@@ -38,7 +38,7 @@
         <div class="card-inner py-3">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <div class="d-flex flex-wrap align-items-center">
                         <div>
                             <span class="text-muted small d-block">Title Limit:</span>
                             <strong class="text-primary fs-14px">{{ $rule->title_char_limit }} characters</strong>
@@ -51,6 +51,8 @@
                                 2&deg;: {{ $rule->title_secondary ?? 'None' }}
                                 <em class="icon ni ni-arrow-right text-muted mx-1"></em>
                                 3&deg;: {{ $rule->title_tertiary ?? 'None' }}
+                                <em class="icon ni ni-arrow-right text-muted mx-1"></em>
+                                4&deg;: {{ $rule->title_quaternary ?? 'None' }}
                             </span>
                         </div>
                         <div class="border-start ps-3">
@@ -213,9 +215,16 @@
                                 <strong>How the Cascade Rules Work:</strong>
                                 <p class="small mb-1 mt-1">
                                     The system evaluates the <strong>Primary</strong> template. If its evaluated length with real variables fits within the configured character limit, it will be used.
-                                    If it exceeds the limit, it falls back to <strong>Secondary</strong>, then <strong>Tertiary</strong>.
+                                    If it exceeds the limit, it falls back to <strong>Secondary</strong>, then <strong>Tertiary</strong>, and finally <strong>Quaternary (4°)</strong> for the worst case (used even if it exceeds the limit).
                                 </p>
-                                <span class="small font-monospace">Available tags: [business name], [category name], [Year], [Site Name]</span>
+                                <div class="small font-monospace mb-2">
+                                    Available tags: [business], [category_cap], [category_tc], [category_lc], [entity1_cap], [entity1_lc], [entities1_cap], [entities1_lc], [entity1_short_cap], [entity1_short_lc], [entities1_short_cap], [entities1_short_lc], [entity2_cap], [entity2_lc], [entities2_cap], [entities2_lc], [entity2_short_cap], [entity2_short_lc], [entities2_short_cap], [entities2_short_lc], [country1], [country2], [year], [website]
+                                </div>
+                                <div class="d-flex align-items-center flex-wrap mt-2" style="gap: 10px;">
+                                    @foreach (['[business]', '[category_cap]', '[category_tc]', '[category_lc]', '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]', '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]', '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]', '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]', '[country1]', '[country2]', '[year]', '[website]'] as $token)
+                                        <span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-11px py-1 px-2" data-token="{{ $token }}">{{ $token }}</span>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -248,6 +257,14 @@
                             <input type="text" class="form-control font-monospace" name="title_tertiary" id="title_tertiary" value="{{ $rule->title_tertiary }}">
                             <span class="text-muted fs-11px">Final fallback for long business names.</span>
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label font-weight-bold d-flex align-items-center justify-content-between">
+                                <span>Quaternary Default (4&deg;) <span class="badge bg-warning text-dark border ms-1 fs-11px">Worst Case Fallback</span></span>
+                                <span class="text-muted fs-11px fw-normal">Used even if character limit is exceeded</span>
+                            </label>
+                            <input type="text" class="form-control font-monospace" name="title_quaternary" id="title_quaternary" value="{{ $rule->title_quaternary }}">
+                            <span class="text-muted fs-11px">Simplest fallback used when all other tiers exceed character limits.</span>
+                        </div>
                     </div>
 
                     {{-- Description Tag Rules --}}
@@ -278,6 +295,14 @@
                             <textarea class="form-control font-monospace" name="description_tertiary" id="description_tertiary" rows="2">{{ $rule->description_tertiary }}</textarea>
                             <span class="text-muted fs-11px">Short fallback for concise snippet requirements.</span>
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label font-weight-bold d-flex align-items-center justify-content-between">
+                                <span>Quaternary Default (4&deg;) <span class="badge bg-warning text-dark border ms-1 fs-11px">Worst Case Fallback</span></span>
+                                <span class="text-muted fs-11px fw-normal">Used even if character limit is exceeded</span>
+                            </label>
+                            <textarea class="form-control font-monospace" name="description_quaternary" id="description_quaternary" rows="2">{{ $rule->description_quaternary }}</textarea>
+                            <span class="text-muted fs-11px">Simplest fallback used when all other tiers exceed character limits.</span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -292,6 +317,17 @@
 </div>
 
 <style>
+.placeholder-chip {
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.placeholder-chip:hover {
+    background-color: #0971fe !important;
+    color: #fff !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
 .char-count {
     font-size: 11px;
     font-weight: 600;
@@ -315,6 +351,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Insert placeholder chip into active modal input on click
+    $(document).on('click', '.placeholder-chip', function() {
+        var token = $(this).data('token');
+        var modal = $(this).closest('.modal');
+        var activeInput = modal.find('input:focus, textarea:focus');
+        if (!activeInput.length) {
+            activeInput = modal.find('input[name="title_primary"]');
+        }
+        if (activeInput.length) {
+            var el = activeInput[0];
+            var start = el.selectionStart || el.value.length;
+            var end = el.selectionEnd || el.value.length;
+            var val = el.value;
+            el.value = val.substring(0, start) + token + val.substring(end);
+            el.selectionStart = el.selectionEnd = start + token.length;
+            el.focus();
+            $(el).trigger('input');
+        }
+    });
+
     // 1. Character Counter & Status Badge Dynamic Update
     function updateCharCount(el) {
         var input = $(el);
@@ -396,6 +452,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof toastr !== 'undefined') {
                     toastr.success('Business meta tags updated successfully!');
                 }
+
+                // If inputs are cleared or updated, update placeholders, char counters and reset button visibility
+                var row = btn.closest('tr');
+                var titleInput = row.find('.meta-title-input');
+                var descInput = row.find('.meta-desc-input');
+                if (res.resolved) {
+                    titleInput.attr('placeholder', res.resolved.auto_title);
+                    descInput.attr('placeholder', res.resolved.auto_description);
+                }
+                updateCharCount(titleInput);
+                updateCharCount(descInput);
+
                 setTimeout(function() {
                     btn.removeClass('btn-success').addClass('btn-primary').prop('disabled', false);
                 }, 2000);

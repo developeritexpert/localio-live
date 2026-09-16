@@ -74,12 +74,18 @@ class ContentTemplateService
     ];
 
     public const CATEGORY_FAQ_FIELDS = [
-        'category_page_faqs' => [
-            'label' => 'Category Page FAQs',
+        'faq_h1' => [
+            'label' => 'H1 headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Category FAQs page.',
+        ],
+        'faq_header_intro' => [
+            'label' => 'Header Intro',
             'type' => 'combined',
-            'field1_label' => 'Category Page FAQs Headline (H2)',
-            'field2_label' => 'Category Page FAQs Subtext',
-            'description' => 'Headline and subtext for the FAQ section on main Category page.',
+            'field1_label' => 'Header1',
+            'field2_label' => 'Header2',
+            'description' => 'Main introductory paragraphs directly below the H1 headline.',
         ],
         'faq_about' => [
             'label' => 'FAQ Page Second Headline & Content',
@@ -99,10 +105,65 @@ class ContentTemplateService
 
     public const FEATURE_FIELDS = [
         'feature_h1' => [
-            'label' => 'Feature Page H1 Headline',
+            'label' => 'H1 Headline',
             'type' => 'single',
             'field1_label' => 'Feature H1 Headline',
             'description' => 'Main page title for Feature pages (e.g. Best [category_tc] with [feature_tc] [country2] [year]).',
+        ],
+        'header_intro' => [
+            'label' => 'Header Introduction Text',
+            'type' => 'combined',
+            'field1_label' => 'Header Question (ends paragraph 1)',
+            'field2_label' => 'Second Header Text (paragraph 2)',
+            'description' => 'Combines individual feature intro with question and second overview paragraph.',
+        ],
+        'compare_top_rated' => [
+            'label' => 'Compare Top-Rated',
+            'type' => 'combined',
+            'field1_label' => 'Compare Top-Rated Headline (H2)',
+            'field2_label' => 'Compare Top-Rated Subtext',
+            'description' => 'Headline and subtext for the top-rated providers section on feature page.',
+        ],
+        'top_10' => [
+            'label' => 'Top 10',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 comparison table section on feature page.',
+        ],
+        'pros_cons' => [
+            'label' => 'Pros and Cons',
+            'type' => 'combined',
+            'field1_label' => 'Pros and Cons Headline (H2)',
+            'field2_label' => 'Pros and Cons Subtext',
+            'description' => 'Headline and subtext for the community feedback section on feature page.',
+        ],
+        'popular_comparisons' => [
+            'label' => 'Popular Comparisons',
+            'type' => 'combined',
+            'field1_label' => 'Popular Comparisons Headline (H2)',
+            'field2_label' => 'Popular Comparisons Subtext',
+            'description' => 'Headline and subtext for the popular side-by-side comparisons section on feature page.',
+        ],
+        'compare_tool' => [
+            'label' => 'Comparison Tool',
+            'type' => 'combined',
+            'field1_label' => 'Comparison Tool Headline (H2)',
+            'field2_label' => 'Comparison Tool Subtext',
+            'description' => 'Headline and subtext for interactive comparison tool box on feature page.',
+        ],
+        'explore_subcategories' => [
+            'label' => 'Explore Subcategories',
+            'type' => 'combined',
+            'field1_label' => 'Explore Subcategories Headline (H2)',
+            'field2_label' => 'Explore Subcategories Subtext',
+            'description' => 'Headline and subtext for explore subcategories/categories section on feature page.',
+        ],
+        'explore_link' => [
+            'label' => '"Explore [business]" Link Text',
+            'type' => 'single',
+            'field1_label' => 'Link Text',
+            'description' => 'Used on top-rated block link (e.g. See all [entities1_cap] with [feature_tc]).',
         ],
     ];
 
@@ -197,19 +258,22 @@ class ContentTemplateService
     public static function assignMissingForFeatures(int $langId = 1): int
     {
         $allFeatureIds = Feature::pluck('id');
+        $allFieldKeys = array_keys(self::FEATURE_FIELDS);
         $assignedCount = 0;
 
         foreach ($allFeatureIds as $featId) {
-            $exists = ContentTemplateAssignment::where('entity_type', 'feature')
-                ->where('entity_id', $featId)
-                ->where('lang_id', $langId)
-                ->where('field_key', 'feature_h1')
-                ->exists();
+            foreach ($allFieldKeys as $fieldKey) {
+                $exists = ContentTemplateAssignment::where('entity_type', 'feature')
+                    ->where('entity_id', $featId)
+                    ->where('lang_id', $langId)
+                    ->where('field_key', $fieldKey)
+                    ->exists();
 
-            if (!$exists) {
-                $template = self::getOrAssignTemplate('feature', $featId, 'feature_h1', $langId);
-                if ($template) {
-                    $assignedCount++;
+                if (!$exists) {
+                    $template = self::getOrAssignTemplate('feature', $featId, $fieldKey, $langId);
+                    if ($template) {
+                        $assignedCount++;
+                    }
                 }
             }
         }
@@ -251,25 +315,40 @@ class ContentTemplateService
             return;
         }
 
-        $existingCount = ContentTemplate::where('section_group', $sectionGroup)
-            ->where('lang_id', $langId)
-            ->count();
+        $fieldDefs = [];
+        if ($sectionGroup === 'category') {
+            $fieldDefs = self::CATEGORY_FIELDS;
+        } elseif ($sectionGroup === 'category_faqs') {
+            $fieldDefs = self::CATEGORY_FAQ_FIELDS;
+        } elseif ($sectionGroup === 'features') {
+            $fieldDefs = self::FEATURE_FIELDS;
+        }
 
-        if ($existingCount === 0) {
-            $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
-                ->where('lang_id', 1)
-                ->get();
+        if ($langId > 1) {
+            foreach (array_keys($fieldDefs) as $fKey) {
+                $hasKey = ContentTemplate::where('section_group', $sectionGroup)
+                    ->where('field_key', $fKey)
+                    ->where('lang_id', $langId)
+                    ->exists();
 
-            foreach ($defaultTemplates as $defTpl) {
-                ContentTemplate::create([
-                    'section_group' => $defTpl->section_group,
-                    'field_key' => $defTpl->field_key,
-                    'option_number' => $defTpl->option_number,
-                    'headline' => $defTpl->headline,
-                    'subtext' => $defTpl->subtext,
-                    'is_active' => $defTpl->is_active,
-                    'lang_id' => $langId,
-                ]);
+                if (!$hasKey) {
+                    $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
+                        ->where('field_key', $fKey)
+                        ->where('lang_id', 1)
+                        ->get();
+
+                    foreach ($defaultTemplates as $defTpl) {
+                        ContentTemplate::create([
+                            'section_group' => $defTpl->section_group,
+                            'field_key' => $defTpl->field_key,
+                            'option_number' => $defTpl->option_number,
+                            'headline' => $defTpl->headline,
+                            'subtext' => $defTpl->subtext,
+                            'is_active' => $defTpl->is_active,
+                            'lang_id' => $langId,
+                        ]);
+                    }
+                }
             }
         }
     }
@@ -391,12 +470,13 @@ class ContentTemplateService
             }
             $rawFeatName = $featTrans?->name ?? $feature->name ?? '';
             $featCap = !empty($featTrans?->category_cap) ? $featTrans->category_cap : (!empty($featTrans?->feature_cap) ? $featTrans->feature_cap : ucfirst(mb_strtolower($rawFeatName)));
-            $featTc  = !empty($featTrans?->category_tc)  ? $featTrans->category_tc  : (!empty($featTrans?->feature_tc)  ? $featTrans->feature_tc  : mb_convert_case($rawFeatName, MB_CASE_TITLE, 'UTF-8'));
+            $featTc  = !empty($featTrans?->features_tc) ? $featTrans->features_tc : (!empty($featTrans?->feature_tc) ? $featTrans->feature_tc : (!empty($featTrans?->category_tc) ? $featTrans->category_tc : mb_convert_case($rawFeatName, MB_CASE_TITLE, 'UTF-8')));
             $featLc  = !empty($featTrans?->category_lc)  ? $featTrans->category_lc  : (!empty($featTrans?->feature_lc)  ? $featTrans->feature_lc  : mb_strtolower($rawFeatName));
 
             $featReplacements = [
                 '[feature_cap]'  => $featCap,
                 '[feature_tc]'   => $featTc,
+                '[features_tc]'  => $featTc,
                 '[feature_lc]'   => $featLc,
                 '[feature]'      => $featLc,
                 '[Feature]'      => $featCap,
@@ -514,6 +594,14 @@ class ContentTemplateService
                     $headline = $catTrans->explore_subcategories_headline ?? ('Explore ' . ($catTrans->name ?? '') . ' categories');
                     $subtext = $catTrans->explore_subcategories_subtext ?? '';
                     break;
+                case 'faq_h1':
+                    $headline = !empty($catTrans->faq_h1_title) ? $catTrans->faq_h1_title : (($catTrans->name ?? 'Category') . ' FAQs');
+                    $subtext = '';
+                    break;
+                case 'faq_header_intro':
+                    $headline = $catTrans->faq_subtext ?? '';
+                    $subtext = '';
+                    break;
                 case 'category_page_faqs':
                     $headline = $catTrans->category_faqs_headline ?? 'Frequently asked questions';
                     $subtext = $catTrans->category_faqs_subtext ?? '';
@@ -561,6 +649,71 @@ class ContentTemplateService
 
         return [
             'headline' => $headline,
+            'template' => $template,
+            'option_number' => $optionNumber,
+        ];
+    }
+
+    /**
+     * Resolves the Feature introduction paragraphs merging individual text with template.
+     */
+    public static function resolveFeatureIntro(Feature $feature, ?Category $category = null, ?string $individualIntro = null, int $langId = 1): string
+    {
+        $template = self::getOrAssignTemplate('feature', $feature->id, 'header_intro', $langId);
+
+        if (!$template) {
+            if (!empty($individualIntro)) {
+                return $individualIntro;
+            }
+            return $category ? self::resolveCategoryIntro($category, $langId) : '<p>Browse and compare the best options</p>';
+        }
+
+        $question = self::replacePlaceholders($template->headline, $category, $feature, $langId);
+        $secondText = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
+
+        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/s', '$1', trim($individualIntro ?? ''));
+
+        $p1 = trim($cleanedIntro);
+        if ($question) {
+            if ($p1 !== '') {
+                $p1 .= ' ' . $question;
+            } else {
+                $p1 = $question;
+            }
+        }
+
+        $output = '';
+        if ($p1 !== '') {
+            $output .= '<p>' . $p1 . '</p>';
+        }
+
+        if ($secondText) {
+            $output .= '<p>' . $secondText . '</p>';
+        }
+
+        return $output ?: '<p>Browse and compare the best options</p>';
+    }
+
+    /**
+     * Resolves a feature section headline and subtext using assigned template with fallback.
+     */
+    public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
+    {
+        $template = self::getOrAssignTemplate('feature', $feature->id, $fieldKey, $langId);
+
+        $headline = '';
+        $subtext = '';
+        $optionNumber = null;
+
+        if ($template) {
+            $headline = self::replacePlaceholders($template->headline, $category, $feature, $langId);
+            $subtext = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
+            $optionNumber = $template->option_number;
+        }
+
+        return [
+            'headline' => $headline,
+            'subtext' => $subtext,
             'template' => $template,
             'option_number' => $optionNumber,
         ];

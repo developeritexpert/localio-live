@@ -172,7 +172,7 @@
                                     </a>
                                 </li>
                                 <!-- Category Feature Content -->
-                                <li class="nk-menu-item">
+                                <li class="nk-menu-item d-none">
                                     <a href="{{ route('admin.category-feature-content.index') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon">
                                              <em class="icon ni ni-file-docs"></em>
@@ -190,17 +190,47 @@
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.businesses') ? 'active' : '' }}">
                                             <a href="{{ route('admin.meta-tags.businesses') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Businesses</span>
+                                                <span class="nk-menu-text">Business profile</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.business-alternatives') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.business-alternatives') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Alternatives</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.business-faqs') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.business-faqs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business FAQs</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.business-compare') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.business-compare') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Compare</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.business-reviews') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.business-reviews') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.business-discussions') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.business-discussions') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Discussions</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.categories') ? 'active' : '' }}">
                                             <a href="{{ route('admin.meta-tags.categories') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Categories</span>
+                                                <span class="nk-menu-text">Category Page</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.categories-faqs') ? 'active' : '' }}">
                                             <a href="{{ route('admin.meta-tags.categories-faqs') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Categories FAQs</span>
+                                                <span class="nk-menu-text">Category FAQs</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.category-discussions') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.category-discussions') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Category Discussions</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.features') ? 'active' : '' }}">
@@ -956,6 +986,33 @@
     <!-- JavaScript -->
     <script src="{{ asset('admin-theme/assets/js/bundle.js?ver=3.1.2') }}"></script>
     <script src="{{ asset('admin-theme/assets/js/scripts.js?ver=3.1.2') }}"></script>
+    <script>
+        // Exact active link matching override to fix duplicate menu highlights
+        if (window.NioApp) {
+            NioApp.CurrentLink = function () {
+                var _link = '.nk-menu-link, .menu-link, .nav-link',
+                    currentPath = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
+                $(_link).each(function () {
+                    var self = $(this),
+                        _self_link = self.attr('href');
+                    if (!_self_link || _self_link === '#' || _self_link.indexOf('javascript:') === 0 || self.hasClass('nk-menu-toggle')) {
+                        return;
+                    }
+                    var linkPath = (self.prop('href') || _self_link).split('#')[0].split('?')[0].replace(/\/+$/, '');
+                    if (linkPath === currentPath) {
+                        self.closest("li").addClass('active current-page').parents().closest("li").addClass("active current-page");
+                        self.closest("li").children('.nk-menu-sub').css('display', 'block');
+                        self.parents().closest("li").children('.nk-menu-sub').css('display', 'block');
+                    } else {
+                        self.closest("li").removeClass('active current-page');
+                    }
+                });
+            };
+            $(document).ready(function() {
+                NioApp.CurrentLink();
+            });
+        }
+    </script>
     <script src="{{ asset('admin-theme/assets/js/charts/gd-default.js?ver=3.1.2') }}"></script>
     <script src="{{ asset('admin-theme/assets/js/example-toastr.js?ver=3.1.2') }}"></script>
     {{-- select 2 --}}

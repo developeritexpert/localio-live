@@ -38,7 +38,7 @@
         <div class="card-inner py-3">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <div class="d-flex flex-wrap align-items-center">
                         <div>
                             <span class="text-muted small d-block">Title Limit:</span>
                             <strong class="text-primary fs-14px">{{ $rule->title_char_limit }} characters</strong>
@@ -51,6 +51,8 @@
                                 2&deg;: {{ $rule->title_secondary ?? 'None' }}
                                 <em class="icon ni ni-arrow-right text-muted mx-1"></em>
                                 3&deg;: {{ $rule->title_tertiary ?? 'None' }}
+                                <em class="icon ni ni-arrow-right text-muted mx-1"></em>
+                                4&deg;: {{ $rule->title_quaternary ?? 'None' }}
                             </span>
                         </div>
                         <div class="border-start ps-3">
@@ -276,12 +278,14 @@
                 </div>
                 <div class="modal-body p-4">
                     {{-- Dynamic Tag Placeholders Legend --}}
-                    <div class="alert alert-primary bg-primary-dim border-0 mb-4 py-2 px-3">
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <span class="fw-bold small text-primary">Available Placeholders:</span>
-                            <span class="badge bg-white text-primary border cursor-pointer placeholder-chip" data-token="[category name]">[category name]</span>
-                            <span class="badge bg-white text-primary border cursor-pointer placeholder-chip" data-token="[Year]">[Year]</span>
-                            <span class="badge bg-white text-primary border cursor-pointer placeholder-chip" data-token="[Site Name]">[Site Name]</span>
+                    <div class="alert alert-primary bg-primary-dim border-0 mb-4 py-3 px-3">
+                        <div class="small font-monospace mb-2 text-dark">
+                            Available tags: [category_cap], [category_tc], [category_lc], [entity1_cap], [entity1_lc], [entities1_cap], [entities1_lc], [entity1_short_cap], [entity1_short_lc], [entities1_short_cap], [entities1_short_lc], [entity2_cap], [entity2_lc], [entities2_cap], [entities2_lc], [entity2_short_cap], [entity2_short_lc], [entities2_short_cap], [entities2_short_lc], [country1], [country2], [year], [website]
+                        </div>
+                        <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+                            @foreach (['[category_cap]', '[category_tc]', '[category_lc]', '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]', '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]', '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]', '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]', '[country1]', '[country2]', '[year]', '[website]'] as $token)
+                                <span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-11px py-1 px-2" data-token="{{ $token }}">{{ $token }}</span>
+                            @endforeach
                         </div>
                     </div>
 
@@ -318,12 +322,20 @@
                                 <input type="text" name="title_secondary" id="rule_title_secondary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_secondary }}">
                             </div>
                             {{-- Tertiary Title --}}
-                            <div class="mb-1">
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
                                     <span>3&deg; Tertiary Fallback <span class="badge bg-light text-secondary border">Concise</span></span>
                                     <span class="text-muted fw-normal fs-11px">Used if Secondary also exceeds limit</span>
                                 </label>
                                 <input type="text" name="title_tertiary" id="rule_title_tertiary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_tertiary }}">
+                            </div>
+                            {{-- Quaternary Title (4°) --}}
+                            <div class="mb-1">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>4&deg; Quaternary Fallback <span class="badge bg-warning text-dark border">Worst Case</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used even if character limit is exceeded</span>
+                                </label>
+                                <input type="text" name="title_quaternary" id="rule_title_quaternary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_quaternary }}">
                             </div>
                         </div>
                     </div>
@@ -361,12 +373,20 @@
                                 <textarea name="description_secondary" id="rule_desc_secondary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_secondary }}</textarea>
                             </div>
                             {{-- Tertiary Description --}}
-                            <div class="mb-1">
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
                                     <span>3&deg; Tertiary Fallback</span>
                                     <span class="text-muted fw-normal fs-11px">Used if Secondary exceeds limit</span>
                                 </label>
                                 <textarea name="description_tertiary" id="rule_desc_tertiary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_tertiary }}</textarea>
+                            </div>
+                            {{-- Quaternary Description (4°) --}}
+                            <div class="mb-1">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>4&deg; Quaternary Fallback <span class="badge bg-warning text-dark border">Worst Case</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used even if character limit is exceeded</span>
+                                </label>
+                                <textarea name="description_quaternary" id="rule_desc_quaternary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_quaternary }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -450,6 +470,26 @@
 
 <script>
 $(document).ready(function() {
+    // Insert placeholder chip into active modal input on click
+    $(document).on('click', '.placeholder-chip', function() {
+        var token = $(this).data('token');
+        var modal = $(this).closest('.modal');
+        var activeInput = modal.find('input:focus, textarea:focus');
+        if (!activeInput.length) {
+            activeInput = modal.find('input[name="title_primary"]');
+        }
+        if (activeInput.length) {
+            var el = activeInput[0];
+            var start = el.selectionStart || el.value.length;
+            var end = el.selectionEnd || el.value.length;
+            var val = el.value;
+            el.value = val.substring(0, start) + token + val.substring(end);
+            el.selectionStart = el.selectionEnd = start + token.length;
+            el.focus();
+            $(el).trigger('input');
+        }
+    });
+
     // 1. Interactive Character Counter & Over-limit indicator
     function updateCharCount(element) {
         var input = $(element);
@@ -599,11 +639,36 @@ $(document).ready(function() {
         var year = '{{ date("Y") }}';
         var site = 'Localio';
 
+        var catCap = catName.charAt(0).toUpperCase() + catName.slice(1);
+        var catTc = catName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        var catLc = catName.toLowerCase();
+
         function rep(tmpl) {
             if (!tmpl) return '';
-            return tmpl.replace(/\[category name\]|\[category\]|\{category\}/gi, catName)
-                       .replace(/\[Year\]|\{year\}/gi, year)
-                       .replace(/\[Site Name\]|\{site_name\}/gi, site);
+            return tmpl.replace(/\[category_cap\]/gi, catCap)
+                       .replace(/\[category_tc\]/gi, catTc)
+                       .replace(/\[category_lc\]/gi, catLc)
+                       .replace(/\[entity1_cap\]/gi, catCap + ' provider')
+                       .replace(/\[entity1_lc\]/gi, (catCap + ' provider').toLowerCase())
+                       .replace(/\[entities1_cap\]/gi, catCap + ' providers')
+                       .replace(/\[entities1_lc\]/gi, (catCap + ' providers').toLowerCase())
+                       .replace(/\[entity1_short_cap\]/gi, 'Provider')
+                       .replace(/\[entity1_short_lc\]/gi, 'provider')
+                       .replace(/\[entities1_short_cap\]/gi, 'Providers')
+                       .replace(/\[entities1_short_lc\]/gi, 'providers')
+                       .replace(/\[entity2_cap\]/gi, catCap + ' provider')
+                       .replace(/\[entity2_lc\]/gi, (catCap + ' provider').toLowerCase())
+                       .replace(/\[entities2_cap\]/gi, catCap + ' providers')
+                       .replace(/\[entities2_lc\]/gi, (catCap + ' providers').toLowerCase())
+                       .replace(/\[entity2_short_cap\]/gi, 'Provider')
+                       .replace(/\[entity2_short_lc\]/gi, 'provider')
+                       .replace(/\[entities2_short_cap\]/gi, 'Providers')
+                       .replace(/\[entities2_short_lc\]/gi, 'providers')
+                       .replace(/\[country1\]/gi, 'United States')
+                       .replace(/\[country2\]/gi, 'US')
+                       .replace(/\[year\]|\[Year\]|\{year\}/gi, year)
+                       .replace(/\[website\]|\[Site Name\]|\{site_name\}/gi, site)
+                       .replace(/\[category name\]|\[category\]|\{category\}/gi, catName);
         }
 
         // Test Title
@@ -611,6 +676,7 @@ $(document).ready(function() {
         var t1 = rep($('#rule_title_primary').val());
         var t2 = rep($('#rule_title_secondary').val());
         var t3 = rep($('#rule_title_tertiary').val());
+        var t4 = rep($('#rule_title_quaternary').val());
 
         var finalTitle = '', titleTier = 'primary';
         if (t1 && t1.length <= titleLimit) {
@@ -619,6 +685,12 @@ $(document).ready(function() {
         } else if (t2 && t2.length <= titleLimit) {
             finalTitle = t2;
             titleTier = 'Secondary (2°)';
+        } else if (t3 && t3.length <= titleLimit) {
+            finalTitle = t3;
+            titleTier = 'Tertiary (3°)';
+        } else if (t4) {
+            finalTitle = t4;
+            titleTier = 'Quaternary (4°)';
         } else {
             finalTitle = t3 || catName;
             titleTier = 'Tertiary (3°)';
@@ -633,6 +705,7 @@ $(document).ready(function() {
         var d1 = rep($('#rule_desc_primary').val());
         var d2 = rep($('#rule_desc_secondary').val());
         var d3 = rep($('#rule_desc_tertiary').val());
+        var d4 = rep($('#rule_desc_quaternary').val());
 
         var finalDesc = '', descTier = 'primary';
         if (d1 && d1.length <= descLimit) {
@@ -641,6 +714,12 @@ $(document).ready(function() {
         } else if (d2 && d2.length <= descLimit) {
             finalDesc = d2;
             descTier = 'Secondary (2°)';
+        } else if (d3 && d3.length <= descLimit) {
+            finalDesc = d3;
+            descTier = 'Tertiary (3°)';
+        } else if (d4) {
+            finalDesc = d4;
+            descTier = 'Quaternary (4°)';
         } else {
             finalDesc = d3 || catName;
             descTier = 'Tertiary (3°)';
@@ -651,7 +730,7 @@ $(document).ready(function() {
         $('#testDescCount').text(finalDesc.length + ' / ' + descLimit + ' chars');
     }
 
-    $('#testCatInput, #rule_title_char_limit, #rule_title_primary, #rule_title_secondary, #rule_title_tertiary, #rule_desc_char_limit, #rule_desc_primary, #rule_desc_secondary, #rule_desc_tertiary').on('input', runSimulation);
+    $('#testCatInput, #rule_title_char_limit, #rule_title_primary, #rule_title_secondary, #rule_title_tertiary, #rule_title_quaternary, #rule_desc_char_limit, #rule_desc_primary, #rule_desc_secondary, #rule_desc_tertiary, #rule_desc_quaternary').on('input', runSimulation);
 
     $('#modalDefaultRules').on('shown.bs.modal', function () {
         runSimulation();

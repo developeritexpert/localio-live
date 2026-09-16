@@ -279,7 +279,7 @@ div#howRankingsWorkModal .circle_11 {
 }
 
 .banner_content_inner:has(.search-results) .search-box input {
-    border-radius: 25px 25px 0px 0px;
+    border-radius: 8px 8px 0px 0px;
 }
 
 .drop_menu {
@@ -6130,10 +6130,6 @@ textarea#message {
         margin-top: 60px;
     }
 
-    .top-rated-heading-sec {
-        padding-top: 90px;
-    }
-
     .common_detail_sec .row .col-lg-8,
     .common_detail_sec .row .col-lg-4 {
         width: 100%;
@@ -7815,11 +7811,11 @@ textarea#message {
         margin-right: 3px;
     }
 
-     .breadcrumb-item + .breadcrumb-item::before{
+    .breadcrumb-item + .breadcrumb-item::before {
         padding: 0 !important;
         margin-right: 3px;
         margin-left: 2px;
-     }
+    }
 
     .sorting {
         border-radius: 8px !important;
@@ -9444,8 +9440,9 @@ textarea#message {
     }
     .business_faq_sec,
     .business_reviews_sec,
-    .cat_main_page_sec {
-        margin-top: 110px !important;
+    .cat_main_page_sec,
+    .top-rated-heading-sec {
+        margin-top: 100px !important;
     }
 
     .reddit-comment-item.nested-comment-item {
@@ -9495,6 +9492,10 @@ textarea#message {
 
     .review-sidebar-sticky h2 {
         font-size: 22px !important;
+    }
+
+    .user_revew_sec, .comparsn_bnr_sec {
+        margin-top: 90px;
     }
 }
 

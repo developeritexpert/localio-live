@@ -25,6 +25,30 @@
 .modal-content {
     pointer-events: auto;
 }
+/* CKEditor styling and z-index */
+:root {
+    --ck-z-default: 1080;
+    --ck-z-modal: 1090;
+}
+.ck-editor__editable_inline {
+    min-height: 140px;
+}
+.ck-content strong,
+.ck-content b,
+.ck-editor__editable strong,
+.ck-editor__editable b,
+.ck-editor__editable_inline strong,
+.ck-editor__editable_inline b {
+    font-weight: 700 !important;
+}
+.ck-content em,
+.ck-content i,
+.ck-editor__editable em,
+.ck-editor__editable i,
+.ck-editor__editable_inline em,
+.ck-editor__editable_inline i {
+    font-style: italic !important;
+}
 </style>
 
 <div class="nk-block nk-block-lg">
@@ -84,15 +108,19 @@
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap gap-3 align-items-center small">
                         <div>
-                            <span class="text-muted d-block">Category Page FAQs:</span>
-                            <strong class="text-dark">{{ $templates->get('category_page_faqs')?->count() ?? 0 }} options</strong>
+                            <span class="text-muted d-block">H1 Headline:</span>
+                            <strong class="text-dark">{{ $templates->get('faq_h1')?->count() ?? 0 }} options</strong>
                         </div>
                         <div class="border-start ps-3">
-                            <span class="text-muted d-block">FAQ Second Section:</span>
+                            <span class="text-muted d-block">Header Intro:</span>
+                            <strong class="text-dark">{{ $templates->get('faq_header_intro')?->count() ?? 0 }} options</strong>
+                        </div>
+                        <div class="border-start ps-3">
+                            <span class="text-muted d-block">Second Headline & Content:</span>
                             <strong class="text-dark">{{ $templates->get('faq_about')?->count() ?? 0 }} options</strong>
                         </div>
                         <div class="border-start ps-3">
-                            <span class="text-muted d-block">FAQ Explore Categories:</span>
+                            <span class="text-muted d-block">Explore Categories:</span>
                             <strong class="text-dark">{{ $templates->get('faq_explore')?->count() ?? 0 }} options</strong>
                         </div>
                     </div>
@@ -117,9 +145,10 @@
                     <thead class="table-light">
                         <tr class="small text-muted text-uppercase">
                             <th style="min-width: 250px;">Category / Subcategory</th>
-                            <th class="text-center" style="min-width: 180px;">Category Page FAQs</th>
-                            <th class="text-center" style="min-width: 200px;">FAQ Page Second Headline & Content</th>
-                            <th class="text-center" style="min-width: 180px;">FAQ Explore Categories</th>
+                            <th class="text-center" style="min-width: 150px;">H1 Headline</th>
+                            <th class="text-center" style="min-width: 150px;">Header Intro</th>
+                            <th class="text-center" style="min-width: 180px;">Second Headline & Content</th>
+                            <th class="text-center" style="min-width: 160px;">Explore Categories</th>
                             <th class="text-end pe-3" style="min-width: 110px;">Actions</th>
                         </tr>
                     </thead>
@@ -140,7 +169,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @foreach(['category_page_faqs', 'faq_about', 'faq_explore'] as $fKey)
+                                @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
                                     @php
                                         $asgn = $catAssignments->get($fKey);
                                         $tpl = $asgn?->template;
@@ -150,20 +179,30 @@
                                             <span class="badge bg-info text-white fs-11px py-1 px-2 cursor-pointer" 
                                                   data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                   title="{{ $tpl->headline ? Str::limit($tpl->headline, 70) : 'Option #' . $tpl->option_number }}">
-                                                Option {{ $tpl->option_number }}
+                                                {{ $tpl->option_number }}
                                             </span>
                                         @else
-                                            <span class="badge bg-secondary text-white fs-11px py-1 px-2">Unassigned</span>
+                                            <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
                                         @endif
                                     </td>
                                 @endforeach
                                 <td class="text-end pe-3 py-3">
-                                    <button type="button" class="btn btn-sm btn-dark btn-view-assign" 
-                                            data-cat-id="{{ $parent->id }}" 
-                                            data-cat-name="{{ $parentName }}"
-                                            data-assignments="{{ json_encode($catAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}">
-                                        <em class="icon ni ni-eye me-1"></em> View / Edit
-                                    </button>
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-dark btn-view-assign p-1 px-2" 
+                                                data-cat-id="{{ $parent->id }}" 
+                                                data-cat-name="{{ $parentName }}"
+                                                data-assignments="{{ json_encode($catAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}"
+                                                title="Edit Assignments" data-toggle="tooltip">
+                                            <em class="icon ni ni-edit"></em>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger btn-reset-entity p-1 px-2 ms-1"
+                                                data-entity-type="category"
+                                                data-entity-id="{{ $parent->id }}"
+                                                data-entity-name="{{ $parentName }}"
+                                                title="Reset Assignments" data-toggle="tooltip">
+                                            <em class="icon ni ni-reload"></em>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -183,7 +222,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    @foreach(['category_page_faqs', 'faq_about', 'faq_explore'] as $fKey)
+                                    @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
                                         @php
                                             $sAsgn = $subAssignments->get($fKey);
                                             $sTpl = $sAsgn?->template;
@@ -193,20 +232,30 @@
                                                 <span class="badge bg-primary text-white fs-11px py-1 px-2 cursor-pointer"
                                                       data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                       title="{{ $sTpl->headline ? Str::limit($sTpl->headline, 70) : 'Option #' . $sTpl->option_number }}">
-                                                    Option {{ $sTpl->option_number }}
+                                                    {{ $sTpl->option_number }}
                                                 </span>
                                             @else
-                                                <span class="badge bg-secondary text-white fs-11px py-1 px-2">Unassigned</span>
+                                                <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
                                             @endif
                                         </td>
                                     @endforeach
                                     <td class="text-end pe-3 py-2">
-                                        <button type="button" class="btn btn-sm btn-dark btn-view-assign" 
-                                                data-cat-id="{{ $sub->id }}" 
-                                                data-cat-name="{{ $subName }}"
-                                                data-assignments="{{ json_encode($subAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}">
-                                            <em class="icon ni ni-eye me-1"></em> View / Edit
-                                        </button>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-sm btn-dark btn-view-assign p-1 px-2" 
+                                                    data-cat-id="{{ $sub->id }}" 
+                                                    data-cat-name="{{ $subName }}"
+                                                    data-assignments="{{ json_encode($subAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}"
+                                                    title="Edit Assignments" data-toggle="tooltip">
+                                                <em class="icon ni ni-edit"></em>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-reset-entity p-1 px-2 ms-1"
+                                                    data-entity-type="category"
+                                                    data-entity-id="{{ $sub->id }}"
+                                                    data-entity-name="{{ $subName }}"
+                                                    title="Reset Assignments" data-toggle="tooltip">
+                                                <em class="icon ni ni-reload"></em>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -243,6 +292,7 @@
                             '[entities1_cap]' => 'Web hosting providers',
                             '[entities1_lc]' => 'web hosting providers',
                             '[year]' => date('Y'),
+                            '[country1]' => 'United States',
                             '[country2]' => 'U.S.',
                         ] as $tag => $example)
                             <button type="button" class="btn btn-xs btn-primary btn-tag-insert py-0 px-2" data-tag="{{ $tag }}">{{ $tag }}</button>
@@ -270,7 +320,12 @@
                                     <h6 class="mb-0 text-dark">{{ $def['label'] }}</h6>
                                     <span class="text-muted small">{{ $def['description'] }}</span>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-primary btn-add-option" data-section="category_faqs" data-field="{{ $key }}">
+                                <button type="button" class="btn btn-sm btn-primary btn-add-option" 
+                                        data-section="category_faqs" 
+                                        data-field="{{ $key }}"
+                                        data-type="{{ $def['type'] }}"
+                                        data-f1="{{ $def['field1_label'] }}"
+                                        data-f2="{{ $def['field2_label'] ?? '' }}">
                                     <em class="icon ni ni-plus me-1"></em> Add New Option
                                 </button>
                             </div>
@@ -281,7 +336,9 @@
                                         <tr>
                                             <th style="width: 85px;">Option #</th>
                                             <th>{{ $def['field1_label'] }}</th>
-                                            <th>{{ $def['field2_label'] }}</th>
+                                            @if(($def['type'] ?? '') !== 'single')
+                                                <th>{{ $def['field2_label'] ?? 'Subtext / Content' }}</th>
+                                            @endif
                                             <th style="width: 140px;" class="text-end">Actions</th>
                                         </tr>
                                     </thead>
@@ -294,9 +351,11 @@
                                                 <td>
                                                     <span class="font-monospace text-dark small">{{ $item->headline }}</span>
                                                 </td>
-                                                <td>
-                                                    <span class="font-monospace text-muted small">{{ Str::limit(strip_tags($item->subtext), 140) }}</span>
-                                                </td>
+                                                @if(($def['type'] ?? '') !== 'single')
+                                                    <td>
+                                                        <span class="font-monospace text-muted small">{{ Str::limit(strip_tags($item->subtext), 140) }}</span>
+                                                    </td>
+                                                @endif
                                                 <td class="text-end">
                                                     <button type="button" class="btn btn-xs btn-primary btn-edit-tpl me-1" 
                                                             data-id="{{ $item->id }}" 
@@ -362,7 +421,7 @@
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
-                        <textarea name="subtext" id="inputSubtext" class="form-control" rows="5" placeholder="Enter subtext or rich HTML template..."></textarea>
+                        <textarea name="subtext" id="inputSubtext" class="form-control rich-editor" rows="5" placeholder="Enter subtext or rich HTML template..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">
@@ -456,18 +515,72 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let shouldReopenManageTemplates = false;
+    let subtextEditor = null;
 
-    $('#inputHeadline, #inputSubtext').on('focus', function() {
+    function initSubtextEditor() {
+        const el = document.querySelector('#inputSubtext');
+        if (!el || typeof ClassicEditor === 'undefined' || subtextEditor) return;
+
+        ClassicEditor
+            .create(el, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                subtextEditor = editor;
+                el.ckeditorInstance = editor;
+
+                editor.model.document.on('change:data', () => {
+                    el.value = editor.getData();
+                });
+
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (isFocused) {
+                        activeInput = $('#inputSubtext');
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("CKEditor Init Error:", error);
+            });
+    }
+
+    // Initialize CKEditor
+    initSubtextEditor();
+
+    $('#inputHeadline').on('focus', function() {
         activeInput = $(this);
+    });
+
+    $('#lblField2').on('click', function() {
+        if (subtextEditor) {
+            subtextEditor.editing.view.focus();
+            activeInput = $('#inputSubtext');
+        }
     });
 
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.length) {
+        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+            try {
+                subtextEditor.model.change(writer => {
+                    subtextEditor.model.insertContent(writer.createText(tag + ' '));
+                });
+            } catch(err) {
+                let cur = subtextEditor.getData() || '';
+                subtextEditor.setData(cur + (cur ? ' ' : '') + tag);
+            }
+            subtextEditor.editing.view.focus();
+        } else if (activeInput && activeInput.length) {
             let val = activeInput.val() || '';
             activeInput.val((val ? val + ' ' : '') + tag);
             activeInput.focus();
+        }
+    });
+
+    $('#templateEditForm').on('submit', function() {
+        if (subtextEditor) {
+            $('#inputSubtext').val(subtextEditor.getData());
         }
     });
 
@@ -497,6 +610,9 @@ $(document).ready(function() {
         shouldReopenManageTemplates = true;
         let field = $(this).data('field');
         let section = $(this).data('section');
+        let type = $(this).data('type') || 'combined';
+        let f1 = $(this).data('f1') || 'Headline';
+        let f2 = $(this).data('f2') || 'Subtext / Content';
 
         $('#templateEditForm').attr('action', '{{ route("admin.content-templates.store") }}');
         $('#tpl_id').val('');
@@ -504,7 +620,18 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
-        $('#tplModalTitle').text('Add New Option for ' + field);
+        if (subtextEditor) {
+            subtextEditor.setData('');
+        }
+
+        $('#lblField1').text(f1);
+        $('#lblField2').text(f2);
+        if (type === 'single') {
+            $('#wrapSubtext').hide();
+        } else {
+            $('#wrapSubtext').show();
+        }
+        $('#tplModalTitle').text('Add New Option (' + f1 + ')');
 
         $('#modalManageTemplates').modal('hide');
         setTimeout(function() {
@@ -520,12 +647,26 @@ $(document).ready(function() {
         let opt = $(this).data('option');
         let headline = $(this).data('headline') || '';
         let subtext = $(this).data('subtext') || '';
+        let type = $(this).data('type') || 'combined';
+        let f1 = $(this).data('f1') || 'Headline';
+        let f2 = $(this).data('f2') || 'Subtext / Content';
 
         $('#templateEditForm').attr('action', '{{ route("admin.content-templates.update") }}');
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
-        $('#tplModalTitle').text('Edit Option #' + opt);
+        if (subtextEditor) {
+            subtextEditor.setData(subtext);
+        }
+
+        $('#lblField1').text(f1);
+        $('#lblField2').text(f2);
+        if (type === 'single') {
+            $('#wrapSubtext').hide();
+        } else {
+            $('#wrapSubtext').show();
+        }
+        $('#tplModalTitle').text('Edit Option #' + opt + ' (' + f1 + ')');
 
         $('#modalManageTemplates').modal('hide');
         setTimeout(function() {
@@ -563,6 +704,41 @@ $(document).ready(function() {
         });
 
         $('#modalViewAssignments').modal('show');
+    });
+
+    // Reset Entity Assignments
+    $('.btn-reset-entity').on('click', function(e) {
+        e.preventDefault();
+        let entityType = $(this).data('entity-type');
+        let entityId = $(this).data('entity-id');
+        let entityName = $(this).data('entity-name');
+
+        let msg = 'Do you really want to reset the template assignments for "' + entityName + '"?\n\nThe assigned templates will be removed. You can then click "Assign Missing" at the top to re-assign randomly.';
+        if (!confirm(msg)) {
+            return;
+        }
+
+        let btn = $(this);
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("admin.content-templates.reset-entity") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                entity_type: entityType,
+                entity_id: entityId,
+                section_group: 'category_faqs',
+                lang_id: '{{ $lang_id }}'
+            },
+            success: function(resp) {
+                window.location.reload();
+            },
+            error: function() {
+                btn.prop('disabled', false);
+                alert('Failed to reset templates. Please try again.');
+            }
+        });
     });
 
     $('.btn-save-single-assign').on('click', function(e) {

@@ -73,7 +73,9 @@ class CategoryTranslation extends Model
         'faq_explore_headline',
         'faq_explore_subtext',
         'faq_meta_title',
-        'faq_meta_description'
+        'faq_meta_description',
+        'discussions_meta_title',
+        'discussions_meta_description'
     ];
 
     public function category()

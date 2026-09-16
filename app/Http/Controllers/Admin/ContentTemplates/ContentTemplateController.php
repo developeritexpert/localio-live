@@ -182,12 +182,14 @@ class ContentTemplateController extends Controller
             ->where('lang_id', $lang_id)
             ->with('template')
             ->get()
-            ->keyBy('entity_id');
+            ->groupBy('entity_id');
 
         $templates = ContentTemplate::where('section_group', 'features')
             ->where('lang_id', $lang_id)
+            ->orderBy('field_key')
             ->orderBy('option_number')
-            ->get();
+            ->get()
+            ->groupBy('field_key');
 
         $fieldDefs = ContentTemplateService::FEATURE_FIELDS;
 
@@ -311,5 +313,47 @@ class ContentTemplateController extends Controller
             'success' => true,
             'message' => 'Assignment updated and locked successfully.',
         ]);
+    }
+
+    /**
+     * Reset/clear locked template assignments for a specific entity (category/feature).
+     */
+    public function resetEntity(Request $request)
+    {
+        $request->validate([
+            'entity_type'   => 'required|string|in:category,feature',
+            'entity_id'     => 'required|integer',
+            'section_group' => 'nullable|string|in:category,category_faqs,features',
+            'lang_id'       => 'nullable|integer',
+        ]);
+
+        $langId = (int) ($request->lang_id ?: 1);
+        $entityType = $request->entity_type;
+        $entityId = (int) $request->entity_id;
+        $sectionGroup = $request->section_group;
+
+        $query = ContentTemplateAssignment::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('lang_id', $langId);
+
+        if ($sectionGroup === 'category') {
+            $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_FIELDS));
+        } elseif ($sectionGroup === 'category_faqs') {
+            $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_FAQ_FIELDS));
+        } elseif ($sectionGroup === 'features') {
+            $query->whereIn('field_key', array_keys(ContentTemplateService::FEATURE_FIELDS));
+        }
+
+        $deleted = $query->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Templates for this {$entityType} have been reset successfully.",
+                'deleted' => $deleted
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Templates for this {$entityType} have been reset successfully.");
     }
 }

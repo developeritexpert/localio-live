@@ -2,10 +2,9 @@
 
 @php
     $lang_id = getCurrentLanguageID();
-    $bTransTmp = $business->translations->firstWhere('language_id', $lang_id) ?? $business->translations->first();
-    $bNameTmp = $bTransTmp->name ?? 'Business';
-    $reviewsMetaTitle = !empty($bTransTmp->reviews_meta_title) ? $bTransTmp->reviews_meta_title : "{$bNameTmp} Reviews & Ratings";
-    $reviewsMetaDesc = !empty($bTransTmp->reviews_meta_description) ? $bTransTmp->reviews_meta_description : ($bTransTmp->reviews_description ?? '');
+    $metaResolved = \App\Services\MetaTagService::resolveBusinessReviewsMeta($business, $lang_id);
+    $reviewsMetaTitle = $metaResolved['title'];
+    $reviewsMetaDesc = $metaResolved['description'];
 @endphp
 
 @section('meta_title', format_meta_text($reviewsMetaTitle))

@@ -81,26 +81,27 @@
 
     // CurrentLink Detect @v1.0
     NioApp.CurrentLink = function () {
-        var _link = '.nk-menu-link, .menu-link, .nav-link',
-            _currentURL = window.location.href,
-            fileName = _currentURL.substring(0, (_currentURL.indexOf("#") == -1) ? _currentURL.length : _currentURL.indexOf("#")),
-            fileName = fileName.substring(0, (fileName.indexOf("?") == -1) ? fileName.length : fileName.indexOf("?"));
+    var _link = '.nk-menu-link, .menu-link, .nav-link',
+      currentPath = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
+    $(_link).each(function () {
+      var self = $(this),
+        _self_link = self.attr('href');
+      if (!_self_link || _self_link === '#' || _self_link.indexOf('javascript:') === 0 || self.hasClass('nk-menu-toggle')) {
+        return;
+      }
+      var linkPath = (self.prop('href') || _self_link).split('#')[0].split('?')[0].replace(/\/+$/, '');
+      if (linkPath === currentPath) {
+        self.closest("li").addClass('active current-page').parents().closest("li").addClass("active current-page");
+        self.closest("li").children('.nk-menu-sub').css('display', 'block');
+        self.parents().closest("li").children('.nk-menu-sub').css('display', 'block');
+      } else {
+        self.closest("li").removeClass('active current-page');
+      }
+    });
+  };
 
-        $(_link).each(function () {
-            var self = $(this), _self_link = self.attr('href');
-            if (fileName.match(_self_link)) {
-                self.closest("li").addClass('active current-page').parents().closest("li").addClass("active current-page");
-                self.closest("li").children('.nk-menu-sub').css('display', 'block');
-                self.parents().closest("li").children('.nk-menu-sub').css('display', 'block');
-                this.scrollIntoView({ block: "start"});
-            } else {
-                self.closest("li").removeClass('active current-page').parents().closest("li:not(.current-page)").removeClass("active");
-            }
-        });
-    };
-
-    // PasswordSwitch @v1.0
-    NioApp.PassSwitch = function () {
+  // PasswordSwitch @v1.0
+  NioApp.PassSwitch = function () {
         NioApp.Passcode('.passcode-switch');
     };
 

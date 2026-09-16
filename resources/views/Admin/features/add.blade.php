@@ -17,18 +17,18 @@
                 <form action="{{ route('features.store') }}" class="form-validate" method="post">
                     @csrf
                     <div class="row g-gs">
-                        <!-- Feature name capitalized [category_cap] -->
+                        <!-- Feature name capitalized [feature_cap] -->
                         <div class="col-md-4 col-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="category_cap">Feature name capitalized <code class="text-primary">[category_cap]</code></label>
+                                <label class="form-label fw-bold" for="feature_cap">Feature name capitalized <code class="text-primary">[feature_cap]</code></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="category_cap" name="category_cap"
-                                        value="{{ old('category_cap', old('name')) }}" placeholder="e.g. Access logs" required />
+                                    <input type="text" class="form-control" id="feature_cap" name="feature_cap"
+                                        value="{{ old('feature_cap', old('category_cap', old('name'))) }}" placeholder="e.g. Access logs" required />
                                     <input type="hidden" id="name" name="name"
-                                        value="{{ old('name', old('category_cap')) }}" />
+                                        value="{{ old('name', old('feature_cap', old('category_cap'))) }}" />
                                 </div>
                                 <small class="text-muted d-block mt-1">Example: Access logs</small>
-                                @error('category_cap')
+                                @error('feature_cap')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                                 @error('name')
@@ -37,31 +37,31 @@
                             </div>
                         </div>
 
-                        <!-- Feature name title case [category_tc] -->
+                        <!-- Feature name title case [features_tc] -->
                         <div class="col-md-4 col-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="category_tc">Feature name title case <code class="text-primary">[category_tc]</code></label>
+                                <label class="form-label fw-bold" for="features_tc">Feature name title case <code class="text-primary">[features_tc]</code></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="category_tc" name="category_tc"
-                                        value="{{ old('category_tc') }}" placeholder="e.g. Access Logs" />
+                                    <input type="text" class="form-control" id="features_tc" name="features_tc"
+                                        value="{{ old('features_tc', old('category_tc')) }}" placeholder="e.g. Access Logs" />
                                 </div>
                                 <small class="text-muted d-block mt-1">Example: Access Logs</small>
-                                @error('category_tc')
+                                @error('features_tc')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-                        <!-- Feature name lowercase [category_lc] -->
+                        <!-- Feature name lowercase [feature_lc] -->
                         <div class="col-md-4 col-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="category_lc">Feature name lowercase <code class="text-primary">[category_lc]</code></label>
+                                <label class="form-label fw-bold" for="feature_lc">Feature name lowercase <code class="text-primary">[feature_lc]</code></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="category_lc" name="category_lc"
-                                        value="{{ old('category_lc') }}" placeholder="e.g. access logs" />
+                                    <input type="text" class="form-control" id="feature_lc" name="feature_lc"
+                                        value="{{ old('feature_lc', old('category_lc')) }}" placeholder="e.g. access logs" />
                                 </div>
                                 <small class="text-muted d-block mt-1">Example: access logs</small>
-                                @error('category_lc')
+                                @error('feature_lc')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -114,24 +114,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const catCapInput = document.getElementById('category_cap');
-            const catTcInput  = document.getElementById('category_tc');
-            const catLcInput  = document.getElementById('category_lc');
-            const nameInput   = document.getElementById('name');
+            const featCapInput = document.getElementById('feature_cap');
+            const featTcInput  = document.getElementById('features_tc');
+            const featLcInput  = document.getElementById('feature_lc');
+            const nameInput    = document.getElementById('name');
 
             let userModifiedTc = false;
             let userModifiedLc = false;
 
-            if (catTcInput && catTcInput.value.trim() !== '') userModifiedTc = true;
-            if (catLcInput && catLcInput.value.trim() !== '') userModifiedLc = true;
+            if (featTcInput && featTcInput.value.trim() !== '') userModifiedTc = true;
+            if (featLcInput && featLcInput.value.trim() !== '') userModifiedLc = true;
 
-            if (catTcInput) {
-                catTcInput.addEventListener('input', function() {
+            if (featTcInput) {
+                featTcInput.addEventListener('input', function() {
                     userModifiedTc = (this.value.trim() !== '');
                 });
             }
-            if (catLcInput) {
-                catLcInput.addEventListener('input', function() {
+            if (featLcInput) {
+                featLcInput.addEventListener('input', function() {
                     userModifiedLc = (this.value.trim() !== '');
                 });
             }
@@ -142,16 +142,16 @@
                 });
             }
 
-            if (catCapInput) {
-                catCapInput.addEventListener('input', function() {
+            if (featCapInput) {
+                featCapInput.addEventListener('input', function() {
                     const val = this.value.trim();
                     if (nameInput) nameInput.value = this.value;
 
-                    if (!userModifiedTc && catTcInput) {
-                        catTcInput.value = val ? toTitleCase(val) : '';
+                    if (!userModifiedTc && featTcInput) {
+                        featTcInput.value = val ? toTitleCase(val) : '';
                     }
-                    if (!userModifiedLc && catLcInput) {
-                        catLcInput.value = val ? val.toLowerCase() : '';
+                    if (!userModifiedLc && featLcInput) {
+                        featLcInput.value = val ? val.toLowerCase() : '';
                     }
                 });
             }

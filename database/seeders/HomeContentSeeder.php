@@ -69,7 +69,7 @@ class HomeContentSeeder extends Seeder
             ],
             [
                 'meta_key' => 'placeholder_text',
-                'meta_value' => 'Search for a company or category...',
+                'meta_value' => 'Search digital products & services',
                 'type'         => 'text',
                 'lang_id' => '1',
                 'created_at' => now(),

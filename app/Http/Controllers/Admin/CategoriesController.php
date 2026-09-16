@@ -506,7 +506,9 @@ class CategoriesController extends Controller
 
         $category->parent_id = $request->parent_id ?? null;
         $category->page_title_addition = $request->page_title_addition;
-        $category->top_rated_listing_headline_addition = $request->top_rated_listing_headline_addition;
+        if ($request->has('top_rated_listing_headline_addition')) {
+            $category->top_rated_listing_headline_addition = $request->top_rated_listing_headline_addition;
+        }
 
         if ($request->hasFile('image')) {
             $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');
@@ -601,70 +603,70 @@ class CategoriesController extends Controller
             }
 
             // Process Category FAQs
-           CategoryTranslation::updateOrCreate(
+            $catTransData = [
+                'category_id'  => $category->id,
+                'lang_id'      => $language_id,
+                'name'         => $categoryName ?: ($validate['name'] ?? ''),
+                'category_cap' => $categoryName ?: ($validate['name'] ?? ''),
+                'category_tc'  => $request->input('category_tc'),
+                'category_lc'  => $request->input('category_lc'),
+                'entity1_cap'  => $request->input('entity1_cap'),
+                'entity1_lc'   => $request->input('entity1_lc'),
+                'entities1_cap'=> $request->input('entities1_cap'),
+                'entities1_lc' => $request->input('entities1_lc'),
+                'entity1_short_cap' => $request->input('entity1_short_cap'),
+                'entity1_short_lc'  => $request->input('entity1_short_lc'),
+                'entities1_short_cap' => $request->input('entities1_short_cap'),
+                'entities1_short_lc'  => $request->input('entities1_short_lc'),
+                'entity2_cap'  => $request->input('entity2_cap'),
+                'entity2_lc'   => $request->input('entity2_lc'),
+                'entities2_cap'=> $request->input('entities2_cap'),
+                'entities2_lc' => $request->input('entities2_lc'),
+                'entity2_short_cap' => $request->input('entity2_short_cap'),
+                'entity2_short_lc'  => $request->input('entity2_short_lc'),
+                'entities2_short_cap' => $request->input('entities2_short_cap'),
+                'entities2_short_lc'  => $request->input('entities2_short_lc'),
+                'comparison_name' => $validate['comparison_name'] ?? null,
+                'page_title'   => $validate['page_title'] ?? null,
+                'description'  => $validate['description'],
+                'faq_h1_title' => $request->input('faq_h1_title'),
+                'faq_subtext'  => $request->input('faq_subtext'),
+                // 'top_rated_description' is now managed centrally on the Top Rated page
+                'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
+                'meta_title'   => $validate['meta_title'] ?? null,
+                'meta_description' => $validate['meta_description'] ?? null,
+                'faq_meta_title'   => $validate['faq_meta_title'] ?? null,
+                'faq_meta_description' => $validate['faq_meta_description'] ?? null,
+                'slug'         => $slug,
+                'comparison_slug' => $comparisonSlug,
+                'is_important' => $request->has('is_important') ? 1 : 0,
+            ];
+
+            // Only update template fields if explicitly passed in the request (e.g. from content templates / legacy)
+            $optionalTemplateFields = [
+                'see_all_text', 'title',
+                'top_rated_listing_headline', 'top_rated_listing_subtext',
+                'compare_alternatives_headline', 'compare_alternatives_subtext',
+                'community_says_headline', 'community_says_subtext',
+                'explore_subcategories_headline', 'explore_subcategories_subtext',
+                'popular_comparisons_headline', 'popular_comparisons_subtext',
+                'compare_tool_headline', 'compare_tool_subtext',
+                'category_faqs_headline', 'category_faqs_subtext',
+                'faq_about_headline', 'faq_about_description',
+                'faq_explore_headline', 'faq_explore_subtext',
+            ];
+            foreach ($optionalTemplateFields as $otf) {
+                if ($request->has($otf)) {
+                    $catTransData[$otf] = $request->input($otf);
+                }
+            }
+
+            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
                     'category_id' => $category->id
                 ],
-                [
-                    'category_id'  => $category->id,
-                    'lang_id'      => $language_id,
-                    'name'         => $categoryName ?: ($validate['name'] ?? ''),
-                    'category_cap' => $categoryName ?: ($validate['name'] ?? ''),
-                    'category_tc'  => $request->input('category_tc'),
-                    'category_lc'  => $request->input('category_lc'),
-                    'entity1_cap'  => $request->input('entity1_cap'),
-                    'entity1_lc'   => $request->input('entity1_lc'),
-                    'entities1_cap'=> $request->input('entities1_cap'),
-                    'entities1_lc' => $request->input('entities1_lc'),
-                    'entity1_short_cap' => $request->input('entity1_short_cap'),
-                    'entity1_short_lc'  => $request->input('entity1_short_lc'),
-                    'entities1_short_cap' => $request->input('entities1_short_cap'),
-                    'entities1_short_lc'  => $request->input('entities1_short_lc'),
-                    'entity2_cap'  => $request->input('entity2_cap'),
-                    'entity2_lc'   => $request->input('entity2_lc'),
-                    'entities2_cap'=> $request->input('entities2_cap'),
-                    'entities2_lc' => $request->input('entities2_lc'),
-                    'entity2_short_cap' => $request->input('entity2_short_cap'),
-                    'entity2_short_lc'  => $request->input('entity2_short_lc'),
-                    'entities2_short_cap' => $request->input('entities2_short_cap'),
-                    'entities2_short_lc'  => $request->input('entities2_short_lc'),
-                    'comparison_name' => $validate['comparison_name'] ?? null,
-                    'see_all_text'    => $validate['see_all_text'] ?? null,
-                    'page_title'   => $validate['page_title'] ?? null,
-                    'title'        => $validate['title'] ?? null,
-                    'description'  => $validate['description'],
-                    'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
-                    'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
-                    'compare_alternatives_headline' => $request->input('compare_alternatives_headline'),
-                    'compare_alternatives_subtext' => $request->input('compare_alternatives_subtext'),
-                    'community_says_headline' => $request->input('community_says_headline'),
-                    'community_says_subtext' => $request->input('community_says_subtext'),
-                    'explore_subcategories_headline' => $request->input('explore_subcategories_headline'),
-                    'explore_subcategories_subtext' => $request->input('explore_subcategories_subtext'),
-                    'popular_comparisons_headline' => $request->input('popular_comparisons_headline'),
-                    'popular_comparisons_subtext' => $request->input('popular_comparisons_subtext'),
-                    'compare_tool_headline' => $request->input('compare_tool_headline'),
-                    'compare_tool_subtext' => $request->input('compare_tool_subtext'),
-                    'category_faqs_headline' => $request->input('category_faqs_headline'),
-                    'category_faqs_subtext' => $request->input('category_faqs_subtext'),
-                    'faq_h1_title' => $request->input('faq_h1_title'),
-                    'faq_subtext' => $request->input('faq_subtext'),
-                    'faq_about_headline' => $request->input('faq_about_headline'),
-                    'faq_about_description' => $request->input('faq_about_description'),
-                    'faq_explore_headline' => $request->input('faq_explore_headline'),
-                    'faq_explore_subtext' => $request->input('faq_explore_subtext'),
-                    // 'top_rated_description' is now managed centrally on the Top Rated page
-                    // 'top_rated_description' => $request->input('top_rated_description'),
-                    'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
-                    'meta_title'   => $validate['meta_title'] ?? null,
-                    'meta_description' => $validate['meta_description'] ?? null,
-                    'faq_meta_title'   => $validate['faq_meta_title'] ?? null,
-                    'faq_meta_description' => $validate['faq_meta_description'] ?? null,
-                    'slug'         => $slug,
-                    'comparison_slug' => $comparisonSlug,
-                    'is_important' => $request->has('is_important') ? 1 : 0,
-                ]
+                $catTransData
             );
 
             // Handle rating criteria
