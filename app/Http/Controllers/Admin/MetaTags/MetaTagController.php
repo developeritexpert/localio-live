@@ -534,6 +534,13 @@ class MetaTagController extends Controller
         }
 
         $business = Business::find($bizId);
+        if ($business) {
+            $business->meta_title = null;
+            $business->meta_description = null;
+            $business->save();
+            $business->refresh();
+        }
+
         $resolved = MetaTagService::resolveBusinessMeta($business, $langId);
 
         return response()->json([
@@ -732,35 +739,52 @@ class MetaTagController extends Controller
      */
     protected function saveBusinessTranslationMeta(int $bizId, int $langId, ?string $metaTitle, ?string $metaDesc)
     {
+        $metaTitle = $metaTitle !== null ? trim($metaTitle) : null;
+        $metaDesc = $metaDesc !== null ? trim($metaDesc) : null;
+
+        $metaTitleVal = ($metaTitle !== '' && $metaTitle !== null) ? $metaTitle : null;
+        $metaDescVal = ($metaDesc !== '' && $metaDesc !== null) ? $metaDesc : null;
+
         $bizTrans = BusinessTranslation::where('business_id', $bizId)
             ->where('lang_id', $langId)
             ->first();
 
         if ($bizTrans) {
-            $bizTrans->meta_title = $metaTitle;
-            $bizTrans->meta_description = $metaDesc;
+            $bizTrans->meta_title = $metaTitleVal;
+            $bizTrans->meta_description = $metaDescVal;
             $bizTrans->save();
-            return $bizTrans;
+        } else {
+            $engTrans = BusinessTranslation::where('business_id', $bizId)->where('lang_id', 1)->first();
+            $baseSlug = $engTrans?->slug ?: ('business-' . $bizId);
+            $targetSlug = $baseSlug . '-' . $langId;
+
+            $counter = 1;
+            while (BusinessTranslation::where('slug', $targetSlug)->exists()) {
+                $targetSlug = $baseSlug . '-' . $langId . '-' . $counter++;
+            }
+
+            $bizTrans = BusinessTranslation::create([
+                'business_id' => $bizId,
+                'lang_id' => $langId,
+                'status' => 1,
+                'name' => $engTrans?->name ?? ('Business #' . $bizId),
+                'slug' => $targetSlug,
+                'meta_title' => $metaTitleVal,
+                'meta_description' => $metaDescVal,
+            ]);
         }
 
-        $engTrans = BusinessTranslation::where('business_id', $bizId)->where('lang_id', 1)->first();
-        $baseSlug = $engTrans?->slug ?: ('business-' . $bizId);
-        $targetSlug = $baseSlug . '-' . $langId;
-
-        $counter = 1;
-        while (BusinessTranslation::where('slug', $targetSlug)->exists()) {
-            $targetSlug = $baseSlug . '-' . $langId . '-' . $counter++;
+        // Also keep legacy businesses table synchronized
+        $business = Business::find($bizId);
+        if ($business) {
+            if ($langId == 1 || ($metaTitleVal === null && $metaDescVal === null)) {
+                $business->meta_title = $metaTitleVal;
+                $business->meta_description = $metaDescVal;
+                $business->save();
+            }
         }
 
-        return BusinessTranslation::create([
-            'business_id' => $bizId,
-            'lang_id' => $langId,
-            'status' => 1,
-            'name' => $engTrans?->name ?? ('Business #' . $bizId),
-            'slug' => $targetSlug,
-            'meta_title' => $metaTitle,
-            'meta_description' => $metaDesc,
-        ]);
+        return $bizTrans;
     }
 
     /**

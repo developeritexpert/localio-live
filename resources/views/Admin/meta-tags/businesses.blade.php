@@ -452,6 +452,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof toastr !== 'undefined') {
                     toastr.success('Business meta tags updated successfully!');
                 }
+
+                // If inputs are cleared or updated, update placeholders, char counters and reset button visibility
+                var row = btn.closest('tr');
+                var titleInput = row.find('.meta-title-input');
+                var descInput = row.find('.meta-desc-input');
+                if (res.resolved) {
+                    titleInput.attr('placeholder', res.resolved.auto_title);
+                    descInput.attr('placeholder', res.resolved.auto_description);
+                }
+                updateCharCount(titleInput);
+                updateCharCount(descInput);
+
                 setTimeout(function() {
                     btn.removeClass('btn-success').addClass('btn-primary').prop('disabled', false);
                 }, 2000);

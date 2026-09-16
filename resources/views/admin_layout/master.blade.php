@@ -190,7 +190,7 @@
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.businesses') ? 'active' : '' }}">
                                             <a href="{{ route('admin.meta-tags.businesses') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Businesses</span>
+                                                <span class="nk-menu-text">Business profile</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.categories') ? 'active' : '' }}">

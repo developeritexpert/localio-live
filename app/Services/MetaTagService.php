@@ -409,8 +409,13 @@ class MetaTagService
             }
         }
 
-        $manualTitle = trim($targetTrans?->meta_title ?? ($business->meta_title ?? ''));
-        $manualDescription = trim($targetTrans?->meta_description ?? ($business->meta_description ?? ''));
+        $manualTitle = trim($targetTrans?->meta_title ?? '');
+        $manualDescription = trim($targetTrans?->meta_description ?? '');
+
+        if (!$targetTrans && $langId === 1) {
+            $manualTitle = trim($business->meta_title ?? '');
+            $manualDescription = trim($business->meta_description ?? '');
+        }
 
         $categoryObj = null;
         if ($business->relationLoaded('category') && $business->category) {
