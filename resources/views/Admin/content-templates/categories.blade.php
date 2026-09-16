@@ -108,7 +108,7 @@
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap gap-3 align-items-center small">
                         <div>
-                            <span class="text-muted d-block">Header Intro:</span>
+                            <span class="text-muted d-block">HEADER:</span>
                             <strong class="text-dark">{{ $templates->get('header_intro')?->count() ?? 0 }} options</strong>
                         </div>
                         <div class="border-start ps-3">
@@ -116,7 +116,7 @@
                             <strong class="text-dark">{{ $templates->get('top_10')?->count() ?? 0 }} options</strong>
                         </div>
                         <div class="border-start ps-3">
-                            <span class="text-muted d-block">Compare Top-Rated:</span>
+                            <span class="text-muted d-block">LISTING:</span>
                             <strong class="text-dark">{{ $templates->get('compare_top_rated')?->count() ?? 0 }} options</strong>
                         </div>
                         <div class="border-start ps-3">
@@ -152,14 +152,14 @@
                     <thead class="table-light">
                         <tr class="small text-muted text-uppercase">
                             <th style="min-width: 220px;">Category / Subcategory</th>
-                            <th class="text-center" style="min-width: 110px;">Header Intro</th>
-                            <th class="text-center" style="min-width: 100px;">Explore Link</th>
-                            <th class="text-center" style="min-width: 120px;">Compare Top-Rated</th>
+                            <th class="text-center" style="min-width: 110px;">HEADER</th>
+                            <th class="text-center" style="min-width: 120px;">LISTING</th>
                             <th class="text-center" style="min-width: 100px;">Top 10</th>
                             <th class="text-center" style="min-width: 110px;">Pros & Cons</th>
                             <th class="text-center" style="min-width: 120px;">Popular Comp.</th>
                             <th class="text-center" style="min-width: 110px;">Comp. Tool</th>
-                            <th class="text-center" style="min-width: 120px;">Explore Subcats</th>
+                            <th class="text-center" style="min-width: 120px;">CATEGORIES</th>
+                            <th class="text-center" style="min-width: 110px;">Explore Link</th>
                             <th class="text-end pe-3" style="min-width: 110px;">Actions</th>
                         </tr>
                     </thead>
@@ -181,7 +181,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @foreach(['header_intro', 'explore_link', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories'] as $fKey)
+                                @foreach(['header_intro', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories', 'explore_link'] as $fKey)
                                     @php
                                         $asgn = $catAssignments->get($fKey);
                                         $tpl = $asgn?->template;
@@ -235,7 +235,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    @foreach(['header_intro', 'explore_link', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories'] as $fKey)
+                                    @foreach(['header_intro', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories', 'explore_link'] as $fKey)
                                         @php
                                             $sAsgn = $subAssignments->get($fKey);
                                             $sTpl = $sAsgn?->template;
@@ -310,6 +310,7 @@
                             '[entities1_short_lc]' => 'providers',
                             '[entities2_lc]' => 'web hosts',
                             '[year]' => date('Y'),
+                            '[country1]' => 'United States',
                             '[country2]' => 'U.S.',
                         ] as $tag => $example)
                             <button type="button" class="btn btn-xs btn-primary btn-tag-insert py-0 px-2" data-tag="{{ $tag }}">{{ $tag }}</button>

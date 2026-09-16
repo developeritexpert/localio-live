@@ -246,6 +246,7 @@
                             '[feature_lc]' => 'free domain privacy',
                             '[entities1_cap]' => 'Web hosting providers',
                             '[year]' => date('Y'),
+                            '[country1]' => 'United States',
                             '[country2]' => 'U.S.',
                         ] as $tag => $example)
                             <button type="button" class="btn btn-xs btn-primary btn-tag-insert py-0 px-2" data-tag="{{ $tag }}">{{ $tag }}</button>
