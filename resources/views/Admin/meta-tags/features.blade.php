@@ -247,7 +247,14 @@
                                     The system evaluates the <strong>Primary</strong> template. If its evaluated length with real variables fits within the configured character limit, it will be used.
                                     If it exceeds the limit, it falls back to <strong>Secondary</strong>, then <strong>Tertiary</strong>.
                                 </p>
-                                <span class="small font-monospace">Available tags: [feature name], [category name], [Year], [Site Name]</span>
+                                <div class="small font-monospace mb-2">
+                                    Available tags: [feature_cap], [features_tc], [feature_lc], [category_cap], [category_tc], [category_lc], [entity1_cap], [entity1_lc], [entities1_cap], [entities1_lc], [entity1_short_cap], [entity1_short_lc], [entities1_short_cap], [entities1_short_lc], [entity2_cap], [entity2_lc], [entities2_cap], [entities2_lc], [entity2_short_cap], [entity2_short_lc], [entities2_short_cap], [entities2_short_lc], [country1], [country2], [year], [website]
+                                </div>
+                                <div class="d-flex align-items-center flex-wrap mt-2" style="gap: 10px;">
+                                    @foreach (['[feature_cap]', '[features_tc]', '[feature_lc]', '[category_cap]', '[category_tc]', '[category_lc]', '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]', '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]', '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]', '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]', '[country1]', '[country2]', '[year]', '[website]'] as $token)
+                                        <span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-11px py-1 px-2" data-token="{{ $token }}">{{ $token }}</span>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -324,6 +331,17 @@
 </div>
 
 <style>
+.placeholder-chip {
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.placeholder-chip:hover {
+    background-color: #0971fe !important;
+    color: #fff !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
 .char-count {
     font-size: 11px;
     font-weight: 600;
@@ -347,6 +365,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Insert placeholder chip into active modal input on click
+    $(document).on('click', '.placeholder-chip', function() {
+        var token = $(this).data('token');
+        var modal = $(this).closest('.modal');
+        var activeInput = modal.find('input:focus, textarea:focus');
+        if (!activeInput.length) {
+            activeInput = modal.find('input[name="title_primary"]');
+        }
+        if (activeInput.length) {
+            var el = activeInput[0];
+            var start = el.selectionStart || el.value.length;
+            var end = el.selectionEnd || el.value.length;
+            var val = el.value;
+            el.value = val.substring(0, start) + token + val.substring(end);
+            el.selectionStart = el.selectionEnd = start + token.length;
+            el.focus();
+            $(el).trigger('input');
+        }
+    });
+
     // 1. Character Counter & Status Badge Dynamic Update
     function updateCharCount(el) {
         var input = $(el);
