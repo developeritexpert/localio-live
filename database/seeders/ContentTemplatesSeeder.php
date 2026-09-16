@@ -1334,6 +1334,7 @@ class ContentTemplatesSeeder extends Seeder
                 'category_lc'  => $lc,
                 'feature_cap'  => $cap,
                 'feature_tc'   => $tc,
+                'features_tc'  => $tc,
                 'feature_lc'   => $lc,
             ]);
             $featCount++;
