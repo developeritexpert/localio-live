@@ -1184,10 +1184,6 @@
                                 font-size: 14px;
                             }
 
-                            .mobile-subcat-back-btn:hover {
-                                color: #F9633B !important;
-                            }
-
                             /* View 1: Main Categories List items */
                             .mobile-cat-nav-btn {
                                 display: flex !important;

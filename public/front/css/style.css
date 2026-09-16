@@ -7796,6 +7796,7 @@ header .menu li.menu-item a {
     font-size: 26px !important;
     font-weight: 700 !important;
     margin-bottom: 8px;
+    line-height: 1;
 }
 
 .product_integra_sec .asn-rating p {
@@ -10916,11 +10917,6 @@ section.community-feedback-sec {
     cursor: pointer !important;
 }
 
-.view-all-category-link:hover {
-    color: var(--color-blue-hover) !important;
-    text-decoration: none !important;
-}
-
 body,
 .footer-langs-container a,
 .ft-btm-rgt .select-menu .options li a {
@@ -11349,6 +11345,7 @@ button.post-action-btn.toggle-reply-btn {
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+    background-color: var(--color-bg-light-grey);
 }
 
 .sticky-comp-row {
@@ -12074,28 +12071,6 @@ i.fa-solid.fa-minus {
     min-height: 220px;
 }
 
-.starting-price-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-dark-blue-text);
-    margin-bottom: 25px;
-}
-
-.starting-price-value {
-    font-size: 42px;
-    font-weight: 700;
-    color: var(--color-dark-blue-text);
-    line-height: 1;
-    margin-bottom: 12px;
-}
-
-.starting-price-text {
-    font-size: 14px;
-    color: #8a8a8a;
-    margin-bottom: 35px;
-    font-weight: 600;
-}
-
 .starting-price-link {
     color: var(--color-dark-blue-text);
     font-size: 14px;
@@ -12108,7 +12083,8 @@ i.fa-solid.fa-minus {
     text-decoration: underline;
 }
 
-.feture_box.str_prc_box .starting-price-text {
+.feture_box.str_prc_box .starting-price-text,
+.starting-price-text {
     text-align: center !important;
     color: var(--color-primary-grey-text);
     font-size: 12px;
@@ -12286,4 +12262,14 @@ div[data-business-id],
 /* product-detail-comp.css */
 section#section-compare {
     padding: 40px 20px !important;
+}
+
+/* ====style.css updated by-Kashish(16-sep-26)===== */
+
+.sidebar-section-title.sidebar-cat:hover {
+    background: none;
+}
+
+.community-feedback-table-section{
+    background-color: var(--color-bg-light-grey);
 }

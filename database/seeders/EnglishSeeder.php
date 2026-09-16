@@ -22,7 +22,7 @@ DB::table('footer_contents')->where('lang_id', 1)->delete();
             'header_description' => 'Get free, unbiased product comparisons, read real customer reviews, and',
             'header_background_img' => 'front/img/bnnr-bg.png',
             'header_img' => 'front/img/banner_image.png',
-            'placeholder_text' => 'Search for a company or category...',
+            'placeholder_text' => 'Search digital products & services',
             'trusted_brands_text' => 'Trusted Brands, Unbeatable Choices',
             'trusted_brands_img' => 'front/img/marq-img1.svg',
             'most_popular' => 'Most Popular',

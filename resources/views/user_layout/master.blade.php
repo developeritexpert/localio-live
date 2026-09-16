@@ -2392,7 +2392,7 @@
                     {{-- <div class="sidebar-menu-divider"></div> --}}
 
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">Categories</h3>
+                        <h3 class="sidebar-section-title sidebar-cat">Categories</h3>
                         <ul class="sidebar-menu-list">
                             @foreach($sidebarCategories as $cat)
                             @if($cat->translation)
@@ -2577,7 +2577,7 @@
         border-radius: 4px;
     }
 
-    .sidebar-section-title:hover {
+    .sidebar-section-title:hover ,.sub-panel-back:hover {
         background: #f4f7fb;
     }
 
@@ -2588,9 +2588,6 @@
         display: inline-block;
     }
 
-    .sidebar-section-title:hover a{
-        color: #f26522 !important;
-    }
 
     .sidebar-menu-list {
         list-style: none;
@@ -2625,7 +2622,7 @@
     }
 
     .sub-panel-back {
-        padding: 0 20px 10px;
+        padding: 10px 20px;
     }
 
     .sub-panel-back a {
@@ -2635,10 +2632,6 @@
         font-size: 14px;
         font-weight: 700;
         text-decoration: none;
-    }
-
-    .sub-panel-back a:hover {
-        color: #f26522;
     }
 
     .view-all-link {

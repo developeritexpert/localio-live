@@ -615,7 +615,7 @@
                                     <div class="row g-3">
                                         <!-- Starting price card -->
                                         <div class="col-6">
-                                            <div class="p-3 bg-white border h-100 d-flex flex-column justify-content-between text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                            <div class="p-3 bg-white border h-100 d-flex flex-column text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                                 <div>
                                                     <p class="starting-price-title">Starting price</p>
                                                     @if($startingPrice)
@@ -630,8 +630,8 @@
                                                         <p class="starting-price-text">Custom subscription</p>
                                                     @endif
                                                 </div>
-                                                <div class="mt-3">
-                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
+                                                <div class="starting-price-link">
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
                                                 </div>
                                             </div>
                                         </div>
