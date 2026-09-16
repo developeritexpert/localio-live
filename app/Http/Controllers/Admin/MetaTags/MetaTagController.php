@@ -274,10 +274,12 @@ class MetaTagController extends Controller
         $rule->title_primary = $request->input('title_primary');
         $rule->title_secondary = $request->input('title_secondary');
         $rule->title_tertiary = $request->input('title_tertiary');
+        $rule->title_quaternary = $request->input('title_quaternary');
         $rule->description_char_limit = $request->input('description_char_limit');
         $rule->description_primary = $request->input('description_primary');
         $rule->description_secondary = $request->input('description_secondary');
         $rule->description_tertiary = $request->input('description_tertiary');
+        $rule->description_quaternary = $request->input('description_quaternary');
         $rule->save();
 
         if ($request->ajax() || $request->wantsJson()) {

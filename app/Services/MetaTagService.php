@@ -211,6 +211,7 @@ class MetaTagService
             $rule->title_primary,
             $rule->title_secondary,
             $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
             $rule->title_char_limit,
             $context
         );
@@ -219,6 +220,7 @@ class MetaTagService
             $rule->description_primary,
             $rule->description_secondary,
             $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
             $rule->description_char_limit,
             $context
         );
@@ -305,6 +307,7 @@ class MetaTagService
             $rule->title_primary,
             $rule->title_secondary,
             $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
             $rule->title_char_limit,
             $context
         );
@@ -313,6 +316,7 @@ class MetaTagService
             $rule->description_primary,
             $rule->description_secondary,
             $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
             $rule->description_char_limit,
             $context
         );
@@ -431,6 +435,7 @@ class MetaTagService
             $rule->title_primary,
             $rule->title_secondary,
             $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
             $rule->title_char_limit,
             $context
         );
@@ -439,6 +444,7 @@ class MetaTagService
             $rule->description_primary,
             $rule->description_secondary,
             $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
             $rule->description_char_limit,
             $context
         );
@@ -578,6 +584,7 @@ class MetaTagService
             $rule->title_primary,
             $rule->title_secondary,
             $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
             $rule->title_char_limit,
             $context
         );
@@ -586,6 +593,7 @@ class MetaTagService
             $rule->description_primary,
             $rule->description_secondary,
             $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
             $rule->description_char_limit,
             $context
         );
@@ -635,9 +643,10 @@ class MetaTagService
     }
 
     /**
-     * Evaluates Primary -> Secondary -> Tertiary cascade against a character limit.
+     * Evaluates Primary -> Secondary -> Tertiary -> Quaternary cascade against a character limit.
+     * Quaternary (4°) is the worst-case fallback used even if it exceeds the character limit.
      */
-    public static function evaluateCascade(?string $primary, ?string $secondary, ?string $tertiary, int $limit, array $context): array
+    public static function evaluateCascade(?string $primary, ?string $secondary, ?string $tertiary, ?string $quaternary, int $limit, array $context): array
     {
         if (!empty($primary)) {
             $evaluated = self::replacePlaceholders($primary, $context);
@@ -651,6 +660,18 @@ class MetaTagService
             if (mb_strlen($evaluated) <= $limit) {
                 return [$evaluated, 'secondary'];
             }
+        }
+
+        if (!empty($tertiary)) {
+            $evaluated = self::replacePlaceholders($tertiary, $context);
+            if (mb_strlen($evaluated) <= $limit) {
+                return [$evaluated, 'tertiary'];
+            }
+        }
+
+        if (!empty($quaternary)) {
+            $evaluated = self::replacePlaceholders($quaternary, $context);
+            return [$evaluated, 'quaternary'];
         }
 
         if (!empty($tertiary)) {
