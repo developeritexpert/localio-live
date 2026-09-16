@@ -25,6 +25,30 @@
 .modal-content {
     pointer-events: auto;
 }
+/* CKEditor styling and z-index */
+:root {
+    --ck-z-default: 1080;
+    --ck-z-modal: 1090;
+}
+.ck-editor__editable_inline {
+    min-height: 140px;
+}
+.ck-content strong,
+.ck-content b,
+.ck-editor__editable strong,
+.ck-editor__editable b,
+.ck-editor__editable_inline strong,
+.ck-editor__editable_inline b {
+    font-weight: 700 !important;
+}
+.ck-content em,
+.ck-content i,
+.ck-editor__editable em,
+.ck-editor__editable i,
+.ck-editor__editable_inline em,
+.ck-editor__editable_inline i {
+    font-style: italic !important;
+}
 </style>
 
 <div class="nk-block nk-block-lg">
@@ -389,7 +413,7 @@
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
-                        <textarea name="subtext" id="inputSubtext" class="form-control" rows="4" placeholder="Enter subtext template..."></textarea>
+                        <textarea name="subtext" id="inputSubtext" class="form-control rich-editor" rows="4" placeholder="Enter subtext template..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">
@@ -482,19 +506,73 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let shouldReopenManageTemplates = false;
+    let subtextEditor = null;
 
-    $('#inputHeadline, #inputSubtext').on('focus', function() {
+    function initSubtextEditor() {
+        const el = document.querySelector('#inputSubtext');
+        if (!el || typeof ClassicEditor === 'undefined' || subtextEditor) return;
+
+        ClassicEditor
+            .create(el, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                subtextEditor = editor;
+                el.ckeditorInstance = editor;
+
+                editor.model.document.on('change:data', () => {
+                    el.value = editor.getData();
+                });
+
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (isFocused) {
+                        activeInput = $('#inputSubtext');
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("CKEditor Init Error:", error);
+            });
+    }
+
+    // Initialize CKEditor
+    initSubtextEditor();
+
+    $('#inputHeadline').on('focus', function() {
         activeInput = $(this);
+    });
+
+    $('#lblField2').on('click', function() {
+        if (subtextEditor) {
+            subtextEditor.editing.view.focus();
+            activeInput = $('#inputSubtext');
+        }
     });
 
     // Tag insertion
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.length) {
+        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+            try {
+                subtextEditor.model.change(writer => {
+                    subtextEditor.model.insertContent(writer.createText(tag + ' '));
+                });
+            } catch(err) {
+                let cur = subtextEditor.getData() || '';
+                subtextEditor.setData(cur + (cur ? ' ' : '') + tag);
+            }
+            subtextEditor.editing.view.focus();
+        } else if (activeInput && activeInput.length) {
             let val = activeInput.val() || '';
             activeInput.val((val ? val + ' ' : '') + tag);
             activeInput.focus();
+        }
+    });
+
+    $('#templateEditForm').on('submit', function() {
+        if (subtextEditor) {
+            $('#inputSubtext').val(subtextEditor.getData());
         }
     });
 
@@ -533,6 +611,9 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
+        if (subtextEditor) {
+            subtextEditor.setData('');
+        }
         $('#tplModalTitle').text('Add New Option for ' + field);
 
         if (field === 'explore_link') {
@@ -563,6 +644,9 @@ $(document).ready(function() {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
+        if (subtextEditor) {
+            subtextEditor.setData(subtext);
+        }
         $('#tplModalTitle').text('Edit Option #' + opt);
 
         if (type === 'single') {
