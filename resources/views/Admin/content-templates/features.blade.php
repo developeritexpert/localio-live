@@ -446,7 +446,7 @@
                                             <option value="">-- Select Option --</option>
                                             @foreach($templates->get($fKey) ?? [] as $tOption)
                                                 <option value="{{ $tOption->id }}">
-                                                    Option #{{ $tOption->option_number }} &bull; {{ Str::limit($tOption->headline, 60) }}
+                                                    Option #{{ $tOption->option_number }} &bull; {{ Str::limit(strip_tags(html_entity_decode($tOption->headline)), 60) }}
                                                 </option>
                                             @endforeach
                                         </select>
