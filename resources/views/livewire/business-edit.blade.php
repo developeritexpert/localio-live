@@ -1491,21 +1491,8 @@
                                 ])->find($selected_category) : null;
                                 $selectedMainCategoryId = $selectedCategoryModel ? ($selectedCategoryModel->parent_id ?: $selectedCategoryModel->id) : null;
 
-                                $subCategories = collect();
-                                if ($selectedMainCategoryId) {
-                                $subCategories = \App\Models\Category::where('parent_id', $selectedMainCategoryId)
-                                ->whereHas('translations', function ($query) use ($langId) {
-                                $query->where('lang_id', $langId);
-                                })
-                                ->with(['translations' => function ($query) use ($langId) {
-                                $query->where('lang_id', $langId);
-                                }])
-                                ->get()
-                                ->sortBy(function($cat) {
-                                return $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? '';
-                                });
-                                }
-                                @endphp
+                                $subCategories = $allPrimaryCategories;
+@endphp
                                 <hr class="my-3">
                                 <div class="form-group mt-3">
                                     <label class="form-label" for="admin_rating">Review Rating (Admin)</label>
@@ -1606,15 +1593,19 @@
                                     $allSubCatIds = $subCategories->pluck('id')->toArray();
                                     $subCatMap = [];
                                     foreach ($subCategories as $cat) {
-                                    $subCatMap[$cat->id] = $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? 'Category #' . $cat->id;
-                                    }
+                                            $catName = $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? 'Category #' . $cat->id;
+                                            if ($cat->parent) {
+                                                $parentName = $cat->parent->translations->name ?? $cat->parent->categoryTranslations->first()->name ?? '';
+                                                if ($parentName) {
+                                                    $catName = $parentName . ' -> ' . $catName;
+                                                }
+                                            }
+                                            $subCatMap[$cat->id] = $catName;
+                                        }
                                     @endphp
 
-                                    @if(!$selectedCategoryModel)
-                                    <div class="border rounded p-3 text-center bg-light text-muted small">
-                                        <em class="icon ni ni-info me-1"></em> Please select a Primary Category first to assign secondary sub-categories.
-                                    </div>
-                                    @elseif($subCategories->isEmpty())
+                                    @if(false)
+@elseif($subCategories->isEmpty())
                                     <div class="border rounded p-3 text-center bg-light text-muted small">
                                         <em class="icon ni ni-alert-circle me-1"></em> No sub-categories exist under {{ $mainCatName ?? 'this category' }}.
                                     </div>
@@ -1623,7 +1614,7 @@
                                     <div class="row mb-2">
                                         <div class="col-md-12">
                                             <div class="input-group">
-                                                <input type="text" x-model="search" class="form-control" placeholder="Search sub-categories in {{ $mainCatName }}...">
+                                                <input type="text" x-model="search" class="form-control" placeholder="Search all categories and sub-categories...">
                                                 <div class="input-group-append">
                                                     <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
                                                         Select All
