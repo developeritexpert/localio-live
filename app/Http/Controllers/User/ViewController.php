@@ -406,7 +406,7 @@ class ViewController extends Controller
         // Filter by rating (stars)
         $selectedStars = $request->get('stars');
         if (is_string($selectedStars)) {
-            $selectedStars = explode(',', $selectedStars);
+            $selectedStars = explode(',', $selectedStars ?? '');
         }
         $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
 
@@ -739,7 +739,8 @@ class ViewController extends Controller
             // Check if second_segment is a Feature for this category
             $featureExists = Feature::whereHas('translations', function ($query) use ($second_segment) {
                 $query->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                    ->orWhere('name', 'LIKE', $second_segment);
+                    ->orWhere('name', 'LIKE', $second_segment)
+                    ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
             })->exists();
 
             if (!$featureExists) {
@@ -769,7 +770,8 @@ class ViewController extends Controller
                 if (!empty($second_segment) && $category) {
                     $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
                         $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                          ->orWhere('name', 'LIKE', $second_segment);
+                          ->orWhere('name', 'LIKE', $second_segment)
+                          ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
                     })->first();
 
                     if ($matchedFeat) {
@@ -1276,8 +1278,9 @@ class ViewController extends Controller
         }
 
         $request->validate([
-            'business_id' => 'nullable|required_without:category_id|exists:businesses,id',
-            'category_id' => 'nullable|required_without:business_id|exists:categories,id',
+            'business_id' => 'nullable|required_without_all:category_id,is_top_rated|exists:businesses,id',
+            'category_id' => 'nullable|required_without_all:business_id,is_top_rated|exists:categories,id',
+            'is_top_rated' => 'nullable|boolean',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category' => 'nullable|string|max:50',
@@ -1289,6 +1292,7 @@ class ViewController extends Controller
         $discussion = BusinessDiscussion::create([
             'business_id' => $request->business_id,
             'category_id' => $request->category_id,
+            'is_top_rated' => $request->boolean('is_top_rated'),
             'user_id' => $user->id,
             'author_name' => $user->displayName(),
             'author_title' => $user->job_title ?: 'Community Member',

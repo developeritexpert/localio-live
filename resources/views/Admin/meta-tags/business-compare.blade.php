@@ -139,7 +139,7 @@
                                             <div class="input-group input-group-sm mb-1">
                                                 <textarea name="meta_description[{{ $business->id }}]" 
                                                           id="desc_{{ $business->id }}" 
-                                                          rows="2" 
+                                                          rows="2" style="min-height: 50px; height: 50px; resize: vertical;" 
                                                           class="form-control meta-desc-input" 
                                                           placeholder="{{ $business->metaData['auto_description'] }}">{{ $business->metaData['manual_description'] }}</textarea>
                                             </div>
@@ -217,12 +217,10 @@
                                     The system evaluates the <strong>Primary</strong> template. If its evaluated length with real variables fits within the configured character limit, it will be used.
                                     If it exceeds the limit, it falls back to <strong>Secondary</strong>, then <strong>Tertiary</strong>, and finally <strong>Quaternary (4°)</strong> for the worst case (used even if it exceeds the limit).
                                 </p>
-                                <div class="small font-monospace mb-2">
-                                    Available tags: [business], [category_cap], [category_tc], [category_lc], [entity1_cap], [entity1_lc], [entities1_cap], [entities1_lc], [entity1_short_cap], [entity1_short_lc], [entities1_short_cap], [entities1_short_lc], [entity2_cap], [entity2_lc], [entities2_cap], [entities2_lc], [entity2_short_cap], [entity2_short_lc], [entities2_short_cap], [entities2_short_lc], [country1], [country2], [year], [website]
-                                </div>
-                                <div class="d-flex align-items-center flex-wrap mt-2" style="gap: 10px;">
+                                
+                                <div class="row g-1 mt-2">
                                     @foreach (['[business]', '[category_cap]', '[category_tc]', '[category_lc]', '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]', '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]', '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]', '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]', '[country1]', '[country2]', '[year]', '[website]'] as $token)
-                                        <span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-11px py-1 px-2" data-token="{{ $token }}">{{ $token }}</span>
+                                        <div class="col-6 col-sm-4 col-md-3"><span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-10px p-1 w-100 text-start" data-token="{{ $token }}">{{ $token }}</span></div>
                                     @endforeach
                                 </div>
                             </div>
@@ -282,17 +280,17 @@
                         </div>
                         <div class="col-md-8">
                             <label class="form-label font-weight-bold">Primary Default (1&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_primary" id="description_primary" rows="2">{{ $rule->description_primary }}</textarea>
+                            <textarea class="form-control font-monospace" name="description_primary" id="description_primary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_primary }}</textarea>
                             <span class="text-muted fs-11px">Default choice when within character limit.</span>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label font-weight-bold">Secondary Default (2&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_secondary" id="description_secondary" rows="2">{{ $rule->description_secondary }}</textarea>
+                            <textarea class="form-control font-monospace" name="description_secondary" id="description_secondary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_secondary }}</textarea>
                             <span class="text-muted fs-11px">Used if Primary exceeds character limit.</span>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label font-weight-bold">Tertiary Default (3&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_tertiary" id="description_tertiary" rows="2">{{ $rule->description_tertiary }}</textarea>
+                            <textarea class="form-control font-monospace" name="description_tertiary" id="description_tertiary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_tertiary }}</textarea>
                             <span class="text-muted fs-11px">Short fallback for concise snippet requirements.</span>
                         </div>
                         <div class="col-md-12">
@@ -300,7 +298,7 @@
                                 <span>Quaternary Default (4&deg;) <span class="badge bg-warning text-dark border ms-1 fs-11px">Worst Case Fallback</span></span>
                                 <span class="text-muted fs-11px fw-normal">Used even if character limit is exceeded</span>
                             </label>
-                            <textarea class="form-control font-monospace" name="description_quaternary" id="description_quaternary" rows="2">{{ $rule->description_quaternary }}</textarea>
+                            <textarea class="form-control font-monospace" name="description_quaternary" id="description_quaternary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_quaternary }}</textarea>
                             <span class="text-muted fs-11px">Simplest fallback used when all other tiers exceed character limits.</span>
                         </div>
                     </div>

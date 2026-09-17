@@ -1,7 +1,18 @@
-@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false])
 
 @php
-    if ($category) {
+    if ($isTopRated) {
+        $bName = $bName ?? 'Top Rated';
+        $allDiscsQuery = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->with(['user.country']);
+        $discList = (clone $allDiscsQuery)->take(4)->get();
+        $totalDiscs = (clone $allDiscsQuery)->count();
+        $discIds = (clone $allDiscsQuery)->pluck('id');
+        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+        $seeAllUrl = route('top-rated.discussions', ['locale' => app()->getLocale()]);
+    } elseif ($category) {
         $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
             ? $category->translations->first()
             : ($category->translations ?? $category->translation);
@@ -32,7 +43,7 @@
 @endphp
 
 <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-    Discussions ({{ number_format($totalDiscs) }})
+   {{ $bName }} Discussions ({{ number_format($totalDiscs) }})
 </h2>
 
 <!-- Inline Post Prompt Card -->
@@ -45,7 +56,7 @@
                 {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
             </div>
         @endif
-        <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
+        <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
         <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 30px; font-size: 13px; font-weight: 600; line-height: 1.3; height: 40px; padding: 0 18px; background: #002347; border-color: #002347;">
             <i class="fas fa-pen" style="font-size: 12px;"></i> Post
         </button>
@@ -124,13 +135,15 @@
                             <div class="d-flex align-items-start justify-content-between mb-2">
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="asn-img" style="flex-shrink: 0;">
+                                        @if ($pDisc->user)
+                                            <a href="{{ $pDisc->user->profileUrl() }}" style="display: block; text-decoration: none;">
+                                        @endif
+                                        
                                         @if ($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
-                                            <a href="{{ $pDisc->user ? $pDisc->user->profileUrl() : route('user.profile', ['id' => $pDisc->user_id]) }}" style="display: block; text-decoration: none;">
-                                                <img src="{{ asset($pDisc->user->profile_image) }}"
-                                                    class="img-fluid profile-circle"
-                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                                    alt="{{ $pDisc->author_display_name }}">
-                                            </a>
+                                            <img src="{{ asset($pDisc->user->profile_image) }}"
+                                                class="img-fluid profile-circle"
+                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                alt="{{ $pDisc->author_display_name }}">
                                         @elseif ($pDisc->author_avatar)
                                             <img src="{{ asset($pDisc->author_avatar) }}"
                                                 class="img-fluid profile-circle"
@@ -144,6 +157,10 @@
                                                 </span>
                                             </div>
                                         @endif
+
+                                        @if ($pDisc->user)
+                                            </a>
+                                        @endif
                                     </div>
 
                                     <div class="asn-rating" style="display: flex; flex-direction: column;">
@@ -156,11 +173,7 @@
                                                 {{ $pDisc->author_display_name }}
                                             @endif
                                         </p>
-                                        @if($pDisc->user && $pDisc->user->country)
-                                            <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                {{ $pDisc->user->country->code ?? $pDisc->user->country->name }}
-                                            </p>
-                                        @endif
+                                        {{-- Country removed per request --}}
                                         @if($pDisc->user && $pDisc->user->job_title)
                                             <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
                                                 {{ $pDisc->user->job_title }}
@@ -389,7 +402,9 @@
             </div>
             <form action="{{ route('business.discussion.store') }}" method="POST">
                 @csrf
-                @if($category)
+                @if($isTopRated)
+                    <input type="hidden" name="is_top_rated" value="1">
+                @elseif($category)
                     <input type="hidden" name="category_id" value="{{ $category->id }}">
                 @elseif($business)
                     <input type="hidden" name="business_id" value="{{ $business->id }}">

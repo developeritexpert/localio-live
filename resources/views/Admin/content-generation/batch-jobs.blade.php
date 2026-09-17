@@ -73,7 +73,7 @@
                                     <td><code class="small">{{ $job->batch_id ?? '-' }}</code></td>
                                     <td>
                                         @if($job->prompt_type)
-                                            @foreach(explode(',', $job->prompt_type) as $f)
+                                            @foreach(explode(',', $job->prompt_type ?? '') as $f)
                                                 <span class="badge badge-dim bg-secondary mb-1">
                                                     {{ \App\Models\AiContentQueue::$fieldLabels[trim($f)] ?? trim($f) }}
                                                 </span>

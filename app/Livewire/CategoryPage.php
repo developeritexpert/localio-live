@@ -58,7 +58,7 @@ class CategoryPage extends Component
         'selectedRatings' => ['except' => []],
         'selectedCriteriaRatings' => ['except' => []],
         'minPrice' => ['except' => 0],
-        'maxPrice' => ['except' => 2000],
+        'maxPrice' => ['except' => 5000],
         'sortBy' => ['except' => 'highest_rated'],
     ];
 
@@ -417,13 +417,12 @@ class CategoryPage extends Component
             });
         }
 
-        if (!empty($this->selectedFeatures)) {
-            $featIds = array_filter($this->selectedFeatures);
-            if (!empty($featIds)) {
-                $query->whereHas('features', function ($q) use ($featIds) {
-                    $q->whereIn('features.id', $featIds);
-                });
-            }
+        // Filter by locked feature if on a feature page
+        if (!empty($this->locked_feature_id)) {
+            $lockedId = (int)$this->locked_feature_id;
+            $query->whereHas('features', function ($q) use ($lockedId) {
+                $q->where('features.id', $lockedId);
+            });
         } elseif (!empty($this->feature_slug)) {
             $featureSlug = $this->feature_slug;
             $query->whereHas('features', function ($q) use ($featureSlug) {
@@ -431,6 +430,16 @@ class CategoryPage extends Component
                     $tq->where('name', 'LIKE', str_replace('-', ' ', $featureSlug))
                        ->orWhere('name', 'LIKE', $featureSlug);
                 });
+            });
+        }
+
+        // Filter by secondary / user-selected features
+        $secondaryFeatIds = array_values(array_filter($this->selectedFeatures, function($id) {
+            return !empty($id) && (int)$id !== (int)$this->locked_feature_id;
+        }));
+        if (!empty($secondaryFeatIds)) {
+            $query->whereHas('features', function ($q) use ($secondaryFeatIds) {
+                $q->whereIn('features.id', $secondaryFeatIds);
             });
         }
 
@@ -875,10 +884,11 @@ class CategoryPage extends Component
     public function updatedSelectedFeatures()
     {
         if ($this->locked_feature_id) {
-            $lockedIdStr = (string)$this->locked_feature_id;
-            if (!in_array($lockedIdStr, array_map('strval', $this->selectedFeatures))) {
-                $this->selectedFeatures[] = $lockedIdStr;
-            }
+            $lockedId = (int)$this->locked_feature_id;
+            $this->selectedFeatures = array_values(array_filter(
+                $this->selectedFeatures,
+                fn($v) => (int)$v !== $lockedId
+            ));
         } else {
             $this->feature_slug = null;
         }
@@ -913,11 +923,21 @@ class CategoryPage extends Component
 
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
+
+        if ($this->locked_feature_id) {
+            $fSlug = $this->locked_feature_obj?->translations?->first()?->slug ?? $this->feature_slug;
+            return redirect()->to(url('/' . (getCurrentLocale() ?? app()->getLocale()) . '/' . $this->slug . '/' . $fSlug));
+        }
+
         return redirect()->route('category.detail', [
             'locale' => getCurrentLocale(), // or app()->getLocale()
             'slug' => $this->slug,
         ]);
-        
+    }
+
+    public function clearFilters()
+    {
+        return $this->resetFilters();
     }
 
     public function previousPage()
@@ -959,10 +979,18 @@ class CategoryPage extends Component
     {
         $locale = app()->getLocale();
 
-        if ($page > 1) {
-            $url = '/' . $locale . '/' . $this->slug . '/' . $page;
+        if (!empty($this->feature_slug)) {
+            if ($page > 1) {
+                $url = '/' . $locale . '/' . $this->slug . '/' . $this->feature_slug . '/' . $page;
+            } else {
+                $url = '/' . $locale . '/' . $this->slug . '/' . $this->feature_slug;
+            }
         } else {
-            $url = '/' . $locale . '/' . $this->slug;
+            if ($page > 1) {
+                $url = '/' . $locale . '/' . $this->slug . '/' . $page;
+            } else {
+                $url = '/' . $locale . '/' . $this->slug;
+            }
         }
 
         // Append filter query params
@@ -970,9 +998,11 @@ class CategoryPage extends Component
         if (!empty($this->selectedRatings)) $queryParams['selectedRatings'] = $this->selectedRatings;
         if (!empty($this->selectedSubCategories)) $queryParams['selectedSubCategories'] = $this->selectedSubCategories;
         if (!empty($this->selectedOptions)) $queryParams['selectedOptions'] = $this->selectedOptions;
+        $secondaryFeat = array_values(array_filter($this->selectedFeatures, fn($id) => (int)$id !== (int)$this->locked_feature_id));
+        if (!empty($secondaryFeat)) $queryParams['selectedFeatures'] = $secondaryFeat;
         if ($this->searchTerm !== '') $queryParams['searchTerm'] = $this->searchTerm;
         if ($this->minPrice != 0) $queryParams['minPrice'] = $this->minPrice;
-        if ($this->maxPrice != 2000) $queryParams['maxPrice'] = $this->maxPrice;
+        if ($this->maxPrice != ($this->maxPriceValue ?: 5000)) $queryParams['maxPrice'] = $this->maxPrice;
 
         return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
     }
@@ -1010,10 +1040,8 @@ class CategoryPage extends Component
 public function getFeatureDescriptionProperty()
     {
         if (!empty($this->feature_slug) && $this->category) {
-            $activeFeatId = null;
-            if (!empty($this->selectedFeatures)) {
-                $activeFeatId = reset($this->selectedFeatures);
-            } else {
+            $activeFeatId = $this->locked_feature_id;
+            if (!$activeFeatId) {
                 $slugToMatch = $this->feature_slug;
                 $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
                     $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
@@ -1267,7 +1295,13 @@ public function getFeatureDescriptionProperty()
     public function loadAvailableFeatures()
     {
         if (!$this->category) return;
-        $catIds = array_filter(array_unique(array_merge([$this->category->id], $this->subCategories ? array_column($this->subCategories, 'id') : [])));
+        $subCatIds = [];
+        if (!empty($this->subCategories)) {
+            $subCatIds = is_array($this->subCategories)
+                ? array_column($this->subCategories, 'id')
+                : (method_exists($this->subCategories, 'pluck') ? $this->subCategories->pluck('id')->toArray() : []);
+        }
+        $catIds = array_values(array_filter(array_unique(array_merge([(int)$this->category->id], array_map('intval', $subCatIds)))));
 
         $this->availableFeatures = \App\Models\Feature::whereIn('category_id', $catIds)
             ->orWhereHas('businesses', function($bq) use ($catIds) {
@@ -1300,9 +1334,11 @@ public function getFeatureDescriptionProperty()
                 $fTrans = $matched->translations->firstWhere('lang_id', $this->lang_id) ?? $matched->translations->first();
                 $this->locked_feature_name = $fTrans?->name ?? $matched->name ?? 'Feature';
 
-                if (!in_array((string)$matched->id, array_map('strval', $this->selectedFeatures))) {
-                    $this->selectedFeatures[] = (string)$matched->id;
-                }
+                // Strip locked feature from selectedFeatures so URL query string stays clean
+                $this->selectedFeatures = array_values(array_filter(
+                    $this->selectedFeatures,
+                    fn($v) => (int)$v !== (int)$matched->id
+                ));
             }
         }
     }
@@ -1324,7 +1360,12 @@ public function getFeatureDescriptionProperty()
             $this->selectedFeatures[] = $idStr;
         }
 
-        if (!$this->locked_feature_id) {
+        if ($this->locked_feature_id) {
+            $this->selectedFeatures = array_values(array_filter(
+                $this->selectedFeatures,
+                fn($v) => (int)$v !== (int)$this->locked_feature_id
+            ));
+        } else {
             $this->feature_slug = null;
         }
         $this->resetPage();
@@ -1332,11 +1373,8 @@ public function getFeatureDescriptionProperty()
 
     public function clearAllFeatures()
     {
-        if ($this->locked_feature_id) {
-            // Retain the locked feature, remove all extra features
-            $this->selectedFeatures = [(string)$this->locked_feature_id];
-        } else {
-            $this->selectedFeatures = [];
+        $this->selectedFeatures = [];
+        if (!$this->locked_feature_id) {
             $this->feature_slug = null;
         }
         $this->resetPage();
@@ -1389,11 +1427,16 @@ public function getFeatureDescriptionProperty()
 
         public function hasActiveFilters()
     {
+        $hasSecondaryFeatures = !empty(array_filter($this->selectedFeatures, function($id) {
+            return !empty($id) && (int)$id !== (int)$this->locked_feature_id;
+        }));
+
         return !empty($this->selectedOptions)
             || !empty(trim($this->searchTerm ?? ''))
             || !empty($this->selectedRatings)
             || !empty($this->selectedCriteriaRatings)
             || !empty($this->selectedSubCategories)
+            || $hasSecondaryFeatures
             || $this->isPriceFilterActive
             || ($this->minPrice > 0)
             || ($this->maxPrice < $this->maxPriceValue);

@@ -335,8 +335,67 @@
 
                     </div>
 
+                    {{-- Target Regions Configuration --}}
+                    @if(!empty($selectedScreenshotCategory))
+                    <div class="mb-4 pt-3 border-top">
+                        <label class="form-label fw-semibold mb-2">Active Countries/Regions</label>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="custom-control custom-radio me-4">
+                                <input type="radio" id="regionModeAll" class="custom-control-input" value="all" wire:model.live="categoryTargetMode">
+                                <label class="custom-control-label" for="regionModeAll">All</label>
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="regionModeSpecific" class="custom-control-input" value="specific" wire:model.live="categoryTargetMode">
+                                <label class="custom-control-label" for="regionModeSpecific">Specific Countries/Regions</label>
+                            </div>
+                        </div>
 
-                    {{-- Screenshot URL Information --}}
+                        @if($categoryTargetMode === 'specific')
+                        <div class="border rounded p-3 bg-light">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Search countries..." wire:model.live="searchLanguage">
+                            </div>
+                            
+                            <div style="max-height: 250px; overflow-y: auto;" class="bg-white border rounded p-2">
+                                @php
+                                    $filteredLanguages = collect($allLanguages)->filter(function($lang) use ($searchLanguage) {
+                                        if (empty($searchLanguage)) return true;
+                                        return stripos($lang['name'] ?? '', $searchLanguage) !== false || 
+                                               stripos($lang['lang_code'] ?? '', $searchLanguage) !== false;
+                                    });
+                                @endphp
+                                
+                                @if($filteredLanguages->isEmpty())
+                                    <div class="text-muted text-center p-2 small">No countries found.</div>
+                                @else
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($filteredLanguages as $lang)
+                                        <li class="p-2 border-bottom last-no-border">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" 
+                                                    id="target_lang_{{ $lang['id'] }}" 
+                                                    value="{{ $lang['id'] }}" 
+                                                    wire:model="categoryTargetRegions">
+                                                <label class="custom-control-label" for="target_lang_{{ $lang['id'] }}">
+                                                    {{ $lang['name'] ?? '' }} ({{ $lang['lang_code'] ?? '' }})
+                                                </label>
+                                            </div>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                            
+                            <div class="text-muted small mt-2">
+                                Select the specific countries/regions where this screenshot category should be displayed.
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    
                     <p class="text-muted small mb-3">
                         Specify target URLs from which automated screenshots will be captured.
                         Add 5 or more URLs for complete coverage.

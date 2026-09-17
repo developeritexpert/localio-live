@@ -438,6 +438,16 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::get('/categories-faqs', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categoriesFaqs'])->name('admin.content-templates.categories-faqs');
         Route::get('/features', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'features'])->name('admin.content-templates.features');
 
+        Route::get('/category-discussions', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categoryDiscussions'])->name('admin.content-templates.category-discussions');
+        Route::get('/business-profile', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessProfile'])->name('admin.content-templates.business-profile');
+        Route::get('/business-alternatives', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessAlternatives'])->name('admin.content-templates.business-alternatives');
+        Route::get('/business-faqs', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessFaqs'])->name('admin.content-templates.business-faqs');
+        Route::get('/business-compare', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessCompare'])->name('admin.content-templates.business-compare');
+        Route::get('/business-reviews', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessReviews'])->name('admin.content-templates.business-reviews');
+        Route::get('/business-discussions', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessDiscussions'])->name('admin.content-templates.business-discussions');
+        Route::get('/criteria-ratings', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'criteriaRatings'])->name('admin.content-templates.criteria-ratings');
+
+
         Route::post('/templates/store', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'storeTemplate'])->name('admin.content-templates.store');
         Route::post('/templates/update', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'updateTemplate'])->name('admin.content-templates.update');
         Route::delete('/templates/{id}', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'deleteTemplate'])->name('admin.content-templates.delete');
@@ -668,6 +678,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     // Top-Rated FAQs
     Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
     Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
+    // Top-Rated Discussions
+    Route::get('/top-rated/discussion', [ProductController::class, 'topRatedDiscussions'])->name('top-rated.discussion');
+    Route::get('/top-rated/discussions', [ProductController::class, 'topRatedDiscussions'])->name('top-rated.discussions');
     Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
     Route::get('/top-rated/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
     Route::get('/top-rated/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');

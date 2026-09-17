@@ -120,19 +120,7 @@
             /* border-bottom: 2px solid #e8eef6; */
         }
 
-        .top-rated-heading-block h1 {
-            /* font-size: 34px;
-            font-weight: 800;
-            color: #002347;
-            margin: 0 0 5px 0;
-            letter-spacing: -0.5px;
-            line-height: 1.2; */
-            font-size: 28px !important;
-            font-weight: 700;
-            padding: 0 !important;
-            margin-bottom: 4px !important;
-            color: #002347 !important;
-        }
+       
 
         .top-rated-heading-block p {
             font-size: 15px;
@@ -143,13 +131,6 @@
     }
 
     @media (max-width: 768px) {
-
-        /* .top-automotive-sec.top_rate_pg {
-                padding-top: 110px !important;
-            } */
-        .top-rated-heading-block h1 {
-            font-size: 24px;
-        }
 
         .top-auto-choice {
             padding-top: 0;
@@ -1227,7 +1208,7 @@
 
     <!-- Dynamic Text Sections -->
     @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
-    <section class="top-rated-text-sections py-5" style="background: #ffffff; border-top: 1px solid #eef2f6;">
+    <section class="top-rated-text-sections py-5 d-none" style="background: #ffffff; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="row">
                 <div class="">
@@ -1282,7 +1263,7 @@
 
     <!-- Top-Rated FAQs Section -->
     @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
-    <section class="top-rated-faq-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
+    <section class="top-rated-faq-sec py-5 d-none" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="row">
                 <div class="">
@@ -1328,6 +1309,13 @@
         </div>
     </section>
     @endif
+    <!-- here add discution section -->
+    <section class="category-discussions-sec py-5" id="topRatedDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <div class="container">
+            <x-community-discussion :isTopRated="true" bName="Top Rated" />
+        </div>
+    </section>
+    <!-- here end discution section -->
 
     <section class="subs_sec light top_rated_org_sec ">
         <x-news-letter-subscription />

@@ -117,7 +117,7 @@
                         </div>
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
+                                <h1 style="margin: 0;">
                                     {{ $bName }} Discussions
                                 </h1>
                             </div>
@@ -163,7 +163,7 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or Ask a question or share something about  {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about  {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
                     <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
@@ -187,6 +187,14 @@
                     <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+                    <div class="col-2 top-pop">
+                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
+                            <option value="popular" selected="">Top / Popular</option>
+                            <option value="recent">Most Recent</option>
+                            <option value="commented">Most Active</option>
+                        </select>
+                    </div>
+
                     </div>
                </div>
 
@@ -220,13 +228,15 @@
                                 <div class="d-flex align-items-start justify-content-between mb-2">
                                     <div class="d-flex align-items-start gap-2">
                                         <div class="asn-img" style="flex-shrink: 0;">
-                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                            @if ($disc->user)
                                                 <a href="{{ $disc->user->profileUrl() }}" style="display: block; text-decoration: none;">
-                                                    <img src="{{ asset($disc->user->profile_image) }}"
-                                                        class="img-fluid profile-circle"
-                                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                                        alt="{{ $disc->author_display_name }}">
-                                                </a>
+                                            @endif
+
+                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                                <img src="{{ asset($disc->user->profile_image) }}"
+                                                    class="img-fluid profile-circle"
+                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                    alt="{{ $disc->author_display_name }}">
                                             @elseif ($disc->author_avatar)
                                                 <img src="{{ asset($disc->author_avatar) }}"
                                                     class="img-fluid profile-circle"
@@ -240,6 +250,10 @@
                                                     </span>
                                                 </div>
                                             @endif
+
+                                            @if ($disc->user)
+                                                </a>
+                                            @endif
                                         </div>
 
                                         <div class="asn-rating" style="display: flex; flex-direction: column;">
@@ -252,11 +266,7 @@
                                                     {{ $disc->author_display_name }}
                                                 @endif
                                             </p>
-                                            @if($disc->user && $disc->user->country)
-                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                    {{ $disc->user->country->code ?? $disc->user->country->name }}
-                                                </p>
-                                            @endif
+                                            {{-- Country removed per request --}}
                                             @if($disc->user && $disc->user->job_title)
                                                 <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
                                                     {{ $disc->user->job_title }}
@@ -465,7 +475,7 @@
                 <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
                 <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border:    1px solid #eef2f6;">
                     <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center mb-0" id="discussionFilterForm" onsubmit="return false;">
-                    <div class="col-sm-8 col-12">
+                    <div class="col-12">
                         <div class="input-group position-relative">
                             <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
                                 <i class="fas fa-search"></i>
@@ -476,13 +486,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-12">
-                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                            <option value="popular" {{ request('sort') == 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
-                            <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="commented" {{ request('sort') == 'commented' ? 'selected' : '' }}>Most Active</option>
-                        </select>
-                    </div>
+                    
                     </form>
                 </div> 
 

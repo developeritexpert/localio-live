@@ -136,7 +136,7 @@
                                             <div class="input-group input-group-sm mb-1">
                                                 <textarea name="meta_description[{{ $parent->id }}]" 
                                                           id="desc_{{ $parent->id }}" 
-                                                          rows="2" 
+                                                          rows="2" style="min-height: 50px; height: 50px; resize: vertical;" 
                                                           class="form-control meta-desc-input" 
                                                           placeholder="{{ $parent->metaData['auto_description'] }}">{{ $parent->metaData['manual_description'] }}</textarea>
                                             </div>
@@ -208,7 +208,7 @@
                                                 <div class="input-group input-group-sm mb-1">
                                                     <textarea name="meta_description[{{ $sub->id }}]" 
                                                               id="desc_{{ $sub->id }}" 
-                                                              rows="2" 
+                                                              rows="2" style="min-height: 50px; height: 50px; resize: vertical;" 
                                                               class="form-control meta-desc-input" 
                                                               placeholder="{{ $sub->metaData['auto_description'] }}">{{ $sub->metaData['manual_description'] }}</textarea>
                                                 </div>
@@ -284,7 +284,7 @@
                         </div>
                         <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
                             @foreach (['[category_cap]', '[category_tc]', '[category_lc]', '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]', '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]', '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]', '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]', '[country1]', '[country2]', '[year]', '[website]'] as $token)
-                                <span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-11px py-1 px-2" data-token="{{ $token }}">{{ $token }}</span>
+                                <div class="col-6 col-sm-4 col-md-3"><span class="badge bg-white text-primary border cursor-pointer placeholder-chip font-monospace fs-10px p-1 w-100 text-start" data-token="{{ $token }}">{{ $token }}</span></div>
                             @endforeach
                         </div>
                     </div>
@@ -362,7 +362,7 @@
                                     <span>1&deg; Primary Default</span>
                                     <span class="text-muted fw-normal fs-11px">Evaluated first; used if length &le; limit</span>
                                 </label>
-                                <textarea name="description_primary" id="rule_desc_primary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_primary }}</textarea>
+                                <textarea name="description_primary" id="rule_desc_primary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_primary }}</textarea>
                             </div>
                             {{-- Secondary Description --}}
                             <div class="mb-3">
@@ -370,7 +370,7 @@
                                     <span>2&deg; Secondary Fallback</span>
                                     <span class="text-muted fw-normal fs-11px">Used if Primary exceeds limit</span>
                                 </label>
-                                <textarea name="description_secondary" id="rule_desc_secondary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_secondary }}</textarea>
+                                <textarea name="description_secondary" id="rule_desc_secondary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_secondary }}</textarea>
                             </div>
                             {{-- Tertiary Description --}}
                             <div class="mb-3">
@@ -378,7 +378,7 @@
                                     <span>3&deg; Tertiary Fallback</span>
                                     <span class="text-muted fw-normal fs-11px">Used if Secondary exceeds limit</span>
                                 </label>
-                                <textarea name="description_tertiary" id="rule_desc_tertiary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_tertiary }}</textarea>
+                                <textarea name="description_tertiary" id="rule_desc_tertiary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_tertiary }}</textarea>
                             </div>
                             {{-- Quaternary Description (4°) --}}
                             <div class="mb-1">
@@ -386,7 +386,7 @@
                                     <span>4&deg; Quaternary Fallback <span class="badge bg-warning text-dark border">Worst Case</span></span>
                                     <span class="text-muted fw-normal fs-11px">Used even if character limit is exceeded</span>
                                 </label>
-                                <textarea name="description_quaternary" id="rule_desc_quaternary" rows="2" class="form-control form-control-sm font-monospace">{{ $rule->description_quaternary }}</textarea>
+                                <textarea name="description_quaternary" id="rule_desc_quaternary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_quaternary }}</textarea>
                             </div>
                         </div>
                     </div>

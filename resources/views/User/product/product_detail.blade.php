@@ -32,19 +32,63 @@ $pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBi
 
 @section('content')
 @php
-$images = is_array($business->business_images)
-? $business->business_images
-: json_decode($business->business_images ?? '[]', true);
+    $images = [];
+    $matchedCategory = null;
+    $screenshotCategories = is_array($business->screenshot_categories) 
+        ? $business->screenshot_categories 
+        : json_decode($business->screenshot_categories ?? '[]', true);
+        
+    if (!empty($screenshotCategories)) {
+        foreach ($screenshotCategories as $category) {
+            if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
+                if (in_array($lang_id, $category['target_regions'])) {
+                    $matchedCategory = $category;
+                    break;
+                }
+            }
+        }
+        if (!$matchedCategory) {
+            foreach ($screenshotCategories as $category) {
+                if (!empty($category['is_default'])) {
+                    $matchedCategory = $category;
+                    break;
+                }
+            }
+        }
+        if (!$matchedCategory) {
+            foreach ($screenshotCategories as $category) {
+                if (($category['target_regions_mode'] ?? 'all') === 'all') {
+                    $matchedCategory = $category;
+                    break;
+                }
+            }
+        }
+        if ($matchedCategory && !empty($matchedCategory['images'])) {
+            $images = $matchedCategory['images'];
+        } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
+            foreach ($matchedCategory['urls'] as $url) {
+                if (!empty($url)) {
+                    $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
+                }
+            }
+        }
+    }
+    
+    if (empty($images)) {
+        $images = is_array($business->business_images)
+            ? $business->business_images
+            : json_decode($business->business_images ?? '[]', true);
 
-if (empty($images) && !empty($business->screenshot_urls)) {
-$urls = is_array($business->screenshot_urls)
-? $business->screenshot_urls
-: json_decode($business->screenshot_urls ?? '[]', true);
-$urls = array_values(array_filter((array)$urls));
-if (!empty($urls)) {
-$images = $urls;
-}
-}
+        if (empty($images) && !empty($business->screenshot_urls)) {
+            $urls = is_array($business->screenshot_urls)
+                ? $business->screenshot_urls
+                : json_decode($business->screenshot_urls ?? '[]', true);
+            $urls = array_values(array_filter((array)$urls));
+            if (!empty($urls)) {
+                $images = $urls;
+            }
+        }
+    }
 @endphp
 
 <script>
@@ -340,7 +384,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <ul class="list-unstyled">
                                         </ul>
                                         @if($business->is_affiliate)
-                                        <div class="top-pro-btn tp_visit new-visit-anc">
+                                        <div class="top-pro-btn tp_visit new-visit-anc top-vist">
                                             <a href="{{ $business->getTrackedUrl() }}"
                                                 data-track="{{ json_encode([
                                                         'type' => 'click',
@@ -639,22 +683,65 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endif
 
                         @php
-                        // Safely decode the business_images
-                        $images = is_array($business->business_images)
-                        ? $business->business_images
-                        : json_decode($business->business_images ?? '[]', true);
+// Safely decode the business_images
+$images = [];
+$matchedCategory = null;
+$screenshotCategories = is_array($business->screenshot_categories) 
+    ? $business->screenshot_categories 
+    : json_decode($business->screenshot_categories ?? '[]', true);
+    
+if (!empty($screenshotCategories)) {
+    foreach ($screenshotCategories as $category) {
+        if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
+            if (in_array($lang_id, $category['target_regions'])) {
+                $matchedCategory = $category;
+                break;
+            }
+        }
+    }
+    if (!$matchedCategory) {
+        foreach ($screenshotCategories as $category) {
+            if (!empty($category['is_default'])) {
+                $matchedCategory = $category;
+                break;
+            }
+        }
+    }
+    if (!$matchedCategory) {
+        foreach ($screenshotCategories as $category) {
+            if (($category['target_regions_mode'] ?? 'all') === 'all') {
+                $matchedCategory = $category;
+                break;
+            }
+        }
+    }
+    if ($matchedCategory && !empty($matchedCategory['images'])) {
+        $images = $matchedCategory['images'];
+    } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
+        foreach ($matchedCategory['urls'] as $url) {
+            if (!empty($url)) {
+                $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
+            }
+        }
+    }
+}
 
-                        // Fallback to screenshot_urls if no business_images are uploaded
-                        if (empty($images) && !empty($business->screenshot_urls)) {
-                        $urls = is_array($business->screenshot_urls)
-                        ? $business->screenshot_urls
-                        : json_decode($business->screenshot_urls ?? '[]', true);
-                        $urls = array_values(array_filter((array)$urls));
-                        if (!empty($urls)) {
-                        $images = $urls;
-                        }
-                        }
-                        @endphp
+if (empty($images)) {
+    $images = is_array($business->business_images)
+        ? $business->business_images
+        : json_decode($business->business_images ?? '[]', true);
+
+    if (empty($images) && !empty($business->screenshot_urls)) {
+        $urls = is_array($business->screenshot_urls)
+            ? $business->screenshot_urls
+            : json_decode($business->screenshot_urls ?? '[]', true);
+        $urls = array_values(array_filter((array)$urls));
+        if (!empty($urls)) {
+            $images = $urls;
+        }
+    }
+}
+@endphp
 
                         @if ($business->is_affiliate && !empty($images))
                         <div class="col-lg-12 mb-4">
@@ -783,7 +870,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                <div class="community-rating mb-2" style="">Community rating</div>
+                                <div class="community-rating mb-2" style="">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                     <span class="rating_bar_span">Features</span>
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -832,7 +919,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                <div class="community-rating mb-2">Community rating</div>
+                                <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                     <span class="rating_bar_span">Ease of use</span>
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -868,7 +955,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
-                                <div class="community-rating mb-2">Community rating</div>
+                                <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                     <span class="rating_bar_span">{{ $crDisplayName }}</span>
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -902,7 +989,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                <div class="community-rating mb-2">Community rating</div>
+                                <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                     <span class="rating_bar_span">Value for money</span>
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -944,10 +1031,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         if ($translation) {
                                         // Assuming pros and cons are comma-separated strings or arrays
                                         $prosList = $prosList->merge(
-                                        array_filter(array_map('trim', explode(',', $translation->pros))),
+                                        array_filter(array_map('trim', explode(',', $translation->pros ?? ''))),
                                         );
                                         $consList = $consList->merge(
-                                        array_filter(array_map('trim', explode(',', $translation->cons))),
+                                        array_filter(array_map('trim', explode(',', $translation->cons ?? ''))),
                                         );
                                         }
                                         }
@@ -1617,6 +1704,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                     </div>
                                                                                     <!-- <span class="com-rating">Community rating</span> -->
                                                                                     <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+
+                                                                                    <div class="top-pro-btn tp_visit new-visit-anc review-visit">
+                                            <a href="http://127.0.0.1:8000/en-us/go/bluehost" data-track="{&quot;type&quot;:&quot;click&quot;,&quot;business_id&quot;:29,&quot;action&quot;:&quot;visit_website&quot;,&quot;label&quot;:&quot;Visit Website&quot;}" class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored" tabindex="0">
+                                                Visit website
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
+                                                    <path d="M15 3h6v6"></path>
+                                                    <path d="M10 14 21 3"></path>
+                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+
                                                                                 </div>
                                                                             </div>
 
@@ -2228,7 +2327,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     }
                                     @endphp
                                     <div class="main_feature_lg">
-                                        <div class="feture_box review-breakdown-box">
+                                        <div class="feture_box review-breakdown-box not-on-mobile">
 
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
                                                 <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
@@ -2318,7 +2417,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     @endphp
                                     @if($sidebarDiscussions->isNotEmpty())
                                     <div class="main_feature_lg">
-                                        <div class="feture_box review-breakdown-box">
+                                        <div class="feture_box review-breakdown-box not-on-mobile">
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                 <h2 class="size22 big-bld m-0">Recent discussions</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
@@ -2508,7 +2607,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
                                         <!-- Left side: Dropdown for current section -->
                                         <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
-                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
+                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
                                                 <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
@@ -3375,10 +3474,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
     // Sticky Sidebar Navigation Active Link & Smooth Scroll
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Sticky Sidebar JS loaded!');
         const stickyNavLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
         if (stickyNavLinks.length > 0) {
             stickyNavLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+                    console.log('CLICK FIRED on link:', this);
                     const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
 
                     if (targetId === 'top' || targetId === 'section1') {
@@ -3461,27 +3562,56 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 {
                     id: 'section14',
                     target: 'section14'
+                },
+                {
+                    id: 'sectionDiscussions',
+                    target: 'sectionDiscussions'
                 }
             ];
 
             window.addEventListener('scroll', function() {
-                const scrollPos = window.scrollY + 130;
+                const scrollPos = window.scrollY + 250;
                 let activeId = '';
+                
+                const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50;
+                
+                console.log('SCROLL FIRED. scrollY:', window.scrollY, 'isAtBottom:', isAtBottom);
 
-                for (const item of navSectionTargets) {
-                    const el = document.getElementById(item.id);
-                    if (el) {
-                        const top = el.offsetTop;
-                        const height = el.offsetHeight;
-                        if (scrollPos >= top && scrollPos < top + height) {
-                            activeId = item.target;
+                if (isAtBottom) {
+                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
+                        if (document.getElementById(navSectionTargets[i].id)) {
+                            activeId = navSectionTargets[i].target;
+                            break;
+                        }
+                    }
+                } else {
+                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
+                        const item = navSectionTargets[i];
+                        const el = document.getElementById(item.id);
+                        if (el) {
+                            const rect = el.getBoundingClientRect();
+                            const top = rect.top + window.scrollY;
+                            if (scrollPos >= top) {
+                                activeId = item.target;
+                                break;
+                            }
                         }
                     }
                 }
+                
+                if (!activeId && navSectionTargets.length > 0) {
+                    activeId = navSectionTargets[0].target;
+                }
 
                 if (activeId) {
+                    console.log('active class on this now:', activeId);
                     stickyNavLinks.forEach(link => {
-                        if (link.getAttribute('data-target') === activeId || link.getAttribute('href') === '#' + activeId) {
+                        let checkTarget = link.getAttribute('data-target');
+                        if (checkTarget === 'top' && activeId === 'section1') {
+                            checkTarget = 'section1';
+                        }
+                        
+                        if (checkTarget === activeId || link.getAttribute('href') === '#' + activeId) {
                             link.classList.add('active');
                         } else {
                             link.classList.remove('active');
@@ -3671,5 +3801,25 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             });
     }
 </script>
-
+<script>
+    $(document).ready(function() {
+        let hash = window.location.hash;
+        if (hash) {
+            setTimeout(function() {
+                let targetData = hash.replace('#', '');
+                let $targetLink = $('.sticky-nav-item[data-target="' + targetData + '"], .sticky-nav-item[href="' + hash + '"]');
+                
+                if ($targetLink.length) {
+                    $('.sticky-nav-item').removeClass('active');
+                    $targetLink.addClass('active');
+                }
+            }, 100);
+        }
+        
+        $(document).on('click', '.sticky-nav-item', function (e) {
+            $('.sticky-nav-item').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
 @endsection

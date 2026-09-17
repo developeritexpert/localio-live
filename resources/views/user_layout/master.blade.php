@@ -2582,7 +2582,6 @@
     }
 
     .sidebar-section-title a {
-        color: #111 !important;
         font-weight: 700 !important;
         text-decoration: none !important;
         display: inline-block;

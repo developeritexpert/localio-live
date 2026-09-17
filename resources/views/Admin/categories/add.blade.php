@@ -662,20 +662,6 @@
 
                                     <div class="row g-3">
                                         <!-- FAQ Page H1 Title -->
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label class="form-label fw-bold" for="faq_h1_title">FAQ Page Title (H1 Heading)</label>
-                                                <div class="form-control-wrap">
-                                                    <input type="text" class="form-control" id="faq_h1_title" name="faq_h1_title"
-                                                        value="{{ isset($category_data) ? ($category_data['faq_h1_title'] ?? '') : old('faq_h1_title') }}"
-                                                        placeholder="e.g. Web Hosting FAQs">
-                                                </div>
-                                                <small class="text-muted d-block mt-1">Main H1 headline shown at the top of the FAQ page. Defaults to "[Category Name] FAQs" if left empty.</small>
-                                                @error('faq_h1_title')
-                                                    <div class="error text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
 
                                         <!-- FAQ Page Subtext below H1 with CKEditor -->
                                         <div class="col-md-12">

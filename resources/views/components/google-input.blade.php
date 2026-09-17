@@ -25,7 +25,7 @@
     // Handle selected values for multiple select
     $selected = $selectedValues;
     if (is_string($selectedValues)) {
-        $selected = explode(',', $selectedValues);
+        $selected = explode(',', $selectedValues ?? '');
     }
     if (!is_array($selected)) {
         $selected = [];

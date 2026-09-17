@@ -176,13 +176,13 @@
                                     @endphp
                                     <td class="text-center py-3">
                                         @if($tpl)
-                                            <span class="badge bg-info text-white fs-11px py-1 px-2 cursor-pointer" 
+                                            <span class="fw-bold text-primary cursor-pointer fs-13px" 
                                                   data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                   title="{{ $tpl->headline ? Str::limit($tpl->headline, 70) : 'Option #' . $tpl->option_number }}">
                                                 {{ $tpl->option_number }}
                                             </span>
                                         @else
-                                            <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
+                                            <span class="text-muted fs-13px">-</span>
                                         @endif
                                     </td>
                                 @endforeach
@@ -229,13 +229,13 @@
                                         @endphp
                                         <td class="text-center py-2">
                                             @if($sTpl)
-                                                <span class="badge bg-primary text-white fs-11px py-1 px-2 cursor-pointer"
+                                                <span class="fw-bold text-primary cursor-pointer fs-13px"
                                                       data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                       title="{{ $sTpl->headline ? Str::limit($sTpl->headline, 70) : 'Option #' . $sTpl->option_number }}">
                                                     {{ $sTpl->option_number }}
                                                 </span>
                                             @else
-                                                <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
+                                                <span class="text-muted fs-13px">-</span>
                                             @endif
                                         </td>
                                     @endforeach
@@ -467,7 +467,7 @@
                                             <option value="">-- Select Option --</option>
                                             @foreach($templates[$fKey] ?? [] as $tOption)
                                                 <option value="{{ $tOption->id }}">
-                                                    Option #{{ $tOption->option_number }} &bull; {{ Str::limit($tOption->headline, 50) }}
+                                                    Option #{{ $tOption->option_number }} &bull; {{ Str::limit(strip_tags(html_entity_decode($tOption->headline)), 50) }}
                                                 </option>
                                             @endforeach
                                         </select>

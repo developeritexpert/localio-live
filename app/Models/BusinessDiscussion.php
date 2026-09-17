@@ -14,6 +14,7 @@ class BusinessDiscussion extends Model
     protected $fillable = [
         'business_id',
         'category_id',
+        'is_top_rated',
         'user_id',
         'author_name',
         'author_title',
@@ -31,6 +32,7 @@ class BusinessDiscussion extends Model
 
     protected $casts = [
         'is_pinned' => 'boolean',
+        'is_top_rated' => 'boolean',
         'upvotes_count' => 'integer',
         'downvotes_count' => 'integer',
         'comments_count' => 'integer',

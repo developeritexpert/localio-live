@@ -980,44 +980,44 @@
                                 </div>
 
                             </div>
-                            @if ($products->count())
-                            <div class="auto-choice-rgt ">
-                                <!-- Browsing Fixed Feature & Selected Secondary Features (Image 2) -->
-                                @php
-                                    $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
-                                    $catTrans = $category->translations ?? $category->translation;
-                                    if (!$catTrans && method_exists($category, 'categoryTranslations')) {
-                                        $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
-                                    }
-                                    $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
-                                    $catSlug = $catTrans->slug ?? ($category->slug ?? request()->segment(2));
+                            @php
+                                $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
+                                $catTrans = $category->translations ?? $category->translation;
+                                if (!$catTrans && method_exists($category, 'categoryTranslations')) {
+                                    $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
+                                }
+                                $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
+                                $catSlug = $catTrans->slug ?? ($category->slug ?? request()->segment(2));
 
-                                    if ($category->parent && $category->parent_id) {
-                                        $parentTrans = $category->parent->translations ?? $category->parent->translation;
-                                        $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
-                                        if (!empty($parentSlug)) {
-                                            $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
-                                        } else {
-                                            $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
-                                        }
+                                if ($category->parent && $category->parent_id) {
+                                    $parentTrans = $category->parent->translations ?? $category->parent->translation;
+                                    $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
+                                    if (!empty($parentSlug)) {
+                                        $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
                                     } else {
                                         $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
                                     }
+                                } else {
+                                    $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+                                }
 
-                                    $firstWord = explode(' ', trim($rawCatName))[0] ?? '';
-                                    if (strlen($firstWord) <= 4 && strtoupper($firstWord) === $firstWord && ctype_alpha($firstWord)) {
-                                        $formattedCatName = $rawCatName;
-                                    } else {
-                                        $formattedCatName = mb_strtolower($rawCatName);
-                                    }
+                                $firstWord = explode(' ', trim($rawCatName))[0] ?? '';
+                                if (strlen($firstWord) <= 4 && strtoupper($firstWord) === $firstWord && ctype_alpha($firstWord)) {
+                                    $formattedCatName = $rawCatName;
+                                } else {
+                                    $formattedCatName = mb_strtolower($rawCatName);
+                                }
 
-                                    $secondarySelectedFeatures = [];
-                                    foreach($availableFeatures ?? [] as $fItem) {
-                                        if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? []))) {
-                                            $secondarySelectedFeatures[] = $fItem;
-                                        }
+                                $secondarySelectedFeatures = [];
+                                foreach($availableFeatures ?? [] as $fItem) {
+                                    if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? []))) {
+                                        $secondarySelectedFeatures[] = $fItem;
                                     }
-                                @endphp
+                                }
+                            @endphp
+                            @if ($products->count())
+                            <div class="auto-choice-rgt ">
+                                <!-- Browsing Fixed Feature & Selected Secondary Features (Image 2) -->
 
                                 <div class="active-feature-chips-container mb-3">
                                     {{-- Row 1: Browsing: [Fixed Feature Chip] [View all {category}] --}}

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Business;
+use App\Models\Language;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -58,12 +59,19 @@ class BusinessImages extends Component
     public $showUrlModal = false;
     public $screenshotUrls = ['', '', '', '', ''];
 
+    // Region Mapping Properties
+    public $allLanguages = [];
+    public $searchLanguage = '';
+    public $categoryTargetMode = 'all'; // 'all' or 'specific'
+    public $categoryTargetRegions = [];
+
     protected $listeners = [
         'closeModal' => 'closeModals'
     ];
 
     public function mount()
     {
+        $this->allLanguages = Language::where('status', 1)->get()->toArray();
         $this->loadBusinesses();
     }
 
@@ -1378,6 +1386,11 @@ public function saveImages()
         while (count($this->screenshotUrls) < 5) {
             $this->screenshotUrls[] = '';
         }
+
+        // Load Region settings
+        $this->categoryTargetMode = $category['target_regions_mode'] ?? 'all';
+        $this->categoryTargetRegions = $category['target_regions'] ?? [];
+        $this->searchLanguage = '';
     }
 
     public function confirmDeleteScreenshotCategory()
@@ -1462,6 +1475,8 @@ public function saveImages()
                 if (($category['name'] ?? '') === $this->selectedScreenshotCategory) {
 
                     $this->screenshotCategories[$index]['urls'] = $cleanUrls;
+                    $this->screenshotCategories[$index]['target_regions_mode'] = $this->categoryTargetMode;
+                    $this->screenshotCategories[$index]['target_regions'] = $this->categoryTargetMode === 'specific' ? $this->categoryTargetRegions : [];
 
                     break;
                 }

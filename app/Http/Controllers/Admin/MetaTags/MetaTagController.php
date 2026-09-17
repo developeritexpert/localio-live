@@ -293,7 +293,14 @@ class MetaTagController extends Controller
         $routeMap = [
             'categories' => 'admin.meta-tags.categories',
             'businesses' => 'admin.meta-tags.businesses',
+            'business_profile' => 'admin.meta-tags.business-profile',
+            'business_alternatives' => 'admin.meta-tags.business-alternatives',
+            'business_faqs' => 'admin.meta-tags.business-faqs',
+            'business_compare' => 'admin.meta-tags.business-compare',
+            'business_reviews' => 'admin.meta-tags.business-reviews',
+            'business_discussions' => 'admin.meta-tags.business-discussions',
             'category_faqs' => 'admin.meta-tags.categories-faqs',
+            'category_discussions' => 'admin.meta-tags.category-discussions',
             'features' => 'admin.meta-tags.features',
         ];
 
