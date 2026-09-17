@@ -187,6 +187,14 @@
                     <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+                    <div class="col-2 top-pop">
+                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
+                            <option value="popular" selected="">Top / Popular</option>
+                            <option value="recent">Most Recent</option>
+                            <option value="commented">Most Active</option>
+                        </select>
+                    </div>
+
                     </div>
                </div>
 
@@ -467,7 +475,7 @@
                 <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
                 <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border:    1px solid #eef2f6;">
                     <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center mb-0" id="discussionFilterForm" onsubmit="return false;">
-                    <div class="col-sm-8 col-12">
+                    <div class="col-12">
                         <div class="input-group position-relative">
                             <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
                                 <i class="fas fa-search"></i>
@@ -478,13 +486,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-sm-4 col-12">
-                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                            <option value="popular" {{ request('sort') == 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
-                            <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="commented" {{ request('sort') == 'commented' ? 'selected' : '' }}>Most Active</option>
-                        </select>
-                    </div>
+                    
                     </form>
                 </div> 
 
