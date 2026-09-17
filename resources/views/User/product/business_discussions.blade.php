@@ -220,13 +220,15 @@
                                 <div class="d-flex align-items-start justify-content-between mb-2">
                                     <div class="d-flex align-items-start gap-2">
                                         <div class="asn-img" style="flex-shrink: 0;">
-                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                            @if ($disc->user)
                                                 <a href="{{ $disc->user->profileUrl() }}" style="display: block; text-decoration: none;">
-                                                    <img src="{{ asset($disc->user->profile_image) }}"
-                                                        class="img-fluid profile-circle"
-                                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                                        alt="{{ $disc->author_display_name }}">
-                                                </a>
+                                            @endif
+
+                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                                <img src="{{ asset($disc->user->profile_image) }}"
+                                                    class="img-fluid profile-circle"
+                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                    alt="{{ $disc->author_display_name }}">
                                             @elseif ($disc->author_avatar)
                                                 <img src="{{ asset($disc->author_avatar) }}"
                                                     class="img-fluid profile-circle"
@@ -240,6 +242,10 @@
                                                     </span>
                                                 </div>
                                             @endif
+
+                                            @if ($disc->user)
+                                                </a>
+                                            @endif
                                         </div>
 
                                         <div class="asn-rating" style="display: flex; flex-direction: column;">
@@ -252,11 +258,7 @@
                                                     {{ $disc->author_display_name }}
                                                 @endif
                                             </p>
-                                            @if($disc->user && $disc->user->country)
-                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                    {{ $disc->user->country->code ?? $disc->user->country->name }}
-                                                </p>
-                                            @endif
+                                            {{-- Country removed per request --}}
                                             @if($disc->user && $disc->user->job_title)
                                                 <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
                                                     {{ $disc->user->job_title }}
