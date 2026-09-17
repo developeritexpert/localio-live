@@ -99,7 +99,7 @@ class ProductController extends Controller
         // Filter: stars (can be array or comma-separated string)
         $selectedStars = $request->get('stars');
         if (is_string($selectedStars)) {
-            $selectedStars = explode(',', $selectedStars);
+            $selectedStars = explode(',', $selectedStars ?? '');
         }
         $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
 

@@ -944,10 +944,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         if ($translation) {
                                         // Assuming pros and cons are comma-separated strings or arrays
                                         $prosList = $prosList->merge(
-                                        array_filter(array_map('trim', explode(',', $translation->pros))),
+                                        array_filter(array_map('trim', explode(',', $translation->pros ?? ''))),
                                         );
                                         $consList = $consList->merge(
-                                        array_filter(array_map('trim', explode(',', $translation->cons))),
+                                        array_filter(array_map('trim', explode(',', $translation->cons ?? ''))),
                                         );
                                         }
                                         }

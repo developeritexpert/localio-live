@@ -406,7 +406,7 @@ class ViewController extends Controller
         // Filter by rating (stars)
         $selectedStars = $request->get('stars');
         if (is_string($selectedStars)) {
-            $selectedStars = explode(',', $selectedStars);
+            $selectedStars = explode(',', $selectedStars ?? '');
         }
         $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
 
@@ -739,7 +739,8 @@ class ViewController extends Controller
             // Check if second_segment is a Feature for this category
             $featureExists = Feature::whereHas('translations', function ($query) use ($second_segment) {
                 $query->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                    ->orWhere('name', 'LIKE', $second_segment);
+                    ->orWhere('name', 'LIKE', $second_segment)
+                    ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
             })->exists();
 
             if (!$featureExists) {
@@ -769,7 +770,8 @@ class ViewController extends Controller
                 if (!empty($second_segment) && $category) {
                     $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
                         $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                          ->orWhere('name', 'LIKE', $second_segment);
+                          ->orWhere('name', 'LIKE', $second_segment)
+                          ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
                     })->first();
 
                     if ($matchedFeat) {

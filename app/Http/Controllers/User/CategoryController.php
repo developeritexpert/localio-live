@@ -100,7 +100,13 @@ class CategoryController extends Controller
        $metaTitle = $resolvedMeta['title'];
        $metaDescription = $resolvedMeta['description'];
 
-       return view('User.category.category_detail', compact('slug', 'page', 'metaTitle', 'metaDescription'));
+       $feature_slug = null;
+       if ($page && !is_numeric($page)) {
+           $feature_slug = $page;
+           $page = 1;
+       }
+
+       return view('User.category.category_detail', compact('slug', 'page', 'feature_slug', 'metaTitle', 'metaDescription'));
      }
 
      public function subCategoryFeatureDetail($lang_code, $category_slug, $subcategory_slug, $feature_slug){
@@ -143,7 +149,8 @@ class CategoryController extends Controller
                if (!empty($feature_slug)) {
                    $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
                        $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
-                         ->orWhere('name', 'LIKE', $feature_slug);
+                         ->orWhere('name', 'LIKE', $feature_slug)
+                         ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$feature_slug]);
                    })->first();
 
                    if ($matchedFeat) {
