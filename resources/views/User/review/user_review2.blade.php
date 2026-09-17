@@ -116,7 +116,7 @@
 
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
-            <div class="col-md-8 col-12">
+            <div class="col-md-8 col-6">
                 <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon: Square with rounded edges -->
                     <div class="top-product-logo" >
@@ -135,7 +135,7 @@
                 </div>
             </div>
             @if(!empty($business->is_affiliate))
-            <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn">
+            <div class="col-md-4 col-6 text-md-end text-end is_affiliate_btn">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" rel="sponsored" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
@@ -203,7 +203,7 @@
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                    <span style="color: #202124; font-size: 14px;">{{ $pro->text }}
+                                                    <span style="color: #202124;">{{ $pro->text }}
                                                         <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
                                                     </span>
                                                 </li>
@@ -229,7 +229,7 @@
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                    <span style="color: #202124; font-size: 14px;">{{ $con->text }}
+                                                    <span style="color: #202124;">{{ $con->text }}
                                                         <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
                                                     </span>
                                                 </li>

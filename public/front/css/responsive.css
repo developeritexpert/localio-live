@@ -4099,7 +4099,7 @@ textarea#message {
     }
 
     h1 {
-        font-size: 50px;
+        font-size: 30px;
     }
 
     .p_120 {
@@ -4901,7 +4901,7 @@ textarea#message {
     .user_revew_sec,
     .comparsn_bnr_sec {
         padding: 35px 0 20px;
-        margin-top: 70px;
+        margin-top: 105px;
     }
 
     .popular-categories-sidebar {
@@ -4990,8 +4990,9 @@ textarea#message {
         margin-top: 20px;
     }
 
-    h1 {
-        font-size: 42px;
+    h1,
+    .top-rated-heading-block h1 {
+        font-size: 25px;
     }
 
     body {
@@ -6127,7 +6128,7 @@ textarea#message {
     }
 
     section.product_sec {
-        margin-top: 60px;
+        margin-top: 85px;
     }
 
     .common_detail_sec .row .col-lg-8,
@@ -6334,7 +6335,7 @@ textarea#message {
     .business_reviews_sec,
     .cat_main_page_sec,
     .top-rated-heading-sec {
-        margin-top: 135px !important;
+        margin-top: 120px !important;
     }
 
     .pdc_box {
@@ -7253,7 +7254,7 @@ textarea#message {
     }
 
     .top-rated-heading-sec .top-rated-heading-block h1 {
-        font-size: 24px !important;
+        font-size: 24px;
     }
 
     .hdr_insdiecont {
@@ -7346,11 +7347,9 @@ textarea#message {
     }
 
     .top-rated-heading-block h1 {
-        font-size: 28px !important;
-        font-weight: 700;
+        font-size: 28px;
         padding: 0 !important;
         margin-bottom: 4px !important;
-        color: #002347 !important;
     }
 
     .top-rated-heading-block p {
@@ -7429,6 +7428,22 @@ textarea#message {
     #modalNextBtn {
         right: 12px !important;
         margin-right: 0 !important;
+    }
+
+    .top-pro-btn.tp_visit .cta {
+        padding: 8px 12px;
+    }
+
+    .top-pro-btn.tp_visit.new-visit-anc {
+        margin: 5px 0;
+    }
+
+    .review-visit {
+        display: block;
+    }
+
+    .top-vist {
+        display: none !important;
     }
 }
 
@@ -7813,7 +7828,7 @@ textarea#message {
 
     .breadcrumb-item + .breadcrumb-item::before {
         padding: 0 !important;
-        margin-right: 3px;
+        margin-right: 2px;
         margin-left: 2px;
     }
 
@@ -9494,8 +9509,13 @@ textarea#message {
         font-size: 22px !important;
     }
 
-    .user_revew_sec, .comparsn_bnr_sec {
+    .user_revew_sec,
+    .comparsn_bnr_sec {
         margin-top: 90px;
+    }
+
+    .not-on-mobile {
+        display: none !important;
     }
 }
 

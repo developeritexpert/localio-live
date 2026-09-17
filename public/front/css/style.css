@@ -95,7 +95,7 @@ h6 {
 }
 
 h1 {
-    font-size: 50px !important;
+    font-size: 50px ;
     font-weight: 700;
     line-height: 1;
 }
@@ -8453,7 +8453,7 @@ body .product_sec li.breadcrumb-item.active {
 }
 
 .top-rated-heading-sec h1 {
-    font-size: 34px !important;
+    font-size: 34px ;
 }
 
 .faq-accor .accordion-button:hover::after,
@@ -10031,7 +10031,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .top-rated-heading-block h1 {
-    font-size: 34px !important;
+    font-size: 34px ;
     font-weight: 700;
     padding: 0 !important;
     margin-bottom: 4px !important;
@@ -10915,6 +10915,7 @@ section.community-feedback-sec {
     font-size: 13px !important;
     font-weight: 500 !important;
     cursor: pointer !important;
+    text-decoration: underline;
 }
 
 body,
@@ -12272,4 +12273,13 @@ section#section-compare {
 
 .community-feedback-table-section{
     background-color: var(--color-bg-light-grey);
+}
+
+/* ====style.css updated by-Kashish(16-sep-26)===== */
+.sub-panel-back {
+    cursor: pointer;
+}
+
+.review-visit {
+    display: none;
 }

@@ -147,7 +147,7 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
                     <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
