@@ -154,51 +154,36 @@
                 </div>
             </div>
 
-            <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
-            <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6;">
-                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="discussionFilterForm" onsubmit="return false;">
-                    <div class="col-sm-8 col-12">
-                        <div class="input-group position-relative">
-                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text" name="q" id="discussionLiveSearchInput" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
-                            <button type="button" id="discussionLiveClearBtn" class="btn position-absolute text-muted {{ request('q') ? '' : 'd-none' }}" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-12">
-                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                            <option value="popular" {{ request('sort') == 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
-                            <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="commented" {{ request('sort') == 'commented' ? 'selected' : '' }}>Most Active</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-
             <!-- Join the Conversation Header Block -->
-            <div class="mb-3 pt-2">
+            <div class="mb-3 pt-2 d-none">
                 <h2 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px; line-height: 1.3;">
                     Join the conversation
                 </h2>
                 <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">
                     Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips.
                 </p>
-                <div class="d-flex align-items-center gap-2" style="font-size: 13.5px; color: #475569; font-weight: 500;">
-                    <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
-                    <span>&bull;</span>
-                    <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
-                    <span>&bull;</span>
-                    <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
-                </div>
+                
             </div>
 
             <!-- Discussions List Container -->
             <div id="discussionsFeedContainer" style="transition: opacity 0.2s ease;">
             @if($discussions->isEmpty())
-                <div class="boxshadow_border bg-white text-center py-5 px-3" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
+                <div class="boxshadow_border bg-white text-center p-4" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
+                    <div class="d-flex align-items-center gap-2 pb-2 mb-4" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;">
+                    <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
+                    <span>&bull;</span>
+                    <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
+                    <span>&bull;</span>
+                    <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+
+                    <div class="col-2 top-pop">
+                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
+                            <option value="popular" selected="">Top / Popular</option>
+                            <option value="recent">Most Recent</option>
+                            <option value="commented">Most Active</option>
+                        </select>
+                    </div>
+                </div>
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
@@ -470,6 +455,24 @@
                         Start Discussion
                     </a>
                 </div>
+
+                <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
+            <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6;">
+                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center mb-0" id="discussionFilterForm" onsubmit="return false;">
+                    <div class="col-12">
+                        <div class="input-group position-relative">
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="q" id="discussionLiveSearchInput" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
+                            <button type="button" id="discussionLiveClearBtn" class="btn position-absolute text-muted {{ request('q') ? '' : 'd-none' }}" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
 
                 <!-- More About Business Component -->
                 <div class="boxshadow_border bg-white p-4 mb-4" style="border-radius: 16px; border: 1px solid #eef2f6; text-align: left;">
