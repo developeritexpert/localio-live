@@ -678,6 +678,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     // Top-Rated FAQs
     Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
     Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
+    // Top-Rated Discussions
+    Route::get('/top-rated/discussion', [ProductController::class, 'topRatedDiscussions'])->name('top-rated.discussion');
+    Route::get('/top-rated/discussions', [ProductController::class, 'topRatedDiscussions'])->name('top-rated.discussions');
     Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
     Route::get('/top-rated/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
     Route::get('/top-rated/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');

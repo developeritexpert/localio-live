@@ -1278,8 +1278,9 @@ class ViewController extends Controller
         }
 
         $request->validate([
-            'business_id' => 'nullable|required_without:category_id|exists:businesses,id',
-            'category_id' => 'nullable|required_without:business_id|exists:categories,id',
+            'business_id' => 'nullable|required_without_all:category_id,is_top_rated|exists:businesses,id',
+            'category_id' => 'nullable|required_without_all:business_id,is_top_rated|exists:categories,id',
+            'is_top_rated' => 'nullable|boolean',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category' => 'nullable|string|max:50',
@@ -1291,6 +1292,7 @@ class ViewController extends Controller
         $discussion = BusinessDiscussion::create([
             'business_id' => $request->business_id,
             'category_id' => $request->category_id,
+            'is_top_rated' => $request->boolean('is_top_rated'),
             'user_id' => $user->id,
             'author_name' => $user->displayName(),
             'author_title' => $user->job_title ?: 'Community Member',

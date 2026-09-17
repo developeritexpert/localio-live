@@ -1,7 +1,18 @@
-@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false])
 
 @php
-    if ($category) {
+    if ($isTopRated) {
+        $bName = $bName ?? 'Top Rated';
+        $allDiscsQuery = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->with(['user.country']);
+        $discList = (clone $allDiscsQuery)->take(4)->get();
+        $totalDiscs = (clone $allDiscsQuery)->count();
+        $discIds = (clone $allDiscsQuery)->pluck('id');
+        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+        $seeAllUrl = route('top-rated.discussions', ['locale' => app()->getLocale()]);
+    } elseif ($category) {
         $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
             ? $category->translations->first()
             : ($category->translations ?? $category->translation);
@@ -391,7 +402,9 @@
             </div>
             <form action="{{ route('business.discussion.store') }}" method="POST">
                 @csrf
-                @if($category)
+                @if($isTopRated)
+                    <input type="hidden" name="is_top_rated" value="1">
+                @elseif($category)
                     <input type="hidden" name="category_id" value="{{ $category->id }}">
                 @elseif($business)
                     <input type="hidden" name="business_id" value="{{ $business->id }}">

@@ -1309,6 +1309,13 @@
         </div>
     </section>
     @endif
+    <!-- here add discution section -->
+    <section class="category-discussions-sec py-5" id="topRatedDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <div class="container">
+            <x-community-discussion :isTopRated="true" bName="Top Rated" />
+        </div>
+    </section>
+    <!-- here end discution section -->
 
     <section class="subs_sec light top_rated_org_sec ">
         <x-news-letter-subscription />

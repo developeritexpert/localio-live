@@ -514,6 +514,63 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs', 'faqCategories', 'groupedFaqs', 'recentReviews', 'lang_id'));
     }
 
+    public function topRatedDiscussions(Request $request, $locale)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $topProductContents = \App\Models\TopProductContent::where('lang_id', $lang_id)
+            ->pluck('meta_value', 'meta_key')
+            ->toArray();
+
+        $query = \App\Models\BusinessDiscussion::where('is_top_rated', 1)
+            ->where('status', 'active')
+            ->with([
+                'user.country',
+                'comments' => fn($q) => $q->whereNull('parent_id')
+                    ->orderByDesc('is_pinned')
+                    ->orderBy('created_at', 'asc')
+                    ->with(['user', 'replies.user', 'replies.replies.user'])
+            ]);
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        $query->orderByDesc('is_pinned');
+
+        $sort = $request->get('sort', 'popular');
+        if ($sort === 'recent') {
+            $query->latest();
+        } elseif ($sort === 'commented') {
+            $query->orderByDesc('comments_count')->latest();
+        } else {
+            $query->orderByRaw('(upvotes_count - downvotes_count) DESC')->latest();
+        }
+
+        $totalDiscussionsCount = (clone $query)->count();
+        $discussions = $query->paginate(10);
+
+        $discIds = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->pluck('id');
+        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+
+        return view('User.product.top_rated_discussions', compact(
+            'topProductContents',
+            'discussions',
+            'totalDiscussionsCount',
+            'totalComments',
+            'totalActiveToday',
+            'sort',
+            'lang_id'
+        ));
+    }
+
     public function topRatedProduct($lang, $category = null, $page = null)
     {
         if (is_numeric($category)) {
