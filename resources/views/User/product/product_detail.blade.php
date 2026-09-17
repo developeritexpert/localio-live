@@ -3474,10 +3474,12 @@ if (empty($images)) {
 
     // Sticky Sidebar Navigation Active Link & Smooth Scroll
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Sticky Sidebar JS loaded!');
         const stickyNavLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
         if (stickyNavLinks.length > 0) {
             stickyNavLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+                    console.log('CLICK FIRED on link:', this);
                     const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
 
                     if (targetId === 'top' || targetId === 'section1') {
@@ -3560,27 +3562,56 @@ if (empty($images)) {
                 {
                     id: 'section14',
                     target: 'section14'
+                },
+                {
+                    id: 'sectionDiscussions',
+                    target: 'sectionDiscussions'
                 }
             ];
 
             window.addEventListener('scroll', function() {
-                const scrollPos = window.scrollY + 130;
+                const scrollPos = window.scrollY + 250;
                 let activeId = '';
+                
+                const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50;
+                
+                console.log('SCROLL FIRED. scrollY:', window.scrollY, 'isAtBottom:', isAtBottom);
 
-                for (const item of navSectionTargets) {
-                    const el = document.getElementById(item.id);
-                    if (el) {
-                        const top = el.offsetTop;
-                        const height = el.offsetHeight;
-                        if (scrollPos >= top && scrollPos < top + height) {
-                            activeId = item.target;
+                if (isAtBottom) {
+                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
+                        if (document.getElementById(navSectionTargets[i].id)) {
+                            activeId = navSectionTargets[i].target;
+                            break;
+                        }
+                    }
+                } else {
+                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
+                        const item = navSectionTargets[i];
+                        const el = document.getElementById(item.id);
+                        if (el) {
+                            const rect = el.getBoundingClientRect();
+                            const top = rect.top + window.scrollY;
+                            if (scrollPos >= top) {
+                                activeId = item.target;
+                                break;
+                            }
                         }
                     }
                 }
+                
+                if (!activeId && navSectionTargets.length > 0) {
+                    activeId = navSectionTargets[0].target;
+                }
 
                 if (activeId) {
+                    console.log('active class on this now:', activeId);
                     stickyNavLinks.forEach(link => {
-                        if (link.getAttribute('data-target') === activeId || link.getAttribute('href') === '#' + activeId) {
+                        let checkTarget = link.getAttribute('data-target');
+                        if (checkTarget === 'top' && activeId === 'section1') {
+                            checkTarget = 'section1';
+                        }
+                        
+                        if (checkTarget === activeId || link.getAttribute('href') === '#' + activeId) {
                             link.classList.add('active');
                         } else {
                             link.classList.remove('active');
@@ -3770,5 +3801,25 @@ if (empty($images)) {
             });
     }
 </script>
-
+<script>
+    $(document).ready(function() {
+        let hash = window.location.hash;
+        if (hash) {
+            setTimeout(function() {
+                let targetData = hash.replace('#', '');
+                let $targetLink = $('.sticky-nav-item[data-target="' + targetData + '"], .sticky-nav-item[href="' + hash + '"]');
+                
+                if ($targetLink.length) {
+                    $('.sticky-nav-item').removeClass('active');
+                    $targetLink.addClass('active');
+                }
+            }, 100);
+        }
+        
+        $(document).on('click', '.sticky-nav-item', function (e) {
+            $('.sticky-nav-item').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
 @endsection
