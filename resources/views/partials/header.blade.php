@@ -1163,6 +1163,7 @@
                                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                                 flex-shrink: 0;
                                 background: #002347;
+                                cursor: default ;
                             }
 
                             .mobile-subcat-back-btn {
@@ -1176,8 +1177,8 @@
                                 align-items: center;
                                 gap: 8px;
                                 padding: 0;
-                                transition: color 0.2s ease;
                                 line-height: 1;
+                                cursor: default !important;
                             }
 
                             .mobile-subcat-back-btn i {
