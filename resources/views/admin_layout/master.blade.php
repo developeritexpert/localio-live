@@ -250,7 +250,7 @@
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.categories') ? 'active' : '' }}">
                                             <a href="{{ route('admin.content-templates.categories') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Category</span>
+                                                <span class="nk-menu-text">Category Page</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.categories-faqs') ? 'active' : '' }}">
@@ -258,9 +258,49 @@
                                                 <span class="nk-menu-text">Category FAQs</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.category-discussions') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.category-discussions') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Category Discussions</span>
+                                            </a>
+                                        </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.features') ? 'active' : '' }}">
                                             <a href="{{ route('admin.content-templates.features') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Features</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.criteria-ratings') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.criteria-ratings') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Criteria Ratings</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-profile') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-profile') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Profile</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-alternatives') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-alternatives') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Alternatives</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-faqs') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-faqs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business FAQs</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-compare') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-compare') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Compare</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-reviews') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-reviews') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-discussions') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-discussions') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Discussions</span>
                                             </a>
                                         </li>
                                     </ul>

@@ -103,6 +103,132 @@ class ContentTemplateService
         ],
     ];
 
+
+    public const CATEGORY_DISCUSSIONS_FIELDS = [
+        'discussions_h1' => [
+            'label' => 'H1 headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Category Discussions page.',
+        ],
+        'discussions_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
+    public const BUSINESS_PROFILE_FIELDS = [
+        'profile_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business Profile page.',
+        ],
+        'profile_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+        'profile_what_is' => [
+            'label' => 'What is [business] Headline',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the What is [business] section.',
+        ],
+        'profile_pros_cons' => [
+            'label' => 'Pros & Cons Headline',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Upper text of Pros & Cons section',
+            'description' => 'Headline and upper text for the Pros & Cons section.',
+        ],
+        'profile_compare' => [
+            'label' => 'Compare [business] Headline & Subtext',
+            'type' => 'combined',
+            'field1_label' => 'Compare Headline',
+            'field2_label' => 'Compare Subtext',
+            'description' => 'Headline and subtext for the comparison section.',
+        ],
+    ];
+
+    public const BUSINESS_ALTERNATIVES_FIELDS = [
+        'alternatives_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business Alternatives page.',
+        ],
+        'alternatives_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
+    public const BUSINESS_FAQS_FIELDS = [
+        'faqs_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business FAQs page.',
+        ],
+        'faqs_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
+    public const BUSINESS_COMPARE_FIELDS = [
+        'compare_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business Compare page.',
+        ],
+        'compare_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
+    public const BUSINESS_REVIEWS_FIELDS = [
+        'reviews_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business Reviews page.',
+        ],
+        'reviews_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
+    public const BUSINESS_DISCUSSIONS_FIELDS = [
+        'discussions_h1' => [
+            'label' => 'H1 Headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Business Discussions page.',
+        ],
+        'discussions_subtext' => [
+            'label' => 'Sub-headline',
+            'type' => 'single',
+            'field1_label' => 'Sub-headline',
+            'description' => 'Sub-headline text below the H1.',
+        ],
+    ];
+
     public const FEATURE_FIELDS = [
         'feature_h1' => [
             'label' => 'H1 Headline',
@@ -228,7 +354,14 @@ class ContentTemplateService
         $allCategoryIds = Category::pluck('id');
         $allFieldKeys = array_merge(
             array_keys(self::CATEGORY_FIELDS),
-            array_keys(self::CATEGORY_FAQ_FIELDS)
+            array_keys(self::CATEGORY_FAQ_FIELDS),
+            array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
+            array_keys(self::BUSINESS_PROFILE_FIELDS),
+            array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
+            array_keys(self::BUSINESS_FAQS_FIELDS),
+            array_keys(self::BUSINESS_COMPARE_FIELDS),
+            array_keys(self::BUSINESS_REVIEWS_FIELDS),
+            array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
         );
 
         $assignedCount = 0;
@@ -309,6 +442,34 @@ class ContentTemplateService
      * Ensure templates exist for a given section group and language.
      * If the language has 0 templates for this section, clones the base templates from lang_id = 1.
      */
+
+    public static function getCriteriaFields(int $criteriaId = null): array
+    {
+        $fields = [];
+        $ranges = [
+            '1' => 'Rating 1.0 - 1.9',
+            '2' => 'Rating 2.0 - 2.9',
+            '3' => 'Rating 3.0 - 3.9',
+            '4' => 'Rating 4.0 - 4.9',
+            '5' => 'Rating 5.0'
+        ];
+
+        // If no specific criteria is passed, we might just define them generic, 
+        // but it's better to store them with field_key = "criteria_{id}_range_{range_id}"
+        if ($criteriaId) {
+            foreach ($ranges as $rKey => $rLabel) {
+                $fields["criteria_{$criteriaId}_range_{$rKey}"] = [
+                    'label' => $rLabel,
+                    'type' => 'combined',
+                    'field1_label' => 'Upper text',
+                    'field2_label' => 'Lower text',
+                    'description' => "Template for {$rLabel}",
+                ];
+            }
+        }
+        return $fields;
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
@@ -320,8 +481,25 @@ class ContentTemplateService
             $fieldDefs = self::CATEGORY_FIELDS;
         } elseif ($sectionGroup === 'category_faqs') {
             $fieldDefs = self::CATEGORY_FAQ_FIELDS;
+        } elseif ($sectionGroup === 'category_discussions') {
+            $fieldDefs = self::CATEGORY_DISCUSSIONS_FIELDS;
+        } elseif ($sectionGroup === 'business_profile') {
+            $fieldDefs = self::BUSINESS_PROFILE_FIELDS;
+        } elseif ($sectionGroup === 'business_alternatives') {
+            $fieldDefs = self::BUSINESS_ALTERNATIVES_FIELDS;
+        } elseif ($sectionGroup === 'business_faqs') {
+            $fieldDefs = self::BUSINESS_FAQS_FIELDS;
+        } elseif ($sectionGroup === 'business_compare') {
+            $fieldDefs = self::BUSINESS_COMPARE_FIELDS;
+        } elseif ($sectionGroup === 'business_reviews') {
+            $fieldDefs = self::BUSINESS_REVIEWS_FIELDS;
+        } elseif ($sectionGroup === 'business_discussions') {
+            $fieldDefs = self::BUSINESS_DISCUSSIONS_FIELDS;
         } elseif ($sectionGroup === 'features') {
             $fieldDefs = self::FEATURE_FIELDS;
+        } elseif (str_starts_with($sectionGroup, 'criteria_ratings_')) {
+            $critId = (int) str_replace('criteria_ratings_', '', $sectionGroup);
+            $fieldDefs = self::getCriteriaFields($critId);
         }
 
         if ($langId > 1) {
