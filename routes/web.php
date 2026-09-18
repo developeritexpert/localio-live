@@ -287,6 +287,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/features/update/{id}', [FeatureController::class, 'update'])->name('features.update');
 
     Route::get('/features/delete/{id}', [FeatureController::class, 'destroy'])->name('features.delete');
+    Route::match(['get', 'post'], '/features/delete-all', [FeatureController::class, 'deleteAll'])->name('features.delete_all');
 
     // Category Feature Content Controller :
     Route::get('/admin-dashboard/category-feature-content', [CategoryFeatureContentController::class, 'index'])->name('admin.category-feature-content.index');
