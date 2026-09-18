@@ -9517,6 +9517,9 @@ textarea#message {
     .not-on-mobile {
         display: none !important;
     }
+    .product_integra_sec .sftware-alternative-pck {  
+        max-width: 100%;
+    }
 }
 
 @media only screen and (max-width: 480px) {
