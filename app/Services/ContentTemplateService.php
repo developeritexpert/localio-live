@@ -17,85 +17,85 @@ class ContentTemplateService
      */
     public const CATEGORY_FIELDS = [
         'header_intro' => [
-            'label' => 'Header Introduction Text',
+            'label' => 'HEADER',
             'type' => 'combined',
             'field1_label' => 'Header Question (ends paragraph 1)',
             'field2_label' => 'Second Header Text (paragraph 2)',
             'description' => 'Combines individual category intro with question and second overview paragraph.',
         ],
-        'explore_link' => [
-            'label' => '"Explore [business]" Link Text',
-            'type' => 'single',
-            'field1_label' => 'Link Text',
-            'description' => 'Used on top-rated block link (e.g. See all [entities1_cap]).',
-        ],
         'compare_top_rated' => [
-            'label' => 'Compare Top-Rated',
+            'label' => 'LISTING',
             'type' => 'combined',
             'field1_label' => 'Compare Top-Rated Headline (H2)',
             'field2_label' => 'Compare Top-Rated Subtext',
             'description' => 'Headline and subtext for the top-rated providers section.',
         ],
         'top_10' => [
-            'label' => 'Top 10',
+            'label' => 'TOP 10',
             'type' => 'combined',
             'field1_label' => 'Top 10 Headline (H2)',
             'field2_label' => 'Top 10 Subtext',
             'description' => 'Headline and subtext for the Top 10 comparison table section.',
         ],
         'pros_cons' => [
-            'label' => 'Pros and Cons',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros and Cons Headline (H2)',
             'field2_label' => 'Pros and Cons Subtext',
             'description' => 'Headline and subtext for the community feedback section.',
         ],
         'popular_comparisons' => [
-            'label' => 'Popular Comparisons',
+            'label' => 'POPULAR COMP.',
             'type' => 'combined',
             'field1_label' => 'Popular Comparisons Headline (H2)',
             'field2_label' => 'Popular Comparisons Subtext',
             'description' => 'Headline and subtext for the popular side-by-side comparisons section.',
         ],
         'compare_tool' => [
-            'label' => 'Comparison Tool',
+            'label' => 'COMP. TOOL',
             'type' => 'combined',
             'field1_label' => 'Comparison Tool Headline (H2)',
             'field2_label' => 'Comparison Tool Subtext',
             'description' => 'Headline and subtext for interactive comparison tool box.',
         ],
         'explore_subcategories' => [
-            'label' => 'Explore Subcategories',
+            'label' => 'CATEGORIES',
             'type' => 'combined',
             'field1_label' => 'Explore Subcategories Headline (H2)',
             'field2_label' => 'Explore Subcategories Subtext',
             'description' => 'Headline and subtext for explore subcategories/categories section.',
         ],
+        'explore_link' => [
+            'label' => 'EXPLORE LINK',
+            'type' => 'single',
+            'field1_label' => 'Link Text',
+            'description' => 'Used on top-rated block link (e.g. See all [entities1_cap]).',
+        ],
     ];
 
     public const CATEGORY_FAQ_FIELDS = [
         'faq_h1' => [
-            'label' => 'H1 headline',
+            'label' => 'H1 HEADLINE',
             'type' => 'single',
             'field1_label' => 'H1 Headline',
             'description' => 'Main H1 headline for the Category FAQs page.',
         ],
         'faq_header_intro' => [
-            'label' => 'Header Intro',
+            'label' => 'HEADER INTRO',
             'type' => 'combined',
             'field1_label' => 'Header1',
             'field2_label' => 'Header2',
             'description' => 'Main introductory paragraphs directly below the H1 headline.',
         ],
         'faq_about' => [
-            'label' => 'FAQ Page Second Headline & Content',
+            'label' => 'SECOND HEADLINE & CONTENT',
             'type' => 'combined',
             'field1_label' => 'FAQ Page Second Headline (H2)',
             'field2_label' => 'FAQ Page Content Text (Rich Editor)',
             'description' => 'Second section intro headline and rich text on FAQ page.',
         ],
         'faq_explore' => [
-            'label' => 'FAQ Explore Categories',
+            'label' => 'EXPLORE CATEGORIES',
             'type' => 'combined',
             'field1_label' => 'FAQ Explore Categories Headline (H2)',
             'field2_label' => 'FAQ Explore Categories Subtext',
@@ -133,20 +133,20 @@ class ContentTemplateService
             'description' => 'Sub-headline text below the H1.',
         ],
         'profile_what_is' => [
-            'label' => 'What is [business] Headline',
+            'label' => 'WHAT IS HEADLINE',
             'type' => 'single',
             'field1_label' => 'Headline',
             'description' => 'Headline for the What is [business] section.',
         ],
         'profile_pros_cons' => [
-            'label' => 'Pros & Cons Headline',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
         'profile_compare' => [
-            'label' => 'Compare [business] Headline & Subtext',
+            'label' => 'COMPARE SECTION',
             'type' => 'combined',
             'field1_label' => 'Compare Headline',
             'field2_label' => 'Compare Subtext',
@@ -231,62 +231,62 @@ class ContentTemplateService
 
     public const FEATURE_FIELDS = [
         'feature_h1' => [
-            'label' => 'H1 Headline',
+            'label' => 'H1',
             'type' => 'single',
             'field1_label' => 'Feature H1 Headline',
             'description' => 'Main page title for Feature pages (e.g. Best [category_tc] with [feature_tc] [country2] [year]).',
         ],
         'header_intro' => [
-            'label' => 'Header Introduction Text',
+            'label' => 'HEADER',
             'type' => 'combined',
             'field1_label' => 'Header Question (ends paragraph 1)',
             'field2_label' => 'Second Header Text (paragraph 2)',
             'description' => 'Combines individual feature intro with question and second overview paragraph.',
         ],
         'compare_top_rated' => [
-            'label' => 'Compare Top-Rated',
+            'label' => 'LISTING',
             'type' => 'combined',
             'field1_label' => 'Compare Top-Rated Headline (H2)',
             'field2_label' => 'Compare Top-Rated Subtext',
             'description' => 'Headline and subtext for the top-rated providers section on feature page.',
         ],
         'top_10' => [
-            'label' => 'Top 10',
+            'label' => 'TOP 10',
             'type' => 'combined',
             'field1_label' => 'Top 10 Headline (H2)',
             'field2_label' => 'Top 10 Subtext',
             'description' => 'Headline and subtext for the Top 10 comparison table section on feature page.',
         ],
         'pros_cons' => [
-            'label' => 'Pros and Cons',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros and Cons Headline (H2)',
             'field2_label' => 'Pros and Cons Subtext',
             'description' => 'Headline and subtext for the community feedback section on feature page.',
         ],
         'popular_comparisons' => [
-            'label' => 'Popular Comparisons',
+            'label' => 'POPULAR COMP.',
             'type' => 'combined',
             'field1_label' => 'Popular Comparisons Headline (H2)',
             'field2_label' => 'Popular Comparisons Subtext',
             'description' => 'Headline and subtext for the popular side-by-side comparisons section on feature page.',
         ],
         'compare_tool' => [
-            'label' => 'Comparison Tool',
+            'label' => 'COMP. TOOL',
             'type' => 'combined',
             'field1_label' => 'Comparison Tool Headline (H2)',
             'field2_label' => 'Comparison Tool Subtext',
             'description' => 'Headline and subtext for interactive comparison tool box on feature page.',
         ],
         'explore_subcategories' => [
-            'label' => 'Explore Subcategories',
+            'label' => 'CATEGORIES',
             'type' => 'combined',
             'field1_label' => 'Explore Subcategories Headline (H2)',
             'field2_label' => 'Explore Subcategories Subtext',
             'description' => 'Headline and subtext for explore subcategories/categories section on feature page.',
         ],
         'explore_link' => [
-            'label' => '"Explore [business]" Link Text',
+            'label' => 'EXPLORE LINK',
             'type' => 'single',
             'field1_label' => 'Link Text',
             'description' => 'Used on top-rated block link (e.g. See all [entities1_cap] with [feature_tc]).',
@@ -296,8 +296,159 @@ class ContentTemplateService
     /**
      * Get or randomly assign & permanently lock a template for an entity.
      */
-    public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1): ?ContentTemplate
+    /**
+     * Determine the section_group based on entityType and fieldKey.
+     */
+    public static function determineSectionGroup(string $entityType, string $fieldKey, ?string $explicitSectionGroup = null): ?string
     {
+        if ($explicitSectionGroup) {
+            return $explicitSectionGroup;
+        }
+
+        if ($entityType === 'feature') {
+            return 'features';
+        }
+
+        if ($entityType === 'category') {
+            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                return 'category_discussions';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                return 'category_faqs';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                return 'category';
+            }
+        }
+
+        if ($entityType === 'business') {
+            if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
+                return 'business_discussions';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
+                return 'business_profile';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
+                return 'business_alternatives';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
+                return 'business_faqs';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
+                return 'business_compare';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
+                return 'business_reviews';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves the locked template assignment for frontend display.
+     * If no assignment exists (never assigned, or previously assigned option was deleted):
+     * Defaults to Option #1 for that section_group and field_key WITHOUT creating an assignment in DB.
+     * This ensures backend continues to show "-" while frontend safely displays Option 1.
+     */
+    public static function getTemplateForResolution(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
+    {
+        $sectionGroup = self::determineSectionGroup($entityType, $fieldKey, $sectionGroup);
+
+        // 1. Check if a valid, active assignment exists in the database
+        $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('lang_id', $langId)
+            ->where('field_key', $fieldKey)
+            ->with('template')
+            ->first();
+
+        if ($assignment && $assignment->template && $assignment->template->is_active) {
+            // Verify that the assigned template actually belongs to the required section_group
+            if (!$sectionGroup || $assignment->template->section_group === $sectionGroup) {
+                return $assignment->template;
+            }
+        }
+
+        // 2. Default to Option #1 on frontend if not assigned or deleted
+        // Note: We DO NOT persist this to ContentTemplateAssignment so backend continues to show "-"
+        $query = ContentTemplate::where('field_key', $fieldKey)
+            ->where('option_number', 1)
+            ->where('lang_id', $langId)
+            ->where('is_active', true);
+        if ($sectionGroup) {
+            $query->where('section_group', $sectionGroup);
+        }
+        $template = $query->first();
+
+        // Fallback to lang_id = 1 if current language has no Option #1
+        if (!$template && $langId !== 1) {
+            $fallbackQuery = ContentTemplate::where('field_key', $fieldKey)
+                ->where('option_number', 1)
+                ->where('lang_id', 1)
+                ->where('is_active', true);
+            if ($sectionGroup) {
+                $fallbackQuery->where('section_group', $sectionGroup);
+            }
+            $template = $fallbackQuery->first();
+        }
+
+        // If specifically option_number 1 doesn't exist, pick the lowest available option
+        if (!$template) {
+            $lowestQuery = ContentTemplate::where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->orderBy('option_number', 'asc');
+            if ($sectionGroup) {
+                $lowestQuery->where('section_group', $sectionGroup);
+            }
+            $template = $lowestQuery->first();
+
+            if (!$template && $langId !== 1) {
+                $lowestFallback = ContentTemplate::where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc');
+                if ($sectionGroup) {
+                    $lowestFallback->where('section_group', $sectionGroup);
+                }
+                $template = $lowestFallback->first();
+            }
+        }
+
+        return $template;
+    }
+
+    public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
+    {
+        if (!$sectionGroup) {
+            if ($entityType === 'feature') {
+                $sectionGroup = 'features';
+            } elseif ($entityType === 'category') {
+                if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                    $sectionGroup = 'category_discussions';
+                } elseif (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                    $sectionGroup = 'category_faqs';
+                } elseif (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                    $sectionGroup = 'category';
+                }
+            } elseif ($entityType === 'business') {
+                if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
+                    $sectionGroup = 'business_discussions';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
+                    $sectionGroup = 'business_profile';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
+                    $sectionGroup = 'business_alternatives';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
+                    $sectionGroup = 'business_faqs';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
+                    $sectionGroup = 'business_compare';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
+                    $sectionGroup = 'business_reviews';
+                }
+            }
+        }
+
         // 1. Check if an assignment is already locked in DB
         $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
             ->where('entity_id', $entityId)
@@ -307,21 +458,29 @@ class ContentTemplateService
             ->first();
 
         if ($assignment && $assignment->template && $assignment->template->is_active) {
-            return $assignment->template;
+            if (!$sectionGroup || $assignment->template->section_group === $sectionGroup) {
+                return $assignment->template;
+            }
         }
 
-        // 2. Fetch active templates for this field_key & lang_id
-        $templates = ContentTemplate::where('field_key', $fieldKey)
+        // 2. Fetch active templates for this field_key & lang_id (and section_group if known)
+        $query = ContentTemplate::where('field_key', $fieldKey)
             ->where('lang_id', $langId)
-            ->where('is_active', true)
-            ->get();
+            ->where('is_active', true);
+        if ($sectionGroup) {
+            $query->where('section_group', $sectionGroup);
+        }
+        $templates = $query->get();
 
         // Fallback to lang_id = 1 if current language has no templates yet
         if ($templates->isEmpty() && $langId !== 1) {
-            $templates = ContentTemplate::where('field_key', $fieldKey)
+            $fallbackQuery = ContentTemplate::where('field_key', $fieldKey)
                 ->where('lang_id', 1)
-                ->where('is_active', true)
-                ->get();
+                ->where('is_active', true);
+            if ($sectionGroup) {
+                $fallbackQuery->where('section_group', $sectionGroup);
+            }
+            $templates = $fallbackQuery->get();
         }
 
         if ($templates->isEmpty()) {
@@ -349,20 +508,23 @@ class ContentTemplateService
     /**
      * Assign missing templates for all categories and subcategories.
      */
-    public static function assignMissingForCategories(int $langId = 1): int
+    public static function assignMissingForCategories(int $langId = 1, ?string $sectionGroup = null): int
     {
         $allCategoryIds = Category::pluck('id');
-        $allFieldKeys = array_merge(
-            array_keys(self::CATEGORY_FIELDS),
-            array_keys(self::CATEGORY_FAQ_FIELDS),
-            array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
-            array_keys(self::BUSINESS_PROFILE_FIELDS),
-            array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
-            array_keys(self::BUSINESS_FAQS_FIELDS),
-            array_keys(self::BUSINESS_COMPARE_FIELDS),
-            array_keys(self::BUSINESS_REVIEWS_FIELDS),
-            array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
-        );
+
+        if ($sectionGroup === 'category_discussions') {
+            $allFieldKeys = array_keys(self::CATEGORY_DISCUSSIONS_FIELDS);
+        } elseif ($sectionGroup === 'category_faqs') {
+            $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
+        } elseif ($sectionGroup === 'category') {
+            $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
+        } else {
+            $allFieldKeys = array_merge(
+                array_keys(self::CATEGORY_FIELDS),
+                array_keys(self::CATEGORY_FAQ_FIELDS),
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
+            );
+        }
 
         $assignedCount = 0;
         foreach ($allCategoryIds as $catId) {
@@ -374,7 +536,7 @@ class ContentTemplateService
                     ->exists();
 
                 if (!$exists) {
-                    $template = self::getOrAssignTemplate('category', $catId, $fieldKey, $langId);
+                    $template = self::getOrAssignTemplate('category', $catId, $fieldKey, $langId, $sectionGroup);
                     if ($template) {
                         $assignedCount++;
                     }
@@ -443,21 +605,69 @@ class ContentTemplateService
      * If the language has 0 templates for this section, clones the base templates from lang_id = 1.
      */
 
+    public static function getCriteriaRanges(): array
+    {
+        $tExcellent = floatval(static_text('rating_threshold_excellent') ?: 4.5);
+        $tGreat = floatval(static_text('rating_threshold_great') ?: 4.0);
+        $tGood = floatval(static_text('rating_threshold_good') ?: 3.0);
+        $tSatisfactory = floatval(static_text('rating_threshold_satisfactory') ?: 2.0);
+        $tPoor = floatval(static_text('rating_threshold_poor') ?: 1.0);
+
+        return [
+            '1' => [
+                'min' => $tPoor,
+                'max' => round($tSatisfactory - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tPoor, $tSatisfactory - 0.1),
+            ],
+            '2' => [
+                'min' => $tSatisfactory,
+                'max' => round($tGood - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tSatisfactory, $tGood - 0.1),
+            ],
+            '3' => [
+                'min' => $tGood,
+                'max' => round($tGreat - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tGood, $tGreat - 0.1),
+            ],
+            '4' => [
+                'min' => $tGreat,
+                'max' => round($tExcellent - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tGreat, $tExcellent - 0.1),
+            ],
+            '5' => [
+                'min' => $tExcellent,
+                'max' => 5.0,
+                'label' => sprintf('Rating %.1f - 5.0', $tExcellent),
+            ],
+        ];
+    }
+
+    public static function getCriteriaRangeKeyForRating(float $score): string
+    {
+        $ranges = self::getCriteriaRanges();
+        if ($score >= $ranges['5']['min']) {
+            return '5';
+        }
+        if ($score >= $ranges['4']['min']) {
+            return '4';
+        }
+        if ($score >= $ranges['3']['min']) {
+            return '3';
+        }
+        if ($score >= $ranges['2']['min']) {
+            return '2';
+        }
+        return '1';
+    }
+
     public static function getCriteriaFields(int $criteriaId = null): array
     {
         $fields = [];
-        $ranges = [
-            '1' => 'Rating 1.0 - 1.9',
-            '2' => 'Rating 2.0 - 2.9',
-            '3' => 'Rating 3.0 - 3.9',
-            '4' => 'Rating 4.0 - 4.9',
-            '5' => 'Rating 5.0'
-        ];
+        $ranges = self::getCriteriaRanges();
 
-        // If no specific criteria is passed, we might just define them generic, 
-        // but it's better to store them with field_key = "criteria_{id}_range_{range_id}"
         if ($criteriaId) {
-            foreach ($ranges as $rKey => $rLabel) {
+            foreach ($ranges as $rKey => $rData) {
+                $rLabel = $rData['label'];
                 $fields["criteria_{$criteriaId}_range_{$rKey}"] = [
                     'label' => $rLabel,
                     'type' => 'combined',
@@ -468,6 +678,35 @@ class ContentTemplateService
             }
         }
         return $fields;
+    }
+
+    public static function copyCriteriaTemplates(string $fromSectionGroup, string $toSectionGroup, int $langId): int
+    {
+        $sourceTemplates = ContentTemplate::where('section_group', $fromSectionGroup)
+            ->where('lang_id', $langId)
+            ->get();
+
+        if ($sourceTemplates->isEmpty() && $langId !== 1) {
+            $sourceTemplates = ContentTemplate::where('section_group', $fromSectionGroup)
+                ->where('lang_id', 1)
+                ->get();
+        }
+
+        $copiedCount = 0;
+        foreach ($sourceTemplates as $src) {
+            ContentTemplate::create([
+                'section_group' => $toSectionGroup,
+                'field_key'     => $src->field_key,
+                'option_number' => $src->option_number,
+                'headline'      => $src->headline,
+                'subtext'       => $src->subtext,
+                'is_active'     => $src->is_active,
+                'lang_id'       => $langId,
+            ]);
+            $copiedCount++;
+        }
+
+        return $copiedCount;
     }
 
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
@@ -498,7 +737,8 @@ class ContentTemplateService
         } elseif ($sectionGroup === 'features') {
             $fieldDefs = self::FEATURE_FIELDS;
         } elseif (str_starts_with($sectionGroup, 'criteria_ratings_')) {
-            $critId = (int) str_replace('criteria_ratings_', '', $sectionGroup);
+            preg_match('/^criteria_ratings_(\d+)/', $sectionGroup, $m);
+            $critId = (int) ($m[1] ?? 0);
             $fieldDefs = self::getCriteriaFields($critId);
         }
 
@@ -558,7 +798,7 @@ class ContentTemplateService
             ?? $category->categoryTranslations()->first();
     }
 
-    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1): string
+    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null): string
     {
         if (empty($text)) {
             return '';
@@ -575,6 +815,15 @@ class ContentTemplateService
         $text = str_replace('[Year]', $currentYear, $text);
         $text = str_replace('[country1]', $c1, $text);
         $text = str_replace('[country2]', $c2, $text);
+
+        if ($business) {
+            $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
+                ?? $business->translations?->first()?->name 
+                ?? $business->name ?? '';
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]'], $bizName, $text);
+            $text = str_replace('[business_cap]', ucfirst($bizName), $text);
+            $text = str_replace('[business_lc]', mb_strtolower($bizName), $text);
+        }
 
         // Category tags
         if ($category) {
@@ -688,7 +937,7 @@ class ContentTemplateService
         $catTrans = self::getCategoryTranslation($category, $langId);
 
         $individualIntro = trim($catTrans?->description ?? '');
-        $template = self::getOrAssignTemplate('category', $category->id, 'header_intro', $langId);
+        $template = self::getTemplateForResolution('category', $category->id, 'header_intro', $langId, 'category');
 
         if (!$template) {
             return $individualIntro ?: '<p>Browse and compare the best options</p>';
@@ -730,7 +979,7 @@ class ContentTemplateService
     {
         $catTrans = self::getCategoryTranslation($category, $langId);
 
-        $template = self::getOrAssignTemplate('category', $category->id, $fieldKey, $langId);
+        $template = self::getTemplateForResolution('category', $category->id, $fieldKey, $langId);
 
         $headline = '';
         $subtext = '';
@@ -808,7 +1057,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureH1(Feature $feature, ?Category $category = null, int $langId = 1): array
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, 'feature_h1', $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, 'feature_h1', $langId, 'features');
 
         $headline = '';
         $optionNumber = null;
@@ -837,7 +1086,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureIntro(Feature $feature, ?Category $category = null, ?string $individualIntro = null, int $langId = 1): string
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, 'header_intro', $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, 'header_intro', $langId, 'features');
 
         if (!$template) {
             if (!empty($individualIntro)) {
@@ -877,7 +1126,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, $fieldKey, $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, $fieldKey, $langId, 'features');
 
         $headline = '';
         $subtext = '';
@@ -895,5 +1144,137 @@ class ContentTemplateService
             'template' => $template,
             'option_number' => $optionNumber,
         ];
+    }
+
+    /**
+     * Resolves rating texts for a business across all default criteria,
+     * checking primary subcategory first, then parent category, then global default.
+     */
+    public static function resolveBusinessRatingTexts(\App\Models\Business $business, int $langId = 1): array
+    {
+        $result = [];
+        $defaultCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order', 'asc')->get();
+        $existingManualTexts = \App\Models\BusinessRatingText::where('business_id', $business->id)->get()->keyBy('criteria_key');
+
+        $primarySubcat = $business->subCategories->first();
+        $parentCat = $business->category;
+        if (!$parentCat && $primarySubcat?->parent_id) {
+            $parentCat = $primarySubcat->parent;
+        }
+
+        $reviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+        $averageRating = floatval($business->admin_rating > 0 ? $business->admin_rating : 4.0);
+
+        foreach ($defaultCriteria as $crit) {
+            $critKey = $crit->key;
+            $critId = $crit->id;
+
+            // 1. If manual override exists, preserve it
+            $manual = $existingManualTexts->get($critKey);
+            if ($manual && (!empty($manual->intro_text) || !empty($manual->end_text))) {
+                $result[$critKey] = [
+                    'intro_text' => $manual->intro_text,
+                    'end_text'   => $manual->end_text,
+                ];
+                continue;
+            }
+
+            // 2. Determine criterion score
+            $critScore = 0.0;
+            if ($reviews->isNotEmpty()) {
+                $scores = [];
+                foreach ($reviews as $rev) {
+                    $rMatch = $rev->ratings->first(fn($r) => optional($r->criteria)->default_key === $critKey || strtolower((string) optional($r->criteria)->name) === strtolower($crit->name));
+                    if ($rMatch && $rMatch->rating > 0) {
+                        $scores[] = floatval($rMatch->rating);
+                    }
+                }
+                if (!empty($scores)) {
+                    $critScore = array_sum($scores) / count($scores);
+                }
+            }
+            if ($critScore <= 0) {
+                $critScore = $averageRating > 0 ? $averageRating : 4.0;
+            }
+
+            // 3. Map score to range
+            $rangeKey = self::getCriteriaRangeKeyForRating($critScore);
+            $fieldKey = "criteria_{$critId}_range_{$rangeKey}";
+
+            // 4. Resolve Template with Hierarchy:
+            // a) Subcategory override
+            $template = null;
+            if ($primarySubcat) {
+                $subcatSection = "criteria_ratings_{$critId}_cat_{$primarySubcat->id}";
+                $template = ContentTemplate::where('section_group', $subcatSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $subcatSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // b) Parent Category
+            if (!$template && $parentCat) {
+                $parentSection = "criteria_ratings_{$critId}_cat_{$parentCat->id}";
+                $template = ContentTemplate::where('section_group', $parentSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $parentSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // c) Global Default
+            if (!$template) {
+                $globalSection = "criteria_ratings_{$critId}";
+                $template = ContentTemplate::where('section_group', $globalSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $globalSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // 5. Replace placeholders
+            $activeCategory = $primarySubcat ?? $parentCat;
+            $headline = '';
+            $subtext = '';
+            if ($template) {
+                $headline = self::replacePlaceholders($template->headline, $activeCategory, null, $langId, $business);
+                $subtext = self::replacePlaceholders($template->subtext, $activeCategory, null, $langId, $business);
+            }
+
+            $result[$critKey] = [
+                'intro_text' => $headline,
+                'end_text'   => $subtext,
+            ];
+        }
+
+        return $result;
     }
 }

@@ -259,79 +259,105 @@
                         </div>
                     </div>
 
-                    {{-- Title Tag Rules --}}
-                    <h6 class="title mb-3 text-dark border-bottom pb-2">
-                        <em class="icon ni ni-type me-1 text-primary"></em> Title Tag Rules
-                    </h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label font-weight-bold">Character Limit <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="title_char_limit" id="title_char_limit" value="{{ $rule->title_char_limit }}" min="10" max="255" required>
-                                <span class="input-group-text">chars</span>
+                                        {{-- Title Tag Cascade Section --}}
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                            <strong class="text-dark"><em class="icon ni ni-heading me-1 text-primary"></em> Title Tag Cascade Rules</strong>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="rule_title_char_limit" class="small mb-0 text-muted">Character Limit:</label>
+                                <input type="number" 
+                                       name="title_char_limit" 
+                                       id="rule_title_char_limit" 
+                                       class="form-control form-control-sm text-center font-weight-bold" 
+                                       style="width: 75px;" 
+                                       value="{{ $rule->title_char_limit }}" 
+                                       min="20" max="255" required>
                             </div>
-                            <span class="text-muted fs-11px">Recommended: 50-60 characters for Google SERPs.</span>
                         </div>
-                        <div class="col-md-8">
-                            <label class="form-label font-weight-bold">Primary Default (1&deg;) <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control font-monospace" name="title_primary" id="title_primary" value="{{ $rule->title_primary }}" required>
-                            <span class="text-muted fs-11px">Default choice when within character limit.</span>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold">Secondary Default (2&deg;)</label>
-                            <input type="text" class="form-control font-monospace" name="title_secondary" id="title_secondary" value="{{ $rule->title_secondary }}">
-                            <span class="text-muted fs-11px">Used if Primary exceeds character limit.</span>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold">Tertiary Default (3&deg;)</label>
-                            <input type="text" class="form-control font-monospace" name="title_tertiary" id="title_tertiary" value="{{ $rule->title_tertiary }}">
-                            <span class="text-muted fs-11px">Final fallback for long feature names.</span>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label font-weight-bold d-flex align-items-center justify-content-between">
-                                <span>Quaternary Default (4&deg;) <span class="badge bg-warning text-dark border ms-1 fs-11px">Worst Case Fallback</span></span>
-                                <span class="text-muted fs-11px fw-normal">Used even if character limit is exceeded</span>
-                            </label>
-                            <input type="text" class="form-control font-monospace" name="title_quaternary" id="title_quaternary" value="{{ $rule->title_quaternary }}">
-                            <span class="text-muted fs-11px">Simplest fallback used when all other tiers exceed character limits.</span>
+                        <div class="card-body p-3">
+                            {{-- Primary Title --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>1&deg; Primary Default <span class="badge bg-light text-primary border">Preferred</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Evaluated first; used if length &le; limit</span>
+                                </label>
+                                <input type="text" name="title_primary" id="rule_title_primary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_primary }}" required>
+                            </div>
+                            {{-- Secondary Title --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>2&deg; Secondary Fallback <span class="badge bg-light text-secondary border">Shorter</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used if Primary exceeds limit</span>
+                                </label>
+                                <input type="text" name="title_secondary" id="rule_title_secondary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_secondary }}">
+                            </div>
+                            {{-- Tertiary Title --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>3&deg; Tertiary Fallback <span class="badge bg-light text-secondary border">Concise</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used if Secondary also exceeds limit</span>
+                                </label>
+                                <input type="text" name="title_tertiary" id="rule_title_tertiary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_tertiary }}">
+                            </div>
+                            {{-- Quaternary Title (4°) --}}
+                            <div class="mb-1">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>4&deg; Quaternary Fallback <span class="badge bg-warning text-dark border">Worst Case</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used even if character limit is exceeded</span>
+                                </label>
+                                <input type="text" name="title_quaternary" id="rule_title_quaternary" class="form-control form-control-sm font-monospace" value="{{ $rule->title_quaternary }}">
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Description Tag Rules --}}
-                    <h6 class="title mb-3 text-dark border-bottom pb-2">
-                        <em class="icon ni ni-file-text me-1 text-primary"></em> Description Tag Rules
-                    </h6>
-                    <div class="row g-3 mb-2">
-                        <div class="col-md-4">
-                            <label class="form-label font-weight-bold">Character Limit <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="description_char_limit" id="description_char_limit" value="{{ $rule->description_char_limit }}" min="20" max="500" required>
-                                <span class="input-group-text">chars</span>
+                    {{-- Description Tag Cascade Section --}}
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                            <strong class="text-dark"><em class="icon ni ni-file-text me-1 text-primary"></em> Description Tag Cascade Rules</strong>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="rule_desc_char_limit" class="small mb-0 text-muted">Character Limit:</label>
+                                <input type="number" 
+                                       name="description_char_limit" 
+                                       id="rule_desc_char_limit" 
+                                       class="form-control form-control-sm text-center font-weight-bold" 
+                                       style="width: 75px;" 
+                                       value="{{ $rule->description_char_limit }}" 
+                                       min="30" max="500" required>
                             </div>
-                            <span class="text-muted fs-11px">Recommended: 150-160 characters for search snippets.</span>
                         </div>
-                        <div class="col-md-8">
-                            <label class="form-label font-weight-bold">Primary Default (1&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_primary" id="description_primary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_primary }}</textarea>
-                            <span class="text-muted fs-11px">Default choice when within character limit.</span>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold">Secondary Default (2&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_secondary" id="description_secondary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_secondary }}</textarea>
-                            <span class="text-muted fs-11px">Used if Primary exceeds character limit.</span>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label font-weight-bold">Tertiary Default (3&deg;)</label>
-                            <textarea class="form-control font-monospace" name="description_tertiary" id="description_tertiary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_tertiary }}</textarea>
-                            <span class="text-muted fs-11px">Short fallback for concise snippet requirements.</span>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label font-weight-bold d-flex align-items-center justify-content-between">
-                                <span>Quaternary Default (4&deg;) <span class="badge bg-warning text-dark border ms-1 fs-11px">Worst Case Fallback</span></span>
-                                <span class="text-muted fs-11px fw-normal">Used even if character limit is exceeded</span>
-                            </label>
-                            <textarea class="form-control font-monospace" name="description_quaternary" id="description_quaternary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;">{{ $rule->description_quaternary }}</textarea>
-                            <span class="text-muted fs-11px">Simplest fallback used when all other tiers exceed character limits.</span>
+                        <div class="card-body p-3">
+                            {{-- Primary Description --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>1&deg; Primary Default</span>
+                                    <span class="text-muted fw-normal fs-11px">Evaluated first; used if length &le; limit</span>
+                                </label>
+                                <textarea name="description_primary" id="rule_desc_primary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_primary }}</textarea>
+                            </div>
+                            {{-- Secondary Description --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>2&deg; Secondary Fallback</span>
+                                    <span class="text-muted fw-normal fs-11px">Used if Primary exceeds limit</span>
+                                </label>
+                                <textarea name="description_secondary" id="rule_desc_secondary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_secondary }}</textarea>
+                            </div>
+                            {{-- Tertiary Description --}}
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>3&deg; Tertiary Fallback</span>
+                                    <span class="text-muted fw-normal fs-11px">Used if Secondary also exceeds limit</span>
+                                </label>
+                                <textarea name="description_tertiary" id="rule_desc_tertiary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_tertiary }}</textarea>
+                            </div>
+                            {{-- Quaternary Description (4°) --}}
+                            <div class="mb-1">
+                                <label class="form-label small fw-bold mb-1 d-flex justify-content-between">
+                                    <span>4&deg; Quaternary Fallback <span class="badge bg-warning text-dark border">Worst Case</span></span>
+                                    <span class="text-muted fw-normal fs-11px">Used even if character limit is exceeded</span>
+                                </label>
+                                <textarea name="description_quaternary" id="rule_desc_quaternary" rows="2" style="min-height: 50px; height: 50px; resize: vertical;" class="form-control form-control-sm font-monospace">{{ $rule->description_quaternary }}</textarea>
+                            </div>
                         </div>
                     </div>
                 </div>

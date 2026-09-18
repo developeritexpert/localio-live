@@ -1026,7 +1026,7 @@
                                         <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
 
                                         <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
-                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                            <span style="font-weight: 500; color: #1e293b;">{{ $lockedFeatureName }}</span>
                                         </span>
 
                                         <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="margin-left: 4px;">
@@ -1483,7 +1483,7 @@
                                         <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
 
                                         <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
-                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                            <span style="font-weight: 500; color: #1e293b;">{{ $lockedFeatureName }}</span>
                                         </span>
 
                                         <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style=" margin-left: 4px;">

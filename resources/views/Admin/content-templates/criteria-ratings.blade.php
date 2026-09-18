@@ -62,13 +62,13 @@
                 @endif
             </h4>
             <div class="text-muted small">
-                Define dynamic templates for criteria ratings based on ranges (e.g. 1.0-1.9, 2.0-2.9, etc.). 
+                Define criteria rating copy by category &amp; subcategory aligned with site content threshold ranges (e.g. 1.0-1.9, 2.0-2.9, ..., 4.5-5.0).
             </div>
         </div>
         <div class="nk-block-head-content d-flex align-items-center gap-2 mt-2 mt-md-0">
             <div class="d-flex align-items-center ms-2">
                 <label class="form-label me-2 mb-0 font-weight-bold small text-nowrap">Language:</label>
-                <select class="form-select form-select-sm" id="langSelect" style="min-width: 200px;" onchange="window.location.href='{{ route('admin.content-templates.criteria-ratings') }}?criteria_id={{ $activeCriteriaId }}&lang_id=' + this.value">
+                <select class="form-select form-select-sm" id="langSelect" style="min-width: 200px;" onchange="navigateCriteria(this.value, '{{ $activeCriteriaId }}', '{{ $activeCategoryId }}')">
                     @if(isset($languages))
                         @foreach ($languages as $lang)
                             <option value="{{ $lang->id }}" {{ (isset($lang_id) && $lang_id == $lang->id) ? 'selected' : '' }}>
@@ -90,19 +90,96 @@
         </div>
     @endif
 
-    <div class="card card-bordered mb-4">
-        <div class="card-inner">
-            <h5 class="card-title">Select Criteria</h5>
-            <p class="text-muted small">Select the rating criteria to define templates for its ranges.</p>
-            <div class="form-group" style="max-width: 400px;">
-                <select class="form-select" onchange="window.location.href='{{ route('admin.content-templates.criteria-ratings') }}?lang_id={{ $lang_id }}&criteria_id=' + this.value">
-                    @foreach($allCriteria as $criteria)
-                        <option value="{{ $criteria->id }}" {{ $activeCriteriaId == $criteria->id ? 'selected' : '' }}>
-                            {{ $criteria->name }}
+    {{-- Filter Card: Criteria & Category Selection --}}
+    <div class="card card-bordered mb-4 bg-light border-0 shadow-sm">
+        <div class="card-inner py-4">
+            <div class="row g-3 align-items-center">
+                {{-- Select Criteria --}}
+                <div class="col-md-5">
+                    <label class="form-label font-weight-bold small text-muted mb-1 text-uppercase">
+                        <em class="icon ni ni-star text-primary me-1"></em> Rating Criteria
+                    </label>
+                    <select class="form-select" id="criteriaSelect" onchange="navigateCriteria('{{ $lang_id }}', this.value, '{{ $activeCategoryId }}')">
+                        @foreach($allCriteria as $criteria)
+                            <option value="{{ $criteria->id }}" {{ $activeCriteriaId == $criteria->id ? 'selected' : '' }}>
+                                {{ $criteria->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Select Category / Subcategory --}}
+                <div class="col-md-7">
+                    <label class="form-label font-weight-bold small text-muted mb-1 text-uppercase">
+                        <em class="icon ni ni-folder text-primary me-1"></em> Category / Subcategory Scope
+                    </label>
+                    <select class="form-select" id="categorySelect" onchange="navigateCriteria('{{ $lang_id }}', '{{ $activeCriteriaId }}', this.value)">
+                        <option value="0" {{ $activeCategoryId == 0 ? 'selected' : '' }}>
+                            ★ Global Default (All Categories)
                         </option>
-                    @endforeach
-                </select>
+                        @foreach($categories as $parent)
+                            @php
+                                $pTrans = $parent->categoryTranslations->where('lang_id', $lang_id)->first() ?? $parent->categoryTranslations->first();
+                                $parentName = $pTrans?->name ?? $parent->name ?? ('Category #' . $parent->id);
+                            @endphp
+                            <optgroup label="📁 {{ $parentName }}">
+                                <option value="{{ $parent->id }}" {{ $activeCategoryId == $parent->id ? 'selected' : '' }}>
+                                    📁 {{ $parentName }} (Entire Category)
+                                </option>
+                                @foreach($parent->subCategories as $sub)
+                                    @php
+                                        $sTrans = $sub->categoryTranslations->where('lang_id', $lang_id)->first() ?? $sub->categoryTranslations->first();
+                                        $subName = $sTrans?->name ?? $sub->name ?? ('Subcategory #' . $sub->id);
+                                    @endphp
+                                    <option value="{{ $sub->id }}" {{ $activeCategoryId == $sub->id ? 'selected' : '' }}>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;↳ {{ $subName }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
+                    </select>
+                </div>
             </div>
+
+            {{-- Inheritance Status Alert --}}
+            @if($activeCategoryId > 0)
+                <div class="mt-3">
+                    @if($inheritanceInfo['has_custom_templates'])
+                        <div class="alert alert-success d-flex align-items-center justify-content-between py-2 px-3 mb-0 small">
+                            <div>
+                                <em class="icon ni ni-check-circle-fill me-1 text-success"></em>
+                                <strong>Custom Copy Active:</strong> 
+                                @if($activeCategory?->parent_id)
+                                    This subcategory (<strong>{{ $activeCategory->name }}</strong>) has its own overrides defined, which takes precedence over parent <strong>{{ $activeCategory->parent?->name }}</strong>.
+                                @else
+                                    This category (<strong>{{ $activeCategory->name }}</strong>) has its own custom templates defined.
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between py-3 px-3 mb-0 small">
+                            <div class="me-2 mb-2 mb-md-0">
+                                <em class="icon ni ni-info-fill me-1 text-warning"></em>
+                                <strong>Inherited Copy:</strong> 
+                                Currently using templates from <strong>{{ $inheritanceInfo['source_label'] }}</strong> ({{ $inheritanceInfo['inherited_count'] }} variations). Adding an option below will customize copy for this {{ $activeCategory?->parent_id ? 'subcategory' : 'category' }}.
+                            </div>
+                            @if($inheritanceInfo['can_copy'])
+                                <form action="{{ route('admin.content-templates.criteria-ratings.copy') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="from_section_group" value="{{ $inheritanceInfo['source_section_group'] }}">
+                                    <input type="hidden" name="to_section_group" value="{{ $sectionGroup }}">
+                                    <input type="hidden" name="lang_id" value="{{ $lang_id }}">
+                                    <input type="hidden" name="criteria_id" value="{{ $activeCriteriaId }}">
+                                    <input type="hidden" name="category_id" value="{{ $activeCategoryId }}">
+                                    <button type="submit" class="btn btn-xs btn-primary">
+                                        <em class="icon ni ni-copy me-1"></em> Copy All from {{ $inheritanceInfo['source_label'] }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 
@@ -121,6 +198,7 @@
                         '[feature_cap]' => 'Feature Name',
                         '[feature_tc]' => 'Feature Name',
                         '[feature_lc]' => 'feature name',
+                        '[business]' => 'Provider Name',
                         '[year]' => date('Y'),
                         '[country1]' => 'United States',
                         '[country2]' => 'U.S.',
@@ -130,7 +208,7 @@
                 </div>
             </div>
 
-            {{-- Field Selector Tabs --}}
+            {{-- Field Selector Tabs (5 Defined Ranges) --}}
             <ul class="nav nav-tabs nav-tabs-mb-icon nav-tabs-card mb-4" id="templateFieldTabs" role="tablist">
                 @foreach($fieldDefs as $key => $def)
                     <li class="nav-item">
@@ -165,38 +243,43 @@
                                 <thead class="table-light small">
                                     <tr>
                                         <th style="width: 85px;">Option #</th>
-                                        <th>{{ $def['field1_label'] }}</th>
+                                        <th style="width: 35%;">{{ $def['field1_label'] }}</th>
                                         @if(($def['type'] ?? '') !== 'single')
                                             <th>{{ $def['field2_label'] ?? 'Subtext / Content' }}</th>
                                         @endif
-                                        <th style="width: 140px;" class="text-end">Actions</th>
+                                        <th class="text-end" style="width: 140px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($templates[$key] ?? [] as $item)
+                                        @php
+                                            $decodedHeadline = html_entity_decode($item->headline, ENT_QUOTES, 'UTF-8');
+                                            $decodedSubtext = html_entity_decode($item->subtext, ENT_QUOTES, 'UTF-8');
+                                            $cleanSnippet = Str::limit(strip_tags($decodedSubtext), 150);
+                                        @endphp
                                         <tr>
                                             <td class="font-weight-bold text-center">
                                                 <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                             </td>
                                             <td>
-                                                <span class="font-monospace text-dark small">{{ $item->headline }}</span>
+                                                <span class="text-dark fs-13px fw-bold">{{ $decodedHeadline }}</span>
                                             </td>
                                             @if(($def['type'] ?? '') !== 'single')
                                                 <td>
-                                                    <span class="font-monospace text-muted small">{{ Str::limit(strip_tags($item->subtext), 140) }}</span>
+                                                    <span class="text-muted small">{{ $cleanSnippet }}</span>
                                                 </td>
                                             @endif
                                             <td class="text-end">
                                                 <button type="button" class="btn btn-xs btn-primary btn-edit-tpl me-1" 
                                                         data-id="{{ $item->id }}" 
                                                         data-option="{{ $item->option_number }}"
-                                                        data-headline="{{ htmlspecialchars($item->headline) }}" 
-                                                        data-subtext="{{ htmlspecialchars($item->subtext) }}"
                                                         data-type="{{ $def['type'] }}"
                                                         data-f1="{{ $def['field1_label'] }}"
                                                         data-f2="{{ $def['field2_label'] ?? '' }}">
                                                     <em class="icon ni ni-edit"></em> Edit
                                                 </button>
+                                                <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $decodedHeadline }}</textarea>
+                                                <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{!! $decodedSubtext !!}</textarea>
                                                 <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete Option #{{ $item->option_number }}?');">
                                                     @csrf
                                                     @method('DELETE')
@@ -209,7 +292,7 @@
                                     @empty
                                         <tr>
                                             <td colspan="4" class="text-center py-4 text-muted">
-                                                No template variations defined yet for this section. Click <strong>Add New Option</strong> above.
+                                                No template variations defined yet for this range under this category. Click <strong>Add New Option</strong> above.
                                             </td>
                                         </tr>
                                     @endforelse
@@ -224,7 +307,7 @@
     @endif
 </div>
 
-{{-- Modal: Add / Edit Template Form --}}
+{{-- Add / Edit Template Modal --}}
 <div class="modal fade" id="modalTemplateForm" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -243,12 +326,12 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold small" id="lblField1">Headline (H2)</label>
-                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter template...">
+                        <label class="form-label font-weight-bold small" id="lblField1">Upper text (Headline)</label>
+                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline / upper text...">
                     </div>
                     <div class="mb-3" id="wrapSubtext">
-                        <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
-                        <textarea name="subtext" id="inputSubtext" class="form-control rich-editor" rows="5" placeholder="Enter rich HTML template..."></textarea>
+                        <label class="form-label font-weight-bold small" id="lblField2">Lower text (Rich Content)</label>
+                        <textarea name="subtext" id="inputSubtext" class="form-control rich-editor" rows="5" placeholder="Enter rich lower text..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">
@@ -262,11 +345,18 @@
 
 @push('scripts')
 <script>
+function navigateCriteria(langId, criteriaId, categoryId) {
+    let url = '{{ route("admin.content-templates.criteria-ratings") }}?lang_id=' + (langId || 1) 
+        + '&criteria_id=' + (criteriaId || 1) 
+        + '&category_id=' + (categoryId || 0);
+    window.location.href = url;
+}
+
 $(document).ready(function() {
-    // Move modals directly to <body> so they are never trapped in .nk-content / .nk-block stacking contexts
+    // Move modals directly to <body> so they are never trapped in stacking contexts
     $('#modalTemplateForm').appendTo('body');
 
-    // Universal explicit handler for all modal close and cross buttons
+    // Universal explicit handler for all modal close buttons
     $(document).on('click', '[data-bs-dismiss="modal"], [data-dismiss="modal"], .btn-close, .close', function(e) {
         let targetModal = $(this).closest('.modal');
         if (targetModal.length) {
@@ -313,7 +403,6 @@ $(document).ready(function() {
             });
     }
 
-    // Initialize CKEditor
     initSubtextEditor();
 
     $('#inputHeadline').on('focus', function() {
@@ -353,13 +442,29 @@ $(document).ready(function() {
         }
     });
 
+    function decodeHtmlEntities(str) {
+        if (!str) return '';
+        if (str.includes('&lt;') || str.includes('&gt;') || str.includes('&amp;')) {
+            let txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            let val = txt.value;
+            if (val.includes('&lt;') || val.includes('&gt;')) {
+                txt.innerHTML = val;
+                val = txt.value;
+            }
+            val = val.replace(/^<p>\s*<p>/i, '<p>').replace(/<\/p>\s*<\/p>$/i, '</p>');
+            return val;
+        }
+        return str;
+    }
+
     $('.btn-add-option').on('click', function(e) {
         e.preventDefault();
         let field = $(this).data('field');
         let section = $(this).data('section');
         let type = $(this).data('type') || 'combined';
-        let f1 = $(this).data('f1') || 'Headline';
-        let f2 = $(this).data('f2') || 'Subtext / Content';
+        let f1 = $(this).data('f1') || 'Upper text';
+        let f2 = $(this).data('f2') || 'Lower text';
 
         $('#templateEditForm').attr('action', '{{ route("admin.content-templates.store") }}');
         $('#tpl_id').val('');
@@ -388,11 +493,13 @@ $(document).ready(function() {
         e.preventDefault();
         let id = $(this).data('id');
         let opt = $(this).data('option');
-        let headline = $(this).data('headline') || '';
-        let subtext = $(this).data('subtext') || '';
+        let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
+        let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
+        let headline = decodeHtmlEntities(rawHeadline);
+        let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
-        let f1 = $(this).data('f1') || 'Headline';
-        let f2 = $(this).data('f2') || 'Subtext / Content';
+        let f1 = $(this).data('f1') || 'Upper text';
+        let f2 = $(this).data('f2') || 'Lower text';
 
         $('#templateEditForm').attr('action', '{{ route("admin.content-templates.update") }}');
         $('#tpl_id').val(id);
@@ -409,7 +516,7 @@ $(document).ready(function() {
         } else {
             $('#wrapSubtext').show();
         }
-        $('#tplModalTitle').text('Edit Option #' + opt + ' (' + f1 + ')');
+        $('#tplModalTitle').text('Edit Option #' + opt);
 
         $('#modalTemplateForm').modal('show');
         setTimeout(function() { $('#inputHeadline').focus(); }, 300);

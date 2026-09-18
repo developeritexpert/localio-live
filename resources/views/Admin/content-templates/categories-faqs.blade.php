@@ -107,22 +107,12 @@
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap gap-3 align-items-center small">
-                        <div>
-                            <span class="text-muted d-block">H1 Headline:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_h1')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Header Intro:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_header_intro')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Second Headline & Content:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_about')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Explore Categories:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_explore')?->count() ?? 0 }} options</strong>
-                        </div>
+                        @foreach($fieldDefs as $fKey => $fDef)
+                            <div class="{{ $loop->first ? '' : 'border-start ps-3' }}">
+                                <span class="text-muted d-block">{{ $fDef['label'] }}:</span>
+                                <strong class="text-dark">{{ $templates->get($fKey)?->count() ?? 0 }} options</strong>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
@@ -145,10 +135,9 @@
                     <thead class="table-light">
                         <tr class="small text-muted text-uppercase">
                             <th style="min-width: 250px;">Category / Subcategory</th>
-                            <th class="text-center" style="min-width: 150px;">H1 Headline</th>
-                            <th class="text-center" style="min-width: 150px;">Header Intro</th>
-                            <th class="text-center" style="min-width: 180px;">Second Headline & Content</th>
-                            <th class="text-center" style="min-width: 160px;">Explore Categories</th>
+                            @foreach($fieldDefs as $fDef)
+                                <th class="text-center" style="min-width: 150px;">{{ $fDef['label'] }}</th>
+                            @endforeach
                             <th class="text-end pe-3" style="min-width: 110px;">Actions</th>
                         </tr>
                     </thead>
@@ -169,7 +158,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
+                                @foreach(array_keys($fieldDefs) as $fKey)
                                     @php
                                         $asgn = $catAssignments->get($fKey);
                                         $tpl = $asgn?->template;
@@ -222,7 +211,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
+                                    @foreach(array_keys($fieldDefs) as $fKey)
                                         @php
                                             $sAsgn = $subAssignments->get($fKey);
                                             $sTpl = $sAsgn?->template;
@@ -360,13 +349,13 @@
                                                     <button type="button" class="btn btn-xs btn-primary btn-edit-tpl me-1" 
                                                             data-id="{{ $item->id }}" 
                                                             data-option="{{ $item->option_number }}"
-                                                            data-headline="{{ htmlspecialchars($item->headline) }}" 
-                                                            data-subtext="{{ htmlspecialchars($item->subtext) }}"
                                                             data-type="{{ $def['type'] }}"
                                                             data-f1="{{ $def['field1_label'] }}"
                                                             data-f2="{{ $def['field2_label'] ?? '' }}">
                                                         <em class="icon ni ni-edit"></em> Edit
                                                     </button>
+                                                    <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $item->headline }}</textarea>
+                                                    <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{{ $item->subtext }}</textarea>
                                                     <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete Option #{{ $item->option_number }}?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -638,15 +627,31 @@ $(document).ready(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() { $('#inputHeadline').focus(); }, 300);
         }, 350);
-    });
+    });    function decodeHtmlEntities(str) {
+        if (!str) return '';
+        if (str.includes('&lt;') || str.includes('&gt;') || str.includes('&amp;')) {
+            let txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            let val = txt.value;
+            if (val.includes('&lt;') || val.includes('&gt;')) {
+                txt.innerHTML = val;
+                val = txt.value;
+            }
+            val = val.replace(/^<p>\s*<p>/i, '<p>').replace(/<\/p>\s*<\/p>$/i, '</p>');
+            return val;
+        }
+        return str;
+    }
 
     $('.btn-edit-tpl').on('click', function(e) {
         e.preventDefault();
         shouldReopenManageTemplates = true;
         let id = $(this).data('id');
         let opt = $(this).data('option');
-        let headline = $(this).data('headline') || '';
-        let subtext = $(this).data('subtext') || '';
+        let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
+        let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
+        let headline = decodeHtmlEntities(rawHeadline);
+        let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
         let f2 = $(this).data('f2') || 'Subtext / Content';

@@ -135,7 +135,8 @@ class FeatureController extends Controller
 
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'json_data'   => 'required|string',
+            'json_data'   => 'nullable|string',
+            'json_file'   => 'nullable|file|max:10240',
         ]);
 
         $category = Category::findOrFail($request->category_id);
@@ -143,41 +144,84 @@ class FeatureController extends Controller
             return redirect()->back()->with('error', 'Features can only be assigned to top-level categories, not subcategories.');
         }
 
-        $items = json_decode($request->json_data, true);
+        $rawJson = null;
+        if ($request->hasFile('json_file') && $request->file('json_file')->isValid()) {
+            $rawJson = file_get_contents($request->file('json_file')->getRealPath());
+        } elseif ($request->filled('json_data')) {
+            $rawJson = $request->json_data;
+        }
+
+        if (empty($rawJson) || !is_string($rawJson) || trim($rawJson) === '') {
+            return redirect()->back()->with('error', 'Please provide JSON data either by pasting it or by uploading a .json file.');
+        }
+
+        // Clean UTF-8 BOM if present
+        $rawJson = preg_replace('/^\xEF\xBB\xBF/', '', trim($rawJson));
+
+        $items = json_decode($rawJson, true);
         if (!is_array($items)) {
-            return redirect()->back()->with('error', 'Invalid JSON format provided.');
+            return redirect()->back()->with('error', 'Invalid JSON format provided. Please ensure the syntax is valid JSON.');
+        }
+
+        // Handle possible wrappers, e.g. {"features": [...]} or {"data": [...]}
+        if (isset($items['features']) && is_array($items['features'])) {
+            $items = $items['features'];
+        } elseif (isset($items['data']) && is_array($items['data'])) {
+            $items = $items['data'];
         }
 
         DB::beginTransaction();
         try {
             $importedCount = 0;
-            foreach ($items as $item) {
-                if (empty($item['name']) && empty($item['feature_name']) && empty($item['feature_cap']) && empty($item['category_cap'])) {
-                    continue;
-                }
-                $name = trim($item['feature_cap'] ?? ($item['category_cap'] ?? ($item['name'] ?? ($item['feature_name'] ?? ''))));
-                if (empty($name)) {
+            foreach ($items as $rawItem) {
+                if (!is_array($rawItem)) {
                     continue;
                 }
 
-                $featureCap = trim($item['feature_cap'] ?? ($item['category_cap'] ?? $name));
-                $featureTc  = trim($item['features_tc'] ?? ($item['feature_tc'] ?? ($item['category_tc'] ?? '')));
+                // Normalize keys: strip brackets [], quotes, whitespace and lowercase
+                $item = [];
+                foreach ($rawItem as $k => $v) {
+                    $cleanKey = strtolower(trim((string)$k, " \t\n\r\0\x0B[]'\""));
+                    $item[$cleanKey] = is_string($v) ? trim($v) : $v;
+                }
+
+                // Extract all variations ([feature_cap], [features_tc], [feature_lc])
+                $featureCap = $item['feature_cap'] ?? ($item['category_cap'] ?? ($item['name'] ?? ($item['feature_name'] ?? '')));
+                $featureTc  = $item['features_tc'] ?? ($item['feature_tc'] ?? ($item['category_tc'] ?? ''));
+                $featureLc  = $item['feature_lc'] ?? ($item['category_lc'] ?? '');
+
+                // Fallbacks if any field is empty
+                if (empty($featureCap) && !empty($featureTc)) {
+                    $featureCap = $featureTc;
+                }
+                if (empty($featureCap) && !empty($featureLc)) {
+                    $featureCap = ucfirst($featureLc);
+                }
+                if (empty($featureCap)) {
+                    continue;
+                }
+
                 if (empty($featureTc)) {
                     $featureTc = mb_convert_case($featureCap, MB_CASE_TITLE, 'UTF-8');
                 }
-                $featureLc  = trim($item['feature_lc'] ?? ($item['category_lc'] ?? ''));
                 if (empty($featureLc)) {
                     $featureLc = mb_strtolower($featureCap);
                 }
 
+                // Base name: explicit name if given, else featureCap
+                $name = !empty($item['name']) ? $item['name'] : $featureCap;
+                $description = $item['description'] ?? null;
+
                 // Check existing feature translation for language
                 $existingTranslation = DB::table('feature_translations')
                     ->where('lang_id', $lang_id)
-                    ->where(function ($q) use ($name, $featureCap) {
+                    ->where(function ($q) use ($name, $featureCap, $featureTc) {
                         $q->where('name', $name)
                           ->orWhere('feature_cap', $featureCap)
                           ->orWhere('category_cap', $featureCap)
-                          ->orWhere('name', $featureCap);
+                          ->orWhere('name', $featureCap)
+                          ->orWhere('features_tc', $featureTc)
+                          ->orWhere('feature_tc', $featureTc);
                     })
                     ->first();
 
@@ -185,8 +229,8 @@ class FeatureController extends Controller
                     $feature = Feature::find($existingTranslation->feature_id);
                     if ($feature) {
                         $feature->update(['category_id' => $request->category_id]);
-                        DB::table('feature_translations')->where('id', $existingTranslation->id)->update([
-                            'name'         => $featureCap,
+                        $updateData = [
+                            'name'         => $name,
                             'feature_cap'  => $featureCap,
                             'feature_tc'   => $featureTc,
                             'features_tc'  => $featureTc,
@@ -194,7 +238,12 @@ class FeatureController extends Controller
                             'category_cap' => $featureCap,
                             'category_tc'  => $featureTc,
                             'category_lc'  => $featureLc,
-                        ]);
+                            'updated_at'   => now(),
+                        ];
+                        if (!empty($description)) {
+                            $updateData['description'] = $description;
+                        }
+                        DB::table('feature_translations')->where('id', $existingTranslation->id)->update($updateData);
                     }
                 } else {
                     $feature = Feature::create([
@@ -202,9 +251,9 @@ class FeatureController extends Controller
                         'status'      => 'active',
                     ]);
 
-                    $feature->translations()->create([
+                    $insertData = [
                         'lang_id'      => $lang_id,
-                        'name'         => $featureCap,
+                        'name'         => $name,
                         'feature_cap'  => $featureCap,
                         'feature_tc'   => $featureTc,
                         'features_tc'  => $featureTc,
@@ -212,7 +261,12 @@ class FeatureController extends Controller
                         'category_cap' => $featureCap,
                         'category_tc'  => $featureTc,
                         'category_lc'  => $featureLc,
-                    ]);
+                    ];
+                    if (!empty($description)) {
+                        $insertData['description'] = $description;
+                    }
+
+                    $feature->translations()->create($insertData);
                 }
                 $importedCount++;
             }
@@ -326,8 +380,71 @@ class FeatureController extends Controller
         if (!$feature) {
             return redirect()->route('features')->with('error', 'Feature not found.');
         }
-        $feature->translations()->delete();
-        $feature->delete();
-        return redirect()->route('features')->with('success', 'Feature deleted successfully.');
+
+        DB::beginTransaction();
+        try {
+            DB::table('business_feature')->where('feature_id', $id)->delete();
+            DB::table('product_features')->where('feature_id', $id)->delete();
+            DB::table('category_features')->where('feature_id', $id)->delete();
+            DB::table('feature_business_reviews')->where('feature_id', $id)->delete();
+            DB::table('category_feature_contents')->where('feature_id', $id)->delete();
+            $feature->translations()->delete();
+            $feature->delete();
+
+            DB::commit();
+            return redirect()->route('features')->with('success', 'Feature deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('features')->with('error', 'Error deleting feature: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteAll(Request $request)
+    {
+        $categoryId = $request->input('category_id') ?? $request->query('category_id');
+
+        DB::beginTransaction();
+        try {
+            if (!empty($categoryId)) {
+                $featureIds = Feature::where('category_id', $categoryId)->pluck('id')->toArray();
+                $count = count($featureIds);
+
+                if ($count === 0) {
+                    return redirect()->route('features', ['category_id' => $categoryId])
+                        ->with('error', 'No features found to delete in the selected category.');
+                }
+
+                // Clean up related records for these features
+                DB::table('business_feature')->whereIn('feature_id', $featureIds)->delete();
+                DB::table('product_features')->whereIn('feature_id', $featureIds)->delete();
+                DB::table('category_features')->whereIn('feature_id', $featureIds)->delete();
+                DB::table('feature_business_reviews')->whereIn('feature_id', $featureIds)->delete();
+                DB::table('category_feature_contents')->whereIn('feature_id', $featureIds)->delete();
+                DB::table('feature_translations')->whereIn('feature_id', $featureIds)->delete();
+
+                Feature::whereIn('id', $featureIds)->delete();
+
+                DB::commit();
+                return redirect()->route('features')->with('success', "Successfully deleted all {$count} features for the selected category.");
+            } else {
+                $count = Feature::count();
+
+                // Global delete: clean up all feature tables including any legacy orphaned records
+                DB::table('business_feature')->delete();
+                DB::table('product_features')->delete();
+                DB::table('category_features')->delete();
+                DB::table('feature_business_reviews')->delete();
+                DB::table('category_feature_contents')->delete();
+                DB::table('feature_translations')->delete();
+                Feature::query()->delete();
+
+                DB::commit();
+                return redirect()->route('features')->with('success', "Successfully deleted all {$count} features.");
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('features', !empty($categoryId) ? ['category_id' => $categoryId] : [])
+                ->with('error', 'Error deleting features: ' . $e->getMessage());
+        }
     }
 }

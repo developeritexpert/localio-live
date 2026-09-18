@@ -1258,13 +1258,21 @@ class ViewController extends Controller
         $totalDiscussionsCount = (clone $query)->count();
         $discussions = $query->paginate(10);
 
+        $resolvedH1Data = \App\Services\ContentTemplateService::resolveCategorySection($category, 'discussions_h1', $lang_id);
+        $resolvedH1 = !empty($resolvedH1Data['headline']) ? $resolvedH1Data['headline'] : null;
+
+        $resolvedSubtextData = \App\Services\ContentTemplateService::resolveCategorySection($category, 'discussions_subtext', $lang_id);
+        $resolvedSubtext = !empty($resolvedSubtextData['headline']) ? $resolvedSubtextData['headline'] : null;
+
         return view('User.category.category_discussions', compact(
             'category',
             'catTrans',
             'catName',
             'discussions',
             'totalDiscussionsCount',
-            'sort'
+            'sort',
+            'resolvedH1',
+            'resolvedSubtext'
         ));
     }
 

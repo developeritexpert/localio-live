@@ -26,12 +26,15 @@
                                     </div>
                                 </li>
                                 @if(getCurrentLanguageID() === 1)
-                                <li class="nk-block-tools-opt">
-                                    <button class="btn btn-outline-primary d-none d-md-inline-flex me-2" data-bs-toggle="modal" data-bs-target="#uploadJsonModal">
+                                <li class="nk-block-tools-opt d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadJsonModal">
                                         <em class="icon ni ni-upload-cloud"></em><span>Upload Features JSON</span>
                                     </button>
+                                    <button type="button" class="btn btn-danger" onclick="confirmDeleteAll()">
+                                        <em class="icon ni ni-trash"></em><span>Delete All Features</span>
+                                    </button>
                                     <a href="{{ route('features.create') }}"
-                                        class="btn btn-primary d-none d-md-inline-flex btn-localio"><span>Add Feature</span></a>
+                                        class="btn btn-primary btn-localio"><span>Add Feature</span></a>
                                 </li>
                                 @endif
                             </ul>
@@ -71,6 +74,16 @@
             </div>
         @endif
 
+                @if ($features->isEmpty() && !empty($selectedCategoryId))
+            <div class="alert alert-light alert-icon border mb-3">
+                <em class="icon ni ni-info"></em>
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <span>No features found for <strong>{{ $activeCatName ?? "selected category" }}</strong>.</span>
+                    <a href="{{ route('features') }}" class="btn btn-xs btn-outline-primary ms-3">Show All Categories</a>
+                </div>
+            </div>
+        @endif
+
         <div class="card card-bordered card-preview">
             <div class="card-inner">
                 <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
@@ -83,8 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($features->isNotEmpty())
-                            @foreach ($features as $feature)
+                        @foreach ($features as $feature)
                                 <tr class="nk-tb-item">
                                     {{-- Feature Name --}}
                                     <td class="nk-tb-col">
@@ -155,19 +167,7 @@
                                         </ul>
                                     </td>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr class="nk-tb-item">
-                                <td class="nk-tb-col text-center py-4" colspan="4">
-                                    <span class="text-muted">No features found{{ !empty($selectedCategoryId) ? ' for the selected category' : '' }}.</span>
-                                    @if(!empty($selectedCategoryId))
-                                        <div class="mt-2">
-                                            <a href="{{ route('features') }}" class="btn btn-sm btn-outline-primary">Show All Categories</a>
-                                        </div>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endif
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -178,7 +178,7 @@
     <div class="modal fade" id="uploadJsonModal" tabindex="-1" aria-labelledby="uploadJsonModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form action="{{ route('features.json_upload') }}" method="POST">
+                <form action="{{ route('features.json_upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="uploadJsonModalLabel">Upload Features via JSON</h5>
@@ -186,16 +186,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group mb-3">
-                            <label class="form-label" for="category_id">Applicable Category</label>
+                            <label class="form-label" for="category_id">Applicable Category <span class="text-danger">*</span></label>
                             <small class="text-muted d-block mb-1">Only main categories are listed below (subcategories excluded).</small>
                             <select name="category_id" id="category_id" class="form-select" required>
                                 <option value="">Select Category</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">
+                                    <option value="{{ $category->id }}" {{ (isset($selectedCategoryId) && $selectedCategoryId == $category->id) ? 'selected' : '' }}>
                                         {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="json_file">Upload .JSON File <small class="text-muted">(Optional: upload file or paste JSON below)</small></label>
+                            <input type="file" class="form-control" name="json_file" id="json_file" accept=".json,application/json,text/plain" onchange="handleJsonFileSelect(this)">
                         </div>
                         <div class="form-group mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -204,10 +208,25 @@
                                     <em class="icon ni ni-copy"></em> Copy Example Format
                                 </button>
                             </div>
-                            <textarea class="form-control" name="json_data" id="json_data" rows="8" placeholder='[
-  { "name": "SSL included"},
-  { "name": "Website backups"}
-]' required></textarea>
+                            <textarea class="form-control font-monospace" name="json_data" id="json_data" rows="8" placeholder='[
+  {
+    "feature_cap": "Access logs",
+    "features_tc": "Access Logs",
+    "feature_lc": "access logs"
+  },
+  {
+    "feature_cap": "Website backups",
+    "features_tc": "Website Backups",
+    "feature_lc": "website backups"
+  }
+]'></textarea>
+                            <div class="alert alert-fill alert-light alert-icon mt-2 py-2 px-3">
+                                <em class="icon ni ni-info"></em>
+                                <div class="small">
+                                    <strong>Supported Formats:</strong> JSON supports all versions with or without brackets:
+                                    <code>[feature_cap]</code>, <code>[features_tc]</code> (or <code>[feature_tc]</code>), and <code>[feature_lc]</code> (or standard <code>name</code>). Missing versions will be automatically derived.
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -230,10 +249,32 @@
             window.location.href = url.toString();
         }
 
+        function handleJsonFileSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const textarea = document.getElementById('json_data');
+                    if (textarea) {
+                        textarea.value = e.target.result;
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
         function copyExampleFormat() {
             const exampleFormat = `[
-  { "name": "SSL included" },
-  { "name": "Website backups" }
+  {
+    "feature_cap": "Access logs",
+    "features_tc": "Access Logs",
+    "feature_lc": "access logs"
+  },
+  {
+    "feature_cap": "Website backups",
+    "features_tc": "Website Backups",
+    "feature_lc": "website backups"
+  }
 ]`;
             navigator.clipboard.writeText(exampleFormat).then(() => {
                 NioApp.Toast('Example JSON format copied to clipboard!', 'info', { position: 'top-right' });
@@ -242,6 +283,60 @@
                 textarea.value = exampleFormat;
                 NioApp.Toast('Example JSON inserted into text area!', 'info', { position: 'top-right' });
             });
+        }
+
+        function confirmDeleteAll() {
+            const selectedCatId = '{{ $selectedCategoryId ?? "" }}';
+            const activeCatName = '{{ isset($activeCatName) ? addslashes($activeCatName) : "" }}';
+
+            if (selectedCatId) {
+                Swal.fire({
+                    title: "Delete Features",
+                    text: "Category filter active (" + activeCatName + "). Delete only features for this category, or delete ALL features across all categories?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonColor: "#d33",
+                    denyButtonColor: "#c82333",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Delete Category Features",
+                    denyButtonText: "Delete ALL Features (Global)",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('features.delete_all') }}?category_id=" + selectedCatId;
+                    } else if (result.isDenied) {
+                        Swal.fire({
+                            title: "Are you ABSOLUTELY sure?",
+                            text: "This will permanently delete EVERY feature across ALL categories from the database. This action cannot be reversed!",
+                            icon: "error",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#6c757d",
+                            confirmButtonText: "Yes, delete ALL features globally!"
+                        }).then((finalResult) => {
+                            if (finalResult.isConfirmed) {
+                                window.location.href = "{{ route('features.delete_all') }}";
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: "Delete ALL Features?",
+                    text: "Are you sure you want to permanently delete ALL features from the entire system? All feature data, translations, and relations will be removed. This cannot be undone!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: "Yes, delete all features!",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('features.delete_all') }}";
+                    }
+                });
+            }
         }
     </script>
 @endsection

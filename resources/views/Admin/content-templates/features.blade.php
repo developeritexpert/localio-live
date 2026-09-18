@@ -58,43 +58,13 @@
         {{-- Summary Stats Card --}}
         <div class="card card-bordered mb-4 bg-light border-0 shadow-sm">
             <div class="card-inner py-3">
-                <div class="d-flex flex-wrap align-items-center small">
-                    <div>
-                        <span class="text-muted d-block">H1 Headline:</span>
-                        <strong class="text-dark">{{ $templates->get('feature_h1')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">HEADER:</span>
-                        <strong class="text-dark">{{ $templates->get('header_intro')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">LISTING:</span>
-                        <strong class="text-dark">{{ $templates->get('compare_top_rated')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">Top 10:</span>
-                        <strong class="text-dark">{{ $templates->get('top_10')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">Pros & Cons:</span>
-                        <strong class="text-dark">{{ $templates->get('pros_cons')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">Popular Comp.:</span>
-                        <strong class="text-dark">{{ $templates->get('popular_comparisons')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">Comp. Tool:</span>
-                        <strong class="text-dark">{{ $templates->get('compare_tool')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">CATEGORIES:</span>
-                        <strong class="text-dark">{{ $templates->get('explore_subcategories')?->count() ?? 0 }} options</strong>
-                    </div>
-                    <div class="border-start ps-3">
-                        <span class="text-muted d-block">Explore Link:</span>
-                        <strong class="text-dark">{{ $templates->get('explore_link')?->count() ?? 0 }} options</strong>
-                    </div>
+                <div class="d-flex flex-wrap gap-3 align-items-center small">
+                    @foreach($fieldDefs as $fKey => $fDef)
+                        <div class="{{ $loop->first ? '' : 'border-start ps-3' }}">
+                            <span class="text-muted d-block">{{ $fDef['label'] }}:</span>
+                            <strong class="text-dark">{{ $templates->get($fKey)?->count() ?? 0 }} options</strong>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -149,15 +119,9 @@
                             <tr class="small text-muted text-uppercase">
                                 <th style="min-width: 220px;">Feature Name</th>
                                 <th style="min-width: 150px;">Category</th>
-                                <th class="text-center" style="min-width: 80px;">H1</th>
-                                <th class="text-center" style="min-width: 90px;">HEADER</th>
-                                <th class="text-center" style="min-width: 100px;">LISTING</th>
-                                <th class="text-center" style="min-width: 85px;">Top 10</th>
-                                <th class="text-center" style="min-width: 95px;">Pros & Cons</th>
-                                <th class="text-center" style="min-width: 105px;">Popular Comp.</th>
-                                <th class="text-center" style="min-width: 95px;">Comp. Tool</th>
-                                <th class="text-center" style="min-width: 105px;">CATEGORIES</th>
-                                <th class="text-center" style="min-width: 95px;">Explore Link</th>
+                                @foreach($fieldDefs as $fDef)
+                                    <th class="text-center" style="min-width: 95px;">{{ $fDef['label'] }}</th>
+                                @endforeach
                                 <th class="text-end pe-3" style="min-width: 95px;">Actions</th>
                             </tr>
                         </thead>
@@ -180,7 +144,7 @@
                                     <td class="py-3">
                                         <span class="badge bg-primary text-white">{{ $categoryName }}</span>
                                     </td>
-                                    @foreach(['feature_h1', 'header_intro', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories', 'explore_link'] as $fKey)
+                                    @foreach(array_keys($fieldDefs) as $fKey)
                                         @php
                                             $asgn = $featAssignments->get($fKey);
                                             $tpl = $asgn?->template;
@@ -339,13 +303,13 @@
                                                     <button type="button" class="btn btn-xs btn-primary btn-edit-tpl me-1" 
                                                             data-id="{{ $item->id }}" 
                                                             data-option="{{ $item->option_number }}"
-                                                            data-headline="{{ htmlspecialchars($item->headline) }}" 
-                                                            data-subtext="{{ htmlspecialchars($item->subtext ?? '') }}"
                                                             data-type="{{ $def['type'] }}"
                                                             data-f1="{{ $def['field1_label'] }}"
                                                             data-f2="{{ $def['field2_label'] ?? '' }}">
                                                         <em class="icon ni ni-edit"></em> Edit
                                                     </button>
+                                                    <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $item->headline }}</textarea>
+                                                    <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{{ $item->subtext }}</textarea>
                                                     <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete Option #{{ $item->option_number }}?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -602,15 +566,31 @@ $(document).ready(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() { $('#inputHeadline').focus(); }, 300);
         }, 350);
-    });
+    });    function decodeHtmlEntities(str) {
+        if (!str) return '';
+        if (str.includes('&lt;') || str.includes('&gt;') || str.includes('&amp;')) {
+            let txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            let val = txt.value;
+            if (val.includes('&lt;') || val.includes('&gt;')) {
+                txt.innerHTML = val;
+                val = txt.value;
+            }
+            val = val.replace(/^<p>\s*<p>/i, '<p>').replace(/<\/p>\s*<\/p>$/i, '</p>');
+            return val;
+        }
+        return str;
+    }
 
     $('.btn-edit-tpl').on('click', function(e) {
         e.preventDefault();
         shouldReopenManageTemplates = true;
         let id = $(this).data('id');
         let opt = $(this).data('option');
-        let headline = $(this).data('headline') || '';
-        let subtext = $(this).data('subtext') || '';
+        let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
+        let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
+        let headline = decodeHtmlEntities(rawHeadline);
+        let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
         let f2 = $(this).data('f2') || 'Subtext / Content';

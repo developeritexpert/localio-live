@@ -522,7 +522,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
     </section>
 
-    <section class="revie_img_sec">
+    <section class="revie_img_sec blue-host_rvw">
         <div class="container">
             <div class="image_revie_inr mt-3">
                 <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">

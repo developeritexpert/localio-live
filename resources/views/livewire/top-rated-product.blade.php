@@ -1132,7 +1132,11 @@
                 }
                 }
                 $catItemName = $trans->name ?? $cat->name ?? '';
-                $catItemSeeAllText = $trans->see_all_text ?? '';
+                $currentLangId = $lang_id ?? (function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : 1);
+                $resolvedExploreLink = \App\Services\ContentTemplateService::resolveCategorySection($cat, 'explore_link', $currentLangId);
+                $catItemSeeAllText = !empty($resolvedExploreLink['headline'])
+                    ? $resolvedExploreLink['headline']
+                    : ($trans->see_all_text ?? ('See all ' . $catItemName));
                 $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
                 $catItemDesc = !empty($cat->custom_top_rated_description)
                 ? $cat->custom_top_rated_description
