@@ -107,30 +107,12 @@
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap gap-3 align-items-center small">
-                        <div>
-                            <span class="text-muted d-block">HEADER:</span>
-                            <strong class="text-dark">{{ $templates->get('header_intro')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Top 10:</span>
-                            <strong class="text-dark">{{ $templates->get('top_10')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">LISTING:</span>
-                            <strong class="text-dark">{{ $templates->get('compare_top_rated')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Pros & Cons:</span>
-                            <strong class="text-dark">{{ $templates->get('pros_cons')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Popular Comparisons:</span>
-                            <strong class="text-dark">{{ $templates->get('popular_comparisons')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Comparison Tool:</span>
-                            <strong class="text-dark">{{ $templates->get('compare_tool')?->count() ?? 0 }} options</strong>
-                        </div>
+                        @foreach($fieldDefs as $fKey => $fDef)
+                            <div class="{{ $loop->first ? '' : 'border-start ps-3' }}">
+                                <span class="text-muted d-block">{{ $fDef['label'] }}:</span>
+                                <strong class="text-dark">{{ $templates->get($fKey)?->count() ?? 0 }} options</strong>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
@@ -152,14 +134,9 @@
                     <thead class="table-light">
                         <tr class="small text-muted text-uppercase">
                             <th style="min-width: 220px;">Category / Subcategory</th>
-                            <th class="text-center" style="min-width: 110px;">HEADER</th>
-                            <th class="text-center" style="min-width: 120px;">LISTING</th>
-                            <th class="text-center" style="min-width: 100px;">Top 10</th>
-                            <th class="text-center" style="min-width: 110px;">Pros & Cons</th>
-                            <th class="text-center" style="min-width: 120px;">Popular Comp.</th>
-                            <th class="text-center" style="min-width: 110px;">Comp. Tool</th>
-                            <th class="text-center" style="min-width: 120px;">CATEGORIES</th>
-                            <th class="text-center" style="min-width: 110px;">Explore Link</th>
+                            @foreach($fieldDefs as $fDef)
+                                <th class="text-center" style="min-width: 110px;">{{ $fDef['label'] }}</th>
+                            @endforeach
                             <th class="text-end pe-3" style="min-width: 110px;">Actions</th>
                         </tr>
                     </thead>
@@ -181,7 +158,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @foreach(['header_intro', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories', 'explore_link'] as $fKey)
+                                @foreach(array_keys($fieldDefs) as $fKey)
                                     @php
                                         $asgn = $catAssignments->get($fKey);
                                         $tpl = $asgn?->template;
@@ -235,7 +212,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    @foreach(['header_intro', 'compare_top_rated', 'top_10', 'pros_cons', 'popular_comparisons', 'compare_tool', 'explore_subcategories', 'explore_link'] as $fKey)
+                                    @foreach(array_keys($fieldDefs) as $fKey)
                                         @php
                                             $sAsgn = $subAssignments->get($fKey);
                                             $sTpl = $sAsgn?->template;

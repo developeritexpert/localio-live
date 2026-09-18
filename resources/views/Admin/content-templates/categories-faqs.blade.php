@@ -107,22 +107,12 @@
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <div class="d-flex flex-wrap gap-3 align-items-center small">
-                        <div>
-                            <span class="text-muted d-block">H1 Headline:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_h1')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Header Intro:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_header_intro')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Second Headline & Content:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_about')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Explore Categories:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_explore')?->count() ?? 0 }} options</strong>
-                        </div>
+                        @foreach($fieldDefs as $fKey => $fDef)
+                            <div class="{{ $loop->first ? '' : 'border-start ps-3' }}">
+                                <span class="text-muted d-block">{{ $fDef['label'] }}:</span>
+                                <strong class="text-dark">{{ $templates->get($fKey)?->count() ?? 0 }} options</strong>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
@@ -145,10 +135,9 @@
                     <thead class="table-light">
                         <tr class="small text-muted text-uppercase">
                             <th style="min-width: 250px;">Category / Subcategory</th>
-                            <th class="text-center" style="min-width: 150px;">H1 Headline</th>
-                            <th class="text-center" style="min-width: 150px;">Header Intro</th>
-                            <th class="text-center" style="min-width: 180px;">Second Headline & Content</th>
-                            <th class="text-center" style="min-width: 160px;">Explore Categories</th>
+                            @foreach($fieldDefs as $fDef)
+                                <th class="text-center" style="min-width: 150px;">{{ $fDef['label'] }}</th>
+                            @endforeach
                             <th class="text-end pe-3" style="min-width: 110px;">Actions</th>
                         </tr>
                     </thead>
@@ -169,7 +158,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
+                                @foreach(array_keys($fieldDefs) as $fKey)
                                     @php
                                         $asgn = $catAssignments->get($fKey);
                                         $tpl = $asgn?->template;
@@ -222,7 +211,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    @foreach(['faq_h1', 'faq_header_intro', 'faq_about', 'faq_explore'] as $fKey)
+                                    @foreach(array_keys($fieldDefs) as $fKey)
                                         @php
                                             $sAsgn = $subAssignments->get($fKey);
                                             $sTpl = $sAsgn?->template;
