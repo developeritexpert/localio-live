@@ -2237,27 +2237,8 @@ class BusinessEdit extends Component
 
         // --- Dispatch browser event so Alpine.js can update CKEditor (wire:ignore) fields ---
         $this->dispatch('ai-content-applied', fields: [
-            'features_intro_text'        => $this->ratingTexts['features']['intro_text'] ?? '',
-            'features_end_text'          => $this->ratingTexts['features']['end_text'] ?? '',
-            'ease_of_use_intro_text'     => $this->ratingTexts['ease_of_use']['intro_text'] ?? '',
-            'ease_of_use_end_text'       => $this->ratingTexts['ease_of_use']['end_text'] ?? '',
-            'value_for_money_intro_text' => $this->ratingTexts['value_for_money']['intro_text'] ?? '',
-            'value_for_money_end_text'   => $this->ratingTexts['value_for_money']['end_text'] ?? '',
             'business_description'       => $this->business_description,
-            'pro_cons_intro'             => $this->pro_cons_intro,
-            'pro_cons_summary'           => $this->pro_cons_summary,
-            'offerings_top_text'         => $this->businessOfferings[0]['top_text'] ?? '',
-            'after_image_description'    => $this->after_image_description,
-            'alternatives_description'   => $this->alternatives_description,
-            'alternatives_description_2' => $this->alternatives_description_2,
-            'reviews_description'        => $this->reviews_description,
-            'reviews_description_2'      => $this->reviews_description_2,
-            'reviews_pro_cons_intro'      => $this->reviews_pro_cons_intro,
-            'reviews_pro_cons_summary'    => $this->reviews_pro_cons_summary,
-            'faqs_description'           => $this->faqs_description,
-            'faqs_description_2'         => $this->faqs_description_2,
-            'comparison_description'     => $this->comparison_description,
-            'comparison_description_2'   => $this->comparison_description_2,
+            'long_preview_description'   => $this->long_preview_description,
         ]);
 
         $this->aiApplyStatus = 'success';
