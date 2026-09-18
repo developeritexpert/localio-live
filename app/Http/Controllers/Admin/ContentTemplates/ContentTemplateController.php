@@ -272,11 +272,11 @@ class ContentTemplateController extends Controller
 
     public function criteriaRatings(Request $request)
     {
-        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+        $lang_id = $request->get('lang_id') ? (int) $request->get('lang_id') : 1;
         $selectedLanguage = Language::find($lang_id);
         if (!$selectedLanguage) {
-            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
-            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+            $selectedLanguage = Language::where('status', 1)->orderBy('id', 'asc')->first() ?? Language::first();
+            $lang_id = $selectedLanguage?->id ?? 1;
         }
 
         $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
@@ -285,8 +285,29 @@ class ContentTemplateController extends Controller
         }
 
         $allCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order', 'asc')->get();
-        $activeCriteriaId = $request->get('criteria_id', $allCriteria->first()->id ?? 0);
-        $sectionGroup = 'criteria_ratings_' . $activeCriteriaId;
+        $activeCriteriaId = (int) $request->get('criteria_id', $allCriteria->first()->id ?? 1);
+        $activeCategoryId = (int) $request->get('category_id', 0);
+
+        // Fetch parent categories with subcategories
+        $categories = \App\Models\Category::with([
+            'categoryTranslations' => fn($q) => $q->where('lang_id', $lang_id)->orWhere('lang_id', 1),
+            'subCategories.categoryTranslations' => fn($q) => $q->where('lang_id', $lang_id)->orWhere('lang_id', 1)
+        ])
+        ->whereNull('parent_id')
+        ->orderBy('id', 'asc')
+        ->get();
+
+        $activeCategory = null;
+        if ($activeCategoryId > 0) {
+            $activeCategory = \App\Models\Category::with([
+                'categoryTranslations',
+                'parent.categoryTranslations'
+            ])->find($activeCategoryId);
+        }
+
+        $sectionGroup = $activeCategoryId > 0
+            ? ('criteria_ratings_' . $activeCriteriaId . '_cat_' . $activeCategoryId)
+            : ('criteria_ratings_' . $activeCriteriaId);
 
         $fieldDefs = [];
         $templates = collect();
@@ -303,9 +324,66 @@ class ContentTemplateController extends Controller
                 ->groupBy('field_key');
         }
 
+        // Inheritance status info
+        $hasCustom = $templates->isNotEmpty() && $templates->flatten()->count() > 0;
+        $inheritanceInfo = [
+            'has_custom_templates' => $hasCustom,
+            'source_label'         => '',
+            'source_section_group' => '',
+            'can_copy'             => false,
+            'inherited_count'      => 0,
+        ];
+
+        if ($activeCategoryId > 0 && !$hasCustom) {
+            if ($activeCategory && $activeCategory->parent_id) {
+                // Subcategory: check parent category templates first
+                $parentSection = 'criteria_ratings_' . $activeCriteriaId . '_cat_' . $activeCategory->parent_id;
+                $parentTemplates = ContentTemplate::where('section_group', $parentSection)->where('lang_id', $lang_id)->get();
+                if ($parentTemplates->isEmpty() && $lang_id !== 1) {
+                    $parentTemplates = ContentTemplate::where('section_group', $parentSection)->where('lang_id', 1)->get();
+                }
+
+                $parentTrans = $activeCategory->parent?->categoryTranslations?->where('lang_id', $lang_id)->first()
+                    ?? $activeCategory->parent?->categoryTranslations?->first();
+                $parentName = $parentTrans?->name ?? $activeCategory->parent?->name ?? 'Parent Category';
+
+                if ($parentTemplates->isNotEmpty()) {
+                    $inheritanceInfo['source_label'] = "Parent Category: {$parentName}";
+                    $inheritanceInfo['source_section_group'] = $parentSection;
+                    $inheritanceInfo['can_copy'] = true;
+                    $inheritanceInfo['inherited_count'] = $parentTemplates->count();
+                } else {
+                    $globalSection = 'criteria_ratings_' . $activeCriteriaId;
+                    $globalTemplates = ContentTemplate::where('section_group', $globalSection)->where('lang_id', $lang_id)->get();
+                    if ($globalTemplates->isEmpty() && $lang_id !== 1) {
+                        $globalTemplates = ContentTemplate::where('section_group', $globalSection)->where('lang_id', 1)->get();
+                    }
+                    $inheritanceInfo['source_label'] = "Global Defaults";
+                    $inheritanceInfo['source_section_group'] = $globalSection;
+                    $inheritanceInfo['can_copy'] = $globalTemplates->isNotEmpty();
+                    $inheritanceInfo['inherited_count'] = $globalTemplates->count();
+                }
+            } else {
+                // Parent category: check global defaults
+                $globalSection = 'criteria_ratings_' . $activeCriteriaId;
+                $globalTemplates = ContentTemplate::where('section_group', $globalSection)->where('lang_id', $lang_id)->get();
+                if ($globalTemplates->isEmpty() && $lang_id !== 1) {
+                    $globalTemplates = ContentTemplate::where('section_group', $globalSection)->where('lang_id', 1)->get();
+                }
+                $inheritanceInfo['source_label'] = "Global Defaults";
+                $inheritanceInfo['source_section_group'] = $globalSection;
+                $inheritanceInfo['can_copy'] = $globalTemplates->isNotEmpty();
+                $inheritanceInfo['inherited_count'] = $globalTemplates->count();
+            }
+        }
+
         return view('Admin.content-templates.criteria-ratings', compact(
             'allCriteria',
             'activeCriteriaId',
+            'categories',
+            'activeCategoryId',
+            'activeCategory',
+            'inheritanceInfo',
             'templates',
             'fieldDefs',
             'languages',
@@ -318,7 +396,22 @@ class ContentTemplateController extends Controller
     public function storeTemplate(Request $request)
     {
         $request->validate([
-            'section_group' => 'required|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings',
+            'section_group' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $standard = [
+                        'category', 'category_faqs', 'category_discussions',
+                        'business_profile', 'business_alternatives', 'business_faqs',
+                        'business_compare', 'business_reviews', 'business_discussions',
+                        'features', 'criteria_ratings'
+                    ];
+                    if (in_array($value, $standard) || str_starts_with($value, 'criteria_ratings_')) {
+                        return true;
+                    }
+                    $fail("The selected {$attribute} is invalid.");
+                }
+            ],
             'field_key'     => 'required|string|max:64',
             'headline'      => 'nullable|string',
             'subtext'       => 'nullable|string',
@@ -479,5 +572,28 @@ class ContentTemplateController extends Controller
         }
 
         return redirect()->back()->with('success', "Templates for this {$entityType} have been reset successfully.");
+    }
+
+    public function copyCriteriaTemplates(Request $request)
+    {
+        $request->validate([
+            'from_section_group' => 'required|string',
+            'to_section_group'   => 'required|string',
+            'lang_id'            => 'required|integer',
+            'criteria_id'        => 'nullable|integer',
+            'category_id'        => 'nullable|integer',
+        ]);
+
+        $copied = \App\Services\ContentTemplateService::copyCriteriaTemplates(
+            $request->from_section_group,
+            $request->to_section_group,
+            (int) $request->lang_id
+        );
+
+        return redirect()->route('admin.content-templates.criteria-ratings', [
+            'criteria_id' => $request->criteria_id,
+            'category_id' => $request->category_id,
+            'lang_id'     => $request->lang_id,
+        ])->with('success', "Copied {$copied} template variations successfully.");
     }
 }

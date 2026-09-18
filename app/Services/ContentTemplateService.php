@@ -605,21 +605,69 @@ class ContentTemplateService
      * If the language has 0 templates for this section, clones the base templates from lang_id = 1.
      */
 
+    public static function getCriteriaRanges(): array
+    {
+        $tExcellent = floatval(static_text('rating_threshold_excellent') ?: 4.5);
+        $tGreat = floatval(static_text('rating_threshold_great') ?: 4.0);
+        $tGood = floatval(static_text('rating_threshold_good') ?: 3.0);
+        $tSatisfactory = floatval(static_text('rating_threshold_satisfactory') ?: 2.0);
+        $tPoor = floatval(static_text('rating_threshold_poor') ?: 1.0);
+
+        return [
+            '1' => [
+                'min' => $tPoor,
+                'max' => round($tSatisfactory - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tPoor, $tSatisfactory - 0.1),
+            ],
+            '2' => [
+                'min' => $tSatisfactory,
+                'max' => round($tGood - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tSatisfactory, $tGood - 0.1),
+            ],
+            '3' => [
+                'min' => $tGood,
+                'max' => round($tGreat - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tGood, $tGreat - 0.1),
+            ],
+            '4' => [
+                'min' => $tGreat,
+                'max' => round($tExcellent - 0.1, 1),
+                'label' => sprintf('Rating %.1f - %.1f', $tGreat, $tExcellent - 0.1),
+            ],
+            '5' => [
+                'min' => $tExcellent,
+                'max' => 5.0,
+                'label' => sprintf('Rating %.1f - 5.0', $tExcellent),
+            ],
+        ];
+    }
+
+    public static function getCriteriaRangeKeyForRating(float $score): string
+    {
+        $ranges = self::getCriteriaRanges();
+        if ($score >= $ranges['5']['min']) {
+            return '5';
+        }
+        if ($score >= $ranges['4']['min']) {
+            return '4';
+        }
+        if ($score >= $ranges['3']['min']) {
+            return '3';
+        }
+        if ($score >= $ranges['2']['min']) {
+            return '2';
+        }
+        return '1';
+    }
+
     public static function getCriteriaFields(int $criteriaId = null): array
     {
         $fields = [];
-        $ranges = [
-            '1' => 'Rating 1.0 - 1.9',
-            '2' => 'Rating 2.0 - 2.9',
-            '3' => 'Rating 3.0 - 3.9',
-            '4' => 'Rating 4.0 - 4.9',
-            '5' => 'Rating 5.0'
-        ];
+        $ranges = self::getCriteriaRanges();
 
-        // If no specific criteria is passed, we might just define them generic, 
-        // but it's better to store them with field_key = "criteria_{id}_range_{range_id}"
         if ($criteriaId) {
-            foreach ($ranges as $rKey => $rLabel) {
+            foreach ($ranges as $rKey => $rData) {
+                $rLabel = $rData['label'];
                 $fields["criteria_{$criteriaId}_range_{$rKey}"] = [
                     'label' => $rLabel,
                     'type' => 'combined',
@@ -630,6 +678,35 @@ class ContentTemplateService
             }
         }
         return $fields;
+    }
+
+    public static function copyCriteriaTemplates(string $fromSectionGroup, string $toSectionGroup, int $langId): int
+    {
+        $sourceTemplates = ContentTemplate::where('section_group', $fromSectionGroup)
+            ->where('lang_id', $langId)
+            ->get();
+
+        if ($sourceTemplates->isEmpty() && $langId !== 1) {
+            $sourceTemplates = ContentTemplate::where('section_group', $fromSectionGroup)
+                ->where('lang_id', 1)
+                ->get();
+        }
+
+        $copiedCount = 0;
+        foreach ($sourceTemplates as $src) {
+            ContentTemplate::create([
+                'section_group' => $toSectionGroup,
+                'field_key'     => $src->field_key,
+                'option_number' => $src->option_number,
+                'headline'      => $src->headline,
+                'subtext'       => $src->subtext,
+                'is_active'     => $src->is_active,
+                'lang_id'       => $langId,
+            ]);
+            $copiedCount++;
+        }
+
+        return $copiedCount;
     }
 
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
@@ -660,7 +737,8 @@ class ContentTemplateService
         } elseif ($sectionGroup === 'features') {
             $fieldDefs = self::FEATURE_FIELDS;
         } elseif (str_starts_with($sectionGroup, 'criteria_ratings_')) {
-            $critId = (int) str_replace('criteria_ratings_', '', $sectionGroup);
+            preg_match('/^criteria_ratings_(\d+)/', $sectionGroup, $m);
+            $critId = (int) ($m[1] ?? 0);
             $fieldDefs = self::getCriteriaFields($critId);
         }
 
@@ -720,7 +798,7 @@ class ContentTemplateService
             ?? $category->categoryTranslations()->first();
     }
 
-    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1): string
+    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null): string
     {
         if (empty($text)) {
             return '';
@@ -737,6 +815,15 @@ class ContentTemplateService
         $text = str_replace('[Year]', $currentYear, $text);
         $text = str_replace('[country1]', $c1, $text);
         $text = str_replace('[country2]', $c2, $text);
+
+        if ($business) {
+            $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
+                ?? $business->translations?->first()?->name 
+                ?? $business->name ?? '';
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]'], $bizName, $text);
+            $text = str_replace('[business_cap]', ucfirst($bizName), $text);
+            $text = str_replace('[business_lc]', mb_strtolower($bizName), $text);
+        }
 
         // Category tags
         if ($category) {
@@ -1057,5 +1144,137 @@ class ContentTemplateService
             'template' => $template,
             'option_number' => $optionNumber,
         ];
+    }
+
+    /**
+     * Resolves rating texts for a business across all default criteria,
+     * checking primary subcategory first, then parent category, then global default.
+     */
+    public static function resolveBusinessRatingTexts(\App\Models\Business $business, int $langId = 1): array
+    {
+        $result = [];
+        $defaultCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order', 'asc')->get();
+        $existingManualTexts = \App\Models\BusinessRatingText::where('business_id', $business->id)->get()->keyBy('criteria_key');
+
+        $primarySubcat = $business->subCategories->first();
+        $parentCat = $business->category;
+        if (!$parentCat && $primarySubcat?->parent_id) {
+            $parentCat = $primarySubcat->parent;
+        }
+
+        $reviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+        $averageRating = floatval($business->admin_rating > 0 ? $business->admin_rating : 4.0);
+
+        foreach ($defaultCriteria as $crit) {
+            $critKey = $crit->key;
+            $critId = $crit->id;
+
+            // 1. If manual override exists, preserve it
+            $manual = $existingManualTexts->get($critKey);
+            if ($manual && (!empty($manual->intro_text) || !empty($manual->end_text))) {
+                $result[$critKey] = [
+                    'intro_text' => $manual->intro_text,
+                    'end_text'   => $manual->end_text,
+                ];
+                continue;
+            }
+
+            // 2. Determine criterion score
+            $critScore = 0.0;
+            if ($reviews->isNotEmpty()) {
+                $scores = [];
+                foreach ($reviews as $rev) {
+                    $rMatch = $rev->ratings->first(fn($r) => optional($r->criteria)->default_key === $critKey || strtolower((string) optional($r->criteria)->name) === strtolower($crit->name));
+                    if ($rMatch && $rMatch->rating > 0) {
+                        $scores[] = floatval($rMatch->rating);
+                    }
+                }
+                if (!empty($scores)) {
+                    $critScore = array_sum($scores) / count($scores);
+                }
+            }
+            if ($critScore <= 0) {
+                $critScore = $averageRating > 0 ? $averageRating : 4.0;
+            }
+
+            // 3. Map score to range
+            $rangeKey = self::getCriteriaRangeKeyForRating($critScore);
+            $fieldKey = "criteria_{$critId}_range_{$rangeKey}";
+
+            // 4. Resolve Template with Hierarchy:
+            // a) Subcategory override
+            $template = null;
+            if ($primarySubcat) {
+                $subcatSection = "criteria_ratings_{$critId}_cat_{$primarySubcat->id}";
+                $template = ContentTemplate::where('section_group', $subcatSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $subcatSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // b) Parent Category
+            if (!$template && $parentCat) {
+                $parentSection = "criteria_ratings_{$critId}_cat_{$parentCat->id}";
+                $template = ContentTemplate::where('section_group', $parentSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $parentSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // c) Global Default
+            if (!$template) {
+                $globalSection = "criteria_ratings_{$critId}";
+                $template = ContentTemplate::where('section_group', $globalSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', $langId)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->first();
+                if (!$template && $langId !== 1) {
+                    $template = ContentTemplate::where('section_group', $globalSection)
+                        ->where('field_key', $fieldKey)
+                        ->where('lang_id', 1)
+                        ->where('is_active', true)
+                        ->orderBy('option_number', 'asc')
+                        ->first();
+                }
+            }
+
+            // 5. Replace placeholders
+            $activeCategory = $primarySubcat ?? $parentCat;
+            $headline = '';
+            $subtext = '';
+            if ($template) {
+                $headline = self::replacePlaceholders($template->headline, $activeCategory, null, $langId, $business);
+                $subtext = self::replacePlaceholders($template->subtext, $activeCategory, null, $langId, $business);
+            }
+
+            $result[$critKey] = [
+                'intro_text' => $headline,
+                'end_text'   => $subtext,
+            ];
+        }
+
+        return $result;
     }
 }

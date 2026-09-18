@@ -374,13 +374,17 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             $recommendPercent = 0;
         }
 
+        $currentLangId = getCurrentLanguageID();
+        $resolvedRatingTemplates = \App\Services\ContentTemplateService::resolveBusinessRatingTexts($business, $currentLangId);
         $ratingTextsRecords = \App\Models\BusinessRatingText::where('business_id', $business->id)->get();
-        $ratingTexts = [];
+        $ratingTexts = $resolvedRatingTemplates;
         foreach ($ratingTextsRecords as $rTxt) {
-            $ratingTexts[$rTxt->criteria_key] = [
-                'intro_text' => $rTxt->intro_text,
-                'end_text' => $rTxt->end_text,
-            ];
+            if (!empty($rTxt->intro_text) || !empty($rTxt->end_text)) {
+                $ratingTexts[$rTxt->criteria_key] = [
+                    'intro_text' => $rTxt->intro_text ?: ($ratingTexts[$rTxt->criteria_key]['intro_text'] ?? ''),
+                    'end_text' => $rTxt->end_text ?: ($ratingTexts[$rTxt->criteria_key]['end_text'] ?? ''),
+                ];
+            }
         }
 
         // Aggregate User Selected Pros and Cons for this business from active reviews

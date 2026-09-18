@@ -447,6 +447,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::get('/business-reviews', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessReviews'])->name('admin.content-templates.business-reviews');
         Route::get('/business-discussions', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessDiscussions'])->name('admin.content-templates.business-discussions');
         Route::get('/criteria-ratings', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'criteriaRatings'])->name('admin.content-templates.criteria-ratings');
+        Route::post('/criteria-ratings/copy', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'copyCriteriaTemplates'])->name('admin.content-templates.criteria-ratings.copy');
 
 
         Route::post('/templates/store', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'storeTemplate'])->name('admin.content-templates.store');
