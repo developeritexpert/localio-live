@@ -296,6 +296,129 @@ class ContentTemplateService
     /**
      * Get or randomly assign & permanently lock a template for an entity.
      */
+    /**
+     * Determine the section_group based on entityType and fieldKey.
+     */
+    public static function determineSectionGroup(string $entityType, string $fieldKey, ?string $explicitSectionGroup = null): ?string
+    {
+        if ($explicitSectionGroup) {
+            return $explicitSectionGroup;
+        }
+
+        if ($entityType === 'feature') {
+            return 'features';
+        }
+
+        if ($entityType === 'category') {
+            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                return 'category_discussions';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                return 'category_faqs';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                return 'category';
+            }
+        }
+
+        if ($entityType === 'business') {
+            if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
+                return 'business_discussions';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
+                return 'business_profile';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
+                return 'business_alternatives';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
+                return 'business_faqs';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
+                return 'business_compare';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
+                return 'business_reviews';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves the locked template assignment for frontend display.
+     * If no assignment exists (never assigned, or previously assigned option was deleted):
+     * Defaults to Option #1 for that section_group and field_key WITHOUT creating an assignment in DB.
+     * This ensures backend continues to show "-" while frontend safely displays Option 1.
+     */
+    public static function getTemplateForResolution(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
+    {
+        $sectionGroup = self::determineSectionGroup($entityType, $fieldKey, $sectionGroup);
+
+        // 1. Check if a valid, active assignment exists in the database
+        $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('lang_id', $langId)
+            ->where('field_key', $fieldKey)
+            ->with('template')
+            ->first();
+
+        if ($assignment && $assignment->template && $assignment->template->is_active) {
+            // Verify that the assigned template actually belongs to the required section_group
+            if (!$sectionGroup || $assignment->template->section_group === $sectionGroup) {
+                return $assignment->template;
+            }
+        }
+
+        // 2. Default to Option #1 on frontend if not assigned or deleted
+        // Note: We DO NOT persist this to ContentTemplateAssignment so backend continues to show "-"
+        $query = ContentTemplate::where('field_key', $fieldKey)
+            ->where('option_number', 1)
+            ->where('lang_id', $langId)
+            ->where('is_active', true);
+        if ($sectionGroup) {
+            $query->where('section_group', $sectionGroup);
+        }
+        $template = $query->first();
+
+        // Fallback to lang_id = 1 if current language has no Option #1
+        if (!$template && $langId !== 1) {
+            $fallbackQuery = ContentTemplate::where('field_key', $fieldKey)
+                ->where('option_number', 1)
+                ->where('lang_id', 1)
+                ->where('is_active', true);
+            if ($sectionGroup) {
+                $fallbackQuery->where('section_group', $sectionGroup);
+            }
+            $template = $fallbackQuery->first();
+        }
+
+        // If specifically option_number 1 doesn't exist, pick the lowest available option
+        if (!$template) {
+            $lowestQuery = ContentTemplate::where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->orderBy('option_number', 'asc');
+            if ($sectionGroup) {
+                $lowestQuery->where('section_group', $sectionGroup);
+            }
+            $template = $lowestQuery->first();
+
+            if (!$template && $langId !== 1) {
+                $lowestFallback = ContentTemplate::where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc');
+                if ($sectionGroup) {
+                    $lowestFallback->where('section_group', $sectionGroup);
+                }
+                $template = $lowestFallback->first();
+            }
+        }
+
+        return $template;
+    }
+
     public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
     {
         if (!$sectionGroup) {
@@ -727,7 +850,7 @@ class ContentTemplateService
         $catTrans = self::getCategoryTranslation($category, $langId);
 
         $individualIntro = trim($catTrans?->description ?? '');
-        $template = self::getOrAssignTemplate('category', $category->id, 'header_intro', $langId);
+        $template = self::getTemplateForResolution('category', $category->id, 'header_intro', $langId, 'category');
 
         if (!$template) {
             return $individualIntro ?: '<p>Browse and compare the best options</p>';
@@ -769,7 +892,7 @@ class ContentTemplateService
     {
         $catTrans = self::getCategoryTranslation($category, $langId);
 
-        $template = self::getOrAssignTemplate('category', $category->id, $fieldKey, $langId);
+        $template = self::getTemplateForResolution('category', $category->id, $fieldKey, $langId);
 
         $headline = '';
         $subtext = '';
@@ -847,7 +970,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureH1(Feature $feature, ?Category $category = null, int $langId = 1): array
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, 'feature_h1', $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, 'feature_h1', $langId, 'features');
 
         $headline = '';
         $optionNumber = null;
@@ -876,7 +999,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureIntro(Feature $feature, ?Category $category = null, ?string $individualIntro = null, int $langId = 1): string
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, 'header_intro', $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, 'header_intro', $langId, 'features');
 
         if (!$template) {
             if (!empty($individualIntro)) {
@@ -916,7 +1039,7 @@ class ContentTemplateService
      */
     public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
     {
-        $template = self::getOrAssignTemplate('feature', $feature->id, $fieldKey, $langId);
+        $template = self::getTemplateForResolution('feature', $feature->id, $fieldKey, $langId, 'features');
 
         $headline = '';
         $subtext = '';

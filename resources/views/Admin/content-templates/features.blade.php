@@ -339,13 +339,13 @@
                                                     <button type="button" class="btn btn-xs btn-primary btn-edit-tpl me-1" 
                                                             data-id="{{ $item->id }}" 
                                                             data-option="{{ $item->option_number }}"
-                                                            data-headline="{{ htmlspecialchars($item->headline) }}" 
-                                                            data-subtext="{{ htmlspecialchars($item->subtext ?? '') }}"
                                                             data-type="{{ $def['type'] }}"
                                                             data-f1="{{ $def['field1_label'] }}"
                                                             data-f2="{{ $def['field2_label'] ?? '' }}">
                                                         <em class="icon ni ni-edit"></em> Edit
                                                     </button>
+                                                    <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $item->headline }}</textarea>
+                                                    <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{{ $item->subtext }}</textarea>
                                                     <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete Option #{{ $item->option_number }}?');">
                                                         @csrf
                                                         @method('DELETE')
@@ -602,15 +602,31 @@ $(document).ready(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() { $('#inputHeadline').focus(); }, 300);
         }, 350);
-    });
+    });    function decodeHtmlEntities(str) {
+        if (!str) return '';
+        if (str.includes('&lt;') || str.includes('&gt;') || str.includes('&amp;')) {
+            let txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            let val = txt.value;
+            if (val.includes('&lt;') || val.includes('&gt;')) {
+                txt.innerHTML = val;
+                val = txt.value;
+            }
+            val = val.replace(/^<p>\s*<p>/i, '<p>').replace(/<\/p>\s*<\/p>$/i, '</p>');
+            return val;
+        }
+        return str;
+    }
 
     $('.btn-edit-tpl').on('click', function(e) {
         e.preventDefault();
         shouldReopenManageTemplates = true;
         let id = $(this).data('id');
         let opt = $(this).data('option');
-        let headline = $(this).data('headline') || '';
-        let subtext = $(this).data('subtext') || '';
+        let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
+        let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
+        let headline = decodeHtmlEntities(rawHeadline);
+        let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
         let f2 = $(this).data('f2') || 'Subtext / Content';
