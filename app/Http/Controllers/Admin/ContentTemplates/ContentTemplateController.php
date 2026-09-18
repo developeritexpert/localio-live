@@ -387,7 +387,7 @@ class ContentTemplateController extends Controller
         if ($section === 'features') {
             $assignedCount = ContentTemplateService::assignMissingForFeatures($langId);
         } else {
-            $assignedCount = ContentTemplateService::assignMissingForCategories($langId);
+            $assignedCount = ContentTemplateService::assignMissingForCategories($langId, $section);
         }
 
         return redirect()->back()->with('success', "Successfully assigned and locked {$assignedCount} template variations permanently.");

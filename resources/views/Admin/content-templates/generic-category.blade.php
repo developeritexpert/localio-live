@@ -62,7 +62,7 @@
                 @endif
             </h4>
             <div class="text-muted small">
-                Define randomized template variations for Category & Subcategory FAQ headlines and content. Once assigned to a category, options are <strong>permanently locked</strong> in the database.
+                Define randomized template variations for {{ $title }} headlines and content. Once assigned to a category, options are <strong>permanently locked</strong> in the database.
             </div>
         </div>
         <div class="nk-block-head-content d-flex align-items-center gap-2 mt-2 mt-md-0">
@@ -113,18 +113,6 @@
                                 <strong class="text-dark">{{ $templates->get($fKey)?->count() ?? 0 }} options</strong>
                             </div>
                         @endforeach
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Header Intro:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_header_intro')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Second Headline & Content:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_about')?->count() ?? 0 }} options</strong>
-                        </div>
-                        <div class="border-start ps-3">
-                            <span class="text-muted d-block">Explore Categories:</span>
-                            <strong class="text-dark">{{ $templates->get('faq_explore')?->count() ?? 0 }} options</strong>
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">

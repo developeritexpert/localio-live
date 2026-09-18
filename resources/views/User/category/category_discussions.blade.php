@@ -108,13 +108,19 @@
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                                 <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
-                                    {{ $catName }} Community Discussions
+                                    {{ !empty($resolvedH1) ? $resolvedH1 : ($catName . ' Community Discussions') }}
                                 </h1>
                             </div>
 
-                            <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
-                                {!! $subHeadline !!}
-                            </p>
+                            @if(!empty($resolvedSubtext))
+                                <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                    {!! $resolvedSubtext !!}
+                                </p>
+                            @elseif(!empty($subHeadline))
+                                <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                    {!! $subHeadline !!}
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>

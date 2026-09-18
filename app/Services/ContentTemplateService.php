@@ -133,20 +133,20 @@ class ContentTemplateService
             'description' => 'Sub-headline text below the H1.',
         ],
         'profile_what_is' => [
-            'label' => 'What is [business] Headline',
+            'label' => 'WHAT IS HEADLINE',
             'type' => 'single',
             'field1_label' => 'Headline',
             'description' => 'Headline for the What is [business] section.',
         ],
         'profile_pros_cons' => [
-            'label' => 'Pros & Cons Headline',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
         'profile_compare' => [
-            'label' => 'Compare [business] Headline & Subtext',
+            'label' => 'COMPARE SECTION',
             'type' => 'combined',
             'field1_label' => 'Compare Headline',
             'field2_label' => 'Compare Subtext',
@@ -296,8 +296,36 @@ class ContentTemplateService
     /**
      * Get or randomly assign & permanently lock a template for an entity.
      */
-    public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1): ?ContentTemplate
+    public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
     {
+        if (!$sectionGroup) {
+            if ($entityType === 'feature') {
+                $sectionGroup = 'features';
+            } elseif ($entityType === 'category') {
+                if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                    $sectionGroup = 'category_discussions';
+                } elseif (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                    $sectionGroup = 'category_faqs';
+                } elseif (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                    $sectionGroup = 'category';
+                }
+            } elseif ($entityType === 'business') {
+                if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
+                    $sectionGroup = 'business_discussions';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
+                    $sectionGroup = 'business_profile';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
+                    $sectionGroup = 'business_alternatives';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
+                    $sectionGroup = 'business_faqs';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
+                    $sectionGroup = 'business_compare';
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
+                    $sectionGroup = 'business_reviews';
+                }
+            }
+        }
+
         // 1. Check if an assignment is already locked in DB
         $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
             ->where('entity_id', $entityId)
@@ -307,21 +335,29 @@ class ContentTemplateService
             ->first();
 
         if ($assignment && $assignment->template && $assignment->template->is_active) {
-            return $assignment->template;
+            if (!$sectionGroup || $assignment->template->section_group === $sectionGroup) {
+                return $assignment->template;
+            }
         }
 
-        // 2. Fetch active templates for this field_key & lang_id
-        $templates = ContentTemplate::where('field_key', $fieldKey)
+        // 2. Fetch active templates for this field_key & lang_id (and section_group if known)
+        $query = ContentTemplate::where('field_key', $fieldKey)
             ->where('lang_id', $langId)
-            ->where('is_active', true)
-            ->get();
+            ->where('is_active', true);
+        if ($sectionGroup) {
+            $query->where('section_group', $sectionGroup);
+        }
+        $templates = $query->get();
 
         // Fallback to lang_id = 1 if current language has no templates yet
         if ($templates->isEmpty() && $langId !== 1) {
-            $templates = ContentTemplate::where('field_key', $fieldKey)
+            $fallbackQuery = ContentTemplate::where('field_key', $fieldKey)
                 ->where('lang_id', 1)
-                ->where('is_active', true)
-                ->get();
+                ->where('is_active', true);
+            if ($sectionGroup) {
+                $fallbackQuery->where('section_group', $sectionGroup);
+            }
+            $templates = $fallbackQuery->get();
         }
 
         if ($templates->isEmpty()) {
@@ -349,20 +385,23 @@ class ContentTemplateService
     /**
      * Assign missing templates for all categories and subcategories.
      */
-    public static function assignMissingForCategories(int $langId = 1): int
+    public static function assignMissingForCategories(int $langId = 1, ?string $sectionGroup = null): int
     {
         $allCategoryIds = Category::pluck('id');
-        $allFieldKeys = array_merge(
-            array_keys(self::CATEGORY_FIELDS),
-            array_keys(self::CATEGORY_FAQ_FIELDS),
-            array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
-            array_keys(self::BUSINESS_PROFILE_FIELDS),
-            array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
-            array_keys(self::BUSINESS_FAQS_FIELDS),
-            array_keys(self::BUSINESS_COMPARE_FIELDS),
-            array_keys(self::BUSINESS_REVIEWS_FIELDS),
-            array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
-        );
+
+        if ($sectionGroup === 'category_discussions') {
+            $allFieldKeys = array_keys(self::CATEGORY_DISCUSSIONS_FIELDS);
+        } elseif ($sectionGroup === 'category_faqs') {
+            $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
+        } elseif ($sectionGroup === 'category') {
+            $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
+        } else {
+            $allFieldKeys = array_merge(
+                array_keys(self::CATEGORY_FIELDS),
+                array_keys(self::CATEGORY_FAQ_FIELDS),
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
+            );
+        }
 
         $assignedCount = 0;
         foreach ($allCategoryIds as $catId) {
@@ -374,7 +413,7 @@ class ContentTemplateService
                     ->exists();
 
                 if (!$exists) {
-                    $template = self::getOrAssignTemplate('category', $catId, $fieldKey, $langId);
+                    $template = self::getOrAssignTemplate('category', $catId, $fieldKey, $langId, $sectionGroup);
                     if ($template) {
                         $assignedCount++;
                     }
