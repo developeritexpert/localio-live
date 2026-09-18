@@ -2565,7 +2565,7 @@
         padding: 0 20px;
     }
 
-      .sidebar-section-title {
+      .sidebar-section-title a{
         font-size: 14px !important;
         color: #002347 !important;
         font-weight: 700 !important;
@@ -2575,6 +2575,7 @@
         padding-left: 12px;
         letter-spacing: 0.5px !important;
         border-radius: 4px;
+        width:100%;
     }
 
     .sidebar-section-title:hover ,.sub-panel-back:hover {
