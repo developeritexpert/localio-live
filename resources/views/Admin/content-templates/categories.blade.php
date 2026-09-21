@@ -339,11 +339,11 @@
                                                     <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                                 </td>
                                                 <td>
-                                                    <span class="font-monospace text-dark small">{{ $item->headline }}</span>
+                                                    <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->headline)), 150) }}</span>
                                                 </td>
                                                 @if($def['type'] === 'combined')
                                                     <td>
-                                                        <span class="font-monospace text-muted small">{{ Str::limit($item->subtext, 140) }}</span>
+                                                        <span class="text-muted small">{{ Str::limit(strip_tags(html_entity_decode($item->subtext)), 150) }}</span>
                                                     </td>
                                                 @endif
                                                 <td class="text-end">

@@ -262,7 +262,7 @@
                                                 <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                             </td>
                                             <td>
-                                                <span class="text-dark fs-13px fw-bold">{{ $decodedHeadline }}</span>
+                                                <span class="text-dark fs-13px fw-bold">{{ Str::limit(strip_tags($decodedHeadline), 150) }}</span>
                                             </td>
                                             @if(($def['type'] ?? '') !== 'single')
                                                 <td>
