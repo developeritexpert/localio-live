@@ -43,7 +43,7 @@
 @endphp
 
 <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-   {{ $bName }} Discussions ({{ number_format($totalDiscs) }})
+   {{ $bName }} discussions ({{ number_format($totalDiscs) }})
 </h2>
 
 <!-- Inline Post Prompt Card -->
