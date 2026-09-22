@@ -58,7 +58,7 @@
         {{-- Summary Stats Card --}}
         <div class="card card-bordered mb-4 bg-light border-0 shadow-sm">
             <div class="card-inner py-3">
-                <div class="d-flex flex-wrap gap-3 align-items-center small">
+                <div class="d-flex flex-wrap align-items-center small">
                     @foreach($fieldDefs as $fKey => $fDef)
                         <div class="{{ $loop->first ? '' : 'border-start ps-3' }}">
                             <span class="text-muted d-block">{{ $fDef['label'] }}:</span>
