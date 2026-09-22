@@ -883,16 +883,17 @@ class CategoryPage extends Component
 
     public function updatedSelectedFeatures()
     {
-        if ($this->locked_feature_id) {
-            $lockedId = (int)$this->locked_feature_id;
-            $this->selectedFeatures = array_values(array_filter(
-                $this->selectedFeatures,
-                fn($v) => (int)$v !== $lockedId
-            ));
-        } else {
+        $lockedId = $this->locked_feature_id ? (int)$this->locked_feature_id : null;
+        $this->selectedFeatures = array_values(array_unique(array_filter(
+            array_map('strval', (array)$this->selectedFeatures),
+            fn($v) => !empty($v) && ($lockedId === null || (int)$v !== $lockedId)
+        )));
+
+        if (!$this->locked_feature_id) {
             $this->feature_slug = null;
         }
         $this->resetPage();
+        $this->dispatch('features-updated', selected: $this->selectedFeatures);
     }
 
     public function updatedSortBy()
@@ -1311,7 +1312,8 @@ public function getFeatureDescriptionProperty()
                 $query->where('lang_id', $this->lang_id);
             }])
             ->get()
-            ->unique('id');
+            ->unique('id')
+            ->values();
 
         if (!empty($this->feature_slug)) {
             $slugToMatch = $this->feature_slug;
@@ -1353,22 +1355,25 @@ public function getFeatureDescriptionProperty()
             return;
         }
 
-        $exists = in_array($idStr, array_map('strval', $this->selectedFeatures)) || in_array($idInt, array_map('intval', $this->selectedFeatures));
-        if ($exists) {
-            $this->selectedFeatures = array_values(array_filter($this->selectedFeatures, fn($v) => (int)$v !== $idInt));
+        $current = array_values(array_unique(array_filter(array_map('strval', (array)$this->selectedFeatures))));
+        if (in_array($idStr, $current, true)) {
+            $this->selectedFeatures = array_values(array_filter($current, fn($v) => (string)$v !== $idStr));
         } else {
-            $this->selectedFeatures[] = $idStr;
+            $current[] = $idStr;
+            $this->selectedFeatures = array_values(array_unique($current));
         }
 
         if ($this->locked_feature_id) {
+            $lockedId = (string)$this->locked_feature_id;
             $this->selectedFeatures = array_values(array_filter(
                 $this->selectedFeatures,
-                fn($v) => (int)$v !== (int)$this->locked_feature_id
+                fn($v) => (string)$v !== $lockedId
             ));
         } else {
             $this->feature_slug = null;
         }
         $this->resetPage();
+        $this->dispatch('features-updated', selected: $this->selectedFeatures);
     }
 
     public function clearAllFeatures()
@@ -1378,6 +1383,7 @@ public function getFeatureDescriptionProperty()
             $this->feature_slug = null;
         }
         $this->resetPage();
+        $this->dispatch('features-updated', selected: []);
     }
 
     public function getAllSearchableBusinessesProperty()

@@ -26,13 +26,28 @@
 @section('meta_title', format_meta_text($discMeta['title']))
 @section('meta_description', format_meta_text($discMeta['description']))
 <style>
-    
     .top-rated-heading-sec {
         margin-top: 95px;
         padding-top: 30px;
         padding-bottom: 20px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e2e8f0;
+    }
+    .discussion-compact-item {
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
+    }
+    .discussion-compact-item:hover {
+        border-color: #cbd5e1 !important;
+        background-color: #fafbfc !important;
+    }
+    .discussion-compact-header:hover {
+        opacity: 0.95;
+    }
+    .discussion-compact-header[aria-expanded="true"] .discussion-expand-arrow {
+        transform: rotate(180deg);
+    }
+    .discussion-compact-header[aria-expanded="true"] {
+        padding-bottom: 2px;
     }
 </style>
 
@@ -235,202 +250,362 @@
                 </div>
             @else
                 @foreach($discussions as $disc)
-                    <div class="boxshadow_border bg-white p-3 p-md-4 mb-3 discussion-item-card" id="discussion-{{ $disc->id }}" data-discussion-id="{{ $disc->id }}" style="border-radius: 16px; border: 1px solid #eef2f6;">
-                        <div class="d-flex align-items-start">
-                            <!-- Desktop Vote Sidebar -->
-                            <div class="vote-sidebar d-none d-sm-flex flex-column align-items-center me-3 pe-3" style="border-right: 1px solid #f1f5f9; min-width: 44px;">
-                                <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote" title="Upvote">
-                                    <i class="fas fa-chevron-up"></i>
-                                </button>
-                                <span class="vote-score vote-score-{{ $disc->id }}" style="font-weight: 700; font-size: 13px; color: #1e293b; margin: 4px 0;">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
-                                <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote" title="Downvote">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
+                    @if($loop->first)
+                        {{-- First Discussion: Partially Expanded with Active Comments --}}
+                        <div class="boxshadow_border bg-white p-3 p-md-4 mb-3 discussion-item-card discussion-first-expanded" id="discussion-{{ $disc->id }}" data-discussion-id="{{ $disc->id }}" style="border-radius: 16px; border: 1px solid #eef2f6;">
+                            <div class="d-flex align-items-start">
+                                <!-- Desktop Vote Sidebar -->
+                                <div class="vote-sidebar d-none d-sm-flex flex-column align-items-center me-3 pe-3" style="border-right: 1px solid #f1f5f9; min-width: 44px;">
+                                    <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote" title="Upvote">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <span class="vote-score vote-score-{{ $disc->id }}" style="font-weight: 700; font-size: 13px; color: #1e293b; margin: 4px 0;">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
+                                    <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote" title="Downvote">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
 
-                            <!-- Discussion Content Body -->
-                            <div class="flex-grow-1 min-w-0">
-                                <!-- Author Header & Options -->
-                                <div class="d-flex align-items-start justify-content-between mb-2">
-                                    <div class="d-flex align-items-start gap-2">
-                                        <div class="asn-img" style="flex-shrink: 0;">
-                                            @if ($disc->user)
-                                                <a href="{{ $disc->user->profileUrl() }}" style="display: block; text-decoration: none;">
+                                <!-- Discussion Content Body -->
+                                <div class="flex-grow-1 min-w-0">
+                                    <!-- Author Header & Options -->
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div class="d-flex align-items-start gap-2">
+                                            <div class="asn-img" style="flex-shrink: 0;">
+                                                @if ($disc->user)
+                                                    <a href="{{ $disc->user->profileUrl() }}" style="display: block; text-decoration: none;">
+                                                @endif
+
+                                                @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                                    <img src="{{ asset($disc->user->profile_image) }}"
+                                                        class="img-fluid profile-circle"
+                                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                        alt="{{ $disc->author_display_name }}">
+                                                @elseif ($disc->author_avatar)
+                                                    <img src="{{ asset($disc->author_avatar) }}"
+                                                        class="img-fluid profile-circle"
+                                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                        alt="{{ $disc->author_display_name }}">
+                                                @else
+                                                    <div class="profile-circle"
+                                                        style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                        <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                            {{ $disc->author_initial ?: 'A' }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+
+                                                @if ($disc->user)
+                                                    </a>
+                                                @endif
+                                            </div>
+
+                                            <div class="asn-rating" style="display: flex; flex-direction: column;">
+                                                <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050; line-height: 1.2;">
+                                                    @if ($disc->user)
+                                                        <a href="{{ $disc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
+                                                            {{ $disc->author_display_name }}
+                                                        </a>
+                                                    @else
+                                                        {{ $disc->author_display_name }}
+                                                    @endif
+                                                </p>
+                                                @if($disc->user && $disc->user->job_title)
+                                                    <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                        {{ $disc->user->job_title }}
+                                                    </p>
+                                                @elseif($disc->author_title)
+                                                    <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                        {{ $disc->author_title }}
+                                                    </p>
+                                                @endif
+                                                @php
+                                                    $cSizeMap = [
+                                                        '2' => 'Small Business (1-50 emp.)',
+                                                        '3' => 'Mid-Market (51-1000 emp.)',
+                                                        '4' => 'Enterprise (>1000 emp.)',
+                                                    ];
+                                                    $compSize = $disc->user ? $disc->user->company_size : null;
+                                                    $displayCompSize = $compSize ? ($cSizeMap[$compSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $compSize) ?: $compSize) : $compSize)) : null;
+                                                @endphp
+                                                @if($displayCompSize)
+                                                    <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                        {{ $displayCompSize }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center gap-2" style="flex-shrink: 0;">
+                                            <span class="text-muted" style="font-size: 12px;">{{ $disc->created_at->diffForHumans() }}</span>
+
+                                            @if($disc->is_pinned)
+                                                <span class="badge bg-warning text-dark me-1" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned</span>
                                             @endif
 
-                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
-                                                <img src="{{ asset($disc->user->profile_image) }}"
-                                                    class="img-fluid profile-circle"
-                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                                    alt="{{ $disc->author_display_name }}">
-                                            @elseif ($disc->author_avatar)
-                                                <img src="{{ asset($disc->author_avatar) }}"
-                                                    class="img-fluid profile-circle"
-                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                                    alt="{{ $disc->author_display_name }}">
-                                            @else
-                                                <div class="profile-circle"
-                                                    style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                    <span style="color: white; font-weight: bold; font-size: 20px;">
-                                                        {{ $disc->author_initial ?: 'A' }}
-                                                    </span>
+                                            @if(auth()->check() && (auth()->id() == $disc->user_id || auth()->user()->user_type === 'admin'))
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Options" style="font-size: 13px;">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px; border-color: #e2e8f0;">
+                                                        <li>
+                                                            <button class="dropdown-item text-danger d-flex align-items-center gap-2" onclick="deleteDiscussion({{ $disc->id }})">
+                                                                <i class="far fa-trash-alt"></i> Delete discussion
+                                                            </button>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             @endif
-
-                                            @if ($disc->user)
-                                                </a>
-                                            @endif
-                                        </div>
-
-                                        <div class="asn-rating" style="display: flex; flex-direction: column;">
-                                            <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050; line-height: 1.2;">
-                                                @if ($disc->user)
-                                                    <a href="{{ $disc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
-                                                        {{ $disc->author_display_name }}
-                                                    </a>
-                                                @else
-                                                    {{ $disc->author_display_name }}
-                                                @endif
-                                            </p>
-                                            {{-- Country removed per request --}}
-                                            @if($disc->user && $disc->user->job_title)
-                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                    {{ $disc->user->job_title }}
-                                                </p>
-                                            @elseif($disc->author_title)
-                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                    {{ $disc->author_title }}
-                                                </p>
-                                            @endif
-                                            @php
-                                                $cSizeMap = [
-                                                    '2' => 'Small Business (1-50 emp.)',
-                                                    '3' => 'Mid-Market (51-1000 emp.)',
-                                                    '4' => 'Enterprise (>1000 emp.)',
-                                                ];
-                                                $compSize = $disc->user ? $disc->user->company_size : null;
-                                                $displayCompSize = $compSize ? ($cSizeMap[$compSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $compSize) ?: $compSize) : $compSize)) : null;
-                                            @endphp
-                                            @if($displayCompSize)
-                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
-                                                    {{ $displayCompSize }}
-                                                </p>
-                                            @endif
                                         </div>
                                     </div>
 
-                                    <div class="d-flex align-items-center gap-2" style="flex-shrink: 0;">
-                                        <span class="text-muted" style="font-size: 12px;">{{ $disc->created_at->diffForHumans() }}</span>
+                                    <!-- Discussion Title -->
+                                    <h2 class="discussion-title h5 mb-2" style="font-size: 18px; font-weight: 700; color: #1e3050; line-height: 1.35; margin: 12px 0 8px;">
+                                        {{ $disc->title }}
+                                    </h2>
 
-                                        @if($disc->is_pinned)
-                                            <span class="badge bg-warning text-dark me-1" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned</span>
-                                        @endif
+                                    <!-- Discussion Body -->
+                                    <div class="text-secondary mb-3 discussion-body-text" style="font-size: 14px; line-height: 1.6; color: #334155; word-break: break-word;">
+                                        {!! nl2br(e($disc->content)) !!}
+                                    </div>
 
-                                        @if(auth()->check() && (auth()->id() == $disc->user_id || auth()->user()->user_type === 'admin'))
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-link text-muted p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Options" style="font-size: 13px;">
-                                                    <i class="fas fa-ellipsis-v"></i>
+                                    <!-- Action Toolbar -->
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2" style="border-top: 1px solid #f8fafc;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <!-- Mobile Vote Pill -->
+                                            <div class="comment-vote-pill d-inline-flex d-sm-none align-items-center">
+                                                <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote">
+                                                    <i class="fas fa-arrow-up"></i>
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px; border-color: #e2e8f0;">
-                                                    <li>
-                                                        <button class="dropdown-item text-danger d-flex align-items-center gap-2" onclick="deleteDiscussion({{ $disc->id }})">
-                                                            <i class="far fa-trash-alt"></i> Delete discussion
-                                                        </button>
-                                                    </li>
-                                                </ul>
+                                                <span class="comment-vote-count vote-score-{{ $disc->id }}">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
+                                                <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                </button>
                                             </div>
-                                        @endif
-                                    </div>
-                                </div>
 
-                                <!-- Discussion Title -->
-                                <h2 class="discussion-title h5 mb-2" style="font-size: 18px; font-weight: 700; color: #1e3050; line-height: 1.35; margin: 12px 0 8px;">
-                                    {{ $disc->title }}
-                                </h2>
+                                            <!-- Comments Toggle Button & Count -->
+                                            <div class="d-flex align-items-center gap-1">
+                                                <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}" title="Toggle comments" aria-label="Toggle comments">
+                                                    <svg viewBox="0 0 39 36" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M5.01672 2.63798H33.965C35.2962 2.63798 36.3352 3.66561 36.3352 4.99009V24.0121C36.3352 25.3366 35.2962 26.3665 33.965 26.3665H7.55691C7.24307 26.3665 6.94339 26.5024 6.74002 26.7415L2.64931 31.5245V4.98953C2.64874 3.66561 3.68771 2.63798 5.01672 2.63798ZM5.01672 0.500567C2.53714 0.500567 0.5 2.52071 0.5 4.99066V34.4289C0.5 35.4237 1.74347 35.8786 2.39212 35.1218L8.05034 28.5028H33.9644C36.4474 28.5028 38.4805 26.4837 38.4805 24.0127V4.99009C38.4805 2.52071 36.4474 0.5 33.9644 0.5H5.01672V0.500567Z"/>
+                                                        <path d="M7.43411 10.6329C6.83305 10.625 6.34473 11.1042 6.34473 11.6996C6.34473 12.2973 6.83362 12.7771 7.43411 12.7686H31.5478C32.1455 12.7777 32.6372 12.2973 32.6372 11.6996C32.6372 11.1042 32.1455 10.6255 31.5478 10.6329H7.43411Z"/>
+                                                        <path d="M7.43411 17.5002C6.83305 17.49 6.34473 17.9704 6.34473 18.568C6.34473 19.1634 6.83362 19.6455 7.43411 19.637H18.2288C18.8265 19.6461 19.3176 19.1634 19.3176 18.568C19.3176 17.9704 18.8265 17.4905 18.2288 17.5002H7.43411Z"/>
+                                                    </svg>
+                                                </button>
+                                                <span class="text-muted fw-semibold" style="font-size: 13px;">{{ $disc->comments_count }}</span>
+                                            </div>
 
-                                <!-- Discussion Body -->
-                                <div class="text-secondary mb-3 discussion-body-text" style="font-size: 14px; line-height: 1.6; color: #334155; word-break: break-word;">
-                                    {!! nl2br(e($disc->content)) !!}
-                                </div>
-
-                                <!-- Action Toolbar -->
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2" style="border-top: 1px solid #f8fafc;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- Mobile Vote Pill -->
-                                        <div class="comment-vote-pill d-inline-flex d-sm-none align-items-center">
-                                            <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote">
-                                                <i class="fas fa-arrow-up"></i>
-                                            </button>
-                                            <span class="comment-vote-count vote-score-{{ $disc->id }}">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
-                                            <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote">
-                                                <i class="fas fa-arrow-down"></i>
-                                            </button>
-                                        </div>
-
-                                        <!-- Comments Toggle Button & Count -->
-                                        <div class="d-flex align-items-center gap-1">
-                                            <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}" title="Toggle comments" aria-label="Toggle comments">
-                                                <svg viewBox="0 0 39 36" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M5.01672 2.63798H33.965C35.2962 2.63798 36.3352 3.66561 36.3352 4.99009V24.0121C36.3352 25.3366 35.2962 26.3665 33.965 26.3665H7.55691C7.24307 26.3665 6.94339 26.5024 6.74002 26.7415L2.64931 31.5245V4.98953C2.64874 3.66561 3.68771 2.63798 5.01672 2.63798ZM5.01672 0.500567C2.53714 0.500567 0.5 2.52071 0.5 4.99066V34.4289C0.5 35.4237 1.74347 35.8786 2.39212 35.1218L8.05034 28.5028H33.9644C36.4474 28.5028 38.4805 26.4837 38.4805 24.0127V4.99009C38.4805 2.52071 36.4474 0.5 33.9644 0.5H5.01672V0.500567Z"/>
-                                                    <path d="M7.43411 10.6329C6.83305 10.625 6.34473 11.1042 6.34473 11.6996C6.34473 12.2973 6.83362 12.7771 7.43411 12.7686H31.5478C32.1455 12.7777 32.6372 12.2973 32.6372 11.6996C32.6372 11.1042 32.1455 10.6255 31.5478 10.6329H7.43411Z"/>
-                                                    <path d="M7.43411 17.5002C6.83305 17.49 6.34473 17.9704 6.34473 18.568C6.34473 19.1634 6.83362 19.6455 7.43411 19.637H18.2288C18.8265 19.6461 19.3176 19.1634 19.3176 18.568C19.3176 17.9704 18.8265 17.4905 18.2288 17.5002H7.43411Z"/>
+                                            <!-- Share Button (Circular SVG) -->
+                                            <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#discussion-{{ $disc->id }}', '{{ addslashes($disc->title) }}', event)" title="Share discussion" aria-label="Share discussion">
+                                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="18" cy="5" r="3"></circle>
+                                                    <circle cx="6" cy="12" r="3"></circle>
+                                                    <circle cx="18" cy="19" r="3"></circle>
+                                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                                 </svg>
                                             </button>
-                                            <span class="text-muted fw-semibold" style="font-size: 13px;">{{ $disc->comments_count }}</span>
-                                        </div>
 
-                                        <!-- Share Button (Circular SVG) -->
-                                        <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#discussion-{{ $disc->id }}', '{{ addslashes($disc->title) }}', event)" title="Share discussion" aria-label="Share discussion">
-                                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="18" cy="5" r="3"></circle>
-                                                <circle cx="6" cy="12" r="3"></circle>
-                                                <circle cx="18" cy="19" r="3"></circle>
-                                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                                            </svg>
-                                        </button>
-
-                                        <!-- Admin Pin Button -->
-                                        @if(auth()->check() && (auth()->user()->user_type === 'admin' || (auth()->user()->business_id && auth()->user()->business_id == $business->id)))
-                                            <button type="button" class="post-action-btn pin-trigger {{ $disc->is_pinned ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $disc->is_pinned ? 'Unpin Discussion' : 'Pin Discussion' }}">
-                                                <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $disc->is_pinned ? 'Pinned' : 'Pin' }}</span>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <!-- Collapsible Comments Container -->
-                                <div class="comments-thread-container collapse mt-3" id="comments-{{ $disc->id }}">
-                                    @if(auth()->check())
-                                        <form action="{{ route('business.discussion.comment') }}" method="POST" class="mb-3 comment-submit-form">
-                                            @csrf
-                                            <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
-                                            <div class="mb-2">
-                                                <textarea name="content" class="form-control" rows="2" placeholder="What are your thoughts?" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
-                                            </div>
-                                            <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-sm btn-primary px-3 py-1 fw-semibold" style="border-radius: 6px; font-size: 12.5px;">
-                                                    Post Comment
+                                            <!-- Admin Pin Button -->
+                                            @if(auth()->check() && (auth()->user()->user_type === 'admin' || (auth()->user()->business_id && auth()->user()->business_id == $business->id)))
+                                                <button type="button" class="post-action-btn pin-trigger {{ $disc->is_pinned ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $disc->is_pinned ? 'Unpin Discussion' : 'Pin Discussion' }}">
+                                                    <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $disc->is_pinned ? 'Pinned' : 'Pin' }}</span>
                                                 </button>
-                                            </div>
-                                        </form>
-                                    @else
-                                        <div class="p-3 mb-3 text-center bg-light rounded-3" style="border: 1px dashed #cbd5e1;">
-                                            <span class="text-muted" style="font-size: 13.5px;">Want to join this discussion? </span>
-                                            <a href="javascript:void(0)" onclick="openLoginModal()" class="fw-semibold text-primary" style="font-size: 13.5px; text-decoration: underline;">Log in or create an account</a>
+                                            @endif
                                         </div>
-                                    @endif
+                                    </div>
 
-                                    <!-- Top-Level Comments List -->
-                                    <div class="top-level-comments-list" id="top-level-comments-{{ $disc->id }}">
-                                        @foreach($disc->comments as $comment)
-                                            @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc, 'level' => 0])
-                                        @endforeach
+                                    <!-- Collapsible Comments Container (Open by Default on First Thread) -->
+                                    <div class="comments-thread-container collapse show mt-3" id="comments-{{ $disc->id }}">
+                                        @if(auth()->check())
+                                            <form action="{{ route('business.discussion.comment') }}" method="POST" class="mb-3 comment-submit-form">
+                                                @csrf
+                                                <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
+                                                <div class="mb-2">
+                                                    <textarea name="content" class="form-control" rows="2" placeholder="What are your thoughts?" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-sm btn-primary px-3 py-1 fw-semibold" style="border-radius: 6px; font-size: 12.5px;">
+                                                        Post Comment
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        @else
+                                            <div class="p-3 mb-3 text-center bg-light rounded-3" style="border: 1px dashed #cbd5e1;">
+                                                <span class="text-muted" style="font-size: 13.5px;">Want to join this discussion? </span>
+                                                <a href="javascript:void(0)" onclick="openLoginModal()" class="fw-semibold text-primary" style="font-size: 13.5px; text-decoration: underline;">Log in or create an account</a>
+                                            </div>
+                                        @endif
+
+                                        <!-- Top-Level Comments List -->
+                                        <div class="top-level-comments-list" id="top-level-comments-{{ $disc->id }}">
+                                            @foreach($disc->comments as $comment)
+                                                @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc, 'level' => 0])
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        {{-- Subsequent Discussions: Compact Title-Only with Expand Toggle --}}
+                        <div class="boxshadow_border bg-white p-3 mb-2 discussion-item-card discussion-compact-item" id="discussion-{{ $disc->id }}" data-discussion-id="{{ $disc->id }}" style="border-radius: 14px; border: 1px solid #eef2f6;">
+                            <!-- Compact Header (Always Visible, Click to Toggle) -->
+                            <div class="d-flex align-items-center justify-content-between gap-3 discussion-compact-header" role="button" data-bs-toggle="collapse" data-bs-target="#disc-expand-{{ $disc->id }}" aria-expanded="false" aria-controls="disc-expand-{{ $disc->id }}" style="cursor: pointer;">
+                                <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
+                                    <div class="asn-img" style="flex-shrink: 0;">
+                                        @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                            <img src="{{ asset($disc->user->profile_image) }}"
+                                                class="img-fluid profile-circle"
+                                                style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"
+                                                alt="{{ $disc->author_display_name }}">
+                                        @elseif ($disc->author_avatar)
+                                            <img src="{{ asset($disc->author_avatar) }}"
+                                                class="img-fluid profile-circle"
+                                                style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"
+                                                alt="{{ $disc->author_display_name }}">
+                                        @else
+                                            <div class="profile-circle"
+                                                style="width: 32px; height: 32px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 13px;">
+                                                    {{ $disc->author_initial ?: 'A' }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="min-w-0 flex-grow-1">
+                                        <h3 class="discussion-title h6 mb-0 text-truncate" style="font-size: 15px; font-weight: 700; color: #1e3050; line-height: 1.35;">
+                                            @if($disc->is_pinned)
+                                                <span class="badge bg-warning text-dark me-1" style="font-size: 10px; font-weight: 600;"><i class="fas fa-thumbtack"></i> Pinned</span>
+                                            @endif
+                                            {{ $disc->title }}
+                                        </h3>
+                                        <div class="d-flex align-items-center gap-1 text-muted" style="font-size: 11.5px; margin-top: 1px;">
+                                            <span>{{ $disc->author_display_name }}</span>
+                                            <span>&bull;</span>
+                                            <span>{{ $disc->created_at->diffForHumans() }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2" style="flex-shrink: 0;">
+                                    <span class="badge bg-light text-secondary border d-none d-sm-inline-flex align-items-center gap-1" style="font-size: 12px; font-weight: 600; padding: 4px 8px;">
+                                        <i class="fas fa-chevron-up text-muted" style="font-size: 10px;"></i>
+                                        <span class="vote-score-{{ $disc->id }}">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
+                                    </span>
+
+                                    <span class="badge bg-light text-secondary border d-inline-flex align-items-center gap-1" style="font-size: 12px; font-weight: 600; padding: 4px 8px;">
+                                        <i class="far fa-comment text-muted" style="font-size: 11px;"></i>
+                                        {{ $disc->comments_count }}
+                                    </span>
+
+                                    <div class="btn btn-sm btn-light p-0 d-flex align-items-center justify-content-center rounded-circle discussion-chevron-btn" style="width: 28px; height: 28px; border: 1px solid #e2e8f0; pointer-events: none;">
+                                        <i class="fas fa-chevron-down discussion-expand-arrow" style="font-size: 11px; color: #64748b; transition: transform 0.25s ease;"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Expandable Body Container -->
+                            <div class="collapse discussion-content-collapsible mt-3 pt-3" id="disc-expand-{{ $disc->id }}" style="border-top: 1px solid #f1f5f9;">
+                                <div class="d-flex align-items-start">
+                                    <!-- Desktop Vote Sidebar -->
+                                    <div class="vote-sidebar d-none d-sm-flex flex-column align-items-center me-3 pe-3" style="border-right: 1px solid #f1f5f9; min-width: 44px;">
+                                        <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote" title="Upvote">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <span class="vote-score vote-score-{{ $disc->id }}" style="font-weight: 700; font-size: 13px; color: #1e293b; margin: 4px 0;">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
+                                        <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote" title="Downvote">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex-grow-1 min-w-0">
+                                        <!-- Discussion Body -->
+                                        <div class="text-secondary mb-3 discussion-body-text" style="font-size: 14px; line-height: 1.6; color: #334155; word-break: break-word;">
+                                            {!! nl2br(e($disc->content)) !!}
+                                        </div>
+
+                                        <!-- Action Toolbar -->
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2" style="border-top: 1px solid #f8fafc;">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <!-- Mobile Vote Pill -->
+                                                <div class="comment-vote-pill d-inline-flex d-sm-none align-items-center">
+                                                    <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="up" aria-label="Upvote">
+                                                        <i class="fas fa-arrow-up"></i>
+                                                    </button>
+                                                    <span class="comment-vote-count vote-score-{{ $disc->id }}">{{ $disc->upvotes_count - $disc->downvotes_count }}</span>
+                                                    <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $disc->id }}" data-vote="down" aria-label="Downvote">
+                                                        <i class="fas fa-arrow-down"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Comments Toggle Button & Count -->
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}" title="Toggle comments" aria-label="Toggle comments">
+                                                        <svg viewBox="0 0 39 36" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M5.01672 2.63798H33.965C35.2962 2.63798 36.3352 3.66561 36.3352 4.99009V24.0121C36.3352 25.3366 35.2962 26.3665 33.965 26.3665H7.55691C7.24307 26.3665 6.94339 26.5024 6.74002 26.7415L2.64931 31.5245V4.98953C2.64874 3.66561 3.68771 2.63798 5.01672 2.63798ZM5.01672 0.500567C2.53714 0.500567 0.5 2.52071 0.5 4.99066V34.4289C0.5 35.4237 1.74347 35.8786 2.39212 35.1218L8.05034 28.5028H33.9644C36.4474 28.5028 38.4805 26.4837 38.4805 24.0127V4.99009C38.4805 2.52071 36.4474 0.5 33.9644 0.5H5.01672V0.500567Z"/>
+                                                            <path d="M7.43411 10.6329C6.83305 10.625 6.34473 11.1042 6.34473 11.6996C6.34473 12.2973 6.83362 12.7771 7.43411 12.7686H31.5478C32.1455 12.7777 32.6372 12.2973 32.6372 11.6996C32.6372 11.1042 32.1455 10.6255 31.5478 10.6329H7.43411Z"/>
+                                                            <path d="M7.43411 17.5002C6.83305 17.49 6.34473 17.9704 6.34473 18.568C6.34473 19.1634 6.83362 19.6455 7.43411 19.637H18.2288C18.8265 19.6461 19.3176 19.1634 19.3176 18.568C19.3176 17.9704 18.8265 17.4905 18.2288 17.5002H7.43411Z"/>
+                                                        </svg>
+                                                    </button>
+                                                    <span class="text-muted fw-semibold" style="font-size: 13px;">{{ $disc->comments_count }}</span>
+                                                </div>
+
+                                                <!-- Share Button (Circular SVG) -->
+                                                <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#discussion-{{ $disc->id }}', '{{ addslashes($disc->title) }}', event)" title="Share discussion" aria-label="Share discussion">
+                                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <circle cx="18" cy="5" r="3"></circle>
+                                                        <circle cx="6" cy="12" r="3"></circle>
+                                                        <circle cx="18" cy="19" r="3"></circle>
+                                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                                    </svg>
+                                                </button>
+
+                                                <!-- Admin Pin Button -->
+                                                @if(auth()->check() && (auth()->user()->user_type === 'admin' || (auth()->user()->business_id && auth()->user()->business_id == $business->id)))
+                                                    <button type="button" class="post-action-btn pin-trigger {{ $disc->is_pinned ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $disc->is_pinned ? 'Unpin Discussion' : 'Pin Discussion' }}">
+                                                        <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $disc->is_pinned ? 'Pinned' : 'Pin' }}</span>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <!-- Collapsible Comments Container -->
+                                        <div class="comments-thread-container collapse mt-3" id="comments-{{ $disc->id }}">
+                                            @if(auth()->check())
+                                                <form action="{{ route('business.discussion.comment') }}" method="POST" class="mb-3 comment-submit-form">
+                                                    @csrf
+                                                    <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
+                                                    <div class="mb-2">
+                                                        <textarea name="content" class="form-control" rows="2" placeholder="What are your thoughts?" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
+                                                    </div>
+                                                    <div class="d-flex justify-content-end">
+                                                        <button type="submit" class="btn btn-sm btn-primary px-3 py-1 fw-semibold" style="border-radius: 6px; font-size: 12.5px;">
+                                                            Post Comment
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            @else
+                                                <div class="p-3 mb-3 text-center bg-light rounded-3" style="border: 1px dashed #cbd5e1;">
+                                                    <span class="text-muted" style="font-size: 13.5px;">Want to join this discussion? </span>
+                                                    <a href="javascript:void(0)" onclick="openLoginModal()" class="fw-semibold text-primary" style="font-size: 13.5px; text-decoration: underline;">Log in or create an account</a>
+                                                </div>
+                                            @endif
+
+                                            <!-- Top-Level Comments List -->
+                                            <div class="top-level-comments-list" id="top-level-comments-{{ $disc->id }}">
+                                                @foreach($disc->comments as $comment)
+                                                    @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc, 'level' => 0])
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 @endforeach
 
                 <!-- Pagination -->
@@ -829,6 +1004,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.hash) {
         const targetEl = document.querySelector(window.location.hash);
         if (targetEl) {
+            const collapsible = targetEl.querySelector('.discussion-content-collapsible');
+            if (collapsible && !collapsible.classList.contains('show')) {
+                collapsible.classList.add('show');
+                const triggerHeader = targetEl.querySelector('.discussion-compact-header');
+                if (triggerHeader) triggerHeader.setAttribute('aria-expanded', 'true');
+            }
             setTimeout(() => {
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 targetEl.style.boxShadow = '0 0 0 3px rgba(33, 71, 135, 0.25)';
