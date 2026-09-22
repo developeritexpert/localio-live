@@ -518,7 +518,7 @@
 @endphp
 <div class="host-pro flex-grow-1" style="max-width: 50%;">
                             <h2 style="margin-bottom: 8px;">
-                               {{ $applyDynamicVars($topRatedH2Text) }}
+                               {!! \App\Services\ContentTemplateService::cleanHeading($applyDynamicVars($topRatedH2Text)) !!}
                             </h2>
                             @if(!empty($topRatedSubText))
                                 <style>
@@ -1605,7 +1605,7 @@
                             $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? '');
                         @endphp
                         <h2>
-                            {{ $compAlternativesHeadline }}
+                            {!! \App\Services\ContentTemplateService::cleanHeading($compAlternativesHeadline) !!}
                         </h2>
                         @if(!empty($compAlternativesSubtext))
                             <style>
@@ -1729,7 +1729,7 @@
                                         : 'What the Localio community says');
                                     $commFeedbackSubtext = !empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations->community_says_subtext ?? '');
                                 @endphp
-                                <h2 style="margin-bottom: 4px;">{{ $commFeedbackHeadline }}</h2>
+                                <h2 style="margin-bottom: 4px;">{!! \App\Services\ContentTemplateService::cleanHeading($commFeedbackHeadline) !!}</h2>
                                 @if(!empty($commFeedbackSubtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
@@ -1845,7 +1845,7 @@
             <div class="container">
                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                     <h2 style="margin-bottom: 8px;">
-                        {{ $popCompHeadline }}
+                        {!! \App\Services\ContentTemplateService::cleanHeading($popCompHeadline) !!}
                     </h2>
                     @if(!empty($popCompSubtext))
                         <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
@@ -1920,7 +1920,7 @@
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
                         <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
-                            {{ $compToolHeadline }}
+                            {!! \App\Services\ContentTemplateService::cleanHeading($compToolHeadline) !!}
                         </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #5b6b7a;margin: 0;">
@@ -2261,7 +2261,7 @@
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 class="explore-cat-h2" style="text-transform: math-auto;">
-                        {{ $exploreHeadline }}
+                        {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
                     </h2>
                     @if(!empty($exploreSubtext))
                         <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
@@ -2329,6 +2329,8 @@
             $resolvedCatFaqs = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_page_faqs', $currentLangId);
             $faqHeadline = !empty($resolvedCatFaqs['headline']) ? $resolvedCatFaqs['headline'] : (!empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions');
             $faqSubtext = !empty($resolvedCatFaqs['subtext']) ? $resolvedCatFaqs['subtext'] : ($catTrans->category_faqs_subtext ?? null);
+            $resolvedFaqSearch = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_faq_search', $currentLangId);
+            $faqSearchPlaceholder = !empty($resolvedFaqSearch['headline']) ? $resolvedFaqSearch['headline'] : ('Search ' . strtolower($catFaqName) . ' FAQs...');
             $catFaqSlug = $catTrans->slug ?? $category->slug ?? '';
             $categoryFaqsUrl = url('/' . app()->getLocale() . '/' . $catFaqSlug . '/faqs');
         @endphp
@@ -2339,7 +2341,7 @@
                         <div class="row align-items-center mb-4">
                             <div class="col-lg-7 col-md-6 col-12 text-start mb-3 mb-md-0">
                                 <h2 style="margin-bottom: 8px; font-size: 24px; font-weight: 700; color: #002347;">
-                                    {{ $faqHeadline }}
+                                    {!! \App\Services\ContentTemplateService::cleanHeading($faqHeadline) !!}
                                 </h2>
                                 @if(!empty($faqSubtext))
                                     <div class="category-faqs-subtext" style="color: #475569; margin: 0; font-size: 15px;">
@@ -2355,7 +2357,7 @@
                             <div class="col-lg-5 col-md-6 col-12">
                                 <form action="{{ $categoryFaqsUrl }}" method="GET" class="category-faq-search-form" id="categoryFaqSearchForm">
                                     <div class="input-group" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
-                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none px-3 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
+                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none px-3 py-2" placeholder="{{ \App\Services\ContentTemplateService::cleanPlaceholder($faqSearchPlaceholder) }}" aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
                                         <span class="input-group-text bg-white border-0 ps-3 pe-3" style="color: #94a3b8;">
                                             <i class="fas fa-search" style="font-size: 15px;"></i>
                                         </span>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Business;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\ContentTemplate;
@@ -71,6 +72,26 @@ class ContentTemplateService
             'field1_label' => 'Link Text',
             'description' => 'Used on top-rated block link (e.g. See all [entities1_cap]).',
         ],
+        'category_page_faqs' => [
+            'label' => 'FAQS',
+            'type' => 'combined',
+            'field1_label' => 'Category FAQs Headline (H2)',
+            'field2_label' => 'Category FAQs Subtext',
+            'description' => 'Headline and subtext for the FAQs section on category and subcategory pages.',
+        ],
+        'category_faq_search' => [
+            'label' => 'FAQ SEARCH',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text for the category/subcategory FAQ search input.',
+        ],
+        'category_page_discussions' => [
+            'label' => 'DISCUSSIONS',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Headline and subtext for the community discussions section on category/subcategory pages.',
+        ],
     ];
 
     public const CATEGORY_FAQ_FIELDS = [
@@ -94,12 +115,37 @@ class ContentTemplateService
             'field2_label' => 'FAQ Page Content Text (Rich Editor)',
             'description' => 'Second section intro headline and rich text on FAQ page.',
         ],
+        'faq_search_headline' => [
+            'label' => 'SEARCH HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Search Headline',
+            'description' => 'Headline above the FAQ search box on the Category FAQs page.',
+        ],
+        'faq_search_placeholder' => [
+            'label' => 'SEARCH PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text inside the FAQ search box on the Category FAQs page.',
+        ],
+        'faq_accordion_headline' => [
+            'label' => 'FAQ LIST HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'FAQ List Headline (H2)',
+            'description' => 'Headline (H2) directly above the FAQ accordion list on the Category FAQs page.',
+        ],
         'faq_explore' => [
             'label' => 'EXPLORE CATEGORIES',
             'type' => 'combined',
             'field1_label' => 'FAQ Explore Categories Headline (H2)',
             'field2_label' => 'FAQ Explore Categories Subtext',
             'description' => 'Headline and subtext above the explore subcategories on FAQ page.',
+        ],
+        'faq_page_discussions' => [
+            'label' => 'DISCUSSIONS',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussion section headline and subtext at the bottom of the Category FAQs page.',
         ],
     ];
 
@@ -151,6 +197,20 @@ class ContentTemplateService
             'field1_label' => 'Compare Headline',
             'field2_label' => 'Compare Subtext',
             'description' => 'Headline and subtext for the comparison section.',
+        ],
+        'profile_reviews' => [
+            'label' => 'REVIEWS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Reviews Headline (H2)',
+            'field2_label' => 'Reviews Subtext',
+            'description' => 'Headline and subtext for the User Reviews section on the Business Profile page.',
+        ],
+        'profile_discussions' => [
+            'label' => 'DISCUSSIONS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Headline and subtext for the Discussions section on the Business Profile page.',
         ],
     ];
 
@@ -309,18 +369,6 @@ class ContentTemplateService
             return 'features';
         }
 
-        if ($entityType === 'category') {
-            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
-                return 'category_discussions';
-            }
-            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
-                return 'category_faqs';
-            }
-            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
-                return 'category';
-            }
-        }
-
         if ($entityType === 'business') {
             if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
                 return 'business_discussions';
@@ -339,6 +387,18 @@ class ContentTemplateService
             }
             if (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
                 return 'business_reviews';
+            }
+        }
+
+        if ($entityType === 'category') {
+            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                return 'category_discussions';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                return 'category_faqs';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                return 'category';
             }
         }
 
@@ -362,6 +422,37 @@ class ContentTemplateService
             ->where('field_key', $fieldKey)
             ->with('template')
             ->first();
+
+        // Fallback for business entity: if no assignment under 'business', check category assignment for business's subcategories / category
+        if (!$assignment && $entityType === 'business') {
+            $biz = Business::find($entityId);
+            if ($biz) {
+                $candidateCatIds = [];
+                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                    foreach ($biz->subCategories as $sc) {
+                        $candidateCatIds[] = $sc->id;
+                    }
+                }
+                if ($biz->category_id) {
+                    $candidateCatIds[] = $biz->category_id;
+                }
+
+                foreach ($candidateCatIds as $cId) {
+                    $candidateAsgn = ContentTemplateAssignment::where('entity_type', 'category')
+                        ->where('entity_id', $cId)
+                        ->where('lang_id', $langId)
+                        ->where('field_key', $fieldKey)
+                        ->with('template')
+                        ->first();
+                    if ($candidateAsgn && $candidateAsgn->template && $candidateAsgn->template->is_active) {
+                        if (!$sectionGroup || $candidateAsgn->template->section_group === $sectionGroup) {
+                            $assignment = $candidateAsgn;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         if ($assignment && $assignment->template && $assignment->template->is_active) {
             // Verify that the assigned template actually belongs to the required section_group
@@ -421,33 +512,7 @@ class ContentTemplateService
 
     public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
     {
-        if (!$sectionGroup) {
-            if ($entityType === 'feature') {
-                $sectionGroup = 'features';
-            } elseif ($entityType === 'category') {
-                if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
-                    $sectionGroup = 'category_discussions';
-                } elseif (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
-                    $sectionGroup = 'category_faqs';
-                } elseif (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
-                    $sectionGroup = 'category';
-                }
-            } elseif ($entityType === 'business') {
-                if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
-                    $sectionGroup = 'business_discussions';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
-                    $sectionGroup = 'business_profile';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
-                    $sectionGroup = 'business_alternatives';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
-                    $sectionGroup = 'business_faqs';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
-                    $sectionGroup = 'business_compare';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
-                    $sectionGroup = 'business_reviews';
-                }
-            }
-        }
+        $sectionGroup = self::determineSectionGroup($entityType, $fieldKey, $sectionGroup);
 
         // 1. Check if an assignment is already locked in DB
         $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
@@ -518,11 +583,29 @@ class ContentTemplateService
             $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
         } elseif ($sectionGroup === 'category') {
             $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
+        } elseif ($sectionGroup === 'business_profile') {
+            $allFieldKeys = array_keys(self::BUSINESS_PROFILE_FIELDS);
+        } elseif ($sectionGroup === 'business_alternatives') {
+            $allFieldKeys = array_keys(self::BUSINESS_ALTERNATIVES_FIELDS);
+        } elseif ($sectionGroup === 'business_faqs') {
+            $allFieldKeys = array_keys(self::BUSINESS_FAQS_FIELDS);
+        } elseif ($sectionGroup === 'business_compare') {
+            $allFieldKeys = array_keys(self::BUSINESS_COMPARE_FIELDS);
+        } elseif ($sectionGroup === 'business_reviews') {
+            $allFieldKeys = array_keys(self::BUSINESS_REVIEWS_FIELDS);
+        } elseif ($sectionGroup === 'business_discussions') {
+            $allFieldKeys = array_keys(self::BUSINESS_DISCUSSIONS_FIELDS);
         } else {
             $allFieldKeys = array_merge(
                 array_keys(self::CATEGORY_FIELDS),
                 array_keys(self::CATEGORY_FAQ_FIELDS),
-                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
+                array_keys(self::BUSINESS_PROFILE_FIELDS),
+                array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
+                array_keys(self::BUSINESS_FAQS_FIELDS),
+                array_keys(self::BUSINESS_COMPARE_FIELDS),
+                array_keys(self::BUSINESS_REVIEWS_FIELDS),
+                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
             );
         }
 
@@ -709,10 +792,241 @@ class ContentTemplateService
         return $copiedCount;
     }
 
+    /**
+     * Seeds default category template options for FAQ and Discussions if missing.
+     */
+    public static function seedDefaultCategoryOptionsIfMissing(): void
+    {
+        $defaults = [
+            'category_page_faqs' => [
+                1 => [
+                    'headline' => 'Frequently asked questions',
+                    'subtext' => 'Common questions and answers about [category_lc] solutions and comparison criteria.',
+                ],
+                2 => [
+                    'headline' => 'Frequently Asked Questions About [category_cap]',
+                    'subtext' => 'Find answers to common questions about choosing and comparing [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => '[category_cap] FAQs',
+                    'subtext' => 'Everything you need to know about [category_lc] features, pricing, and provider comparisons.',
+                ],
+                4 => [
+                    'headline' => 'Questions & Answers on [category_cap]',
+                    'subtext' => 'Key insights and answers to frequent questions regarding [entities1_lc] on Localio.',
+                ],
+            ],
+            'category_faq_search' => [
+                1 => [
+                    'headline' => 'Search [category_lc] FAQs...',
+                    'subtext' => null,
+                ],
+                2 => [
+                    'headline' => 'Search [category_cap] FAQs...',
+                    'subtext' => null,
+                ],
+                3 => [
+                    'headline' => 'Search FAQs for [category_lc]...',
+                    'subtext' => null,
+                ],
+                4 => [
+                    'headline' => 'Search [entities1_lc] FAQs...',
+                    'subtext' => null,
+                ],
+            ],
+            'category_page_discussions' => [
+                1 => [
+                    'headline' => '[category_cap] discussions ([count])',
+                    'subtext' => 'Explore questions, experiences, and opinions shared by Localio users.',
+                ],
+                2 => [
+                    'headline' => 'Join the [category_lc] discussion ([count])',
+                    'subtext' => 'Ask questions, share advice, and connect with other users exploring [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [category_cap] ([count])',
+                    'subtext' => 'Discover real experiences, troubleshooting tips, and user opinions about [entities1_lc].',
+                ],
+                4 => [
+                    'headline' => '[category_tc] Community Discussions ([count])',
+                    'subtext' => 'Explore community feedback, questions, and insights from verified Localio members.',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $optData) {
+                $exists = ContentTemplate::where('section_group', 'category')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    ContentTemplate::create([
+                        'section_group' => 'category',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $optData['headline'],
+                        'subtext'       => $optData['subtext'],
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Seeds default category FAQ template options if missing.
+     */
+    public static function seedDefaultCategoryFaqOptionsIfMissing(): void
+    {
+        $defaults = [
+            'faq_search_headline' => [
+                1 => 'Search [category_cap] FAQs',
+                2 => 'Search [category_tc] Questions & Answers',
+                3 => 'Find Answers in [category_cap] FAQs',
+                4 => 'Quick Search: [category_cap] FAQs',
+            ],
+            'faq_search_placeholder' => [
+                1 => 'Search questions...',
+                2 => 'Search FAQs for [category_lc]...',
+                3 => 'Search questions about [category_lc]...',
+                4 => 'Type a question or topic...',
+            ],
+            'faq_accordion_headline' => [
+                1 => 'Frequently asked questions',
+                2 => 'Frequently Asked Questions About [category_cap]',
+                3 => '[category_cap] FAQs & Answers',
+                4 => 'Common Questions About [category_tc]',
+            ],
+            'faq_page_discussions' => [
+                1 => [
+                    'headline' => '[category_cap] discussions ([count])',
+                    'subtext' => 'Explore questions, experiences, and opinions shared by Localio users.',
+                ],
+                2 => [
+                    'headline' => 'Join the [category_lc] discussion ([count])',
+                    'subtext' => 'Ask questions, share advice, and connect with other users exploring [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [category_cap] ([count])',
+                    'subtext' => 'Discover real experiences, troubleshooting tips, and user opinions about [entities1_lc].',
+                ],
+                4 => [
+                    'headline' => '[category_tc] Community Discussions ([count])',
+                    'subtext' => 'Explore community feedback, questions, and insights from verified Localio members.',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $data) {
+                $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                $exists = ContentTemplate::where('section_group', 'category_faqs')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    ContentTemplate::create([
+                        'section_group' => 'category_faqs',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Seeds default Business Profile template options for reviews and discussions if missing.
+     */
+    public static function seedDefaultBusinessProfileOptionsIfMissing(): void
+    {
+        $defaults = [
+            'profile_reviews' => [
+                1 => [
+                    'headline' => '[business] user reviews ([count])',
+                    'subtext' => '<p>Explore verified ratings, pros & cons, and detailed customer experiences for [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Customer reviews for [business] ([count])',
+                    'subtext' => '<p>Read honest feedback and performance ratings submitted by verified [business] users.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] reviews & ratings ([count])',
+                    'subtext' => '<p>See what real users have to say about [business] features, pricing, and reliability.</p>',
+                ],
+                4 => [
+                    'headline' => 'Verified [business] user reviews ([count])',
+                    'subtext' => '<p>Comprehensive evaluations and feedback shared by community members using [business].</p>',
+                ],
+            ],
+            'profile_discussions' => [
+                1 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext' => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext' => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                3 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext' => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext' => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $data) {
+                $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                $exists = ContentTemplate::where('section_group', 'business_profile')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    ContentTemplate::create([
+                        'section_group' => 'business_profile',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
             return;
+        }
+
+        if ($sectionGroup === 'category') {
+            self::seedDefaultCategoryOptionsIfMissing();
+        } elseif ($sectionGroup === 'category_faqs') {
+            self::seedDefaultCategoryFaqOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_profile') {
+            self::seedDefaultBusinessProfileOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -798,10 +1112,40 @@ class ContentTemplateService
             ?? $category->categoryTranslations()->first();
     }
 
-    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null): string
+        /**
+     * Cleans heading text from CKEditor by decoding entities, stripping block tags (<p>, <div>, etc.)
+     * and preserving inline styling (<b>, <strong>, <i>, <em>, <span>, <mark>, <small>).
+     */
+    public static function cleanHeading(?string $text): string
     {
         if (empty($text)) {
             return '';
+        }
+        $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        $cleaned = strip_tags($decoded, '<b><strong><i><em><span><mark><small>');
+        return trim($cleaned);
+    }
+
+    /**
+     * Cleans input placeholder text by stripping all HTML tags and decoding entities.
+     */
+    public static function cleanPlaceholder(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+        $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        return trim(strip_tags($decoded));
+    }
+
+    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null, array $extraTags = []): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        foreach ($extraTags as $tag => $val) {
+            $text = str_replace($tag, (string) $val, $text);
         }
 
         // Global tags
@@ -820,9 +1164,11 @@ class ContentTemplateService
             $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
                 ?? $business->translations?->first()?->name 
                 ?? $business->name ?? '';
-            $text = str_replace(['[business]', '[business_name]', '[business_tc]'], $bizName, $text);
-            $text = str_replace('[business_cap]', ucfirst($bizName), $text);
-            $text = str_replace('[business_lc]', mb_strtolower($bizName), $text);
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[entity_name]', '[entity]', '[entity_tc]'], $bizName, $text);
+            $text = str_replace(['[business_cap]', '[entity_name_cap]'], ucfirst($bizName), $text);
+            $text = str_replace(['[business_lc]', '[entity_name_lc]'], mb_strtolower($bizName), $text);
+        } else {
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]', '[entity_name]', '[entity]', '[entity_tc]', '[entity_name_cap]', '[entity_name_lc]'], '', $text);
         }
 
         // Category tags
@@ -975,7 +1321,7 @@ class ContentTemplateService
     /**
      * Resolves a category section headline and subtext using assigned template with fallback.
      */
-    public static function resolveCategorySection(Category $category, string $fieldKey, int $langId = 1): array
+    public static function resolveCategorySection(Category $category, string $fieldKey, int $langId = 1, array $extraTags = []): array
     {
         $catTrans = self::getCategoryTranslation($category, $langId);
 
@@ -986,8 +1332,8 @@ class ContentTemplateService
         $optionNumber = null;
 
         if ($template) {
-            $headline = self::replacePlaceholders($template->headline, $category, null, $langId);
-            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId);
+            $headline = self::replacePlaceholders($template->headline, $category, null, $langId, null, $extraTags);
+            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId, null, $extraTags);
             $optionNumber = $template->option_number;
         }
 
@@ -1033,6 +1379,16 @@ class ContentTemplateService
                     $headline = $catTrans->category_faqs_headline ?? 'Frequently asked questions';
                     $subtext = $catTrans->category_faqs_subtext ?? '';
                     break;
+                case 'category_faq_search':
+                    $headline = 'Search ' . strtolower($catTrans->name ?? 'category') . ' FAQs...';
+                    $subtext = '';
+                    break;
+                case 'category_page_discussions':
+                    $countVal = $extraTags['[count]'] ?? ($extraTags['count'] ?? null);
+                    $countSuffix = $countVal !== null ? " ({$countVal})" : '';
+                    $headline = ($catTrans->name ?? 'Category') . ' discussions' . $countSuffix;
+                    $subtext = 'Explore questions, experiences, and opinions shared by Localio users.';
+                    break;
                 case 'faq_about':
                     $headline = $catTrans->faq_about_headline ?? ('About ' . ($catTrans->name ?? ''));
                     $subtext = $catTrans->faq_about_description ?? '';
@@ -1044,12 +1400,23 @@ class ContentTemplateService
             }
         }
 
-        return [
-            'headline' => $headline,
-            'subtext' => $subtext,
-            'template' => $template,
-            'option_number' => $optionNumber,
-        ];
+        if (in_array($fieldKey, ['category_faq_search', 'faq_search_placeholder'], true)) {
+            $headline = self::cleanPlaceholder($headline);
+            return [
+                'headline' => $headline,
+                'subtext' => $subtext,
+                'template' => $template,
+                'option_number' => $optionNumber,
+            ];
+        } else {
+            $headline = self::cleanHeading($headline);
+            return [
+                'headline' => $headline,
+                'subtext' => $subtext,
+                'template' => $template,
+                'option_number' => $optionNumber,
+            ];
+        }
     }
 
     /**
@@ -1075,7 +1442,7 @@ class ContentTemplateService
         }
 
         return [
-            'headline' => $headline,
+            'headline' => self::cleanHeading($headline),
             'template' => $template,
             'option_number' => $optionNumber,
         ];
@@ -1277,4 +1644,32 @@ class ContentTemplateService
 
         return $result;
     }
+
+    /**
+     * Resolves a business page template section headline and subtext using assigned/default template.
+     */
+    public static function resolveBusinessSection(\App\Models\Business $business, string $fieldKey, int $langId = 1, array $extraTags = []): array
+    {
+        $category = $business->category ?? $business->subCategories->first();
+
+        $template = self::getTemplateForResolution('business', $business->id, $fieldKey, $langId);
+
+        $headline = '';
+        $subtext = '';
+        $optionNumber = null;
+
+        if ($template) {
+            $headline = self::replacePlaceholders($template->headline, $category, null, $langId, $business, $extraTags);
+            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId, $business, $extraTags);
+            $optionNumber = $template->option_number;
+        }
+
+        return [
+            'headline' => self::cleanHeading($headline),
+            'subtext' => $subtext,
+            'template' => $template,
+            'option_number' => $optionNumber,
+        ];
+    }
 }
+

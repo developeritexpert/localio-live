@@ -13,13 +13,27 @@
                                         $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
                                         $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
+
+                                        $resolvedAltH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'alternatives_h1',
+                                            getCurrentLanguageID()
+                                        );
+                                        $finalAltH1 = !empty($resolvedAltH1['headline']) ? $resolvedAltH1['headline'] : $altTitle;
+
+                                        $resolvedAltSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'alternatives_subtext',
+                                            getCurrentLanguageID()
+                                        );
+                                        $finalAltDesc = !empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $altDesc;
                                     @endphp
                                     <h2 style="margin-bottom: 4px;">
-                                        {{ $altTitle }}
+                                        {!! \App\Services\ContentTemplateService::cleanHeading($finalAltH1) !!}
                                     </h2>
                 
                                     <div style="color: #002347;">
-                                        {!! $altDesc !!}
+                                        {!! $finalAltDesc !!}
                                     </div>
 
 

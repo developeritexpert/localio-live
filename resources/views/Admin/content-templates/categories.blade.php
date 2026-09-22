@@ -289,6 +289,7 @@
                             '[year]' => date('Y'),
                             '[country1]' => 'United States',
                             '[country2]' => 'U.S.',
+                            '[count]' => '1',
                         ] as $tag => $example)
                             <button type="button" class="btn btn-xs btn-primary btn-tag-insert py-0 px-2" data-tag="{{ $tag }}">{{ $tag }}</button>
                         @endforeach
@@ -339,11 +340,11 @@
                                                     <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                                 </td>
                                                 <td>
-                                                    <span class="font-monospace text-dark small">{{ $item->headline }}</span>
+                                                    <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->headline)), 150) }}</span>
                                                 </td>
                                                 @if($def['type'] === 'combined')
                                                     <td>
-                                                        <span class="font-monospace text-muted small">{{ Str::limit($item->subtext, 140) }}</span>
+                                                        <span class="text-muted small">{{ Str::limit(strip_tags(html_entity_decode($item->subtext)), 150) }}</span>
                                                     </td>
                                                 @endif
                                                 <td class="text-end">
@@ -407,7 +408,7 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label font-weight-bold small" id="lblField1">Headline / Question</label>
-                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline template...">
+                        <textarea name="headline" id="inputHeadline" class="form-control rich-editor" rows="3" placeholder="Enter headline template..."></textarea>
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
@@ -504,7 +505,35 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let shouldReopenManageTemplates = false;
+    let headlineEditor = null;
     let subtextEditor = null;
+
+    function initHeadlineEditor() {
+        const el = document.querySelector('#inputHeadline');
+        if (!el || typeof ClassicEditor === 'undefined' || headlineEditor) return;
+
+        ClassicEditor
+            .create(el, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                headlineEditor = editor;
+                el.ckeditorInstance = editor;
+
+                editor.model.document.on('change:data', () => {
+                    el.value = editor.getData();
+                });
+
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (isFocused) {
+                        activeInput = $('#inputHeadline');
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Headline CKEditor Init Error:", error);
+            });
+    }
 
     function initSubtextEditor() {
         const el = document.querySelector('#inputSubtext');
@@ -533,11 +562,15 @@ $(document).ready(function() {
             });
     }
 
-    // Initialize CKEditor
+    // Initialize CKEditors
+    initHeadlineEditor();
     initSubtextEditor();
 
-    $('#inputHeadline').on('focus', function() {
-        activeInput = $(this);
+    $('#lblField1').on('click', function() {
+        if (headlineEditor) {
+            headlineEditor.editing.view.focus();
+            activeInput = $('#inputHeadline');
+        }
     });
 
     $('#lblField2').on('click', function() {
@@ -551,7 +584,17 @@ $(document).ready(function() {
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+        if (activeInput && activeInput.attr('id') === 'inputHeadline' && headlineEditor) {
+            try {
+                headlineEditor.model.change(writer => {
+                    headlineEditor.model.insertContent(writer.createText(tag + ' '));
+                });
+            } catch(err) {
+                let cur = headlineEditor.getData() || '';
+                headlineEditor.setData(cur + (cur ? ' ' : '') + tag);
+            }
+            headlineEditor.editing.view.focus();
+        } else if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
             try {
                 subtextEditor.model.change(writer => {
                     subtextEditor.model.insertContent(writer.createText(tag + ' '));
@@ -569,6 +612,9 @@ $(document).ready(function() {
     });
 
     $('#templateEditForm').on('submit', function() {
+        if (headlineEditor) {
+            $('#inputHeadline').val(headlineEditor.getData());
+        }
         if (subtextEditor) {
             $('#inputSubtext').val(subtextEditor.getData());
         }
@@ -609,6 +655,9 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
+        if (headlineEditor) {
+            headlineEditor.setData('');
+        }
         if (subtextEditor) {
             subtextEditor.setData('');
         }
@@ -624,7 +673,13 @@ $(document).ready(function() {
         $('#modalManageTemplates').modal('hide');
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
-            setTimeout(function() { $('#inputHeadline').focus(); }, 300);
+            setTimeout(function() {
+                if (headlineEditor) {
+                    headlineEditor.editing.view.focus();
+                } else {
+                    $('#inputHeadline').focus();
+                }
+            }, 300);
         }, 350);
     });
 
@@ -660,6 +715,9 @@ $('.btn-edit-tpl').on('click', function(e) {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
+        if (headlineEditor) {
+            headlineEditor.setData(headline);
+        }
         if (subtextEditor) {
             subtextEditor.setData(subtext);
         }
@@ -675,7 +733,13 @@ $('.btn-edit-tpl').on('click', function(e) {
         $('#modalManageTemplates').modal('hide');
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
-            setTimeout(function() { $('#inputHeadline').focus(); }, 300);
+            setTimeout(function() {
+                if (headlineEditor) {
+                    headlineEditor.editing.view.focus();
+                } else {
+                    $('#inputHeadline').focus();
+                }
+            }, 300);
         }, 350);
     });
 

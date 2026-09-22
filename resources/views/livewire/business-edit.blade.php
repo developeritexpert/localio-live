@@ -256,102 +256,8 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- USP / Key Selling Points Section --}}
-                <div class="card card-bordered mb-3">
-                    <div class="card-inner">
-                        <div class="form-group d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
-                                <p class="text-muted small mb-0">Up to 6 short bullet points shown with ✓ on the product page.</p>
-                            </div>
-                        </div>
-
-                        @foreach ($businessUsps as $index => $usp)
-                        <div class="d-flex align-items-center mb-2 gap-2">
-                            <span class="text-success fw-bold me-1" style="font-size:18px;">✓</span>
-                            <input
-                                type="text"
-                                class="form-control"
-                                wire:model.live="businessUsps.{{ $index }}.text"
-                                placeholder="e.g. Free domain & SSL certificate"
-                                maxlength="255" />
-                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
-                                <em class="icon ni ni-trash"></em>
-                            </button>
-                        </div>
-                        @endforeach
-
-                        @if (count($businessUsps) < 6)
-                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
-                            <em class="icon ni ni-plus"></em> Add USP
-                            </button>
-                            @else
-                            <p class="text-muted small mt-2 mb-0">Maximum of 6 USPs reached.</p>
-                            @endif
-                    </div>
-                </div>
-
-                <!-- Business Description Section -->
-                <div class="card card-bordered mb-3">
-                    <div class="card-inner">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Business description title</label>
-                            <input type="text" class="form-control @error('description_title') is-invalid @enderror"
-                                wire:model.live="description_title" placeholder="e.g. What is {{ $name ?: 'Business Name' }}" />
-                            @error('description_title')
-                            <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group d-flex justify-content-between align-items-center">
-                            <label class="form-label">Business description</label>
-                            {{-- <button type="button" class="btn btn-sm btn-secondary"
-                                wire:click="setFieldIdAndOpenModal('description', 1000, {{ $businessId ?? 'null' }})">
-                            AI Autofill
-                            </button> --}}
-                        </div>
-
-                        <!-- If you're using Alpine.js -->
-                        <div wire:ignore x-data="{
-                                editor: null,
-                                init() {
-                                    this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.editor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.business_description = editor.getData();
-                                                });
-                                                // AI Output Upload listener
-                                                window.addEventListener('ai-content-applied', function(e) {
-                                                    if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
-                                                        editor.setData(e.detail.fields.business_description);
-                                                    }
-                                                });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
-                                    });
-                                }
-                            }">
-                            <div class="form-group">
-                                <textarea
-                                    x-ref="editor"
-                                    class="form-control b_description @error('business_description') is-invalid @enderror"
-                                    wire:model.live="business_description"
-                                    rows="5">
-                                    </textarea>
-                                @error('business_description')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card card-bordered mb-3">
+                
+                                <div class="card card-bordered mb-3">
                     <div class="card-inner">
                         <label class="form-label mt-3">Long Preview Description (Top Affiliated Businesses Section)</label>
                         <div wire:ignore x-data="{
@@ -403,6 +309,94 @@
                     </div>
 
                 </div>
+
+                {{-- USP / Key Selling Points Section --}}
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="form-group d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
+                                <p class="text-muted small mb-0">Up to 6 short bullet points shown with ✓ on the product page.</p>
+                            </div>
+                        </div>
+
+                        @foreach ($businessUsps as $index => $usp)
+                        <div class="d-flex align-items-center mb-2 gap-2">
+                            <span class="text-success fw-bold me-1" style="font-size:18px;">✓</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                wire:model.live="businessUsps.{{ $index }}.text"
+                                placeholder="e.g. Free domain & SSL certificate"
+                                maxlength="255" />
+                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
+                                <em class="icon ni ni-trash"></em>
+                            </button>
+                        </div>
+                        @endforeach
+
+                        @if (count($businessUsps) < 6)
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
+                            <em class="icon ni ni-plus"></em> Add USP
+                            </button>
+                            @else
+                            <p class="text-muted small mt-2 mb-0">Maximum of 6 USPs reached.</p>
+                            @endif
+                    </div>
+                </div>
+
+                <!-- Business Description Section -->
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <label class="form-label">Business description</label>
+                            {{-- <button type="button" class="btn btn-sm btn-secondary"
+                                wire:click="setFieldIdAndOpenModal('description', 1000, {{ $businessId ?? 'null' }})">
+                            AI Autofill
+                            </button> --}}
+                        </div>
+
+                        <!-- If you're using Alpine.js -->
+                        <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.business_description = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
+                                                        editor.setData(e.detail.fields.business_description);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                            <div class="form-group">
+                                <textarea
+                                    x-ref="editor"
+                                    class="form-control b_description @error('business_description') is-invalid @enderror"
+                                    wire:model.live="business_description"
+                                    rows="5">
+                                    </textarea>
+                                @error('business_description')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
 

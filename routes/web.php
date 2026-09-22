@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\Bcp47LanguageController;
 use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, ContributorBadgeController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 use App\Http\Controllers\Admin\CategoryFeatureContentController;
-
+use App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController;
+use App\Http\Controllers\Admin\MetaTags\MetaTagController;
 use App\Http\Controllers\AdminDealController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\CountryController;
@@ -435,93 +436,93 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // Content Templates Management Routes
     Route::prefix('admin-dashboard/content-templates')->group(function () {
-        Route::get('/categories', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categories'])->name('admin.content-templates.categories');
-        Route::get('/categories-faqs', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categoriesFaqs'])->name('admin.content-templates.categories-faqs');
-        Route::get('/features', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'features'])->name('admin.content-templates.features');
+        Route::get('/categories', [ContentTemplateController::class, 'categories'])->name('admin.content-templates.categories');
+        Route::get('/categories-faqs', [ContentTemplateController::class, 'categoriesFaqs'])->name('admin.content-templates.categories-faqs');
+        Route::get('/features', [ContentTemplateController::class, 'features'])->name('admin.content-templates.features');
 
-        Route::get('/category-discussions', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categoryDiscussions'])->name('admin.content-templates.category-discussions');
-        Route::get('/business-profile', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessProfile'])->name('admin.content-templates.business-profile');
-        Route::get('/business-alternatives', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessAlternatives'])->name('admin.content-templates.business-alternatives');
-        Route::get('/business-faqs', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessFaqs'])->name('admin.content-templates.business-faqs');
-        Route::get('/business-compare', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessCompare'])->name('admin.content-templates.business-compare');
-        Route::get('/business-reviews', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessReviews'])->name('admin.content-templates.business-reviews');
-        Route::get('/business-discussions', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'businessDiscussions'])->name('admin.content-templates.business-discussions');
-        Route::get('/criteria-ratings', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'criteriaRatings'])->name('admin.content-templates.criteria-ratings');
-        Route::post('/criteria-ratings/copy', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'copyCriteriaTemplates'])->name('admin.content-templates.criteria-ratings.copy');
+        Route::get('/category-discussions', [ContentTemplateController::class, 'categoryDiscussions'])->name('admin.content-templates.category-discussions');
+        Route::get('/business-profile', [ContentTemplateController::class, 'businessProfile'])->name('admin.content-templates.business-profile');
+        Route::get('/business-alternatives', [ContentTemplateController::class, 'businessAlternatives'])->name('admin.content-templates.business-alternatives');
+        Route::get('/business-faqs', [ContentTemplateController::class, 'businessFaqs'])->name('admin.content-templates.business-faqs');
+        Route::get('/business-compare', [ContentTemplateController::class, 'businessCompare'])->name('admin.content-templates.business-compare');
+        Route::get('/business-reviews', [ContentTemplateController::class, 'businessReviews'])->name('admin.content-templates.business-reviews');
+        Route::get('/business-discussions', [ContentTemplateController::class, 'businessDiscussions'])->name('admin.content-templates.business-discussions');
+        Route::get('/criteria-ratings', [ContentTemplateController::class, 'criteriaRatings'])->name('admin.content-templates.criteria-ratings');
+        Route::post('/criteria-ratings/copy', [ContentTemplateController::class, 'copyCriteriaTemplates'])->name('admin.content-templates.criteria-ratings.copy');
 
 
-        Route::post('/templates/store', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'storeTemplate'])->name('admin.content-templates.store');
-        Route::post('/templates/update', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'updateTemplate'])->name('admin.content-templates.update');
-        Route::delete('/templates/{id}', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'deleteTemplate'])->name('admin.content-templates.delete');
+        Route::post('/templates/store', [ContentTemplateController::class, 'storeTemplate'])->name('admin.content-templates.store');
+        Route::post('/templates/update', [ContentTemplateController::class, 'updateTemplate'])->name('admin.content-templates.update');
+        Route::delete('/templates/{id}', [ContentTemplateController::class, 'deleteTemplate'])->name('admin.content-templates.delete');
 
-        Route::post('/assign-missing', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignMissing'])->name('admin.content-templates.assign-missing');
-        Route::post('/assign-single', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignSingle'])->name('admin.content-templates.assign-single');
-        Route::post('/reset-entity', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'resetEntity'])->name('admin.content-templates.reset-entity');
+        Route::post('/assign-missing', [ContentTemplateController::class, 'assignMissing'])->name('admin.content-templates.assign-missing');
+        Route::post('/assign-single', [ContentTemplateController::class, 'assignSingle'])->name('admin.content-templates.assign-single');
+        Route::post('/reset-entity', [ContentTemplateController::class, 'resetEntity'])->name('admin.content-templates.reset-entity');
     });
 
         // Meta Tags Management Routes
     Route::prefix('admin-dashboard/meta-tags')->group(function () {
-        Route::post('/rules/update', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');
+        Route::post('/rules/update', [MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');
 
         // Categories
-        Route::get('/categories', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
-        Route::post('/categories/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryMeta'])->name('admin.meta-tags.categories.update-single');
-        Route::post('/categories/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryMeta'])->name('admin.meta-tags.categories.reset-single');
-        Route::post('/categories/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesMeta'])->name('admin.meta-tags.categories.update-bulk');
+        Route::get('/categories', [MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
+        Route::post('/categories/update-single', [MetaTagController::class, 'updateSingleCategoryMeta'])->name('admin.meta-tags.categories.update-single');
+        Route::post('/categories/reset-single', [MetaTagController::class, 'resetCategoryMeta'])->name('admin.meta-tags.categories.reset-single');
+        Route::post('/categories/update-bulk', [MetaTagController::class, 'updateBulkCategoriesMeta'])->name('admin.meta-tags.categories.update-bulk');
 
         // Businesses (Business profile)
-        Route::get('/businesses', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businesses'])->name('admin.meta-tags.businesses');
-        Route::post('/businesses/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessMeta'])->name('admin.meta-tags.businesses.update-single');
-        Route::post('/businesses/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessMeta'])->name('admin.meta-tags.businesses.reset-single');
-        Route::post('/businesses/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessesMeta'])->name('admin.meta-tags.businesses.update-bulk');
+        Route::get('/businesses', [MetaTagController::class, 'businesses'])->name('admin.meta-tags.businesses');
+        Route::post('/businesses/update-single', [MetaTagController::class, 'updateSingleBusinessMeta'])->name('admin.meta-tags.businesses.update-single');
+        Route::post('/businesses/reset-single', [MetaTagController::class, 'resetBusinessMeta'])->name('admin.meta-tags.businesses.reset-single');
+        Route::post('/businesses/update-bulk', [MetaTagController::class, 'updateBulkBusinessesMeta'])->name('admin.meta-tags.businesses.update-bulk');
 
         // Business Alternatives
-        Route::get('/business-alternatives', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businessAlternatives'])->name('admin.meta-tags.business-alternatives');
-        Route::post('/business-alternatives/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.update-single');
-        Route::post('/business-alternatives/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.reset-single');
-        Route::post('/business-alternatives/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.update-bulk');
+        Route::get('/business-alternatives', [MetaTagController::class, 'businessAlternatives'])->name('admin.meta-tags.business-alternatives');
+        Route::post('/business-alternatives/update-single', [MetaTagController::class, 'updateSingleBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.update-single');
+        Route::post('/business-alternatives/reset-single', [MetaTagController::class, 'resetBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.reset-single');
+        Route::post('/business-alternatives/update-bulk', [MetaTagController::class, 'updateBulkBusinessAlternativesMeta'])->name('admin.meta-tags.business-alternatives.update-bulk');
 
         // Business FAQs
-        Route::get('/business-faqs', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businessFaqs'])->name('admin.meta-tags.business-faqs');
-        Route::post('/business-faqs/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.update-single');
-        Route::post('/business-faqs/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.reset-single');
-        Route::post('/business-faqs/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.update-bulk');
+        Route::get('/business-faqs', [MetaTagController::class, 'businessFaqs'])->name('admin.meta-tags.business-faqs');
+        Route::post('/business-faqs/update-single', [MetaTagController::class, 'updateSingleBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.update-single');
+        Route::post('/business-faqs/reset-single', [MetaTagController::class, 'resetBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.reset-single');
+        Route::post('/business-faqs/update-bulk', [MetaTagController::class, 'updateBulkBusinessFaqsMeta'])->name('admin.meta-tags.business-faqs.update-bulk');
 
         // Business Compare
-        Route::get('/business-compare', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businessCompare'])->name('admin.meta-tags.business-compare');
-        Route::post('/business-compare/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessCompareMeta'])->name('admin.meta-tags.business-compare.update-single');
-        Route::post('/business-compare/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessCompareMeta'])->name('admin.meta-tags.business-compare.reset-single');
-        Route::post('/business-compare/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessCompareMeta'])->name('admin.meta-tags.business-compare.update-bulk');
+        Route::get('/business-compare', [MetaTagController::class, 'businessCompare'])->name('admin.meta-tags.business-compare');
+        Route::post('/business-compare/update-single', [MetaTagController::class, 'updateSingleBusinessCompareMeta'])->name('admin.meta-tags.business-compare.update-single');
+        Route::post('/business-compare/reset-single', [MetaTagController::class, 'resetBusinessCompareMeta'])->name('admin.meta-tags.business-compare.reset-single');
+        Route::post('/business-compare/update-bulk', [MetaTagController::class, 'updateBulkBusinessCompareMeta'])->name('admin.meta-tags.business-compare.update-bulk');
 
         // Business Reviews
-        Route::get('/business-reviews', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businessReviews'])->name('admin.meta-tags.business-reviews');
-        Route::post('/business-reviews/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.update-single');
-        Route::post('/business-reviews/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.reset-single');
-        Route::post('/business-reviews/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.update-bulk');
+        Route::get('/business-reviews', [MetaTagController::class, 'businessReviews'])->name('admin.meta-tags.business-reviews');
+        Route::post('/business-reviews/update-single', [MetaTagController::class, 'updateSingleBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.update-single');
+        Route::post('/business-reviews/reset-single', [MetaTagController::class, 'resetBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.reset-single');
+        Route::post('/business-reviews/update-bulk', [MetaTagController::class, 'updateBulkBusinessReviewsMeta'])->name('admin.meta-tags.business-reviews.update-bulk');
 
         // Business Discussions
-        Route::get('/business-discussions', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businessDiscussions'])->name('admin.meta-tags.business-discussions');
-        Route::post('/business-discussions/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.update-single');
-        Route::post('/business-discussions/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.reset-single');
-        Route::post('/business-discussions/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.update-bulk');
+        Route::get('/business-discussions', [MetaTagController::class, 'businessDiscussions'])->name('admin.meta-tags.business-discussions');
+        Route::post('/business-discussions/update-single', [MetaTagController::class, 'updateSingleBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.update-single');
+        Route::post('/business-discussions/reset-single', [MetaTagController::class, 'resetBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.reset-single');
+        Route::post('/business-discussions/update-bulk', [MetaTagController::class, 'updateBulkBusinessDiscussionsMeta'])->name('admin.meta-tags.business-discussions.update-bulk');
 
         // Categories FAQs
-        Route::get('/categories-faqs', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categoriesFaqs'])->name('admin.meta-tags.categories-faqs');
-        Route::post('/categories-faqs/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.update-single');
-        Route::post('/categories-faqs/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.reset-single');
-        Route::post('/categories-faqs/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesFaqsMeta'])->name('admin.meta-tags.categories-faqs.update-bulk');
+        Route::get('/categories-faqs', [MetaTagController::class, 'categoriesFaqs'])->name('admin.meta-tags.categories-faqs');
+        Route::post('/categories-faqs/update-single', [MetaTagController::class, 'updateSingleCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.update-single');
+        Route::post('/categories-faqs/reset-single', [MetaTagController::class, 'resetCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.reset-single');
+        Route::post('/categories-faqs/update-bulk', [MetaTagController::class, 'updateBulkCategoriesFaqsMeta'])->name('admin.meta-tags.categories-faqs.update-bulk');
 
         // Category Discussions
-        Route::get('/category-discussions', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categoryDiscussions'])->name('admin.meta-tags.category-discussions');
-        Route::post('/category-discussions/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.update-single');
-        Route::post('/category-discussions/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.reset-single');
-        Route::post('/category-discussions/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.update-bulk');
+        Route::get('/category-discussions', [MetaTagController::class, 'categoryDiscussions'])->name('admin.meta-tags.category-discussions');
+        Route::post('/category-discussions/update-single', [MetaTagController::class, 'updateSingleCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.update-single');
+        Route::post('/category-discussions/reset-single', [MetaTagController::class, 'resetCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.reset-single');
+        Route::post('/category-discussions/update-bulk', [MetaTagController::class, 'updateBulkCategoryDiscussionsMeta'])->name('admin.meta-tags.category-discussions.update-bulk');
 
         // Features
-        Route::get('/features', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'features'])->name('admin.meta-tags.features');
-        Route::post('/features/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleFeatureMeta'])->name('admin.meta-tags.features.update-single');
-        Route::post('/features/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetFeatureMeta'])->name('admin.meta-tags.features.reset-single');
-        Route::post('/features/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkFeaturesMeta'])->name('admin.meta-tags.features.update-bulk');
+        Route::get('/features', [MetaTagController::class, 'features'])->name('admin.meta-tags.features');
+        Route::post('/features/update-single', [MetaTagController::class, 'updateSingleFeatureMeta'])->name('admin.meta-tags.features.update-single');
+        Route::post('/features/reset-single', [MetaTagController::class, 'resetFeatureMeta'])->name('admin.meta-tags.features.reset-single');
+        Route::post('/features/update-bulk', [MetaTagController::class, 'updateBulkFeaturesMeta'])->name('admin.meta-tags.features.update-bulk');
     });
 
     // All Categories Page Content Route

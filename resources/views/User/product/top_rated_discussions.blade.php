@@ -85,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
+                <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3 d-none">
                     <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}" class="btn" style="background-color: #002347; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 22px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 8px;">
                         <span>View Top Rated</span> <i class="fas fa-arrow-right" style="font-size: 12px;"></i>
                     </a>
@@ -113,58 +113,53 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
-                    <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
+                    <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
                 </div>
             </div>
 
-            <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
-            <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6;">
-                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="discussionFilterForm" onsubmit="return false;">
-                    <div class="col-sm-8 col-12">
-                        <div class="input-group position-relative">
-                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text" name="q" id="discussionLiveSearchInput" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
-                            <button type="button" id="discussionLiveClearBtn" class="btn position-absolute text-muted {{ request('q') ? '' : 'd-none' }}" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-12">
-                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                            <option value="popular" {{ request('sort') == 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
-                            <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="commented" {{ request('sort') == 'commented' ? 'selected' : '' }}>Most Active</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-
             <!-- Join the Conversation Header Block -->
-            <div class="mb-3 pt-2">
+            <div class="mb-3 pt-2 d-none">
                 <h2 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px; line-height: 1.3;">
                     Join the conversation
                 </h2>
                 <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">
                     Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips.
                 </p>
-                <div class="d-flex align-items-center gap-2" style="font-size: 13.5px; color: #475569; font-weight: 500;">
+               
+            </div>
+
+            <!-- Discussions List Container -->
+            <div id="discussionsFeedContainer">
+            @if($discussions->isEmpty())
+                <div class="boxshadow_border bg-white text-center p-4 pb-5" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
+                     <div class="d-flex align-items-center gap-2 pb-3 mb-3" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;">
                     <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalComments ?? 0) }}</strong> {{ ($totalComments ?? 0) == 1 ? 'comment' : 'comments' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalActiveToday ?? 0) }}</strong> active today</span>
-                </div>
-            </div>
 
-            <!-- Discussions List Container -->
-            <div id="discussionsFeedContainer" style="transition: opacity 0.2s ease;">
-            @if($discussions->isEmpty())
-                <div class="boxshadow_border bg-white text-center py-5 px-3" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
+                     <div class="top-pop discussion-sort-menu" data-sort-menu>
+                        <button type="button" class="discussion-sort-trigger" data-sort-trigger aria-haspopup="listbox" aria-expanded="false">
+                            <span data-sort-label>{{ request('sort') === 'recent' ? 'Most Recent' : (request('sort') === 'commented' ? 'Most Active' : 'Top / Popular') }}</span>
+                            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <ul class="discussion-sort-options" role="listbox" aria-label="Sort discussions">
+                            <li><button type="button" class="discussion-sort-option {{ request('sort') === 'recent' || request('sort') === 'commented' ? '' : 'is-selected' }}" data-sort-option="popular" role="option" aria-selected="{{ request('sort') === 'recent' || request('sort') === 'commented' ? 'false' : 'true' }}">Top / Popular {!! request('sort') === 'recent' || request('sort') === 'commented' ? '' : '<i class="fas fa-check" aria-hidden="true"></i>' !!}</button></li>
+                            <li><button type="button" class="discussion-sort-option {{ request('sort') === 'recent' ? 'is-selected' : '' }}" data-sort-option="recent" role="option" aria-selected="{{ request('sort') === 'recent' ? 'true' : 'false' }}">Most Recent {!! request('sort') === 'recent' ? '<i class="fas fa-check" aria-hidden="true"></i>' : '' !!}</button></li>
+                            <li><button type="button" class="discussion-sort-option {{ request('sort') === 'commented' ? 'is-selected' : '' }}" data-sort-option="commented" role="option" aria-selected="{{ request('sort') === 'commented' ? 'true' : 'false' }}">Most Active {!! request('sort') === 'commented' ? '<i class="fas fa-check" aria-hidden="true"></i>' : '' !!}</button></li>
+                        </ul>
+                        <select name="sort" id="discussionLiveSortSelect" class="discussion-sort-native" aria-label="Sort discussions" tabindex="-1">
+                            <option value="popular" {{ request('sort') === 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
+                            <option value="recent" {{ request('sort') === 'recent' ? 'selected' : '' }}>Most Recent</option>
+                            <option value="commented" {{ request('sort') === 'commented' ? 'selected' : '' }}>Most Active</option>
+                        </select>
+                    </div>
+                </div>
+
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
@@ -394,6 +389,25 @@
         <!-- Right Column: Sidebar -->
         <div class="col-lg-4">
             <div class="sticky-sidebar-nav-wrapper">
+
+                <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
+                  <div class="boxshadow_border bg-white p-3 mb-4" style="border-radius: 14px; border: 1px solid #eef2f6;">
+                       <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center mb-0" id="discussionFilterForm" onsubmit="return false;">
+                         <div class=" col-12">
+                          <div class="input-group position-relative">
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="q" id="discussionLiveSearchInput" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
+                            <button type="button" id="discussionLiveClearBtn" class="btn position-absolute text-muted {{ request('q') ? '' : 'd-none' }}" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>
+                  </div>
+                   
+                   </form>
+            </div>
+
                 <!-- Join the Conversation White Box -->
                 <div class="boxshadow_border bg-white p-4 mb-4"
                      style="
@@ -438,7 +452,7 @@
                 </div>
 
                 <!-- More About FAQs Component -->
-                <div class="boxshadow_border bg-white p-4 mb-4" style="border-radius: 16px; border: 1px solid #eef2f6; text-align: left;">
+                <div class="boxshadow_border bg-white p-4 mb-4 d-none" style="border-radius: 16px; border: 1px solid #eef2f6; text-align: left;">
                     <h4 style="font-size: 16px; font-weight: 700; color: #002347; margin-bottom: 8px;">
                         Need Top Rated FAQs?
                     </h4>
@@ -775,6 +789,59 @@ const liveSearchInput = document.getElementById('discussionLiveSearchInput');
 const liveSortSelect = document.getElementById('discussionLiveSortSelect');
 const liveClearBtn = document.getElementById('discussionLiveClearBtn');
 const feedContainer = document.getElementById('discussionsFeedContainer');
+
+//kashish.js start dropdown...
+function closeDiscussionSortMenus() {
+    document.querySelectorAll('[data-sort-menu].is-open').forEach(menu => {
+        menu.classList.remove('is-open');
+        const trigger = menu.querySelector('[data-sort-trigger]');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+}
+
+document.addEventListener('click', function(e) {
+    const trigger = e.target.closest('[data-sort-trigger]');
+    const option = e.target.closest('[data-sort-option]');
+
+    if (trigger) {
+        const menu = trigger.closest('[data-sort-menu]');
+        const isOpen = menu.classList.toggle('is-open');
+        closeDiscussionSortMenus();
+        if (isOpen) {
+            menu.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+        }
+        return;
+    }
+
+    if (option) {
+        const menu = option.closest('[data-sort-menu]');
+        const select = menu.querySelector('#discussionLiveSortSelect');
+        const label = menu.querySelector('[data-sort-label]');
+        const value = option.getAttribute('data-sort-option');
+
+        if (select && select.value !== value) {
+            select.value = value;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        if (label) label.textContent = option.textContent.trim();
+        menu.querySelectorAll('[data-sort-option]').forEach(item => {
+            const isSelected = item === option;
+            item.classList.toggle('is-selected', isSelected);
+            item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        });
+        closeDiscussionSortMenus();
+        return;
+    }
+
+    if (!e.target.closest('[data-sort-menu]')) closeDiscussionSortMenus();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDiscussionSortMenus();
+});
+//kashish.js end dropdown...
 
 function performDiscussionsLiveSearch() {
     const q = (liveSearchInput ? liveSearchInput.value : '').trim();

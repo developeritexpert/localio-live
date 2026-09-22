@@ -122,15 +122,32 @@
                     <div class="top-product-logo" >
                         <x-business-logo :business="$business" :name="$bName" />
                     </div>
+                    @php
+                        $resolvedReviewsH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'reviews_h1',
+                            getCurrentLanguageID()
+                        );
+                        $finalReviewsH1 = !empty($resolvedReviewsH1['headline']) ? $resolvedReviewsH1['headline'] : ($bName . ' ' . $reviewsWord . ' reviews');
+
+                        $resolvedReviewsSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'reviews_subtext',
+                            getCurrentLanguageID()
+                        );
+                        $finalReviewsSub = !empty($resolvedReviewsSub['headline']) ? $resolvedReviewsSub['headline'] : $subHeadline;
+                    @endphp
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="margin: 0;">
-                                {{ $bName }} {{ $reviewsWord }} reviews
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalReviewsH1) !!}
                             </h1>
                         </div>
-                        <p class="text-meta" style="">
-                            {{ $subHeadline }}
-                        </p>
+                        @if(!empty($finalReviewsSub))
+                        <div class="text-meta" style="margin-top: 4px;">
+                            {!! $finalReviewsSub !!}
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

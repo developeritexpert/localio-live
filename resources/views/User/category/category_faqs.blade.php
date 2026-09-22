@@ -1,153 +1,11 @@
 @extends('user_layout.master')
 @push('styles')
     <style>
-        /* FAQ Search Box Styling */
-        .faq-search-wrapper {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        .faq-search-input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .faq-search-input-group .search-icon {
-            position: absolute;
-            left: 18px;
-            color: #94a3b8;
-            font-size: 16px;
-            pointer-events: none;
-        }
-        .faq-search-input-group input {
-            width: 100%;
-            padding: 13px 20px 13px 48px;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #1e293b;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        .faq-search-input-group input:focus {
-            border-color: #06498b;
-            box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.12);
-        }
-
-        
-        /* In-Page Category Navigation */
-        .faq-category-nav {
-            display: flex;
-            align-items: center;
-            gap:0 25px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0;
-            margin-bottom: 30px;
-        }
-        .faq-cat-tab {
-            padding: 12px 0;
-            font-size: 15px;
-            font-weight: 500;
-            color: #64748b;
-            text-decoration: none;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: -1px;
-        }
-        .faq-cat-tab:hover {
-            color: #1e3050;
-            background: transparent;
-        }
-        .faq-cat-tab.active {
-            background: transparent;
-            color: #1e3050;
-            font-weight: 600;
-            border-bottom: 2px solid #1e3050;
-        }
-
-        /* FAQ Feedback Row (Was this helpful?) */
-        .faq-feedback-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 18px;
-            padding-top: 14px;
-            font-size: 13.5px;
-            color: #64748b;
-        }
-        .faq-feedback-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .btn-vote-faq {
-            background: transparent;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0;
-            font-size: 13px;
-            font-weight: 600;
-            outline: none;
-            transition: all 0.15s ease;
-        }
-        .btn-vote-faq i {
-            font-size: 15px;
-            color: #64748b;
-            font-weight: 400;
-            transition: all 0.15s ease;
-        }
-        .btn-vote-faq:hover, .btn-vote-faq:hover i {
-            color: #1e3050;
-        }
-        .btn-vote-faq.voted-yes, .btn-vote-faq.voted-yes i,
-        .btn-vote-faq.voted-no, .btn-vote-faq.voted-no i {
-            color: #1e3050 !important;
-        }
-        .btn-vote-faq.voted-yes i.fa-thumbs-up,
-        .btn-vote-faq.voted-no i.fa-thumbs-down {
-            font-weight: 900 !important;
-        }
-
-        .ask-community-btn {
-            background: #ff5722;
-            color: #ffffff !important;
-            font-size: 15px;
-            font-weight: 600;
-            padding: 12px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        .ask-community-btn:hover {
-            /* opacity: 0.92; */
-            transform: translateY(-1px);
-        }
-        .faq-subtext-container p { margin-bottom: 0 !important; }
-        .faq-subtext-container p:not(:last-child) { margin-bottom: 8px !important; }
-        .top-rated-heading-sec {
-            margin-top: 95px;
-            padding-top: 30px;
-            background-color: #f7f9fb;
-            border-bottom: 1px solid #e2e8f0;
+      .top-rated-heading-sec {
+        margin-top: 95px;
+        padding-top: 30px;
+        background-color: #f7f9fb;
+        border-bottom: 1px solid #e2e8f0;
         }
     </style>
 @endpush
@@ -211,7 +69,7 @@
                         @endphp
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                {{ $faqH1Title }}
+                                {!! \App\Services\ContentTemplateService::cleanHeading($faqH1Title) !!}
                             </h1>
                         </div>
         <!-- Category Header Row -->
@@ -269,7 +127,7 @@
     $faqAboutDesc = !empty($resolvedFaqAbout['subtext']) ? $resolvedFaqAbout['subtext'] : ($categoryTranslation->faq_about_description ?? '');
 @endphp
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        {{ $faqAboutH2 }}
+                        {!! \App\Services\ContentTemplateService::cleanHeading($faqAboutH2) !!}
                     </h2>
                     <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
                         @if(!empty($faqAboutDesc))
@@ -284,20 +142,31 @@
 
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
+                    @php
+                        $resolvedFaqSearch = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_search_headline', $lang_id ?? 1);
+                        $faqSearchHeadline = !empty($resolvedFaqSearch['headline']) ? $resolvedFaqSearch['headline'] : ('Search ' . $catName . ' FAQs');
+
+                        $resolvedFaqPlaceholder = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_search_placeholder', $lang_id ?? 1);
+                        $faqSearchPlaceholder = !empty($resolvedFaqPlaceholder['headline']) ? $resolvedFaqPlaceholder['headline'] : 'Search questions...';
+                    @endphp
                     <p style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
-                        Search {{ $catName }} FAQs
+                        {!! \App\Services\ContentTemplateService::cleanHeading($faqSearchHeadline) !!}
                     </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="faqSearchInput" placeholder="Search questions..." value="{{ request('q') }}" autocomplete="off">
+                        <input type="text" id="faqSearchInput" placeholder="{{ \App\Services\ContentTemplateService::cleanPlaceholder($faqSearchPlaceholder) }}" value="{{ request('q') }}" autocomplete="off">
                     </div>
                 </div>
 
                 <!-- Main FAQ Section: Headline & Accordion List -->
                 <div class="main-faq-container">
+                    @php
+                        $resolvedFaqAccordion = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_accordion_headline', $lang_id ?? 1);
+                        $faqAccordionHeadline = !empty($resolvedFaqAccordion['headline']) ? $resolvedFaqAccordion['headline'] : 'Frequently asked questions';
+                    @endphp
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
-                            Frequently asked questions
+                            {!! \App\Services\ContentTemplateService::cleanHeading($faqAccordionHeadline) !!}
                         </h2>
                     </div>
 
@@ -691,7 +560,7 @@
     <div class="container">
         <div class="text-start mb-4">
             <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
-                {{ $exploreHeadline }}
+                {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
             </h2>
             @if(!empty($exploreSubtext))
                 <div class="explore-cat-subtext" style="color: #475569; margin: 0; font-size: 15px;">
@@ -786,6 +655,40 @@
     </div>
 </section>
 @endif
+
+
+<!-- Category Community Discussions Section -->
+@php
+    $catTransForDisc = ($category->translations instanceof \Illuminate\Database\Eloquent\Collection)
+        ? $category->translations->first()
+        : ($category->translations ?? $category->translation);
+    $catDiscName = $catTransForDisc->name ?? $category->name ?? 'Category';
+
+    $totalDiscs = $category->discussions()->count();
+    $resolvedFaqDisc = \App\Services\ContentTemplateService::resolveCategorySection(
+        $category, 
+        'faq_page_discussions', 
+        $lang_id ?? 1,
+        ['[count]' => number_format($totalDiscs)]
+    );
+
+    $faqDiscHeadline = null;
+    $faqDiscSubtext = null;
+    if (!empty($resolvedFaqDisc['headline'])) {
+        $faqDiscHeadline = $resolvedFaqDisc['headline'];
+        if (!str_contains($faqDiscHeadline, '(') && !str_contains($faqDiscHeadline, (string)$totalDiscs)) {
+            $faqDiscHeadline .= ' (' . number_format($totalDiscs) . ')';
+        }
+    }
+    if (!empty($resolvedFaqDisc['subtext'])) {
+        $faqDiscSubtext = $resolvedFaqDisc['subtext'];
+    }
+@endphp
+<section class="category-discussions-sec py-5" id="categoryDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+        <x-community-discussion :category="$category" :bName="$catDiscName" :headline="$faqDiscHeadline" :subtext="$faqDiscSubtext" />
+    </div>
+</section>
 
 @endsection
 

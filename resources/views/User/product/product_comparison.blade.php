@@ -626,7 +626,8 @@
                                                             <p class="starting-price-text">per {{ strtolower($timeUnit) }}</p>
                                                         @endif
                                                     @else
-                                                        <p class="starting-price-value">Starting price</p>
+                                                        <!-- <p class="starting-price-value">Starting price</p> -->
+                                                        <p class="starting-price-value">Contact</p>
                                                         <p class="starting-price-text">Custom subscription</p>
                                                     @endif
                                                 </div>

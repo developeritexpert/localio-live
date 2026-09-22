@@ -209,17 +209,34 @@
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
                 <div class="top_head">
+                    @php
+                        $resolvedCompH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'compare_h1',
+                            getCurrentLanguageID()
+                        );
+                        $finalCompH1 = !empty($resolvedCompH1['headline']) ? $resolvedCompH1['headline'] : ('Compare ' . $bName);
+
+                        $resolvedCompSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'compare_subtext',
+                            getCurrentLanguageID()
+                        );
+                        $finalCompSub = !empty($resolvedCompSub['headline']) ? $resolvedCompSub['headline'] : $subHeadline;
+                    @endphp
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
                         <h1 style=" margin: 0; ">
-                            Compare {{ $bName }}
+                            {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                         </h1>
                     </div>
                     <p class="text-meta">
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
-                    <p style="margin: 0;">
-                        {{ $subHeadline }}
-                    </p>
+                    @if(!empty($finalCompSub))
+                    <div style="margin: 0; color: #1e3050;">
+                        {!! $finalCompSub !!}
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="col-md-4 col-12 mt-4 mt-md-0">

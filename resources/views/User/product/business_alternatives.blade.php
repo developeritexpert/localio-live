@@ -78,18 +78,34 @@
                     @php
                         $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($bName . ' alternatives');
+
+                        $resolvedAltH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'alternatives_h1',
+                            getCurrentLanguageID()
+                        );
+                        $finalAltH1 = !empty($resolvedAltH1['headline']) ? $resolvedAltH1['headline'] : $altTitle;
+
+                        $resolvedAltSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'alternatives_subtext',
+                            getCurrentLanguageID()
+                        );
+                        $finalAltSub = !empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $subHeadline;
                     @endphp
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
                         <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
-                            {{ $bName }} alternatives
+                            {!! \App\Services\ContentTemplateService::cleanHeading($finalAltH1) !!}
                         </h1>
                     </div>
                     <p class="text-meta">
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
-                    <p style="font-size: 16px; margin: 0; font-weight: 400;">
-                        {{ $subHeadline }}
-                    </p>
+                    @if(!empty($finalAltSub))
+                    <div style="font-size: 16px; margin: 0; font-weight: 400; color: #1e3050;">
+                        {!! $finalAltSub !!}
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
