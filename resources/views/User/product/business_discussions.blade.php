@@ -115,10 +115,25 @@
                         <div class="top-product-logo">
                             <x-business-logo :business="$business" :name="$bName" />
                         </div>
+                        @php
+                            $resolvedDiscH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'discussions_h1',
+                                getCurrentLanguageID()
+                            );
+                            $finalDiscH1 = !empty($resolvedDiscH1['headline']) ? $resolvedDiscH1['headline'] : ($bName . ' Discussions');
+
+                            $resolvedDiscSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'discussions_subtext',
+                                getCurrentLanguageID()
+                            );
+                            $finalDiscSub = !empty($resolvedDiscSub['headline']) ? $resolvedDiscSub['headline'] : $subHeadline;
+                        @endphp
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                                 <h1 style="margin: 0;">
-                                    {{ $bName }} Discussions
+                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalDiscH1) !!}
                                 </h1>
                             </div>
 
@@ -126,9 +141,11 @@
                                 Last updated {{ now()->subDay()->format('F j, Y') }}
                             </p>
 
-                            <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
-                                {!! $subHeadline !!}
-                            </p>
+                            @if(!empty($finalDiscSub))
+                            <div style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                {!! $finalDiscSub !!}
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>

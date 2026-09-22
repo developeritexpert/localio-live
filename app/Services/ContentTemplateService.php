@@ -369,16 +369,7 @@ class ContentTemplateService
             return 'features';
         }
 
-        if ($entityType === 'category' || $entityType === 'business') {
-            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
-                return 'category_discussions';
-            }
-            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
-                return 'category_faqs';
-            }
-            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
-                return 'category';
-            }
+        if ($entityType === 'business') {
             if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
                 return 'business_discussions';
             }
@@ -396,6 +387,18 @@ class ContentTemplateService
             }
             if (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
                 return 'business_reviews';
+            }
+        }
+
+        if ($entityType === 'category') {
+            if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
+                return 'category_discussions';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
+                return 'category_faqs';
+            }
+            if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
+                return 'category';
             }
         }
 
@@ -509,31 +512,7 @@ class ContentTemplateService
 
     public static function getOrAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $langId = 1, ?string $sectionGroup = null): ?ContentTemplate
     {
-        if (!$sectionGroup) {
-            if ($entityType === 'feature') {
-                $sectionGroup = 'features';
-            } elseif ($entityType === 'category' || $entityType === 'business') {
-                if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
-                    $sectionGroup = 'category_discussions';
-                } elseif (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
-                    $sectionGroup = 'category_faqs';
-                } elseif (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
-                    $sectionGroup = 'category';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
-                    $sectionGroup = 'business_discussions';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
-                    $sectionGroup = 'business_profile';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_ALTERNATIVES_FIELDS)) {
-                    $sectionGroup = 'business_alternatives';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_FAQS_FIELDS)) {
-                    $sectionGroup = 'business_faqs';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_COMPARE_FIELDS)) {
-                    $sectionGroup = 'business_compare';
-                } elseif (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
-                    $sectionGroup = 'business_reviews';
-                }
-            }
-        }
+        $sectionGroup = self::determineSectionGroup($entityType, $fieldKey, $sectionGroup);
 
         // 1. Check if an assignment is already locked in DB
         $assignment = ContentTemplateAssignment::where('entity_type', $entityType)

@@ -306,16 +306,33 @@
                     <div class="top-product-logo" >
                         <x-business-logo :business="$business" :name="$bName" />
                     </div>
+                    @php
+                        $resolvedFaqsH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'faqs_h1',
+                            getCurrentLanguageID()
+                        );
+                        $finalFaqsH1 = !empty($resolvedFaqsH1['headline']) ? $resolvedFaqsH1['headline'] : ($bName . ' FAQs');
+
+                        $resolvedFaqsSub = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'faqs_subtext',
+                            getCurrentLanguageID()
+                        );
+                        $finalFaqsSub = !empty($resolvedFaqsSub['headline']) ? $resolvedFaqsSub['headline'] : $subHeadline;
+                    @endphp
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="margin: 0; ">
-                                {{ $bName }} FAQs
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalFaqsH1) !!}
                             </h1>
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
-                        <p class="text-meta" style="">
-                            {{ $subHeadline }}
-                        </p>
+                        @if(!empty($finalFaqsSub))
+                        <div class="text-meta" style="margin-top: 4px;">
+                            {!! $finalFaqsSub !!}
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
