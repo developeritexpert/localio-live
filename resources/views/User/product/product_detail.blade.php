@@ -1676,9 +1676,29 @@ if (empty($images)) {
                                                         <div class="col-lg-12">
                                                             <div class="review-sidebar-sticky">
 
-                                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-                                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews ({{ number_format($ratingCount) }})
+                                                                @php
+                                                                    $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews (' . number_format($ratingCount) . ')';
+                                                                    $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                        $business,
+                                                                        'profile_reviews',
+                                                                        getCurrentLanguageID(),
+                                                                        ['[count]' => number_format($ratingCount)]
+                                                                    );
+                                                                    $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
+                                                                    if (!empty($resolvedBizReviews['headline']) && !str_contains($finalBizReviewsHeadline, '(') && !str_contains($finalBizReviewsHeadline, (string)$ratingCount)) {
+                                                                        $finalBizReviewsHeadline .= ' (' . number_format($ratingCount) . ')';
+                                                                    }
+                                                                    $finalBizReviewsSubtext = !empty($resolvedBizReviews['subtext']) ? $resolvedBizReviews['subtext'] : null;
+                                                                @endphp
+
+                                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: {{ !empty($finalBizReviewsSubtext) ? '6px' : '16px' }}; color: #1e3050; line-height: 1.3;">
+                                                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalBizReviewsHeadline) !!}
                                                                 </h2>
+                                                                @if(!empty($finalBizReviewsSubtext))
+                                                                    <div class="reviews-section-subtext mb-3" style="color: #475569; font-size: 14.5px;">
+                                                                        {!! $finalBizReviewsSubtext !!}
+                                                                    </div>
+                                                                @endif
                                                                 <div class="review-filter-sec" style="display: block;">
                                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                                         <div class="row align-items-start g-4">
@@ -2014,7 +2034,27 @@ if (empty($images)) {
                         </div>
 
                         <div id="sectionDiscussions" class="mt-5 pt-4">
-                            <x-community-discussion :business="$business" />
+                            @php
+                                $totalDiscsCount = $business->discussions()->count();
+                                $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'profile_discussions',
+                                    getCurrentLanguageID(),
+                                    ['[count]' => number_format($totalDiscsCount)]
+                                );
+                                $finalBizDiscHeadline = null;
+                                $finalBizDiscSubtext = null;
+                                if (!empty($resolvedBizDiscussions['headline'])) {
+                                    $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+                                    if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                                        $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+                                    }
+                                }
+                                if (!empty($resolvedBizDiscussions['subtext'])) {
+                                    $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+                                }
+                            @endphp
+                            <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
                         </div>
                         <div class="mt-5">
                             <section class="subs_sec light p_50 d-none" id="section16">

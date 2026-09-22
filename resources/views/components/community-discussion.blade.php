@@ -70,9 +70,9 @@
        {!! \App\Services\ContentTemplateService::cleanHeading($finalHeadline) !!}
     </h2>
     @if(!empty($finalSubtext))
-        <p style="color: #475569; margin: 0; font-size: 15px;">
+        <div class="community-discussion-subtext" style="color: #475569; margin: 0; font-size: 15px;">
             {!! $finalSubtext !!}
-        </p>
+        </div>
     @endif
 </div>
 

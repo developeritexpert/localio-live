@@ -273,6 +273,9 @@
                     <strong>Supported Variables:</strong> Click any tag to insert into the active input:
                     <div class="d-flex flex-wrap gap-1 mt-2">
                         @foreach([
+                            '[business]' => 'FlowSync Tech',
+                            '[business_cap]' => 'FlowSync Tech',
+                            '[count]' => '3',
                             '[category_cap]' => 'Web hosting',
                             '[category_tc]' => 'Web Hosting',
                             '[category_lc]' => 'web hosting',
