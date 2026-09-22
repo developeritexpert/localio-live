@@ -16,15 +16,6 @@
         cursor: pointer;
     }
 
-    .automotive-card {
-        box-shadow: 0px 34px 74px 0px #0023470f;
-    }
-
-    .automotive-card:hover {
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 0 !important;
         padding-top: 0 !important;
@@ -67,20 +58,6 @@
 
     @media (max-width: 768px) {
 
-        /* .automotive-card {
-                padding-bottom: 20px !important;
-            } */
-        /* .automotive-card .blue-chkbox {
-                position: relative !important;
-                bottom: auto !important;
-                right: auto !important;
-                border-radius: 8px !important;
-                display: block !important;
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 15px !important;
-                padding: 12px 15px !important;
-            } */
         .automotive-card .blue-chkbox label {
             display: inline-flex !important;
             align-items: center !important;
