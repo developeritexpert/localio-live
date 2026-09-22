@@ -85,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
+                <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3 d-none">
                     <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}" class="btn" style="background-color: #002347; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 22px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 8px;">
                         <span>View Top Rated</span> <i class="fas fa-arrow-right" style="font-size: 12px;"></i>
                     </a>
@@ -113,8 +113,8 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
-                    <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
+                    <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
                 </div>
