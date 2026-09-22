@@ -140,6 +140,13 @@ class ContentTemplateService
             'field2_label' => 'FAQ Explore Categories Subtext',
             'description' => 'Headline and subtext above the explore subcategories on FAQ page.',
         ],
+        'faq_page_discussions' => [
+            'label' => 'DISCUSSIONS',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussion section headline and subtext at the bottom of the Category FAQs page.',
+        ],
     ];
 
 
@@ -883,10 +890,30 @@ class ContentTemplateService
                 3 => '[category_cap] FAQs & Answers',
                 4 => 'Common Questions About [category_tc]',
             ],
+            'faq_page_discussions' => [
+                1 => [
+                    'headline' => '[category_cap] discussions ([count])',
+                    'subtext' => 'Explore questions, experiences, and opinions shared by Localio users.',
+                ],
+                2 => [
+                    'headline' => 'Join the [category_lc] discussion ([count])',
+                    'subtext' => 'Ask questions, share advice, and connect with other users exploring [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [category_cap] ([count])',
+                    'subtext' => 'Discover real experiences, troubleshooting tips, and user opinions about [entities1_lc].',
+                ],
+                4 => [
+                    'headline' => '[category_tc] Community Discussions ([count])',
+                    'subtext' => 'Explore community feedback, questions, and insights from verified Localio members.',
+                ],
+            ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $headlineText) {
+            foreach ($options as $optNum => $data) {
+                $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                 $exists = ContentTemplate::where('section_group', 'category_faqs')
                     ->where('field_key', $fieldKey)
                     ->where('option_number', $optNum)
@@ -899,7 +926,7 @@ class ContentTemplateService
                         'field_key'     => $fieldKey,
                         'option_number' => $optNum,
                         'headline'      => $headlineText,
-                        'subtext'       => null,
+                        'subtext'       => $subtextText,
                         'is_active'     => true,
                         'lang_id'       => 1,
                     ]);

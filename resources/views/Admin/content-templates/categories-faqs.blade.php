@@ -280,6 +280,7 @@
                             '[entity1_lc]' => 'web hosting provider',
                             '[entities1_cap]' => 'Web hosting providers',
                             '[entities1_lc]' => 'web hosting providers',
+                            '[count]' => '12',
                             '[year]' => date('Y'),
                             '[country1]' => 'United States',
                             '[country2]' => 'U.S.',

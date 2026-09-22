@@ -798,6 +798,40 @@
 </section>
 @endif
 
+
+<!-- Category Community Discussions Section -->
+@php
+    $catTransForDisc = ($category->translations instanceof \Illuminate\Database\Eloquent\Collection)
+        ? $category->translations->first()
+        : ($category->translations ?? $category->translation);
+    $catDiscName = $catTransForDisc->name ?? $category->name ?? 'Category';
+
+    $totalDiscs = $category->discussions()->count();
+    $resolvedFaqDisc = \App\Services\ContentTemplateService::resolveCategorySection(
+        $category, 
+        'faq_page_discussions', 
+        $lang_id ?? 1,
+        ['[count]' => number_format($totalDiscs)]
+    );
+
+    $faqDiscHeadline = null;
+    $faqDiscSubtext = null;
+    if (!empty($resolvedFaqDisc['headline'])) {
+        $faqDiscHeadline = $resolvedFaqDisc['headline'];
+        if (!str_contains($faqDiscHeadline, '(') && !str_contains($faqDiscHeadline, (string)$totalDiscs)) {
+            $faqDiscHeadline .= ' (' . number_format($totalDiscs) . ')';
+        }
+    }
+    if (!empty($resolvedFaqDisc['subtext'])) {
+        $faqDiscSubtext = $resolvedFaqDisc['subtext'];
+    }
+@endphp
+<section class="category-discussions-sec py-5" id="categoryDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+        <x-community-discussion :category="$category" :bName="$catDiscName" :headline="$faqDiscHeadline" :subtext="$faqDiscSubtext" />
+    </div>
+</section>
+
 @endsection
 
 @push('scripts')
