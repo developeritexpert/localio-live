@@ -520,7 +520,7 @@
                                 $activeTitle = !empty($featureContent->page_title) ? $featureContent->page_title : (!empty($resolvedFeatH1) ? $resolvedFeatH1 : $fallbackTitle);
                             @endphp
                             <h1>
-                                {{ $applyDynamicVars($activeTitle) }}
+                                {!! $applyDynamicVars($activeTitle) !!}
                             </h1>
 
                             <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
@@ -561,7 +561,7 @@
                                 $topRatedSubtext = !empty($featureContent->top_rated_listing_subtext) ? $featureContent->top_rated_listing_subtext : (!empty($resolvedTopRated['subtext']) ? $resolvedTopRated['subtext'] : ($category->translation->top_rated_listing_subtext ?? ''));
                             @endphp
                             <h2 style="margin-bottom: 8px;">
-                               {{ $applyDynamicVars($topRatedHeadline) }}
+                               {!! $applyDynamicVars($topRatedHeadline) !!}
                             </h2>
                             @if(!empty($topRatedSubtext))
                                 <style>
@@ -1762,7 +1762,7 @@
                                 : (!empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? null));
                         @endphp
                         <h2>
-                            {{ $applyDynamicVars($compAlternativesHeadline) }}
+                            {!! $applyDynamicVars($compAlternativesHeadline) !!}
                         </h2>
                         @if(!empty($compAlternativesSubtext))
                             <style>
@@ -1893,7 +1893,7 @@
                                         ? $featureContent->community_says_subtext
                                         : (!empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations->community_says_subtext ?? null));
                                 @endphp
-                                <h2 style="margin-bottom: 4px;">{{ $applyDynamicVars($commFeedbackHeadline) }}</h2>
+                                <h2 style="margin-bottom: 4px;">{!! $applyDynamicVars($commFeedbackHeadline) !!}</h2>
                                 @if(!empty($commFeedbackSubtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
@@ -2012,7 +2012,7 @@
             <div class="container">
                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                     <h2 style="margin-bottom: 8px;">
-                        {{ $popCompHeadline }}
+                        {!! $popCompHeadline !!}
                     </h2>
                     @if(!empty($popCompSubtext))
                         <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
@@ -2088,7 +2088,7 @@
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
                         <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
-                            {{ $compToolHeadline }}
+                            {!! $compToolHeadline !!}
                         </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #5b6b7a; margin: 0;">
@@ -2432,7 +2432,7 @@
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 class="explore-cat-h2" style="text-transform: math-auto;">
-                        {{ $exploreHeadline }}
+                        {!! $exploreHeadline !!}
                     </h2>
                     @if(!empty($exploreSubtext))
                         <div class="explore-cat-subtext" style="color: #002347; margin: 0;">

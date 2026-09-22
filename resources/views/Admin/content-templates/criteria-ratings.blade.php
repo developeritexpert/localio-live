@@ -262,7 +262,7 @@
                                                 <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                             </td>
                                             <td>
-                                                <span class="text-dark fs-13px fw-bold">{{ $decodedHeadline }}</span>
+                                                <span class="text-dark fs-13px fw-bold">{{ Str::limit(strip_tags($decodedHeadline), 150) }}</span>
                                             </td>
                                             @if(($def['type'] ?? '') !== 'single')
                                                 <td>
@@ -327,7 +327,7 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label font-weight-bold small" id="lblField1">Upper text (Headline)</label>
-                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline / upper text...">
+                        <textarea name="headline" id="inputHeadline" class="form-control rich-editor" rows="3" placeholder="Enter headline / upper text..."></textarea>
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Lower text (Rich Content)</label>
@@ -374,7 +374,35 @@ $(document).ready(function() {
     });
 
     let activeInput = $('#inputHeadline');
+    let headlineEditor = null;
     let subtextEditor = null;
+
+    function initHeadlineEditor() {
+        const el = document.querySelector('#inputHeadline');
+        if (!el || typeof ClassicEditor === 'undefined' || headlineEditor) return;
+
+        ClassicEditor
+            .create(el, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                headlineEditor = editor;
+                el.ckeditorInstance = editor;
+
+                editor.model.document.on('change:data', () => {
+                    el.value = editor.getData();
+                });
+
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (isFocused) {
+                        activeInput = $('#inputHeadline');
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Headline CKEditor Init Error:", error);
+            });
+    }
 
     function initSubtextEditor() {
         const el = document.querySelector('#inputSubtext');
@@ -403,10 +431,14 @@ $(document).ready(function() {
             });
     }
 
+    initHeadlineEditor();
     initSubtextEditor();
 
-    $('#inputHeadline').on('focus', function() {
-        activeInput = $(this);
+    $('#lblField1').on('click', function() {
+        if (headlineEditor) {
+            headlineEditor.editing.view.focus();
+            activeInput = $('#inputHeadline');
+        }
     });
 
     $('#lblField2').on('click', function() {
@@ -419,7 +451,17 @@ $(document).ready(function() {
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+        if (activeInput && activeInput.attr('id') === 'inputHeadline' && headlineEditor) {
+            try {
+                headlineEditor.model.change(writer => {
+                    headlineEditor.model.insertContent(writer.createText(tag + ' '));
+                });
+            } catch(err) {
+                let cur = headlineEditor.getData() || '';
+                headlineEditor.setData(cur + (cur ? ' ' : '') + tag);
+            }
+            headlineEditor.editing.view.focus();
+        } else if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
             try {
                 subtextEditor.model.change(writer => {
                     subtextEditor.model.insertContent(writer.createText(tag + ' '));
@@ -437,6 +479,9 @@ $(document).ready(function() {
     });
 
     $('#templateEditForm').on('submit', function() {
+        if (headlineEditor) {
+            $('#inputHeadline').val(headlineEditor.getData());
+        }
         if (subtextEditor) {
             $('#inputSubtext').val(subtextEditor.getData());
         }
@@ -472,6 +517,9 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
+        if (headlineEditor) {
+            headlineEditor.setData('');
+        }
         if (subtextEditor) {
             subtextEditor.setData('');
         }
@@ -486,7 +534,13 @@ $(document).ready(function() {
         $('#tplModalTitle').text('Add New Option (' + f1 + ')');
 
         $('#modalTemplateForm').modal('show');
-        setTimeout(function() { $('#inputHeadline').focus(); }, 300);
+        setTimeout(function() {
+            if (headlineEditor) {
+                headlineEditor.editing.view.focus();
+            } else {
+                $('#inputHeadline').focus();
+            }
+        }, 300);
     });
 
     $('.btn-edit-tpl').on('click', function(e) {
@@ -505,6 +559,9 @@ $(document).ready(function() {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
+        if (headlineEditor) {
+            headlineEditor.setData(headline);
+        }
         if (subtextEditor) {
             subtextEditor.setData(subtext);
         }
@@ -519,7 +576,13 @@ $(document).ready(function() {
         $('#tplModalTitle').text('Edit Option #' + opt);
 
         $('#modalTemplateForm').modal('show');
-        setTimeout(function() { $('#inputHeadline').focus(); }, 300);
+        setTimeout(function() {
+            if (headlineEditor) {
+                headlineEditor.editing.view.focus();
+            } else {
+                $('#inputHeadline').focus();
+            }
+        }, 300);
     });
 });
 </script>

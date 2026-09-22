@@ -231,7 +231,7 @@ class ContentTemplateController extends Controller
             $languages = Language::all();
         }
 
-        \App\Services\ContentTemplateService::ensureTemplatesExistForLanguage($sectionGroup, $lang_id);
+        ContentTemplateService::ensureTemplatesExistForLanguage($sectionGroup, $lang_id);
 
         $parentCategories = Category::whereNull('parent_id')
             ->with([
@@ -492,7 +492,7 @@ class ContentTemplateController extends Controller
     public function assignSingle(Request $request)
     {
         $request->validate([
-            'entity_type' => 'required|string|in:category,feature',
+            'entity_type' => 'required|string|in:category,feature,business',
             'entity_id'   => 'required|integer',
             'field_key'   => 'required|string',
             'template_id' => 'required|integer|exists:content_templates,id',
@@ -516,12 +516,12 @@ class ContentTemplateController extends Controller
     }
 
     /**
-     * Reset/clear locked template assignments for a specific entity (category/feature).
+     * Reset/clear locked template assignments for a specific entity (category/feature/business).
      */
     public function resetEntity(Request $request)
     {
         $request->validate([
-            'entity_type'   => 'required|string|in:category,feature',
+            'entity_type'   => 'required|string|in:category,feature,business',
             'entity_id'     => 'required|integer',
             'section_group' => 'nullable|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings',
             'lang_id'       => 'nullable|integer',
@@ -538,25 +538,25 @@ class ContentTemplateController extends Controller
 
         if (str_starts_with($sectionGroup, 'criteria_ratings_')) {
             $critId = (int) str_replace('criteria_ratings_', '', $sectionGroup);
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::getCriteriaFields($critId)));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::getCriteriaFields($critId)));
         } elseif ($sectionGroup === 'category') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::CATEGORY_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_FIELDS));
         } elseif ($sectionGroup === 'category_faqs') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::CATEGORY_FAQ_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_FAQ_FIELDS));
         } elseif ($sectionGroup === 'category_discussions') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::CATEGORY_DISCUSSIONS_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_DISCUSSIONS_FIELDS));
         } elseif ($sectionGroup === 'business_profile') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_PROFILE_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_PROFILE_FIELDS));
         } elseif ($sectionGroup === 'business_alternatives') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_ALTERNATIVES_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_ALTERNATIVES_FIELDS));
         } elseif ($sectionGroup === 'business_faqs') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_FAQS_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_FAQS_FIELDS));
         } elseif ($sectionGroup === 'business_compare') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_COMPARE_FIELDS));
         } elseif ($sectionGroup === 'business_reviews') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_REVIEWS_FIELDS));
         } elseif ($sectionGroup === 'business_discussions') {
-            $query->whereIn('field_key', array_keys(\App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS));
+            $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS));
         } elseif ($sectionGroup === 'features') {
             $query->whereIn('field_key', array_keys(ContentTemplateService::FEATURE_FIELDS));
         }
@@ -584,7 +584,7 @@ class ContentTemplateController extends Controller
             'category_id'        => 'nullable|integer',
         ]);
 
-        $copied = \App\Services\ContentTemplateService::copyCriteriaTemplates(
+        $copied = ContentTemplateService::copyCriteriaTemplates(
             $request->from_section_group,
             $request->to_section_group,
             (int) $request->lang_id

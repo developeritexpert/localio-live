@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Business;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\ContentTemplate;
@@ -70,6 +71,13 @@ class ContentTemplateService
             'type' => 'single',
             'field1_label' => 'Link Text',
             'description' => 'Used on top-rated block link (e.g. See all [entities1_cap]).',
+        ],
+        'category_page_faqs' => [
+            'label' => 'CATEGORY FAQS',
+            'type' => 'combined',
+            'field1_label' => 'Category Page FAQs Headline (H2)',
+            'field2_label' => 'Category Page FAQs Subtext',
+            'description' => 'Headline and subtext for the FAQs section on category page.',
         ],
     ];
 
@@ -309,7 +317,7 @@ class ContentTemplateService
             return 'features';
         }
 
-        if ($entityType === 'category') {
+        if ($entityType === 'category' || $entityType === 'business') {
             if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
                 return 'category_discussions';
             }
@@ -319,9 +327,6 @@ class ContentTemplateService
             if (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
                 return 'category';
             }
-        }
-
-        if ($entityType === 'business') {
             if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
                 return 'business_discussions';
             }
@@ -362,6 +367,19 @@ class ContentTemplateService
             ->where('field_key', $fieldKey)
             ->with('template')
             ->first();
+
+        // Fallback for business entity: if no assignment under 'business', check category assignment for business's category
+        if (!$assignment && $entityType === 'business') {
+            $biz = Business::find($entityId);
+            if ($biz && $biz->category_id) {
+                $assignment = ContentTemplateAssignment::where('entity_type', 'category')
+                    ->where('entity_id', $biz->category_id)
+                    ->where('lang_id', $langId)
+                    ->where('field_key', $fieldKey)
+                    ->with('template')
+                    ->first();
+            }
+        }
 
         if ($assignment && $assignment->template && $assignment->template->is_active) {
             // Verify that the assigned template actually belongs to the required section_group
@@ -424,16 +442,14 @@ class ContentTemplateService
         if (!$sectionGroup) {
             if ($entityType === 'feature') {
                 $sectionGroup = 'features';
-            } elseif ($entityType === 'category') {
+            } elseif ($entityType === 'category' || $entityType === 'business') {
                 if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
                     $sectionGroup = 'category_discussions';
                 } elseif (array_key_exists($fieldKey, self::CATEGORY_FAQ_FIELDS)) {
                     $sectionGroup = 'category_faqs';
                 } elseif (array_key_exists($fieldKey, self::CATEGORY_FIELDS)) {
                     $sectionGroup = 'category';
-                }
-            } elseif ($entityType === 'business') {
-                if (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
+                } elseif (array_key_exists($fieldKey, self::BUSINESS_DISCUSSIONS_FIELDS)) {
                     $sectionGroup = 'business_discussions';
                 } elseif (array_key_exists($fieldKey, self::BUSINESS_PROFILE_FIELDS)) {
                     $sectionGroup = 'business_profile';
@@ -518,11 +534,29 @@ class ContentTemplateService
             $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
         } elseif ($sectionGroup === 'category') {
             $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
+        } elseif ($sectionGroup === 'business_profile') {
+            $allFieldKeys = array_keys(self::BUSINESS_PROFILE_FIELDS);
+        } elseif ($sectionGroup === 'business_alternatives') {
+            $allFieldKeys = array_keys(self::BUSINESS_ALTERNATIVES_FIELDS);
+        } elseif ($sectionGroup === 'business_faqs') {
+            $allFieldKeys = array_keys(self::BUSINESS_FAQS_FIELDS);
+        } elseif ($sectionGroup === 'business_compare') {
+            $allFieldKeys = array_keys(self::BUSINESS_COMPARE_FIELDS);
+        } elseif ($sectionGroup === 'business_reviews') {
+            $allFieldKeys = array_keys(self::BUSINESS_REVIEWS_FIELDS);
+        } elseif ($sectionGroup === 'business_discussions') {
+            $allFieldKeys = array_keys(self::BUSINESS_DISCUSSIONS_FIELDS);
         } else {
             $allFieldKeys = array_merge(
                 array_keys(self::CATEGORY_FIELDS),
                 array_keys(self::CATEGORY_FAQ_FIELDS),
-                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
+                array_keys(self::BUSINESS_PROFILE_FIELDS),
+                array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
+                array_keys(self::BUSINESS_FAQS_FIELDS),
+                array_keys(self::BUSINESS_COMPARE_FIELDS),
+                array_keys(self::BUSINESS_REVIEWS_FIELDS),
+                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
             );
         }
 
@@ -823,6 +857,8 @@ class ContentTemplateService
             $text = str_replace(['[business]', '[business_name]', '[business_tc]'], $bizName, $text);
             $text = str_replace('[business_cap]', ucfirst($bizName), $text);
             $text = str_replace('[business_lc]', mb_strtolower($bizName), $text);
+        } else {
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]'], '', $text);
         }
 
         // Category tags
@@ -1277,4 +1313,32 @@ class ContentTemplateService
 
         return $result;
     }
+
+    /**
+     * Resolves a business page template section headline and subtext using assigned/default template.
+     */
+    public static function resolveBusinessSection(\App\Models\Business $business, string $fieldKey, int $langId = 1): array
+    {
+        $category = $business->category ?? $business->subCategories->first();
+
+        $template = self::getTemplateForResolution('business', $business->id, $fieldKey, $langId);
+
+        $headline = '';
+        $subtext = '';
+        $optionNumber = null;
+
+        if ($template) {
+            $headline = self::replacePlaceholders($template->headline, $category, null, $langId, $business);
+            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId, $business);
+            $optionNumber = $template->option_number;
+        }
+
+        return [
+            'headline' => $headline,
+            'subtext' => $subtext,
+            'template' => $template,
+            'option_number' => $optionNumber,
+        ];
+    }
 }
+
