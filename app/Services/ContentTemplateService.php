@@ -115,6 +115,24 @@ class ContentTemplateService
             'field2_label' => 'FAQ Page Content Text (Rich Editor)',
             'description' => 'Second section intro headline and rich text on FAQ page.',
         ],
+        'faq_search_headline' => [
+            'label' => 'SEARCH HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Search Headline',
+            'description' => 'Headline above the FAQ search box on the Category FAQs page.',
+        ],
+        'faq_search_placeholder' => [
+            'label' => 'SEARCH PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text inside the FAQ search box on the Category FAQs page.',
+        ],
+        'faq_accordion_headline' => [
+            'label' => 'FAQ LIST HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'FAQ List Headline (H2)',
+            'description' => 'Headline (H2) directly above the FAQ accordion list on the Category FAQs page.',
+        ],
         'faq_explore' => [
             'label' => 'EXPLORE CATEGORIES',
             'type' => 'combined',
@@ -841,6 +859,55 @@ class ContentTemplateService
         }
     }
 
+    /**
+     * Seeds default category FAQ template options if missing.
+     */
+    public static function seedDefaultCategoryFaqOptionsIfMissing(): void
+    {
+        $defaults = [
+            'faq_search_headline' => [
+                1 => 'Search [category_cap] FAQs',
+                2 => 'Search [category_tc] Questions & Answers',
+                3 => 'Find Answers in [category_cap] FAQs',
+                4 => 'Quick Search: [category_cap] FAQs',
+            ],
+            'faq_search_placeholder' => [
+                1 => 'Search questions...',
+                2 => 'Search FAQs for [category_lc]...',
+                3 => 'Search questions about [category_lc]...',
+                4 => 'Type a question or topic...',
+            ],
+            'faq_accordion_headline' => [
+                1 => 'Frequently asked questions',
+                2 => 'Frequently Asked Questions About [category_cap]',
+                3 => '[category_cap] FAQs & Answers',
+                4 => 'Common Questions About [category_tc]',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $headlineText) {
+                $exists = ContentTemplate::where('section_group', 'category_faqs')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    ContentTemplate::create([
+                        'section_group' => 'category_faqs',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => null,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
@@ -849,6 +916,8 @@ class ContentTemplateService
 
         if ($sectionGroup === 'category') {
             self::seedDefaultCategoryOptionsIfMissing();
+        } elseif ($sectionGroup === 'category_faqs') {
+            self::seedDefaultCategoryFaqOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -1222,16 +1291,23 @@ class ContentTemplateService
             }
         }
 
-        if ($fieldKey === 'category_faq_search') {
+        if (in_array($fieldKey, ['category_faq_search', 'faq_search_placeholder'], true)) {
             $headline = self::cleanPlaceholder($headline);
+            return [
+                'headline' => $headline,
+                'subtext' => $subtext,
+                'template' => $template,
+                'option_number' => $optionNumber,
+            ];
+        } else {
+            $headline = self::cleanHeading($headline);
+            return [
+                'headline' => $headline,
+                'subtext' => $subtext,
+                'template' => $template,
+                'option_number' => $optionNumber,
+            ];
         }
-
-        return [
-            'headline' => $headline,
-            'subtext' => $subtext,
-            'template' => $template,
-            'option_number' => $optionNumber,
-        ];
     }
 
     /**
@@ -1257,7 +1333,7 @@ class ContentTemplateService
         }
 
         return [
-            'headline' => $headline,
+            'headline' => self::cleanHeading($headline),
             'template' => $template,
             'option_number' => $optionNumber,
         ];
@@ -1480,7 +1556,7 @@ class ContentTemplateService
         }
 
         return [
-            'headline' => $headline,
+            'headline' => self::cleanHeading($headline),
             'subtext' => $subtext,
             'template' => $template,
             'option_number' => $optionNumber,

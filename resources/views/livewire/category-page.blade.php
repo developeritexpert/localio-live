@@ -1920,7 +1920,7 @@
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
                         <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
-                            {{ $compToolHeadline }}
+                            {!! \App\Services\ContentTemplateService::cleanHeading($compToolHeadline) !!}
                         </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #5b6b7a;margin: 0;">

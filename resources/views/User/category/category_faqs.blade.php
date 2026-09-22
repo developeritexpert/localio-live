@@ -211,7 +211,7 @@
                         @endphp
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                {{ $faqH1Title }}
+                                {!! \App\Services\ContentTemplateService::cleanHeading($faqH1Title) !!}
                             </h1>
                         </div>
         <!-- Category Header Row -->
@@ -269,7 +269,7 @@
     $faqAboutDesc = !empty($resolvedFaqAbout['subtext']) ? $resolvedFaqAbout['subtext'] : ($categoryTranslation->faq_about_description ?? '');
 @endphp
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        {{ $faqAboutH2 }}
+                        {!! \App\Services\ContentTemplateService::cleanHeading($faqAboutH2) !!}
                     </h2>
                     <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
                         @if(!empty($faqAboutDesc))
@@ -284,20 +284,31 @@
 
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
+                    @php
+                        $resolvedFaqSearch = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_search_headline', $lang_id ?? 1);
+                        $faqSearchHeadline = !empty($resolvedFaqSearch['headline']) ? $resolvedFaqSearch['headline'] : ('Search ' . $catName . ' FAQs');
+
+                        $resolvedFaqPlaceholder = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_search_placeholder', $lang_id ?? 1);
+                        $faqSearchPlaceholder = !empty($resolvedFaqPlaceholder['headline']) ? $resolvedFaqPlaceholder['headline'] : 'Search questions...';
+                    @endphp
                     <p style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
-                        Search {{ $catName }} FAQs
+                        {!! \App\Services\ContentTemplateService::cleanHeading($faqSearchHeadline) !!}
                     </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="faqSearchInput" placeholder="Search questions..." value="{{ request('q') }}" autocomplete="off">
+                        <input type="text" id="faqSearchInput" placeholder="{{ \App\Services\ContentTemplateService::cleanPlaceholder($faqSearchPlaceholder) }}" value="{{ request('q') }}" autocomplete="off">
                     </div>
                 </div>
 
                 <!-- Main FAQ Section: Headline & Accordion List -->
                 <div class="main-faq-container">
+                    @php
+                        $resolvedFaqAccordion = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_accordion_headline', $lang_id ?? 1);
+                        $faqAccordionHeadline = !empty($resolvedFaqAccordion['headline']) ? $resolvedFaqAccordion['headline'] : 'Frequently asked questions';
+                    @endphp
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
-                            Frequently asked questions
+                            {!! \App\Services\ContentTemplateService::cleanHeading($faqAccordionHeadline) !!}
                         </h2>
                     </div>
 
@@ -691,7 +702,7 @@
     <div class="container">
         <div class="text-start mb-4">
             <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
-                {{ $exploreHeadline }}
+                {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
             </h2>
             @if(!empty($exploreSubtext))
                 <div class="explore-cat-subtext" style="color: #475569; margin: 0; font-size: 15px;">

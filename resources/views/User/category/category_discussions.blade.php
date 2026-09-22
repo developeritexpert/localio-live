@@ -108,7 +108,7 @@
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                                 <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
-                                    {{ !empty($resolvedH1) ? $resolvedH1 : ($catName . ' Community Discussions') }}
+                                    {!! \App\Services\ContentTemplateService::cleanHeading(!empty($resolvedH1) ? $resolvedH1 : ($catName . ' Community Discussions')) !!}
                                 </h1>
                             </div>
 
