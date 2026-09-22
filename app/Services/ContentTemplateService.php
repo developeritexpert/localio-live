@@ -73,11 +73,24 @@ class ContentTemplateService
             'description' => 'Used on top-rated block link (e.g. See all [entities1_cap]).',
         ],
         'category_page_faqs' => [
-            'label' => 'CATEGORY FAQS',
+            'label' => 'FAQS',
             'type' => 'combined',
-            'field1_label' => 'Category Page FAQs Headline (H2)',
-            'field2_label' => 'Category Page FAQs Subtext',
-            'description' => 'Headline and subtext for the FAQs section on category page.',
+            'field1_label' => 'Category FAQs Headline (H2)',
+            'field2_label' => 'Category FAQs Subtext',
+            'description' => 'Headline and subtext for the FAQs section on category and subcategory pages.',
+        ],
+        'category_faq_search' => [
+            'label' => 'FAQ SEARCH',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text for the category/subcategory FAQ search input.',
+        ],
+        'category_page_discussions' => [
+            'label' => 'DISCUSSIONS',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Headline and subtext for the community discussions section on category/subcategory pages.',
         ],
     ];
 
@@ -743,10 +756,99 @@ class ContentTemplateService
         return $copiedCount;
     }
 
+    /**
+     * Seeds default category template options for FAQ and Discussions if missing.
+     */
+    public static function seedDefaultCategoryOptionsIfMissing(): void
+    {
+        $defaults = [
+            'category_page_faqs' => [
+                1 => [
+                    'headline' => 'Frequently asked questions',
+                    'subtext' => 'Common questions and answers about [category_lc] solutions and comparison criteria.',
+                ],
+                2 => [
+                    'headline' => 'Frequently Asked Questions About [category_cap]',
+                    'subtext' => 'Find answers to common questions about choosing and comparing [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => '[category_cap] FAQs',
+                    'subtext' => 'Everything you need to know about [category_lc] features, pricing, and provider comparisons.',
+                ],
+                4 => [
+                    'headline' => 'Questions & Answers on [category_cap]',
+                    'subtext' => 'Key insights and answers to frequent questions regarding [entities1_lc] on Localio.',
+                ],
+            ],
+            'category_faq_search' => [
+                1 => [
+                    'headline' => 'Search [category_lc] FAQs...',
+                    'subtext' => null,
+                ],
+                2 => [
+                    'headline' => 'Search [category_cap] FAQs...',
+                    'subtext' => null,
+                ],
+                3 => [
+                    'headline' => 'Search FAQs for [category_lc]...',
+                    'subtext' => null,
+                ],
+                4 => [
+                    'headline' => 'Search [entities1_lc] FAQs...',
+                    'subtext' => null,
+                ],
+            ],
+            'category_page_discussions' => [
+                1 => [
+                    'headline' => '[category_cap] discussions ([count])',
+                    'subtext' => 'Explore questions, experiences, and opinions shared by Localio users.',
+                ],
+                2 => [
+                    'headline' => 'Join the [category_lc] discussion ([count])',
+                    'subtext' => 'Ask questions, share advice, and connect with other users exploring [entities1_lc].',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [category_cap] ([count])',
+                    'subtext' => 'Discover real experiences, troubleshooting tips, and user opinions about [entities1_lc].',
+                ],
+                4 => [
+                    'headline' => '[category_tc] Community Discussions ([count])',
+                    'subtext' => 'Explore community feedback, questions, and insights from verified Localio members.',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $optData) {
+                $exists = ContentTemplate::where('section_group', 'category')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    ContentTemplate::create([
+                        'section_group' => 'category',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $optData['headline'],
+                        'subtext'       => $optData['subtext'],
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
             return;
+        }
+
+        if ($sectionGroup === 'category') {
+            self::seedDefaultCategoryOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -832,10 +934,40 @@ class ContentTemplateService
             ?? $category->categoryTranslations()->first();
     }
 
-    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null): string
+        /**
+     * Cleans heading text from CKEditor by decoding entities, stripping block tags (<p>, <div>, etc.)
+     * and preserving inline styling (<b>, <strong>, <i>, <em>, <span>, <mark>, <small>).
+     */
+    public static function cleanHeading(?string $text): string
     {
         if (empty($text)) {
             return '';
+        }
+        $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        $cleaned = strip_tags($decoded, '<b><strong><i><em><span><mark><small>');
+        return trim($cleaned);
+    }
+
+    /**
+     * Cleans input placeholder text by stripping all HTML tags and decoding entities.
+     */
+    public static function cleanPlaceholder(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+        $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        return trim(strip_tags($decoded));
+    }
+
+    public static function replacePlaceholders(?string $text, ?Category $category, ?Feature $feature = null, int $langId = 1, ?\App\Models\Business $business = null, array $extraTags = []): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        foreach ($extraTags as $tag => $val) {
+            $text = str_replace($tag, (string) $val, $text);
         }
 
         // Global tags
@@ -1011,7 +1143,7 @@ class ContentTemplateService
     /**
      * Resolves a category section headline and subtext using assigned template with fallback.
      */
-    public static function resolveCategorySection(Category $category, string $fieldKey, int $langId = 1): array
+    public static function resolveCategorySection(Category $category, string $fieldKey, int $langId = 1, array $extraTags = []): array
     {
         $catTrans = self::getCategoryTranslation($category, $langId);
 
@@ -1022,8 +1154,8 @@ class ContentTemplateService
         $optionNumber = null;
 
         if ($template) {
-            $headline = self::replacePlaceholders($template->headline, $category, null, $langId);
-            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId);
+            $headline = self::replacePlaceholders($template->headline, $category, null, $langId, null, $extraTags);
+            $subtext = self::replacePlaceholders($template->subtext, $category, null, $langId, null, $extraTags);
             $optionNumber = $template->option_number;
         }
 
@@ -1069,6 +1201,16 @@ class ContentTemplateService
                     $headline = $catTrans->category_faqs_headline ?? 'Frequently asked questions';
                     $subtext = $catTrans->category_faqs_subtext ?? '';
                     break;
+                case 'category_faq_search':
+                    $headline = 'Search ' . strtolower($catTrans->name ?? 'category') . ' FAQs...';
+                    $subtext = '';
+                    break;
+                case 'category_page_discussions':
+                    $countVal = $extraTags['[count]'] ?? ($extraTags['count'] ?? null);
+                    $countSuffix = $countVal !== null ? " ({$countVal})" : '';
+                    $headline = ($catTrans->name ?? 'Category') . ' discussions' . $countSuffix;
+                    $subtext = 'Explore questions, experiences, and opinions shared by Localio users.';
+                    break;
                 case 'faq_about':
                     $headline = $catTrans->faq_about_headline ?? ('About ' . ($catTrans->name ?? ''));
                     $subtext = $catTrans->faq_about_description ?? '';
@@ -1078,6 +1220,10 @@ class ContentTemplateService
                     $subtext = $catTrans->faq_explore_subtext ?? '';
                     break;
             }
+        }
+
+        if ($fieldKey === 'category_faq_search') {
+            $headline = self::cleanPlaceholder($headline);
         }
 
         return [

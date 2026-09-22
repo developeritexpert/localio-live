@@ -1,4 +1,4 @@
-@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false, 'headline' => null, 'subtext' => null])
 
 @php
     if ($isTopRated) {
@@ -40,11 +40,41 @@
         $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
         $seeAllUrl = route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]);
     }
+    $discHeadline = null;
+    $discSubtext = null;
+    if ($category) {
+        $resolvedCatDisc = \App\Services\ContentTemplateService::resolveCategorySection(
+            $category, 
+            'category_page_discussions', 
+            getCurrentLanguageID(),
+            ['[count]' => number_format($totalDiscs)]
+        );
+        if (!empty($resolvedCatDisc['headline'])) {
+            $discHeadline = $resolvedCatDisc['headline'];
+            if (!str_contains($discHeadline, '(') && !str_contains($discHeadline, (string)$totalDiscs)) {
+                $discHeadline .= ' (' . number_format($totalDiscs) . ')';
+            }
+        }
+        if (!empty($resolvedCatDisc['subtext'])) {
+            $discSubtext = $resolvedCatDisc['subtext'];
+        } else {
+            $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
+        }
+    }
+    $finalHeadline = $headline ?? $discHeadline ?? ($bName . ' discussions (' . number_format($totalDiscs) . ')');
+    $finalSubtext = $subtext ?? $discSubtext ?? null;
 @endphp
 
-<h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-   {{ $bName }} discussions ({{ number_format($totalDiscs) }})
-</h2>
+<div class="mb-4 text-start">
+    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #002347; line-height: 1.3;">
+       {!! \App\Services\ContentTemplateService::cleanHeading($finalHeadline) !!}
+    </h2>
+    @if(!empty($finalSubtext))
+        <p style="color: #475569; margin: 0; font-size: 15px;">
+            {!! $finalSubtext !!}
+        </p>
+    @endif
+</div>
 
 <!-- Inline Post Prompt Card -->
 <div class="boxshadow_border bg-white p-3 mb-3 discussion-composer-card" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">

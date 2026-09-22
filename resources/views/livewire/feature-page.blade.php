@@ -2547,8 +2547,9 @@
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
             $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
-            $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
-            $faqSubtext = $catTrans->category_faqs_subtext ?? null;
+            $resolvedCatFaqs = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_page_faqs', $currentLangId);
+            $faqHeadline = !empty($resolvedCatFaqs['headline']) ? $resolvedCatFaqs['headline'] : (!empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions');
+            $faqSubtext = !empty($resolvedCatFaqs['subtext']) ? $resolvedCatFaqs['subtext'] : ($catTrans->category_faqs_subtext ?? null);
         @endphp
         <section class="category-faqs-sec cat-faq-sec py-5" style="">
             <div class="container">
@@ -2556,7 +2557,7 @@
                     <div class="">
                         <div class="text-start mb-4">
                             <h2 style="margin-bottom: 8px;">
-                                {{ $faqHeadline }}
+                                {!! \App\Services\ContentTemplateService::cleanHeading($faqHeadline) !!}
                             </h2>
                             @if(!empty($faqSubtext))
                                 <div class="category-faqs-subtext" style="color: #002347; margin: 0;">

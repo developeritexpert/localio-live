@@ -566,7 +566,7 @@
                             <div class="alert alert-primary bg-primary-dim border-0 d-flex align-items-center justify-content-between p-3 mb-3">
                                 <div>
                                     <strong class="d-block text-primary"><em class="icon ni ni-template me-1"></em>Dynamic Content Templates</strong>
-                                    <span class="small text-muted">Headlines and subtexts for Top 10, Compare Top-Rated, Pros &amp; Cons, Comparisons, and Category FAQs are centrally managed in <strong>Content templates &gt; Category</strong>.</span>
+                                    <span class="small text-muted">Headlines and subtexts for Top 10, Compare Top-Rated, Pros &amp; Cons, Comparisons, Category FAQs, FAQ Search, and Discussions are centrally managed in <strong>Content templates &gt; Category</strong>.</span>
                                 </div>
                                 <a href="{{ route('admin.content-templates.categories') }}" target="_blank" class="btn btn-sm btn-primary ms-3 text-nowrap">
                                     <em class="icon ni ni-external me-1"></em> Manage Content Templates
