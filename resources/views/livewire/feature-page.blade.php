@@ -934,7 +934,7 @@
                                             @php
                                                 $sortedFeatures = collect($availableFeatures)->sortBy(function($feat) use ($lang_id) {
                                                     $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                                    $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                    $featTrans = $feat->translations->where('lang_id', $currentLangId)->first() ?? $feat->translations->first();
                                                     return strtolower($featTrans->name ?? $feat->name ?? 'Feature');
                                                 })->values();
                                             @endphp
@@ -952,15 +952,15 @@
                                                     @if((int)$feat->id !== (int)$lockedFeatureId)
                                                         @php
                                                             $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                                            $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                            $featTrans = $feat->translations->where('lang_id', $currentLangId)->first() ?? $feat->translations->first();
                                                             $featName = $featTrans->name ?? $feat->name ?? 'Feature';
                                                             $featId = (string)$feat->id;
                                                             $isChecked = in_array($featId, array_map('strval', $selectedFeatures ?? []));
                                                         @endphp
                                                         <div class="form-check" style="margin-bottom: 6px;" wire:key="feat-wrap-{{ $featId }}">
-                                                            <input type="checkbox" class="form-check-input"
-                                                                   wire:model.live="selectedFeatures"
-                                                                   wire:key="feat-input-{{ $featId }}-{{ $isChecked ? '1' : '0' }}"
+                                                            <input type="checkbox" class="form-check-input feature-filter-checkbox"
+                                                                   wire:click="toggleFeature('{{ $featId }}')"
+                                                                   {{ $isChecked ? 'checked' : '' }}
                                                                    value="{{ $featId }}"
                                                                    id="feature-check-{{ $featId }}"
                                                                    style="margin-right: 8px; cursor: pointer;">
@@ -1042,17 +1042,16 @@
 
                                         @foreach($secondarySelectedFeatures as $fItem)
                                             @php
-                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fTrans = $fItem->translations->firstWhere('lang_id', $lang_id) ?? $fItem->translations->first();
                                                 $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
                                             @endphp
-                                           
-                                                <button
-    type="button"
-    wire:key="active-feature-chip-{{ $fItem->id }}"
-    class="active-feat-chip"
-    wire:click="toggleFeature({{ $fItem->id }})"
-    title="Click to remove {{ $fName }}"
->
+                                            <button
+                                                type="button"
+                                                wire:key="active-feature-chip-{{ $fItem->id }}"
+                                                class="active-feat-chip"
+                                                wire:click="toggleFeature({{ $fItem->id }})"
+                                                title="Click to remove {{ $fName }}"
+                                            >
                                                 <span>{{ $fName }}</span>
                                                 <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
                                             </button>
@@ -1499,10 +1498,14 @@
 
                                         @foreach($secondarySelectedFeatures as $fItem)
                                             @php
-                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fTrans = $fItem->translations->firstWhere('lang_id', $lang_id) ?? $fItem->translations->first();
                                                 $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
                                             @endphp
-                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                            <button type="button"
+                                                    wire:key="active-feature-chip-no-results-{{ $fItem->id }}"
+                                                    class="active-feat-chip"
+                                                    wire:click="toggleFeature({{ $fItem->id }})"
+                                                    title="Click to remove {{ $fName }}">
                                                 <span>{{ $fName }}</span>
                                                 <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
                                             </button>
@@ -2770,5 +2773,73 @@ function switchCategoryPreview(bizId, imgSrc, thumbElement) {
 </script>
 
 
+
+
+<script>
+(function() {
+    function syncFeatureCheckboxes(selectedIds) {
+        var strSelected = Array.isArray(selectedIds) ? selectedIds.map(String) : null;
+        document.querySelectorAll('.feature-filter-checkbox').forEach(function(cb) {
+            if (strSelected !== null) {
+                cb.checked = strSelected.includes(String(cb.value));
+            } else {
+                cb.checked = cb.hasAttribute('checked');
+            }
+        });
+    }
+
+    // 1. Direct window event listener for features-updated
+    window.addEventListener('features-updated', function(event) {
+        var selected = null;
+        if (event && event.detail) {
+            if (Array.isArray(event.detail.selected)) {
+                selected = event.detail.selected;
+            } else if (Array.isArray(event.detail) && event.detail[0] && Array.isArray(event.detail[0].selected)) {
+                selected = event.detail[0].selected;
+            } else if (Array.isArray(event.detail)) {
+                selected = event.detail;
+            }
+        }
+        syncFeatureCheckboxes(selected);
+    });
+
+    // 2. Register with Livewire directly
+    function initSync() {
+        if (window.Livewire) {
+            if (window.Livewire.on) {
+                window.Livewire.on('features-updated', function(data) {
+                    var selected = data && data.selected ? data.selected : (Array.isArray(data) ? data : []);
+                    syncFeatureCheckboxes(selected);
+                });
+            }
+            if (window.Livewire.hook) {
+                window.Livewire.hook('morph.updated', function() {
+                    syncFeatureCheckboxes();
+                });
+                window.Livewire.hook('commit', function(context) {
+                    if (context && context.succeed) {
+                        context.succeed(function() {
+                            queueMicrotask(function() {
+                                syncFeatureCheckboxes();
+                            });
+                        });
+                    }
+                });
+            }
+        }
+        syncFeatureCheckboxes();
+    }
+
+    if (window.Livewire) {
+        initSync();
+    } else {
+        document.addEventListener('livewire:init', initSync);
+        document.addEventListener('livewire:initialized', initSync);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        syncFeatureCheckboxes();
+    });
+})();
+</script>
 
 </div>
