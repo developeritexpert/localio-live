@@ -420,16 +420,34 @@ class ContentTemplateService
             ->with('template')
             ->first();
 
-        // Fallback for business entity: if no assignment under 'business', check category assignment for business's category
+        // Fallback for business entity: if no assignment under 'business', check category assignment for business's subcategories / category
         if (!$assignment && $entityType === 'business') {
             $biz = Business::find($entityId);
-            if ($biz && $biz->category_id) {
-                $assignment = ContentTemplateAssignment::where('entity_type', 'category')
-                    ->where('entity_id', $biz->category_id)
-                    ->where('lang_id', $langId)
-                    ->where('field_key', $fieldKey)
-                    ->with('template')
-                    ->first();
+            if ($biz) {
+                $candidateCatIds = [];
+                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                    foreach ($biz->subCategories as $sc) {
+                        $candidateCatIds[] = $sc->id;
+                    }
+                }
+                if ($biz->category_id) {
+                    $candidateCatIds[] = $biz->category_id;
+                }
+
+                foreach ($candidateCatIds as $cId) {
+                    $candidateAsgn = ContentTemplateAssignment::where('entity_type', 'category')
+                        ->where('entity_id', $cId)
+                        ->where('lang_id', $langId)
+                        ->where('field_key', $fieldKey)
+                        ->with('template')
+                        ->first();
+                    if ($candidateAsgn && $candidateAsgn->template && $candidateAsgn->template->is_active) {
+                        if (!$sectionGroup || $candidateAsgn->template->section_group === $sectionGroup) {
+                            $assignment = $candidateAsgn;
+                            break;
+                        }
+                    }
+                }
             }
         }
 

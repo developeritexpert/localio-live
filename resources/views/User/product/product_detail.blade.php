@@ -345,12 +345,33 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class="col-md-6" data-aos="fade-up" data-aos-duration="1000">
                                 <div class="ans_lft">
                                     <div class="asn-rating">
+                                        @php
+                                            $bizH1Fallback = ($business->translations->first()->name ?? $business->name ?? '') . ' review ' . date('Y');
+                                            $resolvedBizH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                $business,
+                                                'profile_h1',
+                                                getCurrentLanguageID()
+                                            );
+                                            $finalBizH1 = !empty($resolvedBizH1['headline']) ? $resolvedBizH1['headline'] : $bizH1Fallback;
+
+                                            $bizSubtextFallback = 'Real reviews, user discussions & alternatives';
+                                            $resolvedBizSubtext = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                $business,
+                                                'profile_subtext',
+                                                getCurrentLanguageID()
+                                            );
+                                            $finalBizSubtext = !empty($resolvedBizSubtext['headline']) ? $resolvedBizSubtext['headline'] : $bizSubtextFallback;
+                                        @endphp
                                         <div class="an_lkd">
                                             <h1 style="color: #000;" class="mb-0 p-1">
-                                                {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span>
+                                                {!! \App\Services\ContentTemplateService::cleanHeading($finalBizH1) !!}
                                             </h1>
                                         </div>
-                                        <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 18px;  margin-bottom: 0;">Real reviews, user discussions & alternatives </p>
+                                        @if(!empty($finalBizSubtext))
+                                            <p class="text-muted size16 hide-on-sticky" style="color: #666; font-size: 18px; margin-bottom: 0;">
+                                                {!! $finalBizSubtext !!}
+                                            </p>
+                                        @endif
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
@@ -529,7 +550,16 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                     <div class="row sld_rw">
                         <div class="col-lg-12">
                             <div class="is-asana-lft">
-                                <h2>{{ $business->translations->first()->description_title ?: ('What is ' . ($business->translations->first()->name ?? '')) }}</h2>
+                                @php
+                                    $bizWhatIsFallback = 'What is ' . ($business->translations->first()->name ?? $business->name ?? '');
+                                    $resolvedBizWhatIs = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_what_is',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalBizWhatIs = !empty($resolvedBizWhatIs['headline']) ? $resolvedBizWhatIs['headline'] : $bizWhatIsFallback;
+                                @endphp
+                                <h2>{!! \App\Services\ContentTemplateService::cleanHeading($finalBizWhatIs) !!}</h2>
                                 <div class="is_text">
                                     {!! $business->translations->first()->description !!}
                                 </div>
@@ -538,14 +568,24 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                         @if(isset($aggregatedPros) && isset($aggregatedCons) && count($aggregatedPros) > 0 && count($aggregatedCons) > 0)
                         <div class="col-lg-12 mt-2 mb-4">
+                            @php
+                                $bizProsConsFallbackH2 = ($business->translations->first()->name ?? $business->name ?? 'Business') . ' pros and cons';
+                                $resolvedBizProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'profile_pros_cons',
+                                    getCurrentLanguageID()
+                                );
+                                $finalBizProsConsH2 = !empty($resolvedBizProsCons['headline']) ? $resolvedBizProsCons['headline'] : $bizProsConsFallbackH2;
+                                $finalBizProsConsUpper = !empty($resolvedBizProsCons['subtext']) ? $resolvedBizProsCons['subtext'] : (!empty($business->pro_cons_intro) ? $business->pro_cons_intro : null);
+                            @endphp
                             <div class="pros-cons-header mb-3">
-                                <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
-                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+                                <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: {{ !empty($finalBizProsConsUpper) ? '8px' : '16px' }};">
+                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalBizProsConsH2) !!}
                                 </h2>
-                                @if(!empty($business->pro_cons_intro))
-                                <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
-                                    {!! $business->pro_cons_intro !!}
-                                </p>
+                                @if(!empty($finalBizProsConsUpper))
+                                <div class="pros-cons-intro" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6; color: #475569;">
+                                    {!! $finalBizProsConsUpper !!}
+                                </div>
                                 @endif
                             </div>
 
@@ -1343,13 +1383,26 @@ if (empty($images)) {
                                         @endphp
                                         <section class="compare-section p_50 light" id="section-compare" style="background-color: #f7f9fb !important;">
                                             <div class="container">
+                                                @php
+                                                    $bizCompareFallbackH2 = 'Compare ' . $bName;
+                                                    $bizCompareFallbackSub = 'See how ' . $bName . ' compares to other ' . $catName . ' providers.';
+                                                    $resolvedBizCompare = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                        $business,
+                                                        'profile_compare',
+                                                        getCurrentLanguageID()
+                                                    );
+                                                    $finalBizCompareH2 = !empty($resolvedBizCompare['headline']) ? $resolvedBizCompare['headline'] : $bizCompareFallbackH2;
+                                                    $finalBizCompareSubtext = !empty($resolvedBizCompare['subtext']) ? $resolvedBizCompare['subtext'] : $bizCompareFallbackSub;
+                                                @endphp
                                                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                                                     <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
-                                                        Compare {{ $bName }}
+                                                        {!! \App\Services\ContentTemplateService::cleanHeading($finalBizCompareH2) !!}
                                                     </h2>
-                                                    <p style="font-size: 15px; margin: 0;">
-                                                        See how {{ $bName }} compares to other {{ $catName }} providers.
-                                                    </p>
+                                                    @if(!empty($finalBizCompareSubtext))
+                                                    <div style="font-size: 15px; margin: 0; color: #475569;">
+                                                        {!! $finalBizCompareSubtext !!}
+                                                    </div>
+                                                    @endif
                                                 </div>
 
                                                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
