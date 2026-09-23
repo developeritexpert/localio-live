@@ -405,10 +405,12 @@ foreach ($altCriteria as $criterion) {
                                             </div>
                                         </div>
 
+                                        @if(!empty($business->is_affiliate))
                                         <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" rel="sponsored" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
                                             {{ static_text('visit_website') ?: 'Visit website' }}
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
+                                        @endif
                                     </div>
 
                                     @if(count($bCriteria) > 0)
@@ -446,16 +448,17 @@ foreach ($altCriteria as $criterion) {
                                 <!-- Widget 3: More About Business Card -->
                                 <x-more-about-business :business="$business" />
                             </div>
-
-
                         </div>
-                        
-                        <!-- Dynamic Section 1: Most popular alternatives (Cards) -->
-                        <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
-                        <!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                        <!-- 2. Compare alternatives (Affiliated Table 1) -->
-                        <div class="comparison-table-section my-5 pt-3">
+    <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
+    <section class="comparison-table-sec py-4">
+        <div class="container">
+            <div class="comparison-table-section my-4">
                             @php
                                 if (!isset($bTrans) || !$bTrans) {
                                     $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
@@ -551,10 +554,14 @@ foreach ($altCriteria as $criterion) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+        </div>
+    </div>
+</section>
 
-                        <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
-                        <div class="community-feedback-table-section my-5 pt-3">
+<!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+<section class="community-feedback-sec border_bt py-4">
+    <div class="container">
+        <div class="community-feedback-table-section my-4">
                             <div class="mb-3">
                                 @php
                                     $commFeedbackHeadline = !empty($bTrans->community_says_headline)
@@ -662,27 +669,35 @@ foreach ($altCriteria as $criterion) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+        </div>
+    </div>
+</section>
 
-                        @php
-                            $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
-                                ? $bTrans->all_alternatives_headline
-                                : ('All ' . $businessName . ' alternatives');
-                        @endphp
-                        <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
-                            {{ $allAlternativesHeadline }}
-                        </h2>
-                        @if(!empty($bTrans->all_alternatives_subtext))
-                            <style>
-                                .all-alternatives-subtext p { margin-bottom: 0 !important; }
-                                .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
-                            </style>
-                            <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
-                                {!! $bTrans->all_alternatives_subtext !!}
-                            </div>
-                        @endif
+<!-- All Alternatives Listing Section -->
+<section class="top-automotive-sec top_rate_pg light py-4" id="allAlternativesSection">
+    <div class="container">
+        <div class="top-auto-choice">
+            <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
+                @php
+                    $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
+                        ? $bTrans->all_alternatives_headline
+                        : ('All ' . $businessName . ' alternatives');
+                @endphp
+                <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                    {{ $allAlternativesHeadline }}
+                </h2>
+                @if(!empty($bTrans->all_alternatives_subtext))
+                    <style>
+                        .all-alternatives-subtext p { margin-bottom: 0 !important; }
+                        .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                    </style>
+                    <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                        {!! $bTrans->all_alternatives_subtext !!}
                     </div>
-                    <div class="auto-choice-row d-flex ">
+                @endif
+            </div>
+
+            <div class="auto-choice-row d-flex">
                         <div class="auto-choice-lft">
                             <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1073,6 +1088,7 @@ foreach ($altCriteria as $criterion) {
                                                             @endif
 
                                                             <!-- Features -->
+                                                            @if (!empty($item->is_affiliate))
                                                             <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
                                                                 <div class="main_feature_lg">
                                                                     <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
@@ -1110,6 +1126,7 @@ foreach ($altCriteria as $criterion) {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @endif
 
                                                             <!-- Compare Checkbox -->
                                                         </div>
@@ -1118,14 +1135,16 @@ foreach ($altCriteria as $criterion) {
                                                         <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                @if(!empty($item->is_affiliate))
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="cta cta_orange justify-content-center"
-                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center;">
                                                                     {{ static_text('visit_website') ?: 'Visit website' }}
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
+                                                                @endif
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
-                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
+                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
                                                                     {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                 </a>
                                                             </div>
@@ -1319,9 +1338,11 @@ foreach ($altCriteria as $criterion) {
                                 </div>
                             </div> --}}
                         @endif
+            </div>
         </div>
-            <livewire:compare-bar />
-    </section>
+    </div>
+    <livewire:compare-bar />
+</section>
 
     <!-- Top 10 Businesses with Details (Exact design matching category page) -->
     @php
@@ -1507,7 +1528,8 @@ foreach ($altCriteria as $criterion) {
     @endif
 
     <!-- Discussions Section (From business details page) -->
-    <div id="sectionDiscussions" class="container my-5 pt-4">
+    <section class="business-discussions-sec py-5" id="sectionDiscussions">
+        <div class="container">
         @php
             $totalDiscsCount = $business->discussions()->count();
             $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
@@ -1529,7 +1551,8 @@ foreach ($altCriteria as $criterion) {
             }
         @endphp
         <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
-    </div>
+        </div>
+    </section>
 
     <section class="subs_sec light top_rated_org_sec ">
         {{-- <div class="container">
