@@ -185,7 +185,20 @@
                                 </div>
                             </div> -->
                         <div class="auto-choice-row d-flex ">
+                            <!-- Mobile Filter Backdrop Overlay -->
+                            <div class="mobile-filter-backdrop d-lg-none" onclick="closeMobileFilterDrawer()"></div>
+
                             <div class="auto-choice-lft">
+                                <!-- Mobile Filter Drawer Header -->
+                                <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
+                                    <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                    <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <div class="container">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                     </div>
@@ -542,6 +555,17 @@
 
                                 </div>
 
+                                <!-- Mobile Filter Drawer Sticky Footer -->
+                                <div class="mobile-filter-footer d-lg-none">
+                                    <button type="button" class="btn-show-results" onclick="closeMobileFilterDrawer()">
+                                        @if(isset($products) && $products->total() > 0)
+                                            Show {{ $products->total() }}+ results
+                                        @else
+                                            Show results
+                                        @endif
+                                    </button>
+                                </div>
+
                             </div>
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
@@ -570,21 +594,36 @@
                                     </div>
                                 @endif
 
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
+                                @if ($products->count() > 0)
+                                @php
+                                $currentPage = $products->currentPage();
+                                $perPage = $products->perPage();
+                                $total = $products->total();
+                                $from = ($currentPage - 1) * $perPage + 1;
+                                $to = min($currentPage * $perPage, $total);
+                                @endphp
+                                @endif
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Mobile Filter Button (matching Image 2) -->
+                                        <button type="button" class="mobile-filter-btn d-inline-flex d-lg-none" onclick="openMobileFilterDrawer()" aria-label="Open filters">
+                                            <svg width="22" height="16" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                                                <path d="M2 5h10m4 0h6M12 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM2 13h4m4 0h12M6 10.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            @php
+                                                $activeFilterCount = count($selectedRatings ?? []) + count($selectedCategories ?? []) + count($selectedFeatures ?? []) + (!empty($priceRange) ? 1 : 0);
+                                            @endphp
+                                            @if($activeFilterCount > 0)
+                                                <span class="filter-badge">{{ $activeFilterCount }}</span>
+                                            @endif
+                                        </button>
+
                                         @if ($products->count() > 0)
-                                        @php
-                                        $currentPage = $products->currentPage();
-                                        $perPage = $products->perPage();
-                                        $total = $products->total();
-                                        $from = ($currentPage - 1) * $perPage + 1;
-                                        $to = min($currentPage * $perPage, $total);
-                                        @endphp
-                                        <p class="m-0 showing-p">
+                                        <p class="m-0 showing-p d-none d-sm-block">
                                             Showing {{$from}}-{{$to}} of {{$total}}
                                         </p>
                                         @elseif($products->count() > 0)
-                                        <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
+                                        <p class="m-0 showing-p d-none d-sm-block">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
                                     @php
@@ -637,6 +676,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                @if ($products->count() > 0)
+                                <p class="m-0 showing-p d-block d-sm-none mb-3" style="font-size: 13.5px; color: #64748b;">
+                                    Showing {{$from}}-{{$to}} of {{$total}}
+                                </p>
+                                @endif
                                 @if (!empty($products))
                                 @foreach ($products as $index => $item)
                                 <div class="automotive-card"

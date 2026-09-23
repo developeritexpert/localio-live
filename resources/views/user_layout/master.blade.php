@@ -3285,6 +3285,31 @@
         }
     }
 </style>
+<script>
+    function openMobileFilterDrawer() {
+        const drawer = document.querySelector('.auto-choice-lft');
+        const backdrop = document.querySelector('.mobile-filter-backdrop');
+        if (drawer) drawer.classList.add('mobile-filter-active');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileFilterDrawer() {
+        const drawer = document.querySelector('.auto-choice-lft');
+        const backdrop = document.querySelector('.mobile-filter-backdrop');
+        if (drawer) drawer.classList.remove('mobile-filter-active');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMobileFilterDrawer();
+    });
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992) closeMobileFilterDrawer();
+    });
+</script>
 </body>
 
 </html>
