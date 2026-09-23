@@ -14,63 +14,7 @@
 @endphp
 
 <style>
-    .more-about-business-card {
-        border-radius: 16px !important;
-        /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important; */
-    }
-    .more-about-link-item {
-        color: #1e3050;
-        transition: all 0.2s ease;
-        padding: 11px 4px;
-        border-bottom: 1px solid #f1f5f9;
-        text-decoration: none !important;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-    }
-    .more-about-link-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    .more-about-link-item:first-child {
-        padding-top: 0;
-    }
-    .more-about-link-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .more-about-link-icon {
-        width: 36px;
-        height: 36px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .more-about-link-icon img {
-        width: 28px;
-        height: 28px;
-    }
-    .more-about-link-text {
-        font-size: 14px;
-        font-weight: 500;
-        color: #002347;
-    }
-    .more-about-link-arrow {
-        font-size: 14px;
-        color: #9aacbe;
-        transition: transform 0.2s ease, color 0.2s ease;
-        flex-shrink: 0;
-    }
-    .more-about-link-item:hover .more-about-link-text {
-        color: #033b74;
-    }
-    
-    .more-about-link-item:hover .more-about-link-arrow {
-        color: #033b74;
-    }
+   
 </style>
 
 <div class="boxshadow_border bg-white p-4 more-about-business-card" style="border-radius: 16px !important;">
