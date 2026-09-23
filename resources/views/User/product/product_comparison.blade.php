@@ -599,6 +599,47 @@
                                 @php
                                     $startingPriceBusiness = getBusinessesWithStartingPrice($business);
                                     $startingPrice = $startingPriceBusiness[0]['starting_price'] ?? null;
+
+                                    if (!$startingPrice && $business->products && $business->products->count() > 0) {
+                                        $allPrices = $business->products
+                                            ->flatMap(function ($product) {
+                                                return $product->prices;
+                                            })
+                                            ->filter(function ($price) {
+                                                return !is_null($price->price) || !is_null($price->discount_price) || !is_null($price->renewal_price);
+                                            })
+                                            ->sortBy(function ($price) {
+                                                $now = Illuminate\Support\Carbon::now();
+                                                if ($price->discount_price && $price->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($price->discount_expiration_date))) {
+                                                    return $price->discount_price;
+                                                } elseif ($price->renewal_price) {
+                                                    return $price->renewal_price;
+                                                } else {
+                                                    return $price->price;
+                                                }
+                                            });
+
+                                        $startingPriceObj = $allPrices->first();
+                                        if ($startingPriceObj) {
+                                            $now = Illuminate\Support\Carbon::now();
+                                            $effectiveAmt = $startingPriceObj->price;
+                                            $timeUnitVal = $startingPriceObj->time_unit;
+                                            if ($startingPriceObj->discount_price && $startingPriceObj->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($startingPriceObj->discount_expiration_date))) {
+                                                $effectiveAmt = $startingPriceObj->discount_price;
+                                                $timeUnitVal = $startingPriceObj->discount_time_units ?? $startingPriceObj->time_unit;
+                                            } elseif ($startingPriceObj->renewal_price) {
+                                                $effectiveAmt = $startingPriceObj->renewal_price;
+                                                $timeUnitVal = $startingPriceObj->renewal_time_units ?? $startingPriceObj->time_unit;
+                                            }
+                                            $startingPrice = [
+                                                'amount' => $effectiveAmt,
+                                                'currency' => $startingPriceObj->currency ?? '$',
+                                                'time_unit' => $timeUnitVal,
+                                                'additional_info' => $startingPriceObj->additional_info,
+                                            ];
+                                        }
+                                    }
+
                                     $bName = $business->translations->first()?->name ?? '';
                                     $currency = $startingPrice['currency'] ?? '$';
                                     $amountStr = isset($startingPrice['amount']) ? number_format($startingPrice['amount'], 2) : null;
