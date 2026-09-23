@@ -47,7 +47,7 @@ class ContentTemplateController extends Controller
         // Load all category assignments for this language
         $assignments = ContentTemplateAssignment::where('entity_type', 'category')
             ->where('lang_id', $lang_id)
-            ->whereHas('template', fn($q) => $q->where('section_group', $sectionGroup))
+            ->whereHas('template', fn($q) => $q->where('section_group', 'category'))
             ->with('template')
             ->get()
             ->groupBy('entity_id');
@@ -90,7 +90,7 @@ class ContentTemplateController extends Controller
             $languages = Language::all();
         }
 
-        ContentTemplateService::ensureTemplatesExistForLanguage('category', $lang_id);
+        ContentTemplateService::ensureTemplatesExistForLanguage('category_faqs', $lang_id);
 
         $parentCategories = Category::whereNull('parent_id')
             ->with([
@@ -104,6 +104,7 @@ class ContentTemplateController extends Controller
 
         $assignments = ContentTemplateAssignment::where('entity_type', 'category')
             ->where('lang_id', $lang_id)
+            ->whereHas('template', fn($q) => $q->where('section_group', 'category_faqs'))
             ->with('template')
             ->get()
             ->groupBy('entity_id');
