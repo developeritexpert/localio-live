@@ -1122,7 +1122,7 @@ class ContentTemplateService
             return '';
         }
         $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-        $cleaned = strip_tags($decoded, '<b><strong><i><em><span><mark><small>');
+        $cleaned = strip_tags($decoded);
         return trim($cleaned);
     }
 
