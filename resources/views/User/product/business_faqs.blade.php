@@ -397,7 +397,7 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="blue-btn ask-community-btn">
+                        <a href="#sectionDiscussions" class="blue-btn ask-community-btn">
                             Ask a question <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
@@ -463,6 +463,9 @@
                                 </a>
                                 <a href="#section-ask-community" class="sticky-nav-item" data-target="section-ask-community">
                                     <span>Ask the community</span>
+                                </a>
+                                <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
+                                    <span>Discussions</span>
                                 </a>
                             </div>
 
@@ -706,56 +709,83 @@
                     @endif
 
                     <!-- 5. Recent Discussions -->
+                    @php
+                        $sidebarDiscussions = $business->discussions()->with(['user'])->latest()->take(2)->get();
+                    @endphp
+                    @if($sidebarDiscussions->isNotEmpty())
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h2 class="m-0 card-h-title">Recent discussions</h2>
-                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link">
+                            <a href="#sectionDiscussions" class="view-review-link">
                                 View all
                             </a>
                         </div>
 
-                        <div class="sidebar-review-card mb-3 pb-3 border-bottom">
+                        @foreach($sidebarDiscussions as $pDisc)
+                        <div class="sidebar-review-card {{ !$loop->last ? 'mb-3 pb-3 border-bottom' : '' }}">
                             <div class="review-header d-flex justify-content-between align-items-start">
                                 <div class="review-user d-flex align-items-center gap-2">
+                                    @if($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
+                                    <img src="{{ asset($pDisc->user->profile_image) }}"
+                                        class="rounded-circle"
+                                        width="38"
+                                        height="38"
+                                        style="object-fit: cover;">
+                                    @elseif($pDisc->author_avatar)
+                                    <img src="{{ asset($pDisc->author_avatar) }}"
+                                        class="rounded-circle"
+                                        width="38"
+                                        height="38"
+                                        style="object-fit: cover;">
+                                    @else
                                     <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
+                                        <span style="color: white; font-weight: bold; font-size: 16px;">{{ $pDisc->author_initial ?: 'A' }}</span>
                                     </div>
+                                    @endif
                                     <div>
-                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Marc L.</p>
-                                        <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
+                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                                            @if($pDisc->user)
+                                            <a href="{{ $pDisc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
+                                                {{ $pDisc->author_display_name }}
+                                            </a>
+                                            @else
+                                            {{ $pDisc->author_display_name }}
+                                            @endif
+                                        </p>
+                                        <div style="font-size: 11px; color: #777;">
+                                            @php
+                                                $metaParts = [];
+                                                if ($pDisc->user && $pDisc->user->job_title) {
+                                                    $metaParts[] = $pDisc->user->job_title;
+                                                } elseif ($pDisc->author_title) {
+                                                    $metaParts[] = $pDisc->author_title;
+                                                }
+                                                if ($pDisc->user && $pDisc->user->company_size) {
+                                                    $cSizeMap = [
+                                                        '2' => 'Small Business (1-50 emp.)',
+                                                        '3' => 'Mid-Market (51-1000 emp.)',
+                                                        '4' => 'Enterprise (>1000 emp.)',
+                                                    ];
+                                                    $cSize = $pDisc->user->company_size;
+                                                    $metaParts[] = $cSizeMap[$cSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $cSize) ?: $cSize) : $cSize);
+                                                }
+                                            @endphp
+                                            {{ !empty($metaParts) ? implode(' • ', $metaParts) : ($pDisc->author_title ?: '') }}
+                                        </div>
                                     </div>
                                 </div>
-                                <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
+                                <small class="text-muted" style="font-size: 11px;">{{ $pDisc->created_at->diffForHumans() }}</small>
                             </div>
                             <p style="cursor: pointer; margin-bottom: 8px; margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
-                                Is there a free tier for API access or is it trial only?
+                                {{ $pDisc->title }}
                             </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
-                                We are looking to integrate this into our workflow and want to test latency...
+                                {{ Str::limit(strip_tags($pDisc->content), 120) }}
                             </p>
                         </div>
-
-                        <div class="sidebar-review-card">
-                            <div class="review-header d-flex justify-content-between align-items-start">
-                                <div class="review-user d-flex align-items-center gap-2">
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
-                                    </div>
-                                    <div>
-                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Sarah J.</p>
-                                        <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
-                                    </div>
-                                </div>
-                                <small class="text-muted" style="font-size: 11px;">1 day ago</small>
-                            </div>
-                            <p style="cursor: pointer; margin-bottom: 8px; margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
-                                How does the performance compare to alternatives in large datasets?
-                            </p>
-                            <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
-                                We noticed some latency spikes during queries with more than 10k items...
-                            </p>
-                        </div>
+                        @endforeach
                     </div>
+                    @endif
 
                     <!-- 6. More about Business Card -->
                     <x-more-about-business :business="$business" />
@@ -849,6 +879,33 @@
     </div>
 </section>
 @endif
+
+<!-- Discussions Section (From business details page) -->
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+    @php
+        $totalDiscsCount = $business->discussions()->count();
+        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'profile_discussions',
+            getCurrentLanguageID(),
+            ['[count]' => number_format($totalDiscsCount)]
+        );
+        $finalBizDiscHeadline = null;
+        $finalBizDiscSubtext = null;
+        if (!empty($resolvedBizDiscussions['headline'])) {
+            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+            }
+        }
+        if (!empty($resolvedBizDiscussions['subtext'])) {
+            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+        }
+    @endphp
+    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
+    </div>
+</section>
 
 <!-- Report Issue Modal -->
 <div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
@@ -1254,7 +1311,8 @@
             const navSectionTargets = [
                 { id: 'section-search-faq', target: 'section-search-faq' },
                 { id: 'section-faq-list', target: 'section-faq-list' },
-                { id: 'section-ask-community', target: 'section-ask-community' }
+                { id: 'section-ask-community', target: 'section-ask-community' },
+                { id: 'sectionDiscussions', target: 'sectionDiscussions' }
             ];
 
             window.addEventListener('scroll', function() {
