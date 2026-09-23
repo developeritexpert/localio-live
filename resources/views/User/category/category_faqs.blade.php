@@ -119,27 +119,6 @@
             <!-- Left Side: FAQs Content, Search & Accordion -->
             <div class="col-lg-8 col-12">
                 
-                <!-- Section 1: Intro Title & Description -->
-                <div class="faq-top-intro mb-4">
-                    @php
-    $resolvedFaqAbout = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_about', $currentLangId ?? 1);
-    $faqAboutH2 = !empty($resolvedFaqAbout['headline']) ? $resolvedFaqAbout['headline'] : (!empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName));
-    $faqAboutDesc = !empty($resolvedFaqAbout['subtext']) ? $resolvedFaqAbout['subtext'] : ($categoryTranslation->faq_about_description ?? '');
-@endphp
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        {!! \App\Services\ContentTemplateService::cleanHeading($faqAboutH2) !!}
-                    </h2>
-                    <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                        @if(!empty($faqAboutDesc))
-                            {!! $faqAboutDesc !!}
-                        @else
-                            <p>
-                                Explore comprehensive information, user reviews, and comparisons for top {{ strtolower($catName) }} solutions. Our guide helps you discover the right options for your specific needs.
-                            </p>
-                        @endif
-                    </div>
-                </div>
-
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
                     @php

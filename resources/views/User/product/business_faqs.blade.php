@@ -115,8 +115,6 @@
         $subHeadline = 'Frequently asked questions and answers about ' . $bName . '.';
     }
 
-    $faqTitle1 = $bTranslation->faqs_title ?? ('About ' . $bName);
-    $faqDesc1  = $bTranslation->faqs_description ?? '';
 @endphp
 
 <!-- Upper Header Section -->
@@ -216,20 +214,6 @@
             <!-- Left Side: FAQs Content, Search & Accordion -->
             <div class="col-lg-8 col-12">
                 
-                <!-- Section 1: Title 1 & Description 1 -->
-                @if(!empty($faqTitle1) || !empty($faqDesc1))
-                <div class="faq-top-intro mb-4" id="section-about-faq">
-                    @if($faqTitle1)
-                        <h2 style="margin-bottom: 12px;">{{ $faqTitle1 }}</h2>
-                    @endif
-                    @if($faqDesc1)
-                        <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                            {!! $faqDesc1 !!}
-                        </div>
-                    @endif
-                </div>
-                @endif
-
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
                     <p style="margin-bottom: 14px;">
@@ -471,12 +455,7 @@
                             </div>
 
                             <div class="sticky-nav-links">
-                                @if(!empty($faqTitle1) || !empty($faqDesc1))
-                                    <a href="#section-about-faq" class="sticky-nav-item active" data-target="section-about-faq">
-                                        <span>About {{ $bName }}</span>
-                                    </a>
-                                @endif
-                                <a href="#section-search-faq" class="sticky-nav-item" data-target="section-search-faq">
+                                <a href="#section-search-faq" class="sticky-nav-item active" data-target="section-search-faq">
                                     <span>Search FAQs</span>
                                 </a>
                                 <a href="#section-faq-list" class="sticky-nav-item" data-target="section-faq-list">
@@ -1273,7 +1252,6 @@
 
             // Update active link on scroll
             const navSectionTargets = [
-                { id: 'section-about-faq', target: 'section-about-faq' },
                 { id: 'section-search-faq', target: 'section-search-faq' },
                 { id: 'section-faq-list', target: 'section-faq-list' },
                 { id: 'section-ask-community', target: 'section-ask-community' }

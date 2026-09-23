@@ -108,13 +108,6 @@ class ContentTemplateService
             'field2_label' => 'Header2',
             'description' => 'Main introductory paragraphs directly below the H1 headline.',
         ],
-        'faq_about' => [
-            'label' => 'SECOND HEADLINE & CONTENT',
-            'type' => 'combined',
-            'field1_label' => 'FAQ Page Second Headline (H2)',
-            'field2_label' => 'FAQ Page Content Text (Rich Editor)',
-            'description' => 'Second section intro headline and rich text on FAQ page.',
-        ],
         'faq_search_headline' => [
             'label' => 'SEARCH HEADLINE',
             'type' => 'single',
@@ -1388,10 +1381,6 @@ class ContentTemplateService
                     $countSuffix = $countVal !== null ? " ({$countVal})" : '';
                     $headline = ($catTrans->name ?? 'Category') . ' discussions' . $countSuffix;
                     $subtext = 'Explore questions, experiences, and opinions shared by Localio users.';
-                    break;
-                case 'faq_about':
-                    $headline = $catTrans->faq_about_headline ?? ('About ' . ($catTrans->name ?? ''));
-                    $subtext = $catTrans->faq_about_description ?? '';
                     break;
                 case 'faq_explore':
                     $headline = $catTrans->faq_explore_headline ?? ('Explore ' . ($catTrans->name ?? '') . ' categories');
