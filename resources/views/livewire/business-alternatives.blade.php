@@ -682,8 +682,6 @@ foreach ($altCriteria as $criterion) {
                             </div>
                         @endif
                     </div>
-                    <!-- this is here
-                      -->
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
                             <div class="container">
