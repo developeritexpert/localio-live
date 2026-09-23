@@ -372,6 +372,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 {!! $finalBizSubtext !!}
                                             </p>
                                         @endif
+
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
@@ -442,6 +443,108 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
                     </div>
                 </div>
+
+                                        @if ($averageRating !== null)
+                                        <!-- Mobile Review Summary & Sliding Breakdown Card (Mobile only, below business name) -->
+                                        <div class="mobile-review-summary-card d-md-none bg-white p-3 p-sm-4 rounded-3 border w-100 mt-3" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0, 35, 71, 0.05); box-sizing: border-box;">
+                                            <div class="d-flex justify-content-between align-items-start pb-3" style="border-bottom: 1px solid #f0f0f0;">
+                                                <div class="d-flex flex-column align-items-start">
+                                                    <span class="overall-rating-number" style="font-size: 38px; font-weight: 700; color: #002347; line-height: 1;">
+                                                        {{ formatRating($averageRating) }}
+                                                    </span>
+                                                    @if($ratingWord = get_rating_label($averageRating))
+                                                    <span class="rating-word-label mt-1" style="font-size: 14px; font-weight: 600; color: #002347;">
+                                                        {{ $ratingWord }}
+                                                    </span>
+                                                    @endif
+                                                    <div class="d-flex align-items-center gap-2 my-1 mobile-rating-trigger" onclick="toggleMobileReviewBreakdown()" style="cursor: pointer; user-select: none;" title="Toggle rating breakdown">
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            @for ($j = 1; $j <= 5; $j++)
+                                                                @if ($j <= floor($averageRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                                                @elseif ($j - 0.5 <= $averageRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                                                @else
+                                                                <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <span class="mobile-rating-arrow-wrap d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
+                                                            <i class="fas fa-chevron-down mobile-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <span class="com-rating" style="font-size: 13px; color: #64748b;">
+                                                        {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}
+                                                    </span>
+                                                    <div class="top-pro-btn tp_visit new-visit-anc review-visit">
+                                                        <a href="{{ isset($business) && method_exists($business, 'getTrackedUrl') ? $business->getTrackedUrl() : 'javascript:void(0)' }}" data-track="{{ json_encode(['type' => 'click', 'business_id' => $business->id ?? null, 'action' => 'visit_website', 'label' => 'Visit Website']) }}" class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored" tabindex="0">
+                                                            {{ static_text('visit_website') ?: 'Visit website' }}
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
+                                                                <path d="M15 3h6v6"></path>
+                                                                <path d="M10 14 21 3"></path>
+                                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <a href="#section14" class="view-review-link" style="color: #003f7d; font-weight: 600; font-size: 13px; text-decoration: none; padding-top: 4px;" onclick="document.getElementById('section14')?.scrollIntoView({behavior: 'smooth'})">
+                                                    View all reviews
+                                                </a>
+                                            </div>
+
+                                            <!-- Collapsible Breakdown Section (Hidden by default, slides out when clicking stars or arrow) -->
+                                            <div id="mobileReviewBreakdownContent" class="mobile-breakdown-collapsible" data-expanded="false" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.35s ease-in-out, opacity 0.25s ease;">
+                                                @if(isset($criteria) && count($criteria) > 0)
+                                                <div class="pt-3">
+                                                    <p class="breakdown-title" style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</p>
+
+                                                    <div class="mb-2">
+                                                        @foreach ($criteria as $criterion)
+                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                            <span style="font-size: 13px; font-weight: 500; color: #002347; min-width: 105px; flex-shrink: 0;">{{ $criterion->name }}</span>
+                                                            <div class="d-flex align-items-center flex-grow-1 mx-2" style="max-width: 55%;">
+                                                                <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
+                                                                    <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #007bff;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                </div>
+                                                            </div>
+                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right; flex-shrink: 0;">{{ formatRating($criterion->average_rating) }}</span>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                @endif
+
+                                                @if(isset($recommendPercent) && $recommendPercent > 0)
+                                                <div class="pt-3 mt-2 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                    <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
+                                                </div>
+                                                @endif
+
+                                                <div class="do-you-recommend mt-3 pt-3 border-top" style="border-top-color: #f1f5f9 !important; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <div style="display: flex; gap: 8px;">
+                                                        @auth
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
+                                                            <i class="fas fa-thumbs-up"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
+                                                            <i class="fas fa-thumbs-down"></i>
+                                                        </a>
+                                                        @else
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
+                                                            <i class="fas fa-thumbs-up"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
+                                                            <i class="fas fa-thumbs-down"></i>
+                                                        </a>
+                                                        @endauth
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
             </div>
 
             <div class="Tab-outerlnk container-fluid d-none">
@@ -1764,38 +1867,35 @@ if (empty($images)) {
                                                                                         {{ $ratingWord }}
                                                                                     </span>
                                                                                     @endif
-                                                                                    <div class="d-flex align-items-center gap-1 mb-1">
-                                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                                            @if ($j <=floor($averageRating))
-                                                                                            <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                                            @elseif ($j - 0.5 <= $averageRating)
-                                                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                                    <div class="d-flex align-items-center gap-2 mb-1 section14-rating-trigger" onclick="toggleSection14ReviewBreakdown()" style="user-select: none;">
+                                                                                        <div class="d-flex align-items-center gap-1">
+                                                                                            @for ($j = 1; $j <= 5; $j++)
+                                                                                                @if ($j <= floor($averageRating))
+                                                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                @elseif ($j - 0.5 <= $averageRating)
+                                                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                                                                 @else
-                                                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                                                                 @endif
-                                                                                                @endfor
+                                                                                            @endfor
+                                                                                        </div>
+                                                                                        <span class="section14-rating-arrow-wrap d-inline-flex align-items-center justify-content-center d-md-none" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
+                                                                                            <i class="fas fa-chevron-down section14-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                                                        </span>
                                                                                     </div>
                                                                                     <!-- <span class="com-rating">Community rating</span> -->
                                                                                     <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
 
-                                                                                    <div class="top-pro-btn tp_visit new-visit-anc review-visit">
-                                            <a href="http://127.0.0.1:8000/en-us/go/bluehost" data-track="{&quot;type&quot;:&quot;click&quot;,&quot;business_id&quot;:29,&quot;action&quot;:&quot;visit_website&quot;,&quot;label&quot;:&quot;Visit Website&quot;}" class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored" tabindex="0">
-                                                Visit website
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
-                                                    <path d="M15 3h6v6"></path>
-                                                    <path d="M10 14 21 3"></path>
-                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                                </svg>
-                                            </a>
-                                        </div>
+                                                                                    
 
                                                                                 </div>
                                                                             </div>
 
                                                                             <!-- Right Column: Review Breakdown & Recommendation -->
-                                                                            <div class="col-lg-7 col-md-7 col-12 mt-0">
+                                                                            <div class="col-lg-7 col-md-7 col-12 mt-0 section14-breakdown-collapsible" id="section14ReviewBreakdownContent" data-expanded="false">
+                                                                                <div class="d-md-none border-top w-100 my-3" style="border-top: 1px solid #f0f0f0 !important;"></div>
                                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                                <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
+                                                                                <p class="breakdown-title" style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown </p>
 
                                                                                 <div class="mb-2">
                                                                                     @foreach ($criteria as $criterion)
@@ -2178,11 +2278,11 @@ if (empty($images)) {
                             </div>
                             @endif
 
-                            <div class="main_feature_lg">
+                            <div class="main_feature_lg not-on-mobile d-none d-md-block">
                                 <div class="feture_box review-breakdown-card">
 
                                     @if ($averageRating !== null)
-                                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
+                                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px; border-bottom: 1px solid #f0f0f0;">
                                         <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                             <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                                 {{ formatRating($averageRating) }}
@@ -2193,16 +2293,21 @@ if (empty($images)) {
                                             </span>
                                             @endif
 
-                                            <div class="" style="margin-bottom: 3px; display: flex; gap: 4px;">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <=floor($averageRating))
-                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                            <div class="d-flex align-items-center gap-2 mb-1 bottom-rating-trigger" onclick="toggleBottomReviewBreakdown()" style="user-select: none;">
+                                                <div class="d-flex align-items-center gap-1">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($averageRating))
+                                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                         @else
-                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                            <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                         @endif
-                                                        @endfor
+                                                    @endfor
+                                                </div>
+                                                <span class="bottom-rating-arrow-wrap d-inline-flex align-items-center justify-content-center d-md-none" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
+                                                    <i class="fas fa-chevron-down bottom-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                </span>
                                             </div>
 
                                             @if ($hasUserReviews)
@@ -2218,49 +2323,52 @@ if (empty($images)) {
                                     </div>
                                     @endif
 
-                                    @if ($hasUserReviews)
-                                    <p class="breakdown-title" style="margin-bottom: 15px;">
-                                        Detailed user ratings 
-                                    </p>
+                                    <!-- Collapsible Breakdown Section (Mobile: hidden by default, toggles; Desktop: always shown) -->
+                                    <div id="bottomReviewBreakdownContent" class="bottom-breakdown-collapsible" data-expanded="false">
+                                        @if ($hasUserReviews)
+                                        <p class="breakdown-title" style="margin-bottom: 15px;">
+                                            Review breakdown
+                                        </p>
 
-                                    <div class="review-progress-list ">
-                                        @foreach ($criteria as $criterion)
-                                        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                            <p class="m-0" style="font-size: 12px; font-weight: 500;">{{ $criterion->name }}</p>
-                                            <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                <progress class="progress-bar w-100"
-                                                    value="{{ $criterion->average_rating * 20 }}"
-                                                    max="100" style="height: 8px;"></progress>
-                                                <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
+                                        <div class="review-progress-list ">
+                                            @foreach ($criteria as $criterion)
+                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                <p class="m-0" style="font-size: 12px; font-weight: 500;">{{ $criterion->name }}</p>
+                                                <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                    <progress class="progress-bar w-100"
+                                                        value="{{ $criterion->average_rating * 20 }}"
+                                                        max="100" style="height: 8px;"></progress>
+                                                    <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
+                                                </div>
                                             </div>
+                                            @endforeach
                                         </div>
-                                        @endforeach
-                                    </div>
 
-                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                        <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
-                                    </div>
-                                    @endif
+                                        <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                            <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
+                                        </div>
+                                        @endif
 
-                                    <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
-                                        <div style="display: flex; gap: 8px;">
-                                            @auth
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
-                                                <i class="fas fa-thumbs-up"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
-                                                <i class="fas fa-thumbs-down"></i>
-                                            </a>
-                                            @else
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
-                                                <i class="fas fa-thumbs-up"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
-                                                <i class="fas fa-thumbs-down"></i>
-                                            </a>
-                                            @endauth
+                                        <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                            <div style="display: flex; gap: 8px;">
+                                                @auth
+                                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </a>
+                                                @else
+                                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </a>
+                                                @endauth
+                                            </div>
                                         </div>
                                     </div>
 
@@ -3736,6 +3844,139 @@ if (empty($images)) {
             });
         }
     });
+</script>
+
+<style>
+@media (max-width: 767.98px) {
+    .section14-breakdown-collapsible,
+    .bottom-breakdown-collapsible {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.35s ease-in-out, opacity 0.25s ease;
+    }
+    .section14-rating-trigger,
+    .bottom-rating-trigger {
+        cursor: pointer;
+    }
+}
+@media (min-width: 768px) {
+    .section14-breakdown-collapsible,
+    .bottom-breakdown-collapsible {
+        max-height: none !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
+}
+</style>
+
+<script>
+    function toggleSection14ReviewBreakdown() {
+        if (window.innerWidth >= 768) return;
+
+        const content = document.getElementById('section14ReviewBreakdownContent');
+        const chevron = document.querySelector('.section14-rating-chevron');
+        if (!content) return;
+
+        const isExpanded = content.getAttribute('data-expanded') === 'true';
+
+        if (isExpanded) {
+            content.style.maxHeight = '0px';
+            content.style.opacity = '0';
+            content.setAttribute('data-expanded', 'false');
+            if (chevron) {
+                chevron.style.transform = 'rotate(0deg)';
+                chevron.style.color = '#64748b';
+            }
+        } else {
+            content.style.maxHeight = (content.scrollHeight + 50) + 'px';
+            content.style.opacity = '1';
+            content.setAttribute('data-expanded', 'true');
+            if (chevron) {
+                chevron.style.transform = 'rotate(180deg)';
+                chevron.style.color = '#002347';
+            }
+        }
+    }
+</script>
+
+<style>
+@media (max-width: 767.98px) {
+    .bottom-breakdown-collapsible {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.35s ease-in-out, opacity 0.25s ease;
+    }
+    .bottom-rating-trigger {
+        cursor: pointer;
+    }
+}
+@media (min-width: 768px) {
+    .bottom-breakdown-collapsible {
+        max-height: none !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
+}
+</style>
+
+<script>
+    function toggleBottomReviewBreakdown() {
+        if (window.innerWidth >= 768) return;
+
+        const content = document.getElementById('bottomReviewBreakdownContent');
+        const chevron = document.querySelector('.bottom-rating-chevron');
+        if (!content) return;
+
+        const isExpanded = content.getAttribute('data-expanded') === 'true';
+
+        if (isExpanded) {
+            content.style.maxHeight = '0px';
+            content.style.opacity = '0';
+            content.setAttribute('data-expanded', 'false');
+            if (chevron) {
+                chevron.style.transform = 'rotate(0deg)';
+                chevron.style.color = '#64748b';
+            }
+        } else {
+            content.style.maxHeight = (content.scrollHeight + 50) + 'px';
+            content.style.opacity = '1';
+            content.setAttribute('data-expanded', 'true');
+            if (chevron) {
+                chevron.style.transform = 'rotate(180deg)';
+                chevron.style.color = '#002347';
+            }
+        }
+    }
+
+    function toggleMobileReviewBreakdown() {
+        const content = document.getElementById('mobileReviewBreakdownContent');
+        const chevron = document.querySelector('.mobile-rating-chevron');
+        if (!content) return;
+
+        const isExpanded = content.getAttribute('data-expanded') === 'true';
+
+        if (isExpanded) {
+            content.style.maxHeight = '0px';
+            content.style.opacity = '0';
+            content.setAttribute('data-expanded', 'false');
+            if (chevron) {
+                chevron.style.transform = 'rotate(0deg)';
+                chevron.style.color = '#64748b';
+            }
+        } else {
+            content.style.maxHeight = (content.scrollHeight + 50) + 'px';
+            content.style.opacity = '1';
+            content.setAttribute('data-expanded', 'true');
+            if (chevron) {
+                chevron.style.transform = 'rotate(180deg)';
+                chevron.style.color = '#002347';
+            }
+        }
+    }
 </script>
 
 <!-- Report Issue Modal -->
