@@ -7,39 +7,7 @@
 @endphp
 
 <style>
-    .share-trigger-btn, .action-icon-btn {
-        background: transparent !important;
-        border: 0 !important;
-        outline: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 32px !important;
-        height: 32px !important;
-        border-radius: 50% !important;
-        color: #94a3b8 !important;
-        cursor: pointer !important;
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        transition: background-color 0.2s ease, color 0.2s ease !important;
-    }
-    .share-trigger-btn:hover, .action-icon-btn:hover {
-        background-color: #f1f5f9 !important;
-        color: #1e293b !important;
-        
-    }
-    a.action-icon-btn:hover,button.action-icon-btn:hover {
-    background: #003f7d !important;
-    color: #fff !important;
-}
-button.action-icon-btn.share-trigger-btn:hover{
-     background: #ff5722!important;
-    color: #fff !important;
-
-}
+ 
 </style>
 
 <div class="inside_sec_text inside_sec_text_2">
