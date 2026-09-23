@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\ContentTemplates;
 
 use App\Http\Controllers\Controller;
+use App\Models\Business;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\ContentTemplate;
@@ -211,12 +212,12 @@ class ContentTemplateController extends Controller
      */
 
     public function categoryDiscussions(Request $request) { return $this->genericCategoryView($request, 'category_discussions', \App\Services\ContentTemplateService::CATEGORY_DISCUSSIONS_FIELDS, 'Category Discussions'); }
-    public function businessProfile(Request $request) { return $this->genericCategoryView($request, 'business_profile', \App\Services\ContentTemplateService::BUSINESS_PROFILE_FIELDS, 'Business Profile'); }
-    public function businessAlternatives(Request $request) { return $this->genericCategoryView($request, 'business_alternatives', \App\Services\ContentTemplateService::BUSINESS_ALTERNATIVES_FIELDS, 'Business Alternatives'); }
-    public function businessFaqs(Request $request) { return $this->genericCategoryView($request, 'business_faqs', \App\Services\ContentTemplateService::BUSINESS_FAQS_FIELDS, 'Business FAQs'); }
-    public function businessCompare(Request $request) { return $this->genericCategoryView($request, 'business_compare', \App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS, 'Business Compare'); }
-    public function businessReviews(Request $request) { return $this->genericCategoryView($request, 'business_reviews', \App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS, 'Business Reviews'); }
-    public function businessDiscussions(Request $request) { return $this->genericCategoryView($request, 'business_discussions', \App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS, 'Business Discussions'); }
+    public function businessProfile(Request $request) { return $this->genericBusinessView($request, 'business_profile', \App\Services\ContentTemplateService::BUSINESS_PROFILE_FIELDS, 'Business Profile'); }
+    public function businessAlternatives(Request $request) { return $this->genericBusinessView($request, 'business_alternatives', \App\Services\ContentTemplateService::BUSINESS_ALTERNATIVES_FIELDS, 'Business Alternatives'); }
+    public function businessFaqs(Request $request) { return $this->genericBusinessView($request, 'business_faqs', \App\Services\ContentTemplateService::BUSINESS_FAQS_FIELDS, 'Business FAQs'); }
+    public function businessCompare(Request $request) { return $this->genericBusinessView($request, 'business_compare', \App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS, 'Business Compare'); }
+    public function businessReviews(Request $request) { return $this->genericBusinessView($request, 'business_reviews', \App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS, 'Business Reviews'); }
+    public function businessDiscussions(Request $request) { return $this->genericBusinessView($request, 'business_discussions', \App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS, 'Business Discussions'); }
 
     private function genericCategoryView(Request $request, $sectionGroup, $fieldDefs, $title)
     {
@@ -269,6 +270,97 @@ class ContentTemplateController extends Controller
             'sectionGroup'
         ));
     }
+
+    private function genericBusinessView(Request $request, $sectionGroup, $fieldDefs, $title)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        ContentTemplateService::ensureTemplatesExistForLanguage($sectionGroup, $lang_id);
+
+        $query = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.categoryTranslations' => fn($q) => $q->where('lang_id', $lang_id),
+            'subCategories.categoryTranslations' => fn($q) => $q->where('lang_id', $lang_id),
+        ]);
+
+        if ($categoryId = $request->get('category_id')) {
+            $selectedCat = Category::find($categoryId);
+            if ($selectedCat && $selectedCat->parent_id === null) {
+                $subIds = $selectedCat->subCategories()->pluck('id')->push((int)$categoryId)->toArray();
+                $query->where(function($q) use ($subIds) {
+                    $q->whereIn('category_id', $subIds)
+                      ->orWhereHas('subCategories', function($sq) use ($subIds) {
+                          $sq->whereIn('categories.id', $subIds);
+                      });
+                });
+            } else {
+                $query->where(function($q) use ($categoryId) {
+                    $q->where('category_id', $categoryId)
+                      ->orWhereHas('subCategories', function($sq) use ($categoryId) {
+                          $sq->where('categories.id', $categoryId);
+                      });
+                });
+            }
+        }
+
+        if ($search = $request->get('search')) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('translations', function($tq) use ($search) {
+                    $tq->where('name', 'like', "%{$search}%");
+                })->orWhere('permanent_url', 'like', "%{$search}%");
+            });
+        }
+
+        $businesses = $query->orderBy('id', 'asc')->paginate(50)->withQueryString();
+
+        $allCategories = Category::whereNull('parent_id')
+            ->with([
+                'categoryTranslations' => fn($q) => $q->where('lang_id', $lang_id),
+                'subCategories' => function($q) use ($lang_id) {
+                    $q->with(['categoryTranslations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                }
+            ])
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $assignments = ContentTemplateAssignment::where('entity_type', 'business')
+            ->where('lang_id', $lang_id)
+            ->whereHas('template', fn($q) => $q->where('section_group', $sectionGroup))
+            ->with('template')
+            ->get()
+            ->groupBy('entity_id');
+
+        $templates = ContentTemplate::where('section_group', $sectionGroup)
+            ->where('lang_id', $lang_id)
+            ->orderBy('field_key')
+            ->orderBy('option_number')
+            ->get()
+            ->groupBy('field_key');
+
+        return view('Admin.content-templates.generic-business', compact(
+            'businesses',
+            'allCategories',
+            'assignments',
+            'templates',
+            'fieldDefs',
+            'languages',
+            'lang_id',
+            'selectedLanguage',
+            'title',
+            'sectionGroup'
+        ));
+    }
+
 
 
     public function criteriaRatings(Request $request)
@@ -488,6 +580,8 @@ class ContentTemplateController extends Controller
 
         if ($section === 'features') {
             $assignedCount = ContentTemplateService::assignMissingForFeatures($langId);
+        } elseif (in_array($section, ['business_profile', 'business_alternatives', 'business_faqs', 'business_compare', 'business_reviews', 'business_discussions'])) {
+            $assignedCount = ContentTemplateService::assignMissingForBusinesses($langId, $section);
         } else {
             $assignedCount = ContentTemplateService::assignMissingForCategories($langId, $section);
         }

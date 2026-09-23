@@ -594,29 +594,11 @@ class ContentTemplateService
             $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
         } elseif ($sectionGroup === 'category') {
             $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
-        } elseif ($sectionGroup === 'business_profile') {
-            $allFieldKeys = array_keys(self::BUSINESS_PROFILE_FIELDS);
-        } elseif ($sectionGroup === 'business_alternatives') {
-            $allFieldKeys = array_keys(self::BUSINESS_ALTERNATIVES_FIELDS);
-        } elseif ($sectionGroup === 'business_faqs') {
-            $allFieldKeys = array_keys(self::BUSINESS_FAQS_FIELDS);
-        } elseif ($sectionGroup === 'business_compare') {
-            $allFieldKeys = array_keys(self::BUSINESS_COMPARE_FIELDS);
-        } elseif ($sectionGroup === 'business_reviews') {
-            $allFieldKeys = array_keys(self::BUSINESS_REVIEWS_FIELDS);
-        } elseif ($sectionGroup === 'business_discussions') {
-            $allFieldKeys = array_keys(self::BUSINESS_DISCUSSIONS_FIELDS);
         } else {
             $allFieldKeys = array_merge(
                 array_keys(self::CATEGORY_FIELDS),
                 array_keys(self::CATEGORY_FAQ_FIELDS),
-                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
-                array_keys(self::BUSINESS_PROFILE_FIELDS),
-                array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
-                array_keys(self::BUSINESS_FAQS_FIELDS),
-                array_keys(self::BUSINESS_COMPARE_FIELDS),
-                array_keys(self::BUSINESS_REVIEWS_FIELDS),
-                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
             );
         }
 
@@ -631,6 +613,57 @@ class ContentTemplateService
 
                 if (!$exists) {
                     $template = self::getOrAssignTemplate('category', $catId, $fieldKey, $langId, $sectionGroup);
+                    if ($template) {
+                        $assignedCount++;
+                    }
+                }
+            }
+        }
+
+        return $assignedCount;
+    }
+
+    /**
+     * Assign missing templates for all businesses.
+     */
+    public static function assignMissingForBusinesses(int $langId = 1, ?string $sectionGroup = null): int
+    {
+        $allBusinessIds = \App\Models\Business::pluck('id');
+
+        if ($sectionGroup === 'business_profile') {
+            $allFieldKeys = array_keys(self::BUSINESS_PROFILE_FIELDS);
+        } elseif ($sectionGroup === 'business_alternatives') {
+            $allFieldKeys = array_keys(self::BUSINESS_ALTERNATIVES_FIELDS);
+        } elseif ($sectionGroup === 'business_faqs') {
+            $allFieldKeys = array_keys(self::BUSINESS_FAQS_FIELDS);
+        } elseif ($sectionGroup === 'business_compare') {
+            $allFieldKeys = array_keys(self::BUSINESS_COMPARE_FIELDS);
+        } elseif ($sectionGroup === 'business_reviews') {
+            $allFieldKeys = array_keys(self::BUSINESS_REVIEWS_FIELDS);
+        } elseif ($sectionGroup === 'business_discussions') {
+            $allFieldKeys = array_keys(self::BUSINESS_DISCUSSIONS_FIELDS);
+        } else {
+            $allFieldKeys = array_merge(
+                array_keys(self::BUSINESS_PROFILE_FIELDS),
+                array_keys(self::BUSINESS_ALTERNATIVES_FIELDS),
+                array_keys(self::BUSINESS_FAQS_FIELDS),
+                array_keys(self::BUSINESS_COMPARE_FIELDS),
+                array_keys(self::BUSINESS_REVIEWS_FIELDS),
+                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
+            );
+        }
+
+        $assignedCount = 0;
+        foreach ($allBusinessIds as $bizId) {
+            foreach ($allFieldKeys as $fieldKey) {
+                $exists = ContentTemplateAssignment::where('entity_type', 'business')
+                    ->where('entity_id', $bizId)
+                    ->where('lang_id', $langId)
+                    ->where('field_key', $fieldKey)
+                    ->exists();
+
+                if (!$exists) {
+                    $template = self::getOrAssignTemplate('business', $bizId, $fieldKey, $langId, $sectionGroup);
                     if ($template) {
                         $assignedCount++;
                     }
