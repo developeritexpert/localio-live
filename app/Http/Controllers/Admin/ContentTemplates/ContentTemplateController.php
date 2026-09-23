@@ -46,6 +46,7 @@ class ContentTemplateController extends Controller
         // Load all category assignments for this language
         $assignments = ContentTemplateAssignment::where('entity_type', 'category')
             ->where('lang_id', $lang_id)
+            ->whereHas('template', fn($q) => $q->where('section_group', $sectionGroup))
             ->with('template')
             ->get()
             ->groupBy('entity_id');

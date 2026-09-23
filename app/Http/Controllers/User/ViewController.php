@@ -1264,6 +1264,12 @@ class ViewController extends Controller
         $resolvedSubtextData = \App\Services\ContentTemplateService::resolveCategorySection($category, 'discussions_subtext', $lang_id);
         $resolvedSubtext = !empty($resolvedSubtextData['headline']) ? $resolvedSubtextData['headline'] : null;
 
+        $resolvedPromptData = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_prompt_placeholder', $lang_id);
+        $resolvedPrompt = !empty($resolvedPromptData['headline']) ? $resolvedPromptData['headline'] : null;
+
+        $resolvedEmptyData = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_empty_headline', $lang_id);
+        $resolvedEmpty = !empty($resolvedEmptyData['headline']) ? $resolvedEmptyData['headline'] : null;
+
         return view('User.category.category_discussions', compact(
             'category',
             'catTrans',
@@ -1272,7 +1278,9 @@ class ViewController extends Controller
             'totalDiscussionsCount',
             'sort',
             'resolvedH1',
-            'resolvedSubtext'
+            'resolvedSubtext',
+            'resolvedPrompt',
+            'resolvedEmpty'
         ));
     }
 

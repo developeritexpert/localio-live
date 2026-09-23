@@ -554,30 +554,7 @@ class ContentTemplateSeeder extends Seeder
                 'subtext'       => "Find tailored [category_lc] categories and related toolsets.",
                 'lang_id' => 1,
             ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 1,
-                'headline'      => "See all [entities1_cap] with [feature_lc]",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 2,
-                'headline'      => "Explore [entities1_cap] offering [feature_tc]",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 3,
-                'headline'      => "View all [feature_lc] providers",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
+
         ];
 
         foreach ($templates as $data) {

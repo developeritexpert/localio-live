@@ -194,25 +194,7 @@ class FeatureContentTemplatesSeeder extends Seeder
                 'subtext'       => 'Find tailored [category_lc] categories and related toolsets.',
             ],
 
-            // 9. Explore Link Text (3 options)
-            [
-                'field_key'     => 'explore_link',
-                'option_number' => 1,
-                'headline'      => 'See all [entities1_cap] with [feature_lc]',
-                'subtext'       => null,
-            ],
-            [
-                'field_key'     => 'explore_link',
-                'option_number' => 2,
-                'headline'      => 'Explore [entities1_cap] offering [feature_tc]',
-                'subtext'       => null,
-            ],
-            [
-                'field_key'     => 'explore_link',
-                'option_number' => 3,
-                'headline'      => 'View all [feature_lc] providers',
-                'subtext'       => null,
-            ],
+
         ];
 
         // Target languages: ID 1 (standard base) + en-us
