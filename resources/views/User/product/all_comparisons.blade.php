@@ -1,25 +1,8 @@
 @extends('user_layout.master')
 @push('styles')
 <style>
-     .explore-subcat-card {
-        background: #fdfdfd;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 16px 20px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .explore-subcat-card:hover {
-        border-color: #06498b;
-        box-shadow: 0 4px 12px rgba(6,73,139,0.08);
-        transform: translateY(-2px);
-    }
-    .explore-subcat-card:hover h6 {
-        color: #e56b46 !important;
-    }
+    
+   
     .auto-choice-rgt .btn-pages {
         display: flex;
         justify-content: center;
@@ -606,7 +589,7 @@
                         <div class="d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $subcatItem->businesses()->count() ?? 0 }} listings
+                                {{ $subcatItem->businesses()->count() ?? 0 }} FAQs
                             </span>
                         </div>
                     </div>
