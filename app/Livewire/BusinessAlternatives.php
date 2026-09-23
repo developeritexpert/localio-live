@@ -52,26 +52,31 @@ class BusinessAlternatives extends Component
 
         $this->business = Business::with([
             'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+            'category.children',
+            'category.parent',
+            'subCategories',
             'products.categories'
         ])->findOrFail($businessId);
 
         $this->businessName = $this->business->translations->first()?->name ?? 'Business';
 
-        // Get sub-categories
+        // Get all related category IDs (parent, children, subcategories, product categories)
         $categoryIds = [$this->business->category_id];
+        if ($this->business->category) {
+            if ($this->business->category->parent_id === null) {
+                $childCatIds = Category::where('parent_id', $this->business->category_id)->pluck('id')->toArray();
+                $categoryIds = array_merge($categoryIds, $childCatIds);
+            } else {
+                $categoryIds[] = $this->business->category->parent_id;
+            }
+        }
+        $subCatIds = $this->business->subCategories ? $this->business->subCategories->pluck('id')->toArray() : [];
         $productCategoryIds = $this->business->products
             ->flatMap(fn($product) => $product->categories->pluck('id'))
             ->toArray();
-        $allCategoryIds = array_unique(array_filter(array_merge($categoryIds, $productCategoryIds)));
+        $allCategoryIds = array_values(array_unique(array_filter(array_merge($categoryIds, $subCatIds, $productCategoryIds))));
 
-        $this->subCategoryIds = Category::whereIn('id', $allCategoryIds)
-            ->whereNotNull('parent_id')
-            ->pluck('id')
-            ->toArray();
-
-        if (empty($this->subCategoryIds) && $this->business->category_id) {
-            $this->subCategoryIds = [$this->business->category_id];
-        }
+        $this->subCategoryIds = $allCategoryIds;
 
         $allProducts = Product::with([
             'filterOptions.filterOption.filter.translations' => fn($q) => $q->where('language_id', $this->lang_id),
@@ -347,22 +352,88 @@ class BusinessAlternatives extends Component
         }
     }
 
-    public function getProductsProperty()
+    public function getTopAffiliatedBusinessesProperty()
     {
-        $query = Business::whereHas('translations', function ($q) {
-            $q->where('lang_id', $this->lang_id);
-        })->whereHas('languages', function ($query) {
-            $query->where('language_id', $this->lang_id);
+        $categoryIds = [$this->business->category_id];
+        if ($this->business->category && $this->business->category->parent_id === null) {
+            $childCatIds = Category::where('parent_id', $this->business->category_id)->pluck('id')->toArray();
+            $categoryIds = array_merge($categoryIds, $childCatIds);
+        } elseif ($this->business->category && $this->business->category->parent_id !== null) {
+            $categoryIds[] = $this->business->category->parent_id;
+        }
+        $subCatIds = $this->business->subCategories ? $this->business->subCategories->pluck('id')->toArray() : [];
+        $allTargetCategoryIds = array_values(array_unique(array_filter(array_merge($categoryIds, $subCatIds))));
+
+        $topBusinesses = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+            'reviews' => fn($q) => $q->where('status', 'active'),
+            'category.ratingCriteria',
+            'usps',
+            'products.prices'
+        ])
+        ->withAvg(['reviews as average_rating' => function ($q) {
+            $q->where('status', 'active');
+        }], 'rating')
+        ->where('is_affiliate', 1)
+        ->where('id', '!=', $this->businessId)
+        ->where('status', 1)
+        ->where(function ($q) use ($allTargetCategoryIds) {
+            $q->whereIn('category_id', $allTargetCategoryIds)
+              ->orWhereHas('subCategories', function ($subQ) use ($allTargetCategoryIds) {
+                  $subQ->whereIn('categories.id', $allTargetCategoryIds);
+              });
         })
+        ->orderByDesc('average_rating')
+        ->take(10)
+        ->get();
+
+        if ($topBusinesses->count() < 10) {
+            $moreAff = Business::with([
+                'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'category.ratingCriteria',
+                'usps',
+                'products.prices'
+            ])
+            ->withAvg(['reviews as average_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
             ->where('is_affiliate', 1)
             ->where('id', '!=', $this->businessId)
-            ->where(function ($query) {
+            ->whereNotIn('id', $topBusinesses->pluck('id'))
+            ->where('status', 1)
+            ->orderByDesc('average_rating')
+            ->take(10 - $topBusinesses->count())
+            ->get();
+
+            $topBusinesses = $topBusinesses->merge($moreAff);
+        }
+
+        return $topBusinesses;
+    }
+
+        public function getProductsProperty()
+    {
+        $tableBizIds = $this->topAffiliatedBusinesses->pluck('id')->toArray();
+
+        $query = Business::whereHas('translations', function ($q) {
+            $q->where('lang_id', $this->lang_id);
+        })
+            ->where('id', '!=', $this->businessId)
+            ->where('status', 1)
+            ->where(function ($query) use ($tableBizIds) {
                 $query->whereIn('category_id', $this->subCategoryIds)
+                    ->orWhereHas('subCategories', function ($subQ) {
+                        $subQ->whereIn('categories.id', $this->subCategoryIds);
+                    })
                     ->orWhereHas('products', function($pq) {
                         $pq->whereHas('categories', function($cq) {
                             $cq->whereIn('categories.id', $this->subCategoryIds);
                         });
                     });
+                if (!empty($tableBizIds)) {
+                    $query->orWhereIn('businesses.id', $tableBizIds);
+                }
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
@@ -393,9 +464,7 @@ class BusinessAlternatives extends Component
             ])
             ->withAvg(['reviews as avg_rating' => function ($q) {
                 $q->where('status', 'active');
-            }], 'rating')
-            ->orderByDesc('avg_rating')
-            ->orderBy('id');
+            }], 'rating');
 
         if (!empty($this->searchTerm)) {
             $query->whereHas('translations', function ($q) {
@@ -407,11 +476,18 @@ class BusinessAlternatives extends Component
         }
 
         if (!empty($this->selectedRatings)) {
-            $query->whereHas('reviews', function ($q) {
-                $q->select('business_id')
-                    ->where('status', 'active')
-                    ->groupBy('business_id')
-                    ->havingRaw('AVG(rating) >= ?', [min($this->selectedRatings)]);
+            $minRating = min($this->selectedRatings);
+            $query->where(function ($q) use ($minRating) {
+                $q->whereHas('reviews', function ($rq) use ($minRating) {
+                    $rq->select('business_id')
+                        ->where('status', 'active')
+                        ->groupBy('business_id')
+                        ->havingRaw('AVG(rating) >= ?', [$minRating]);
+                })->orWhere(function ($adminQ) use ($minRating) {
+                    $adminQ->whereDoesntHave('reviews', function ($rq) {
+                        $rq->where('status', 'active');
+                    })->where('admin_rating', '>=', $minRating);
+                });
             });
         }
 
@@ -452,6 +528,10 @@ class BusinessAlternatives extends Component
         });
 
         $filtered = $businesses->filter(function ($business) {
+            if (!$this->isPriceFilterActive) {
+                return true;
+            }
+
             $validPrices = $business->products->flatMap(function ($product) {
                 return $product->prices;
             })->map(function ($price) {
@@ -472,7 +552,8 @@ class BusinessAlternatives extends Component
         });
 
         $filtered = $filtered->sortByDesc(function ($business) {
-            return $business->avg_rating ?? 0;
+            $avg = $business->avg_rating ?? ($business->admin_rating ?? 0);
+            return ($business->is_affiliate ? 100 : 0) + $avg;
         })->values();
 
         $totalCount = $filtered->count();
@@ -503,7 +584,6 @@ class BusinessAlternatives extends Component
 
         return $paginator;
     }
-
     public function updateActiveFilters()
     {
         foreach ($this->activeFilters as $filterId => $data) {
@@ -660,6 +740,7 @@ class BusinessAlternatives extends Component
             'products' => $this->products,
             'filters' => $this->filters,
             'lang_id' => $this->lang_id,
+            'topAffiliatedBusinesses' => $this->topAffiliatedBusinesses,
         ]);
     }
 }

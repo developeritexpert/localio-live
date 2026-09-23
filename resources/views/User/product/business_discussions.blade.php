@@ -124,7 +124,7 @@
         <!-- Main Heading (with Business Logo and Visit Website Button) -->
         <div class="top-rated-heading-block">
             <div class="row align-items-center justify-content-between">
-                <div class="col-md-8 col-12 text-start">
+                <div class="{{ (!empty($business->is_affiliate) && $business->getTrackedUrl()) ? 'col-md-8' : 'col-12' }} col-12 text-start">
                     <div class="top_head d-flex align-items-center gap-3">
                         <!-- Business Logo -->
                         <div class="top-product-logo">

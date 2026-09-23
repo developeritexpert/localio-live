@@ -563,20 +563,24 @@
                         $subTrans = $subcatItem->translations->first();
                     }
                 }
+                if (!$subTrans && isset($subcatItem->categoryTranslations)) {
+                    $subTrans = $subcatItem->categoryTranslations->where('lang_id', $currentLangId)->first() ?? $subcatItem->categoryTranslations->first();
+                }
+
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
 
-                // Count FAQ entries / answers for this subcategory
+                // Count FAQ entries for this subcategory
                 $faqCount = 0;
                 if (!empty($subTrans->faqs)) {
                     $decodedFaqs = is_array($subTrans->faqs) ? $subTrans->faqs : json_decode($subTrans->faqs, true);
-                    if (is_array($decodedFaqs)) {
+                    if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
                         $faqCount = count($decodedFaqs);
                     }
                 }
-                if ($faqCount === 0 && isset($subcatItem->translations) && $subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection) {
-                    foreach ($subcatItem->translations as $transItem) {
+                if ($faqCount === 0 && isset($subcatItem->categoryTranslations)) {
+                    foreach ($subcatItem->categoryTranslations as $transItem) {
                         if (!empty($transItem->faqs)) {
                             $decodedFaqs = is_array($transItem->faqs) ? $transItem->faqs : json_decode($transItem->faqs, true);
                             if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
@@ -594,18 +598,14 @@
                         ->value('faqs');
                     if (!empty($catFaqsJson)) {
                         $decodedFaqs = is_array($catFaqsJson) ? $catFaqsJson : json_decode($catFaqsJson, true);
-                        if (is_array($decodedFaqs)) {
+                        if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
                             $faqCount = count($decodedFaqs);
                         }
                     }
                 }
+                // Fallback: If no custom FAQs exist in DB, category FAQ pages display the 4 standard fallback FAQs
                 if ($faqCount === 0) {
-                    $faqCount = \App\Models\BusinessFaq::whereHas('business', function ($q) use ($subcatItem) {
-                        $q->where('status', 1)->where(function ($bQ) use ($subcatItem) {
-                            $bQ->where('category_id', $subcatItem->id)
-                              ->orWhereHas('subCategories', fn($sq) => $sq->where('categories.id', $subcatItem->id));
-                        });
-                    })->where('status', 1)->count();
+                    $faqCount = 4;
                 }
             @endphp
             <div class="col-lg-4 col-md-6 col-6">
