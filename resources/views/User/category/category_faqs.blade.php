@@ -119,27 +119,6 @@
             <!-- Left Side: FAQs Content, Search & Accordion -->
             <div class="col-lg-8 col-12">
                 
-                <!-- Section 1: Intro Title & Description -->
-                <div class="faq-top-intro mb-4">
-                    @php
-    $resolvedFaqAbout = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_about', $currentLangId ?? 1);
-    $faqAboutH2 = !empty($resolvedFaqAbout['headline']) ? $resolvedFaqAbout['headline'] : (!empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName));
-    $faqAboutDesc = !empty($resolvedFaqAbout['subtext']) ? $resolvedFaqAbout['subtext'] : ($categoryTranslation->faq_about_description ?? '');
-@endphp
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        {!! \App\Services\ContentTemplateService::cleanHeading($faqAboutH2) !!}
-                    </h2>
-                    <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                        @if(!empty($faqAboutDesc))
-                            {!! $faqAboutDesc !!}
-                        @else
-                            <p>
-                                Explore comprehensive information, user reviews, and comparisons for top {{ strtolower($catName) }} solutions. Our guide helps you discover the right options for your specific needs.
-                            </p>
-                        @endif
-                    </div>
-                </div>
-
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
                     @php
@@ -584,20 +563,24 @@
                         $subTrans = $subcatItem->translations->first();
                     }
                 }
+                if (!$subTrans && isset($subcatItem->categoryTranslations)) {
+                    $subTrans = $subcatItem->categoryTranslations->where('lang_id', $currentLangId)->first() ?? $subcatItem->categoryTranslations->first();
+                }
+
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
 
-                // Count FAQ entries / answers for this subcategory
+                // Count FAQ entries for this subcategory
                 $faqCount = 0;
                 if (!empty($subTrans->faqs)) {
                     $decodedFaqs = is_array($subTrans->faqs) ? $subTrans->faqs : json_decode($subTrans->faqs, true);
-                    if (is_array($decodedFaqs)) {
+                    if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
                         $faqCount = count($decodedFaqs);
                     }
                 }
-                if ($faqCount === 0 && isset($subcatItem->translations) && $subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection) {
-                    foreach ($subcatItem->translations as $transItem) {
+                if ($faqCount === 0 && isset($subcatItem->categoryTranslations)) {
+                    foreach ($subcatItem->categoryTranslations as $transItem) {
                         if (!empty($transItem->faqs)) {
                             $decodedFaqs = is_array($transItem->faqs) ? $transItem->faqs : json_decode($transItem->faqs, true);
                             if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
@@ -615,18 +598,14 @@
                         ->value('faqs');
                     if (!empty($catFaqsJson)) {
                         $decodedFaqs = is_array($catFaqsJson) ? $catFaqsJson : json_decode($catFaqsJson, true);
-                        if (is_array($decodedFaqs)) {
+                        if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
                             $faqCount = count($decodedFaqs);
                         }
                     }
                 }
+                // Fallback: If no custom FAQs exist in DB, category FAQ pages display the 4 standard fallback FAQs
                 if ($faqCount === 0) {
-                    $faqCount = \App\Models\BusinessFaq::whereHas('business', function ($q) use ($subcatItem) {
-                        $q->where('status', 1)->where(function ($bQ) use ($subcatItem) {
-                            $bQ->where('category_id', $subcatItem->id)
-                              ->orWhereHas('subCategories', fn($sq) => $sq->where('categories.id', $subcatItem->id));
-                        });
-                    })->where('status', 1)->count();
+                    $faqCount = 4;
                 }
             @endphp
             <div class="col-lg-4 col-md-6 col-6">
@@ -644,7 +623,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $faqCount }} {{ $faqCount == 1 ? 'listing' : 'listings' }}
+                                {{ $faqCount }} {{ $faqCount == 1 ? 'FAQ' : 'FAQs' }}
                             </span>
                         </div>
                     </div>

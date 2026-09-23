@@ -124,7 +124,7 @@
         <!-- Main Heading (with Business Logo and Visit Website Button) -->
         <div class="top-rated-heading-block">
             <div class="row align-items-center justify-content-between">
-                <div class="col-md-8 col-12 text-start">
+                <div class="{{ (!empty($business->is_affiliate) && $business->getTrackedUrl()) ? 'col-md-8' : 'col-12' }} col-12 text-start">
                     <div class="top_head d-flex align-items-center gap-3">
                         <!-- Business Logo -->
                         <div class="top-product-logo">
@@ -144,6 +144,20 @@
                                 getCurrentLanguageID()
                             );
                             $finalDiscSub = !empty($resolvedDiscSub['headline']) ? $resolvedDiscSub['headline'] : $subHeadline;
+
+                            $resolvedDiscPrompt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'discussions_prompt_placeholder',
+                                getCurrentLanguageID()
+                            );
+                            $finalDiscPrompt = !empty($resolvedDiscPrompt['headline']) ? $resolvedDiscPrompt['headline'] : ('Ask a question or share something about ' . $bName);
+
+                            $resolvedDiscEmpty = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'discussions_empty_headline',
+                                getCurrentLanguageID()
+                            );
+                            $finalDiscEmpty = !empty($resolvedDiscEmpty['headline']) ? $resolvedDiscEmpty['headline'] : ('No discussions about ' . $bName . '.');
                         @endphp
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
@@ -195,7 +209,7 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="{{ $finalDiscPrompt }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
                     <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
@@ -242,7 +256,7 @@
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
-                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions about {{ $bName }}.</h3>
+                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">{{ $finalDiscEmpty }}</h3>
                     <p class="text-muted mb-3 d-none" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
                     <button type="button" class="blue-btn btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
                         <i class="fas fa-plus me-1"></i> Start a discussion 

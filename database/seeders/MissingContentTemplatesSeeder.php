@@ -74,6 +74,18 @@ class MissingContentTemplatesSeeder extends Seeder
             ['headline' => 'Ask questions, share experiences, exchange tips, and discuss [category_lc] with other users.'],
             ['headline' => 'Join the conversation and connect with other [category_lc] users.']
         ]);
+        $insertOptions('category_discussions', 'category_discussions_prompt_placeholder', [
+            ['headline' => 'Ask a question or share something about [category_cap]'],
+            ['headline' => 'Have a question about [category_cap]? Ask the community'],
+            ['headline' => 'Share your thoughts or ask a question about [category_cap]'],
+            ['headline' => 'Start a conversation or ask about [category_cap]...']
+        ]);
+        $insertOptions('category_discussions', 'category_discussions_empty_headline', [
+            ['headline' => 'No discussions about [category_cap].'],
+            ['headline' => 'There are no discussions about [category_cap] yet.'],
+            ['headline' => 'No questions or discussions for [category_cap] yet.'],
+            ['headline' => 'Be the first to discuss [category_cap].']
+        ]);
 
         // --- 3. Business Alternatives ---
         $insertOptions('business_alternatives', 'alternatives_h1', [
@@ -123,6 +135,18 @@ class MissingContentTemplatesSeeder extends Seeder
         $insertOptions('business_discussions', 'discussions_subtext', [
             ['headline' => 'Join the conversation and share your experiences.'],
             ['headline' => 'Connect with other users and exchange tips.']
+        ]);
+        $insertOptions('business_discussions', 'discussions_prompt_placeholder', [
+            ['headline' => 'Ask a question or share something about [business]'],
+            ['headline' => 'Have a question about [business]? Ask the community'],
+            ['headline' => 'Share your thoughts or ask a question about [business]'],
+            ['headline' => 'Start a conversation or ask about [business]...']
+        ]);
+        $insertOptions('business_discussions', 'discussions_empty_headline', [
+            ['headline' => 'No discussions about [business].'],
+            ['headline' => 'There are no discussions about [business] yet.'],
+            ['headline' => 'No questions or discussions for [business] yet.'],
+            ['headline' => 'Be the first to discuss [business].']
         ]);
 
         // --- 8. Criteria Ratings ---

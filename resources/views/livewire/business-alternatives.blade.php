@@ -1,4 +1,94 @@
 <div>
+@php
+    $lang_id = getCurrentLanguageID();
+    $bCategoryIds = array_filter(array_unique(array_merge(
+        [$business->category_id],
+        $business->category && $business->category->parent_id === null ? \App\Models\Category::where('parent_id', $business->category_id)->pluck('id')->toArray() : [],
+        $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+    )));
+
+    // 1. Fetch 4-6 popular alternatives
+    $popularAltBusinesses = \App\Models\Business::where('id', '!=', $business->id)
+        ->where('status', 1)
+        ->whereIn('category_id', $bCategoryIds)
+        ->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'reviews' => fn($q) => $q->where('status', 'active'),
+            'category.ratingCriteria',
+            'products.prices'
+        ])
+        ->get()
+        ->sortByDesc(function($b) {
+            $r = $b->reviews->where('status', 'active');
+            return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+        })
+        ->take(3);
+
+    if ($popularAltBusinesses->count() < 3) {
+        $morePop = \App\Models\Business::where('id', '!=', $business->id)
+            ->where('status', 1)
+            ->whereNotNull('category_id')
+            ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'category.ratingCriteria',
+                'products.prices'
+            ])
+            ->get()
+            ->sortByDesc(function ($b) {
+                $r = $b->reviews->where('status', 'active');
+                return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+            })
+            ->take(3 - $popularAltBusinesses->count());
+
+        $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
+    }
+
+    // 2. Fetch 10 affiliated businesses for tables
+    if (isset($topAffiliatedBusinesses) && $topAffiliatedBusinesses->count() > 0) {
+        $affiliatedTableBusinesses = $topAffiliatedBusinesses;
+    } else {
+        $affiliatedTableBusinesses = \App\Models\Business::where('is_affiliate', 1)
+            ->where('id', '!=', $business->id)
+            ->where('status', 1)
+            ->whereIn('category_id', $bCategoryIds)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'category.ratingCriteria'
+            ])
+            ->get()
+            ->sortByDesc(function($b) {
+                $r = $b->reviews->where('status', 'active');
+                return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+            })
+            ->take(10);
+
+        if ($affiliatedTableBusinesses->count() < 10) {
+            $moreAff = \App\Models\Business::where('is_affiliate', 1)
+                ->where('id', '!=', $business->id)
+                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
+                ->where('status', 1)
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'category.ratingCriteria'
+                ])
+                ->get()
+                ->sortByDesc(function($b) {
+                    $r = $b->reviews->where('status', 'active');
+                    return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                })
+                ->take(10 - $affiliatedTableBusinesses->count());
+
+            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
+        }
+    }
+
+    $tableRowsList = collect([$business])->merge($affiliatedTableBusinesses);
+@endphp
+
 
     <section class="top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
     <div class="top-auto-btm">
@@ -7,8 +97,8 @@
                 <div class="top-auto-choice">
                     <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
-                            @if(empty($hasUpperHeader))
-                                <div class="text-start col-lg-8">
+                            <div class="text-start col-lg-8">
+                                @if(empty($hasUpperHeader))
                                     @php
                                         $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
@@ -35,93 +125,7 @@
                                     <div style="color: #002347;">
                                         {!! $finalAltDesc !!}
                                     </div>
-
-
-                                    <!-- after this alternative sec -->
-                                    @php
-                                    $lang_id = getCurrentLanguageID();
-                                    $bCategoryIds = array_filter(array_unique(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [])));
-
-                                    // 1. Fetch 4-6 popular alternatives
-                                    $popularAltBusinesses = \App\Models\Business::where('id', '!=', $business->id)
-                                        ->where('status', 1)
-                                        ->whereIn('category_id', $bCategoryIds)
-                                        ->with([
-                                            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                                            'reviews' => fn($q) => $q->where('status', 'active'),
-                                            'category.ratingCriteria',
-                                            'products.prices'
-                                        ])
-                                        ->get()
-                                        ->sortByDesc(function($b) {
-                                            $r = $b->reviews->where('status', 'active');
-                                            return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
-                                        })
-                                        ->take(3);
-
-                                  if ($popularAltBusinesses->count() < 3) {
-    $morePop = \App\Models\Business::where('id', '!=', $business->id)
-        ->where('status', 1)
-        ->whereNotNull('category_id')
-        ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
-        ->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->where('status', 'active'),
-            'category.ratingCriteria',
-            'products.prices'
-        ])
-        ->get()
-        ->sortByDesc(function ($b) {
-            $r = $b->reviews->where('status', 'active');
-
-            return $r->count() > 0
-                ? $r->avg('rating')
-                : ($b->admin_rating ?? 0);
-        })
-        ->take(3 - $popularAltBusinesses->count());
-
-    $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
-}
-
-                                    // 2. Fetch 10 affiliated businesses for tables
-                                    $affiliatedTableBusinesses = \App\Models\Business::where('is_affiliate', 1)
-                                        ->where('id', '!=', $business->id)
-                                        ->where('status', 1)
-                                        ->whereIn('category_id', $bCategoryIds)
-                                        ->with([
-                                            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                                            'reviews' => fn($q) => $q->where('status', 'active'),
-                                            'category.ratingCriteria'
-                                        ])
-                                        ->get()
-                                        ->sortByDesc(function($b) {
-                                            $r = $b->reviews->where('status', 'active');
-                                            return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
-                                        })
-                                        ->take(10);
-
-                                    if ($affiliatedTableBusinesses->count() < 10) {
-                                        $moreAff = \App\Models\Business::where('is_affiliate', 1)
-                                            ->where('id', '!=', $business->id)
-                                            ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
-                                            ->where('status', 1)
-                                            ->with([
-                                                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                                                'reviews' => fn($q) => $q->where('status', 'active'),
-                                                'category.ratingCriteria'
-                                            ])
-                                            ->get()
-                                            ->sortByDesc(function($b) {
-                                                $r = $b->reviews->where('status', 'active');
-                                                return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
-                                            })
-                                            ->take(10 - $affiliatedTableBusinesses->count());
-
-                                        $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
-                                    }
-
-                                    $tableRowsList = collect([$business])->merge($affiliatedTableBusinesses);
-                                @endphp
+                                @endif
 
                                 <!-- 1. Most popular alternatives (Matched design with product_detail.blade.php) -->
                                 @if($popularAltBusinesses->count() > 0)
@@ -249,43 +253,43 @@ foreach ($altCriteria as $criterion) {
                                                                     </div>
                                                                 </div>
 
-     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-    <!-- <pre style="background:#fff;color:#000;padding:10px;font-size:11px;">
+                                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
+                                                                    <!-- <pre style="background:#fff;color:#000;padding:10px;font-size:11px;">
 
-</pre> -->
-     <p class="fw_700 mb-3" style="color: #002347; font-size:12px;">
-        Detailed user ratings 
-    </p>
+                                                                </pre> -->
+                                                                    <p class="fw_700 mb-3" style="color: #002347; font-size:12px;">
+                                                                        Detailed user ratings 
+                                                                    </p>
 
-    @foreach ($altCriteria as $criterion)
-        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                                    @foreach ($altCriteria as $criterion)
+                                                                        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
 
-            <p class="m-0" style="font-size: 12px; color: #002347;">
-                {{ $criterion->name }}
-            </p>
+                                                                            <p class="m-0" style="font-size: 12px; color: #002347;">
+                                                                                {{ $criterion->name }}
+                                                                            </p>
 
-            <div class="prgs_br d-flex align-items-center">
+                                                                            <div class="prgs_br d-flex align-items-center">
 
-                @if ($criterion->average_rating !== null)
-                    <progress
-                        class="progress-bar"
-                        value="{{ $criterion->average_rating * 20 }}"
-                        max="100">
-                    </progress>
+                                                                                @if ($criterion->average_rating !== null)
+                                                                                    <progress
+                                                                                        class="progress-bar"
+                                                                                        value="{{ $criterion->average_rating * 20 }}"
+                                                                                        max="100">
+                                                                                    </progress>
 
-                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">
-                        {{ number_format($criterion->average_rating, 1) }}
-                    </span>
-                @else
-                    <span style="font-size: 12px; font-weight: 600; color: #999; min-width: 32px; text-align: right;">
-                        N/A
-                    </span>
-                @endif
+                                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">
+                                                                                        {{ number_format($criterion->average_rating, 1) }}
+                                                                                    </span>
+                                                                                @else
+                                                                                    <span style="font-size: 12px; font-weight: 600; color: #999; min-width: 32px; text-align: right;">
+                                                                                        N/A
+                                                                                    </span>
+                                                                                @endif
 
-            </div>
-        </div>
-    @endforeach
-</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
 
                                                                 @php
                                                                     $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
@@ -320,8 +324,8 @@ foreach ($altCriteria as $criterion) {
                                     </section>
                                 @endif
 
-                                </div>
-                            @endif
+                                
+                            </div>
                             @php
                                 $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
                                 $bReviewCount = $activeReviews->count();
@@ -401,10 +405,12 @@ foreach ($altCriteria as $criterion) {
                                             </div>
                                         </div>
 
+                                        @if(!empty($business->is_affiliate))
                                         <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" rel="sponsored" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
                                             {{ static_text('visit_website') ?: 'Visit website' }}
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
+                                        @endif
                                     </div>
 
                                     @if(count($bCriteria) > 0)
@@ -442,16 +448,17 @@ foreach ($altCriteria as $criterion) {
                                 <!-- Widget 3: More About Business Card -->
                                 <x-more-about-business :business="$business" />
                             </div>
-
-
                         </div>
-                        
-                        <!-- Dynamic Section 1: Most popular alternatives (Cards) -->
-                        <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
-                        <!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                        <!-- 2. Compare alternatives (Affiliated Table 1) -->
-                        <div class="comparison-table-section my-5 pt-3">
+    <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
+    <section class="comparison-table-sec py-4">
+        <div class="container">
+            <div class="comparison-table-section my-4">
                             @php
                                 if (!isset($bTrans) || !$bTrans) {
                                     $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
@@ -547,10 +554,14 @@ foreach ($altCriteria as $criterion) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+        </div>
+    </div>
+</section>
 
-                        <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
-                        <div class="community-feedback-table-section my-5 pt-3">
+<!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+<section class="community-feedback-sec border_bt py-4">
+    <div class="container">
+        <div class="community-feedback-table-section my-4">
                             <div class="mb-3">
                                 @php
                                     $commFeedbackHeadline = !empty($bTrans->community_says_headline)
@@ -658,28 +669,49 @@ foreach ($altCriteria as $criterion) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+        </div>
+    </div>
+</section>
 
-@php
-                            $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
-                                ? $bTrans->all_alternatives_headline
-                                : ('All ' . $businessName . ' alternatives');
-                        @endphp
-                        <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
-                            {{ $allAlternativesHeadline }}
-                        </h2>
-                        @if(!empty($bTrans->all_alternatives_subtext))
-                            <style>
-                                .all-alternatives-subtext p { margin-bottom: 0 !important; }
-                                .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
-                            </style>
-                            <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
-                                {!! $bTrans->all_alternatives_subtext !!}
-                            </div>
-                        @endif
+<!-- All Alternatives Listing Section -->
+<section class="top-automotive-sec top_rate_pg light py-4" id="allAlternativesSection">
+    <div class="container">
+        <div class="top-auto-choice">
+            <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
+                @php
+                    $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
+                        ? $bTrans->all_alternatives_headline
+                        : ('All ' . $businessName . ' alternatives');
+                @endphp
+                <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                    {{ $allAlternativesHeadline }}
+                </h2>
+                @if(!empty($bTrans->all_alternatives_subtext))
+                    <style>
+                        .all-alternatives-subtext p { margin-bottom: 0 !important; }
+                        .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                    </style>
+                    <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                        {!! $bTrans->all_alternatives_subtext !!}
                     </div>
-                    <div class="auto-choice-row d-flex ">
+                @endif
+            </div>
+
+            <div class="auto-choice-row d-flex">
+                        <!-- Mobile Filter Backdrop Overlay -->
+                        <div class="mobile-filter-backdrop d-lg-none" onclick="closeMobileFilterDrawer()"></div>
+
                         <div class="auto-choice-lft">
+                            <!-- Mobile Filter Drawer Header -->
+                            <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
+                                <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
                             <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                 </div>
@@ -977,32 +1009,63 @@ foreach ($altCriteria as $criterion) {
                                 </div>
                        
                 </div>
+
+                <!-- Mobile Filter Drawer Sticky Footer -->
+                <div class="mobile-filter-footer d-lg-none">
+                    <button type="button" class="btn-show-results" onclick="closeMobileFilterDrawer()">
+                        @if(isset($products) && $products->total() > 0)
+                            Show {{ $products->total() }}+ results
+                        @else
+                            Show results
+                        @endif
+                    </button>
+                </div>
                 
              </div>
               @if ($products->count())
                             <div class="auto-choice-rgt ">
                                 <!-- Product Count and Sort -->
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        @if ($products->count() > 0)
+                                @if ($products->count() > 0)
+                                    @php
+                                        $currentPage = $products->currentPage();
+                                        $perPage = $products->perPage();
+                                        $total = $products->total();
+                                        $from = ($currentPage - 1) * $perPage + 1;
+                                        $to = min($currentPage * $perPage, $total);
+                                    @endphp
+                                @endif
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Mobile Filter Button (matching Image 2) -->
+                                        <button type="button" class="mobile-filter-btn d-inline-flex d-lg-none" onclick="openMobileFilterDrawer()" aria-label="Open filters">
+                                            <svg width="22" height="16" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                                                <path d="M2 5h10m4 0h6M12 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM2 13h4m4 0h12M6 10.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
                                             @php
-                                                $currentPage = $products->currentPage();
-                                                $perPage = $products->perPage();
-                                                $total = $products->total();
-                                                $from = ($currentPage - 1) * $perPage + 1;
-                                                $to = min($currentPage * $perPage, $total);
+                                                $activeFilterCount = count($selectedRatings ?? []) + count($selectedCategories ?? []) + count($selectedFeatures ?? []) + (!empty($priceRange) ? 1 : 0);
                                             @endphp
-                                            <p class="m-0 showing-p">
+                                            @if($activeFilterCount > 0)
+                                                <span class="filter-badge">{{ $activeFilterCount }}</span>
+                                            @endif
+                                        </button>
+
+                                        @if ($products->count() > 0)
+                                            <p class="m-0 showing-p d-none d-sm-block">
                                                 Showing {{$from}}-{{$to}} of {{$total}}
                                             </p>
                                         @elseif($products->count() > 0)
-                                            <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
+                                            <p class="m-0 showing-p d-none d-sm-block">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
                                     <div wire:ignore class="d-none">
                                         <x-social-icon/>
                                     </div>
                                 </div>
+                                @if ($products->count() > 0)
+                                    <p class="m-0 showing-p d-block d-sm-none mb-3" style="font-size: 13.5px; color: #64748b;">
+                                        Showing {{$from}}-{{$to}} of {{$total}}
+                                    </p>
+                                @endif
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
                                         <div class="automotive-card auto-bg" data-aos="fade-up"
@@ -1069,6 +1132,7 @@ foreach ($altCriteria as $criterion) {
                                                             @endif
 
                                                             <!-- Features -->
+                                                            @if (!empty($item->is_affiliate))
                                                             <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
                                                                 <div class="main_feature_lg">
                                                                     <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
@@ -1106,6 +1170,7 @@ foreach ($altCriteria as $criterion) {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @endif
 
                                                             <!-- Compare Checkbox -->
                                                         </div>
@@ -1114,14 +1179,16 @@ foreach ($altCriteria as $criterion) {
                                                         <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                @if(!empty($item->is_affiliate))
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="cta cta_orange justify-content-center"
-                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center;">
                                                                     {{ static_text('visit_website') ?: 'Visit website' }}
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
+                                                                @endif
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
-                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
+                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
                                                                     {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                 </a>
                                                             </div>
@@ -1159,37 +1226,37 @@ foreach ($altCriteria as $criterion) {
 
                                                             <!-- Price -->
                                                            @if ($startingPrice && !empty($item->is_affiliate))
-    <div class="text-center mt-4 w-100"
-        style="padding: 15px 25px; border-radius: 8px;">
+                                                                <div class="text-center mt-4 w-100"
+                                                                    style="padding: 15px 25px; border-radius: 8px;">
 
-        <h6
-            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-            Starting price
-        </h6>
+                                                                    <h6
+                                                                        style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+                                                                        Starting price
+                                                                    </h6>
 
-        <h3
-            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-        </h3>
+                                                                    <h3
+                                                                        style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+                                                                        {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+                                                                    </h3>
 
-        @if (
-            !empty($startingPrice->additional_info) &&
-            !in_array(
-                strtoupper(trim((string) $startingPrice->additional_info)),
-                ['NA', 'N/A', 'NULL']
-            )
-        )
-            <p style="font-size: 11px; margin-bottom: 0;">
-                {{ $startingPrice->additional_info }}
-            </p>
-        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
-            <p style="font-size: 11px; margin-bottom: 0;">
-                per {{ strtolower($startingPrice->time_unit) }}
-            </p>
-        @endif
+                                                                    @if (
+                                                                        !empty($startingPrice->additional_info) &&
+                                                                        !in_array(
+                                                                            strtoupper(trim((string) $startingPrice->additional_info)),
+                                                                            ['NA', 'N/A', 'NULL']
+                                                                        )
+                                                                    )
+                                                                        <p style="font-size: 11px; margin-bottom: 0;">
+                                                                            {{ $startingPrice->additional_info }}
+                                                                        </p>
+                                                                    @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+                                                                        <p style="font-size: 11px; margin-bottom: 0;">
+                                                                            per {{ strtolower($startingPrice->time_unit) }}
+                                                                        </p>
+                                                                    @endif
 
-    </div>
-@endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1315,9 +1382,222 @@ foreach ($altCriteria as $criterion) {
                                 </div>
                             </div> --}}
                         @endif
+            </div>
         </div>
-            <livewire:compare-bar />
+    </div>
+    <livewire:compare-bar />
+</section>
+
+    <!-- Top 10 Businesses with Details (Exact design matching category page) -->
+    @php
+        $detailedBusinesses = isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0 
+            ? $topAffiliatedBusinesses 
+            : ($affiliatedTableBusinesses ?? collect());
+    @endphp
+    @if(isset($detailedBusinesses) && count($detailedBusinesses) > 0)
+    <section class="revie_img_sec border_bt bg_new_grey">
+        <div class="container">
+            <div class="mb-4">
+                @foreach($detailedBusinesses as $index => $biz)
+                @php
+                    $curLangId = getCurrentLanguageID();
+                    $bizTrans = $biz->translations->firstWhere('lang_id', $curLangId) ?? ($biz->translations->firstWhere('language_id', $curLangId) ?? $biz->translations->first());
+                    $bizName = $bizTrans->name ?? $biz->name ?? '';
+                    $bizSlug = $bizTrans->slug ?? $biz->slug ?? (string)$biz->id;
+                    $longDescription = $bizTrans->long_preview_description ?? '';
+                    $hasBizTrackedUrl = !empty($biz->getTrackedUrl());
+                    $affiliateUrl = $hasBizTrackedUrl ? $biz->getTrackedUrl() : route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bizSlug]);
+                    
+                    // Fetch criteria ratings
+                    $criteriaRatings = [];
+                    foreach($biz->category->ratingCriteria ?? [] as $criterion) {
+                        $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
+                        if ($avg !== null) {
+                            $criteriaRatings[$criterion->name] = round($avg, 1);
+                        }
+                    }
+                    $recommendPercent = $biz->reviews()->count() > 0 ? round(($biz->reviews()->where('recommend', 1)->count() / $biz->reviews()->count()) * 100) : 0;
+                @endphp
+                
+                <div class="image_revie_inr m-30 {{ !$loop->last ? 'border-bottom border-gray-200' : '' }}">
+                    <!-- Left Column: Description, Image, Pros/Cons -->
+                    <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="row sld_rw">
+                            <h2 style="font-weight: 700 !important; margin-bottom: 24px;">
+                                #{{ $index + 1 }} {{ $bizName }}
+                            </h2>
+                        
+                            @if(!empty($longDescription))
+                            <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
+                                {!! $longDescription !!}
+                            </div>
+                            @endif
+                            
+                            @php
+                                $sliderImages = is_array($biz->business_images) ? $biz->business_images : json_decode($biz->business_images ?? '[]', true);
+                                if (empty($sliderImages)) {
+                                    $sliderImages = is_array($biz->screenshot_urls) ? $biz->screenshot_urls : json_decode($biz->screenshot_urls ?? '[]', true);
+                                }
+                                $sliderImages = array_values(array_filter((array) $sliderImages));
+                            @endphp
+                            @if(!empty($sliderImages) && count($sliderImages) > 0)
+                            <div class="business-preview-images mb-5">
+                                @php
+                                    $firstImg = \Illuminate\Support\Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
+                                @endphp
+                                <div class="business-main-preview mb-3">
+                                    <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                        <img src="{{ $firstImg }}" alt="{{ $bizName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display">
+                                    </a>
+                                </div>
+                                @if(count($sliderImages) > 1)
+                                <div class="business-preview-thumbnails d-flex flex-wrap align-items-center justify-content-start">
+                                    @foreach($sliderImages as $thumbIndex => $thumbImg)
+                                        @php
+                                            $tSrc = \Illuminate\Support\Str::startsWith($thumbImg, ['http://', 'https://']) ? $thumbImg : asset($thumbImg);
+                                        @endphp
+                                        <div class="preview-thumb-item {{ $thumbIndex === 0 ? 'active' : '' }}"
+                                             onmouseenter="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)"
+                                             onclick="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)">
+                                            <img src="{{ $tSrc }}" alt="{{ $bizName }} preview {{ $thumbIndex + 1 }}" class="preview-thumb-img">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+                            
+                            <!-- Pros and Cons Section -->
+                            @php
+                                $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                    ->where('reviews.business_id', $biz->id)
+                                    ->where('reviews.status', 'active')
+                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
+                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                    ->orderByDesc('reviews_count')
+                                    ->get();
+                                    
+                                $topPros = $aggregatedProCons->where('type', 'pro')->values()->take(5);
+                                $topCons = $aggregatedProCons->where('type', 'con')->values()->take(5);
+                            @endphp
+                            <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
+                                <div class="pros-cons-header mb-3">
+                                    <h3 style="margin-bottom: 8px;">
+                                        {{ $bizName }} pros and cons
+                                    </h3>
+                                </div>
+                                
+                                <div class="row g-4 d-flex">
+                                    <div class="col-md-6">
+                                        <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                            <div class="card-body">
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                                <ul class="list-unstyled mb-0">
+                                                    @forelse($topPros as $pro)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                        <span style="color: #202124;">{{ $pro->text }}
+                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->reviews_count }} {{ $pro->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        </span>
+                                                    </li>
+                                                    @empty
+                                                    <li class="text-muted" style="font-size: 14px;">No pros available</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                            <div class="card-body">
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                                <ul class="list-unstyled mb-0">
+                                                    @forelse($topCons as $con)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                        <span style="color: #202124;">{{ $con->text }}
+                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->reviews_count }} {{ $con->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        </span>
+                                                    </li>
+                                                    @empty
+                                                    <li class="text-muted" style="font-size: 14px;">No cons available</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Stats and Sidebar (Matching Product Detail Design) -->
+                    <div class="thre_revi_rgt">
+                        <div class="main_feture">
+                            <div class="fetru_row d-flex justify-content-between">
+
+                                <!-- Review Breakdown Card -->
+                                <x-review-breakdown-card :business="$biz" />
+
+                                <!-- Features / USPs Checklist -->
+                                @if($biz->usps->count() > 0)
+                                <div class="main_feature_lg">
+                                    <div class="feture_box lft_check_box size15">
+                                        <ul class="list-unstyled">
+                                            @foreach ($biz->usps->take(5) as $usp)
+                                                <li class="d-flex flex-row align-items-center size15">
+                                                    <div class="grn_chk">
+                                                        <img src="{{ asset('front/img/green-tick.svg') }}">
+                                                    </div>
+                                                    <p class="m-0">{{ $usp->text }}</p>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                                @endif
+
+                                <!-- More about box -->
+                                <x-more-about-business :business="$biz" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
     </section>
+    @endif
+
+    <!-- Discussions Section (From business details page) -->
+    <section class="business-discussions-sec py-5" id="sectionDiscussions">
+        <div class="container">
+        @php
+            $totalDiscsCount = $business->discussions()->count();
+            $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+                $business,
+                'profile_discussions',
+                getCurrentLanguageID(),
+                ['[count]' => number_format($totalDiscsCount)]
+            );
+            $finalBizDiscHeadline = null;
+            $finalBizDiscSubtext = null;
+            if (!empty($resolvedBizDiscussions['headline'])) {
+                $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+                if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                    $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+                }
+            }
+            if (!empty($resolvedBizDiscussions['subtext'])) {
+                $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+            }
+        @endphp
+        <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
+        </div>
+    </section>
+
     <section class="subs_sec light top_rated_org_sec ">
         {{-- <div class="container">
             <div class="subs_content">
@@ -1437,4 +1717,19 @@ foreach ($altCriteria as $criterion) {
     </script>
 
 
+    <script>
+        function switchCategoryPreview(bizId, imgSrc, thumbElement) {
+            var mainImg = document.getElementById('main-preview-img-' + bizId);
+            if (mainImg && mainImg.src !== imgSrc) {
+                mainImg.src = imgSrc;
+            }
+            if (thumbElement && thumbElement.parentElement) {
+                var siblings = thumbElement.parentElement.querySelectorAll('.preview-thumb-item');
+                siblings.forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                thumbElement.classList.add('active');
+            }
+        }
+    </script>
 </div>

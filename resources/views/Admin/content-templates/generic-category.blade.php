@@ -409,7 +409,7 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label font-weight-bold small" id="lblField1">Headline (H2)</label>
-                        <textarea name="headline" id="inputHeadline" class="form-control rich-editor" rows="3" placeholder="Enter headline template..."></textarea>
+                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline template...">
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
@@ -507,37 +507,9 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let shouldReopenManageTemplates = false;
-    let headlineEditor = null;
     let subtextEditor = null;
 
-    function initHeadlineEditor() {
-        const el = document.querySelector('#inputHeadline');
-        if (!el || typeof ClassicEditor === 'undefined' || headlineEditor) return;
-
-        ClassicEditor
-            .create(el, {
-                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
-            })
-            .then(editor => {
-                headlineEditor = editor;
-                el.ckeditorInstance = editor;
-
-                editor.model.document.on('change:data', () => {
-                    el.value = editor.getData();
-                });
-
-                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
-                    if (isFocused) {
-                        activeInput = $('#inputHeadline');
-                    }
-                });
-            })
-            .catch(error => {
-                console.error("Headline CKEditor Init Error:", error);
-            });
-    }
-
-    function initSubtextEditor() {
+        function initSubtextEditor() {
         const el = document.querySelector('#inputSubtext');
         if (!el || typeof ClassicEditor === 'undefined' || subtextEditor) return;
 
@@ -564,15 +536,15 @@ $(document).ready(function() {
             });
     }
 
-    // Initialize CKEditors
-    initHeadlineEditor();
+    // Initialize CKEditor for Subtext / Content only
     initSubtextEditor();
 
     $('#lblField1').on('click', function() {
-        if (headlineEditor) {
-            headlineEditor.editing.view.focus();
-            activeInput = $('#inputHeadline');
-        }
+        $('#inputHeadline').focus();
+    });
+
+    $('#inputHeadline').on('focus', function() {
+        activeInput = $(this);
     });
 
     $('#lblField2').on('click', function() {
@@ -585,17 +557,7 @@ $(document).ready(function() {
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.attr('id') === 'inputHeadline' && headlineEditor) {
-            try {
-                headlineEditor.model.change(writer => {
-                    headlineEditor.model.insertContent(writer.createText(tag + ' '));
-                });
-            } catch(err) {
-                let cur = headlineEditor.getData() || '';
-                headlineEditor.setData(cur + (cur ? ' ' : '') + tag);
-            }
-            headlineEditor.editing.view.focus();
-        } else if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
             try {
                 subtextEditor.model.change(writer => {
                     subtextEditor.model.insertContent(writer.createText(tag + ' '));
@@ -606,16 +568,24 @@ $(document).ready(function() {
             }
             subtextEditor.editing.view.focus();
         } else if (activeInput && activeInput.length) {
-            let val = activeInput.val() || '';
-            activeInput.val((val ? val + ' ' : '') + tag);
+            let el = activeInput[0];
+            if (el && typeof el.selectionStart === 'number' && typeof el.selectionEnd === 'number') {
+                let start = el.selectionStart;
+                let end = el.selectionEnd;
+                let val = activeInput.val() || '';
+                let insert = (start > 0 && val.charAt(start - 1) !== ' ' ? ' ' : '') + tag + ' ';
+                activeInput.val(val.slice(0, start) + insert + val.slice(end));
+                let newPos = start + insert.length;
+                el.setSelectionRange(newPos, newPos);
+            } else {
+                let val = activeInput.val() || '';
+                activeInput.val((val ? val + ' ' : '') + tag);
+            }
             activeInput.focus();
         }
     });
 
     $('#templateEditForm').on('submit', function() {
-        if (headlineEditor) {
-            $('#inputHeadline').val(headlineEditor.getData());
-        }
         if (subtextEditor) {
             $('#inputSubtext').val(subtextEditor.getData());
         }
@@ -657,9 +627,6 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
-        if (headlineEditor) {
-            headlineEditor.setData('');
-        }
         if (subtextEditor) {
             subtextEditor.setData('');
         }
@@ -677,14 +644,17 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                if (headlineEditor) {
-                    headlineEditor.editing.view.focus();
-                } else {
-                    $('#inputHeadline').focus();
-                }
+                $('#inputHeadline').focus();
             }, 300);
         }, 350);
     });
+
+    function stripHtmlTags(str) {
+        if (!str) return '';
+        let tmp = document.createElement('div');
+        tmp.innerHTML = str;
+        return (tmp.textContent || tmp.innerText || '').trim();
+    }
 
     function decodeHtmlEntities(str) {
         if (!str) return '';
@@ -709,7 +679,7 @@ $(document).ready(function() {
         let opt = $(this).data('option');
         let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
         let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
-        let headline = decodeHtmlEntities(rawHeadline);
+        let headline = stripHtmlTags(decodeHtmlEntities(rawHeadline));
         let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
@@ -719,9 +689,6 @@ $(document).ready(function() {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
-        if (headlineEditor) {
-            headlineEditor.setData(headline);
-        }
         if (subtextEditor) {
             subtextEditor.setData(subtext);
         }
@@ -739,11 +706,7 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                if (headlineEditor) {
-                    headlineEditor.editing.view.focus();
-                } else {
-                    $('#inputHeadline').focus();
-                }
+                $('#inputHeadline').focus();
             }, 300);
         }, 350);
     });

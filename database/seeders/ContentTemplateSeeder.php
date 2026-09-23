@@ -318,32 +318,6 @@ class ContentTemplateSeeder extends Seeder
                 'lang_id' => 1,
             ],
 
-            // CATEGORY FAQS: faq_about
-            [
-                'section_group' => 'category_faqs',
-                'field_key' => 'faq_about',
-                'option_number' => 1,
-                'headline' => 'About [category_cap]',
-                'subtext' => '<p>Explore comprehensive information, user reviews, and comparisons for top [category_lc] solutions. Our guide helps you discover the right options for your specific needs.</p>',
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'category_faqs',
-                'field_key' => 'faq_about',
-                'option_number' => 2,
-                'headline' => 'Understanding [category_tc] in [year]',
-                'subtext' => '<p>Get in-depth insights into how modern [entities1_lc] operate, key capabilities to look for, and how community reviews inform the best decisions.</p>',
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'category_faqs',
-                'field_key' => 'faq_about',
-                'option_number' => 3,
-                'headline' => '[category_cap] Essentials & Buyer Guide',
-                'subtext' => '<p>Learn about fundamental features, typical pricing tiers, and critical evaluation factors across leading [entities1_lc].</p>',
-                'lang_id' => 1,
-            ],
-
             // CATEGORY FAQS: faq_explore
             [
                 'section_group' => 'category_faqs',
@@ -580,30 +554,7 @@ class ContentTemplateSeeder extends Seeder
                 'subtext'       => "Find tailored [category_lc] categories and related toolsets.",
                 'lang_id' => 1,
             ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 1,
-                'headline'      => "See all [entities1_cap] with [feature_lc]",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 2,
-                'headline'      => "Explore [entities1_cap] offering [feature_tc]",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
-            [
-                'section_group' => 'features',
-                'field_key' => 'explore_link',
-                'option_number' => 3,
-                'headline'      => "View all [feature_lc] providers",
-                'subtext'       => null,
-                'lang_id' => 1,
-            ],
+
         ];
 
         foreach ($templates as $data) {

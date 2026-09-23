@@ -1,125 +1,7 @@
 @extends('user_layout.master')
 @push('styles')
 <style>
-     .explore-subcat-card {
-        background: #fdfdfd;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 16px 20px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .explore-subcat-card:hover {
-        border-color: #06498b;
-        box-shadow: 0 4px 12px rgba(6,73,139,0.08);
-        transform: translateY(-2px);
-    }
-    .explore-subcat-card:hover h6 {
-        color: #e56b46 !important;
-    }
-    .auto-choice-rgt .btn-pages {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        margin-top: 50px;
-    }
-    .auto-choice-rgt .btn-pages .pagination-btn {
-        width: 44px;
-        height: 44px;
-        border-radius: 50% !important;
-        border: 1.5px solid #174889;
-        background-color: #ffffff;
-        color: #174889;
-        font-size: 15px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-    .auto-choice-rgt .btn-pages .pagination-btn.active {
-        background-color: #174889 !important;
-        color: #ffffff !important;
-        border-color: #174889 !important;
-    }
-    .auto-choice-rgt .btn-pages .pagination-btn:hover {
-        background-color: #174889 !important;
-        color: #ffffff !important;
-        border-color: #174889 !important;
-    }
-    .auto-choice-rgt .btn-pages .pagination-btn:hover i {
-        color: #ffffff !important;
-    }
-    .auto-choice-rgt .btn-pages .pagination-arrow {
-        background-color: #ffffff;
-        border: 1.5px solid #174889;
-        border-radius: 50% !important;
-    }
-    .auto-choice-rgt .btn-pages .pagination-arrow i {
-        color: #174889;
-        font-size: 13px;
-    }
-    .auto-choice-rgt .btn-pages .pagination-dots {
-        font-size: 16px;
-        color: #64748b;
-        padding: 0 4px;
-    }
-
-    /* Subcategory filter tabs without arrows */
-    .subcat-filter-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 28px;
-    }
-    .subcat-filter-item {
-        font-size: 15px;
-        font-weight: 600;
-        color: #1e3050;
-        text-decoration: none;
-        padding: 6px 16px;
-        border-radius: 20px;
-        background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        display: inline-block;
-    }
-    .subcat-filter-item:hover {
-        color: #002347;
-        border-color: #002347;
-        background: #f8fafc;
-    }
-    .subcat-filter-item.active {
-        background: #002347;
-        color: #ffffff !important;
-        border-color: #002347;
-    }
-
-    /* Live Search Dropdown item */
-    .search-preview-item {
-        padding: 10px 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #1e3050;
-    }
-    .search-preview-item:hover {
-        background: #f1f5f9;
-        color: #002347;
-    }
-  
-    a.comparison-box:hover {
-        border-color: #06498b !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-    }
+    
 </style>
 @endpush
 
@@ -606,7 +488,7 @@
                         <div class="d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $subcatItem->businesses()->count() ?? 0 }} listings
+                                {{ $subcatItem->businesses()->count() ?? 0 }} FAQs
                             </span>
                         </div>
                     </div>
