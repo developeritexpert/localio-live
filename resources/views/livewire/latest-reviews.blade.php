@@ -1,23 +1,6 @@
 <section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; ">
     <style>
-        /* Responsive adjustments */
-        @media (max-width: 575px) {
-            .latest_review_part_footer {
-                padding: 20px 0 !important;
-            }
-            .latest_review_part_footer .container {
-                padding-left: 20px !important;
-                padding-right: 20px !important;
-            }
-            .latest_review_part_footer .reviews_slider {
-                margin: 0 !important;
-            }
-            .latest_review_part_footer .review_card {
-                height: auto !important;
-                min-height: 240px !important;
-                padding: 16px !important;
-            }
-        }
+        
     </style>
     <div class="section_hed" data-aos="fade-up" data-aos-duration="1000" style="margin-bottom: 30px;">
         <div class="container">

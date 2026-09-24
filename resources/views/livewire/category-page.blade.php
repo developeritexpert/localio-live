@@ -1546,7 +1546,7 @@
                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
                     @foreach($popularComparisons as $comp)
                     <div class="col-lg-4 col-md-4 col-12">
-                        <a href="{{ $comp['url'] }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #fff !important; border-radius: 12px !important; color: inherit; text-decoration: none; display: flex;">
+                        <a href="{{ $comp['url'] }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="background-color: #fff !important; border-radius: 12px !important; color: inherit; text-decoration: none; ">
                             <div class="d-flex align-items-center justify-content-between gap-2">
 
                                 <!-- Business 1 -->

@@ -194,7 +194,7 @@
 
 
 <!-- Main Discussion Body Container -->
-<div class="container my-4" data-business-id="{{ $business->id }}">
+<div class="container my-4 dis-ask" data-business-id="{{ $business->id }}">
     <div class="row g-4">
         <!-- Left Column: Discussion Feed -->
         <div class="col-lg-8">
@@ -227,7 +227,7 @@
                     <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">
                     Connect with other {{ $bName }} users to ask questions, share experiences,and exchange useful tips.
                        </p> -->
-                     <div class="d-flex align-items-center gap-2 pb-2" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;">
+                     <div class="d-flex align-items-center gap-2 pb-2" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;     flex-wrap: wrap;">
                     <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>

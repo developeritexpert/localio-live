@@ -77,7 +77,7 @@
 @include('User.partials.business_detail_styles')
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec business_reviews_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec business_reviews_sec all-com" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4" style="background-color: #f7f9fb;">
@@ -163,7 +163,7 @@
 </section>
 
 <!-- Main Two-Column Section with Left-Aligned Content and Right Sticky Navigation -->
-<section class="revie_img_sec py-5" style="background-color: #f8fafc; border-top: 1px solid #eef2f6;">
+<section class="revie_img_sec py-4" style="background-color: #f8fafc; border-top: 1px solid #eef2f6;">
     <div class="container">
         <div class="image_revie_inr mt-3">
             

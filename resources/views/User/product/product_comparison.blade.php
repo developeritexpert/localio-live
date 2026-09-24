@@ -87,7 +87,7 @@
     </div>
 </div>
 @endif
-<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec all-com" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4" style="background-color: #f7f9fb;">
@@ -150,7 +150,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-lg-3 col-6 mt-4 mt-lg-0">
+            <div class="col-lg-3 col-12 mt-4 mt-lg-0">
                 <div class="comparison-header-icons">
                     @foreach($businesses as $b)
                         <div class="comp-header-icon-box" title="{{ $b->translations->first()?->name ?? '' }}">
