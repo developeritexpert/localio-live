@@ -287,8 +287,12 @@ class CategoryPage extends Component
             ->withAvg(['reviews' => function ($query) {
                 $query->where('status', 'active');
             }], 'rating')
-            ->whereHas('languages', function ($query) {
-                $query->where('language_id', $this->lang_id);
+            ->where(function ($query) {
+                $query->whereHas('languages', function ($lq) {
+                    $lq->where('language_id', $this->lang_id);
+                })->orWhereHas('translations', function ($tq) {
+                    $tq->where('lang_id', $this->lang_id);
+                });
             })
             ->whereHas('countries', function ($query) {
                 $query->where('country_id', $this->country_id);
@@ -343,8 +347,12 @@ class CategoryPage extends Component
 
         return $query->where('status', 1)
             ->where('is_affiliate', 1)
-            ->whereHas('languages', function ($q) {
-                $q->where('language_id', $this->lang_id);
+            ->where(function ($q) {
+                $q->whereHas('languages', function ($lq) {
+                    $lq->where('language_id', $this->lang_id);
+                })->orWhereHas('translations', function ($tq) {
+                    $tq->where('lang_id', $this->lang_id);
+                });
             })
             ->where(function ($q) {
                 $q->where('active_all_countries', 1)
@@ -477,8 +485,12 @@ class CategoryPage extends Component
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
                     ->where('status', 'active')
             ])
-            ->whereHas('languages', function ($query) {
-                $query->where('language_id', $this->lang_id);
+            ->where(function ($query) {
+                $query->whereHas('languages', function ($lq) {
+                    $lq->where('language_id', $this->lang_id);
+                })->orWhereHas('translations', function ($tq) {
+                    $tq->where('lang_id', $this->lang_id);
+                });
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)

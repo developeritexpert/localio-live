@@ -379,6 +379,9 @@ class ContentGenerationController extends Controller
                     'status'      => 1,
                 ]);
 
+                // Automatically attach default language so business appears in listings
+                $business->languages()->syncWithoutDetaching([1]);
+
                 $imported++;
             } catch (\Exception $e) {
                 Log::error("Failed to import business {$name}: " . $e->getMessage());
@@ -926,6 +929,12 @@ class ContentGenerationController extends Controller
 
         $businessId = $item->resource_id;
         $field      = $item->content_field;
+
+        // Ensure business has default language attached to be visible in listings
+        $bizRecord = Business::find($businessId);
+        if ($bizRecord) {
+            $bizRecord->languages()->syncWithoutDetaching([1]);
+        }
 
         switch ($field) {
             case 'short_description':
