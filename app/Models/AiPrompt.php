@@ -26,15 +26,29 @@ class AiPrompt extends Model
     ];
 
     // Content generation field types
-    const CONTENT_FIELDS = ['content', 'faqs', 'features', 'pros_cons', 'metatags'];
+    const CONTENT_FIELDS = [
+        'short_description',
+        'long_description',
+        'usps',
+        'what_is',
+        'pros_cons',
+        'services',
+        'faqs',
+        'categories',
+        'active_countries',
+    ];
 
     // Label map for content fields
     const FIELD_LABELS = [
-        'content'   => 'Content / Overview',
-        'faqs'      => 'FAQs',
-        'features'  => 'Features',
-        'pros_cons' => 'Pros & Cons',
-        'metatags'  => 'Meta Tags (SEO)',
+        'short_description' => 'Short Description',
+        'long_description'  => 'Long Description',
+        'usps'              => 'USPs',
+        'what_is'           => 'What is',
+        'pros_cons'         => 'Pros & Cons',
+        'services'          => 'Services',
+        'faqs'              => 'FAQs',
+        'categories'        => 'Categories',
+        'active_countries'  => 'Active countries/regions',
     ];
 
     public function getProcessedPrompt($variables = [])
