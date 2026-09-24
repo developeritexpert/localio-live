@@ -19,10 +19,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ContentGenerationController extends Controller
 {
-    const CONTENT_FIELDS = ['content', 'faqs', 'features', 'pros_cons', 'metatags'];
+    const CONTENT_FIELDS = [
+        'short_description',
+        'long_description',
+        'usps',
+        'what_is',
+        'pros_cons',
+        'services',
+        'faqs',
+        'categories',
+        'active_countries',
+    ];
 
     const FEATURE_CONTENT_FIELDS = [
         'header',
@@ -47,7 +58,8 @@ class ContentGenerationController extends Controller
             $query->where('category_id', $request->category_id);
         }
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $statusVal = ($request->status === 'active' || $request->status === '1') ? 1 : 0;
+            $query->where('status', $statusVal);
         }
         if ($request->filled('search')) {
             $query->whereHas('translations', function ($q) use ($request) {
@@ -292,6 +304,100 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     // BUSINESSES LIST
     // -------------------------------------------------------------------------
+    /**
+     * Import businesses via JSON payload (Business name, Business URL).
+     */
+    public function importJson(Request $request)
+    {
+        $jsonInput = $request->input('json_data');
+        if (empty($jsonInput)) {
+            return back()->with('error', 'Please provide JSON data with businesses.');
+        }
+
+        $decoded = json_decode($jsonInput, true);
+        if (!is_array($decoded)) {
+            return back()->with('error', 'Invalid JSON format. Please ensure you provide a valid JSON array of objects.');
+        }
+
+        // If a single object was passed instead of array, wrap it
+        if (!empty($decoded) && !isset($decoded[0])) {
+            $decoded = [$decoded];
+        }
+
+        $imported = 0;
+        $skipped  = 0;
+        $errors   = [];
+
+        foreach ($decoded as $index => $item) {
+            if (!is_array($item)) {
+                $skipped++;
+                continue;
+            }
+
+            // Flexible key resolution
+            $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? '');
+            $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? '');
+
+            if (empty($name)) {
+                $skipped++;
+                $errors[] = "Item #" . ($index + 1) . " skipped: missing Business Name.";
+                continue;
+            }
+
+            // Clean & format URL
+            if (!empty($url) && !preg_match('/^https?:\/\//i', $url)) {
+                $url = 'https://' . $url;
+            }
+
+            // Generate unique slug
+            $baseSlug = Str::slug($name);
+            if (empty($baseSlug)) {
+                $baseSlug = 'business-' . time() . '-' . rand(100, 999);
+            }
+            $slug = $baseSlug;
+            $counter = 1;
+            while (BusinessTranslation::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+
+            try {
+                $business = Business::create([
+                    'permanent_url'        => $url ?: null,
+                    'status'               => 1,
+                    'created_by'           => auth()->id() ?? 1,
+                    'is_affiliate'         => 0,
+                    'active_all_countries' => 1,
+                    'category_id'          => null,
+                ]);
+
+                BusinessTranslation::create([
+                    'business_id' => $business->id,
+                    'lang_id'     => 1, // Default primary language (English)
+                    'name'        => $name,
+                    'slug'        => $slug,
+                    'status'      => 1,
+                ]);
+
+                // Automatically attach default language so business appears in listings
+                $business->languages()->syncWithoutDetaching([1]);
+
+                $imported++;
+            } catch (\Exception $e) {
+                Log::error("Failed to import business {$name}: " . $e->getMessage());
+                $skipped++;
+                $errors[] = "Error creating {$name}: " . $e->getMessage();
+            }
+        }
+
+        $msg = "Successfully imported {$imported} " . ($imported === 1 ? 'business' : 'businesses') . "!";
+        if ($skipped > 0) {
+            $msg .= " ({$skipped} skipped/failed)";
+        }
+
+        return redirect()->route('content-gen.businesses')->with('success', $msg);
+    }
+
     public function businesses(Request $request)
     {
         $query = Business::with([
@@ -340,8 +446,10 @@ class ContentGenerationController extends Controller
         $categories = Category::whereNull('parent_id')->orderBy('id')->get();
         $fields     = self::CONTENT_FIELDS;
 
+        $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+
         return view('Admin.content-generation.businesses', compact(
-            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt'
+            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize'
         ));
     }
 
@@ -350,17 +458,87 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function submitBatch(Request $request)
     {
+        $validFields = array_merge(self::CONTENT_FIELDS, ['content', 'features', 'metatags']);
         $request->validate([
             'business_ids'   => 'required|array|min:1',
             'business_ids.*' => 'integer|exists:businesses,id',
             'fields'         => 'required|array|min:1',
-            'fields.*'       => 'string|in:content,faqs,features,pros_cons,metatags',
-            'provider'       => 'required|in:openai,anthropic',
+            'fields.*'       => 'string|in:' . implode(',', $validFields),
+            'provider'       => 'required|in:manual,openai,anthropic',
+            'batch_size'     => 'nullable|integer|min:1|max:50',
         ]);
 
         $provider    = $request->provider;
-        $businessIds = $request->business_ids;
+        $businessIds = array_values(array_unique($request->business_ids));
         $fields      = $request->fields;
+
+        if ($request->filled('batch_size')) {
+            WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => (int)$request->batch_size]);
+        }
+        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5));
+
+        // ---------------------------------------------------------------------
+        // MANUAL BATCH WORKFLOW (Download JSON for ChatGPT & Upload Results)
+        // ---------------------------------------------------------------------
+        if ($provider === 'manual') {
+            $chunks = array_chunk($businessIds, $batchSize);
+            $createdJobs = [];
+
+            foreach ($chunks as $chunk) {
+                $businessesData = [];
+                $businessModels = Business::with([
+                    'translations' => fn($q) => $q->where('lang_id', 1),
+                ])->whereIn('id', $chunk)->get();
+
+                foreach ($chunk as $bizId) {
+                    $b = $businessModels->firstWhere('id', $bizId);
+                    if (!$b) continue;
+                    $bName = optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $bizId;
+                    $bUrl  = $b->permanent_url ?: ($b->affiliate_link ?: '');
+                    $businessesData[] = [
+                        'business_id'   => $bizId,
+                        'business_name' => $bName,
+                        'business_url'  => $bUrl,
+                    ];
+                }
+
+                $batchJobCode = 'BATCH-MANUAL-' . strtoupper(Str::random(8));
+                $inputPayload = [
+                    'batch_id'         => $batchJobCode,
+                    'total_businesses' => count($businessesData),
+                    'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
+                    'fields_requested' => $fields,
+                    'businesses'       => $businessesData,
+                ];
+
+                $batchJob = AiBatchJob::create([
+                    'provider'      => 'manual',
+                    'batch_id'      => $batchJobCode,
+                    'prompt_type'   => implode(',', $fields),
+                    'status'        => 'pending',
+                    'submitted_at'  => now(),
+                    'total_items'   => count($businessesData) * count($fields),
+                    'input_payload' => json_encode($inputPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+                ]);
+
+                foreach ($businessesData as $bItem) {
+                    foreach ($fields as $field) {
+                        AiContentQueue::create([
+                            'batch_job_id'      => $batchJob->id,
+                            'resource_type'     => 'business',
+                            'resource_id'       => $bItem['business_id'],
+                            'content_field'     => $field,
+                            'openai_request_id' => "biz_{$bItem['business_id']}_{$field}",
+                            'status'            => 'pending',
+                        ]);
+                    }
+                }
+                $createdJobs[] = $batchJob;
+            }
+
+            $countJobs = count($createdJobs);
+            return redirect()->route('content-gen.batch-jobs')->with('success', "Created {$countJobs} manual batch job(s) ({$batchSize} businesses per batch). You can now download the JSONs and upload the results!");
+        }
 
         $apiKey = $provider === 'openai'
             ? optional(WebSetting::where('key', 'openai_api_key')->first())->value
@@ -387,8 +565,41 @@ class ContentGenerationController extends Controller
             if (!$business) continue;
 
             $businessName    = optional($business->translations->first())->name ?? 'Business #' . $businessId;
-            $categoryName    = optional($business->category)->name ?? '';
+            $businessUrl     = $business->permanent_url ?: ($business->affiliate_link ?: '');
+            $categoryName    = optional(optional($business->category)->translations->firstWhere('lang_id', 1))->name ?? optional($business->category)->name ?? '';
             $subcategoryName = $business->subCategories->pluck('name')->filter()->implode(', ');
+
+            // Contextual pros/cons list for pros_cons field
+            $availableProsStr = "- High reliability\n- Good value for money\n- Affordable pricing\n- Easy to use interface\n- 24/7 expert customer support\n- Fast performance\n- Comprehensive features";
+            $availableConsStr = "- Steep learning curve\n- Limited advanced features\n- Hidden additional fees\n- Unclear pricing\n- Occasional support delays";
+            if ($business->category_id) {
+                $catProCons = \App\Models\CategoryProCon::where('category_id', $business->category_id)->get();
+                if ($catProCons->isEmpty()) {
+                    $catProCons = \App\Models\CategoryProCon::take(30)->get();
+                }
+                $prosList = $catProCons->where('type', 'pro')->pluck('text')->filter()->values()->toArray();
+                $consList = $catProCons->where('type', 'con')->pluck('text')->filter()->values()->toArray();
+                if (!empty($prosList)) $availableProsStr = "- " . implode("\n- ", $prosList);
+                if (!empty($consList)) $availableConsStr = "- " . implode("\n- ", $consList);
+            }
+
+            // Category list for categories field
+            $allCategoriesList = Category::whereNull('parent_id')
+                ->where('status', 1)
+                ->with(['children' => fn($q) => $q->where('status', 1)])
+                ->take(20)
+                ->get()
+                ->map(function($cat) {
+                    $subs = $cat->children->map(fn($c) => "[ID: {$c->id}] {$c->name}")->implode(', ');
+                    return "[ID: {$cat->id}] {$cat->name} (Subcategories: " . ($subs ?: 'None') . ")";
+                })
+                ->implode("\n");
+
+            $extra = [
+                'available_pros' => $availableProsStr,
+                'available_cons' => $availableConsStr,
+                'category_list'  => $allCategoriesList,
+            ];
 
             foreach ($fields as $field) {
                 $prompt   = AiPrompt::forContentField($field);
@@ -396,8 +607,12 @@ class ContentGenerationController extends Controller
 
                 $inputVariables = [
                     'business_name'    => $businessName,
+                    'business_url'     => $businessUrl,
                     'category_name'    => $categoryName,
                     'subcategory_name' => $subcategoryName,
+                    'available_pros'   => $availableProsStr,
+                    'available_cons'   => $availableConsStr,
+                    'category_list'    => $allCategoriesList,
                 ];
 
                 if ($provider === 'openai') {
@@ -417,7 +632,7 @@ class ContentGenerationController extends Controller
                     } else {
                         $promptText = $prompt
                             ? $prompt->getProcessedPrompt($inputVariables)
-                            : $this->defaultPromptText($field, $businessName, $categoryName);
+                            : $this->defaultPromptText($field, $businessName, $categoryName, $businessUrl, $extra);
 
                         $requests[] = [
                             'custom_id' => $customId,
@@ -502,10 +717,11 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function retryFailed(Request $request)
     {
+        $validFields = array_merge(self::CONTENT_FIELDS, ['content', 'features', 'metatags']);
         $request->validate([
             'business_id' => 'required|integer|exists:businesses,id',
-            'field'       => 'required|string|in:content,faqs,features,pros_cons,metatags',
-            'provider'    => 'required|in:openai,anthropic',
+            'field'       => 'required|string|in:' . implode(',', $validFields),
+            'provider'    => 'required|in:manual,openai,anthropic',
         ]);
 
         // GAP 8: Allow re-generation of completed items too
@@ -527,9 +743,12 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function batchJobs()
     {
-        $jobs       = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
-        $lastPollAt = Cache::get('ai_batch_last_poll');
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt'));
+        $jobs               = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
+        $lastPollAt         = Cache::get('ai_batch_last_poll');
+        $batchSize          = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+        $batchResultExample = self::getBatchResultExampleJson();
+
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample'));
     }
 
     // -------------------------------------------------------------------------
@@ -711,22 +930,116 @@ class ContentGenerationController extends Controller
         $businessId = $item->resource_id;
         $field      = $item->content_field;
 
+        // Ensure business has default language attached to be visible in listings
+        $bizRecord = Business::find($businessId);
+        if ($bizRecord) {
+            $bizRecord->languages()->syncWithoutDetaching([1]);
+        }
+
         switch ($field) {
-            case 'content':
-                $content = $data['content'] ?? null;
-                if ($content !== null) {
+            case 'short_description':
+                $shortDesc = $data['short_description'] ?? null;
+                if ($shortDesc !== null) {
                     BusinessTranslation::where('business_id', $businessId)
                         ->where('lang_id', 1)
-                        ->update(['description' => $content]);
+                        ->update(['short_description' => $shortDesc]);
+                }
+                break;
+
+            case 'long_description':
+                $longDesc = $data['long_preview_description'] ?? ($data['long_description'] ?? null);
+                if ($longDesc !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['long_preview_description' => $longDesc]);
+                }
+                break;
+
+            case 'usps':
+                $usps = $data['usps'] ?? ($data['features'] ?? []);
+                if (!empty($usps) && is_array($usps)) {
+                    BusinessUsp::where('business_id', $businessId)->delete();
+                    foreach ($usps as $index => $itemVal) {
+                        $text = is_array($itemVal) ? ($itemVal['title'] ?? ($itemVal['text'] ?? '')) : (string)$itemVal;
+                        if (empty(trim($text))) continue;
+                        BusinessUsp::create([
+                            'business_id' => $businessId,
+                            'text'        => trim($text),
+                            'sort_order'  => $index + 1,
+                        ]);
+                    }
+                }
+                break;
+
+            case 'what_is':
+                $whatIs = $data['description'] ?? ($data['what_is'] ?? ($data['content'] ?? null));
+                if ($whatIs !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['description' => $whatIs]);
+                }
+                break;
+
+            case 'pros_cons':
+                $pros = $data['pros'] ?? [];
+                $cons = $data['cons'] ?? [];
+
+                // 1. Delete and populate business_pro_cons
+                \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
+                if (is_array($pros)) {
+                    foreach ($pros as $p) {
+                        if (!empty(trim($p))) {
+                            \App\Models\BusinessProCon::create([
+                                'business_id' => $businessId,
+                                'type'        => 'pro',
+                                'text'        => trim($p),
+                            ]);
+                        }
+                    }
+                }
+                if (is_array($cons)) {
+                    foreach ($cons as $c) {
+                        if (!empty(trim($c))) {
+                            \App\Models\BusinessProCon::create([
+                                'business_id' => $businessId,
+                                'type'        => 'con',
+                                'text'        => trim($c),
+                            ]);
+                        }
+                    }
+                }
+
+                // 2. Also populate pro_cons_intro / pro_cons_summary on Business
+                $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
+                $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
+                Business::where('id', $businessId)->update([
+                    'pro_cons_intro'   => $prosText,
+                    'pro_cons_summary' => $consText,
+                ]);
+                break;
+
+            case 'services':
+                $headline   = $data['headline'] ?? null;
+                $topText    = $data['top_text'] ?? null;
+                $bottomText = $data['bottom_text'] ?? null;
+
+                $offering = \App\Models\BusinessOffering::firstOrNew(['business_id' => $businessId]);
+                if ($headline !== null)   $offering->headline   = $headline;
+                if ($topText !== null)    $offering->top_text    = $topText;
+                if ($bottomText !== null) $offering->bottom_text = $bottomText;
+                $offering->save();
+
+                if ($bottomText !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['after_image_description' => $bottomText]);
                 }
                 break;
 
             case 'faqs':
                 $faqs = $data['faqs'] ?? [];
                 if (!empty($faqs) && is_array($faqs)) {
-                    // Remove all existing FAQs for this business before inserting AI-generated ones
                     BusinessFaq::where('business_id', $businessId)->delete();
-
                     foreach ($faqs as $index => $faq) {
                         $question = $faq['question'] ?? null;
                         $answer   = $faq['answer']   ?? null;
@@ -749,19 +1062,94 @@ class ContentGenerationController extends Controller
                 }
                 break;
 
+            case 'categories':
+                $catId = $data['category_id'] ?? null;
+                $catName = $data['category_name'] ?? ($data['category'] ?? null);
+
+                // If catId was provided but does not exist in DB, reset it to null
+                if ($catId && !Category::where('id', $catId)->exists()) {
+                    $catId = null;
+                }
+
+                // If catId is null, look up by category name in category_translations
+                if (!$catId && $catName) {
+                    $cleanCatName = trim($catName);
+                    $matchedCatId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanCatName)])
+                        ->orWhere('name', 'like', '%' . $cleanCatName . '%')
+                        ->value('category_id');
+                    if ($matchedCatId) {
+                        $catId = $matchedCatId;
+                    }
+                }
+
+                // If still not matched, check if business name indicates a primary category
+                if (!$catId) {
+                    $bizName = BusinessTranslation::where('business_id', $businessId)->value('name') ?? '';
+                    if (stripos($bizName, 'host') !== false) {
+                        $catId = \App\Models\CategoryTranslation::where('name', 'like', '%hosting%')
+                            ->whereHas('category', fn($q) => $q->whereNull('parent_id'))
+                            ->value('category_id');
+                    }
+                }
+
+                if ($catId && Category::where('id', $catId)->exists()) {
+                    Business::where('id', $businessId)->update(['category_id' => $catId]);
+                }
+
+                // Subcategories: can be array of IDs or array of names
+                $subCatIds = $data['subcategory_ids'] ?? ($data['subcategories'] ?? []);
+                if (is_array($subCatIds) && !empty($subCatIds)) {
+                    $validSubs = [];
+                    foreach ($subCatIds as $sub) {
+                        if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
+                            $validSubs[] = (int) $sub;
+                        } elseif (is_string($sub)) {
+                            $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
+                                ->value('category_id');
+                            if ($matchedSub) {
+                                $validSubs[] = $matchedSub;
+                            }
+                        }
+                    }
+                    $biz = Business::find($businessId);
+                    if ($biz && !empty($validSubs)) {
+                        $biz->subCategories()->sync($validSubs);
+                    }
+                }
+                break;
+
+            case 'active_countries':
+                $activeAll = !empty($data['active_all_countries']);
+                Business::where('id', $businessId)->update(['active_all_countries' => $activeAll ? 1 : 0]);
+
+                if (!$activeAll && !empty($data['country_codes']) && is_array($data['country_codes'])) {
+                    $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
+                    $biz = Business::find($businessId);
+                    if ($biz) {
+                        $biz->countries()->sync($countryIds);
+                    }
+                }
+                break;
+
+            // Legacy fallbacks
+            case 'content':
+                $content = $data['content'] ?? null;
+                if ($content !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['description' => $content]);
+                }
+                break;
+
             case 'features':
-                // Store as USPs (business_usps): title + optional description combined
                 $features = $data['features'] ?? [];
                 if (!empty($features) && is_array($features)) {
                     BusinessUsp::where('business_id', $businessId)->delete();
-
                     foreach ($features as $index => $feature) {
                         $title = $feature['title']       ?? null;
                         $desc  = $feature['description'] ?? null;
                         if (!$title) continue;
-
                         $text = $desc ? "{$title}: {$desc}" : $title;
-
                         BusinessUsp::create([
                             'business_id' => $businessId,
                             'text'        => $text,
@@ -769,19 +1157,6 @@ class ContentGenerationController extends Controller
                         ]);
                     }
                 }
-                break;
-
-            case 'pros_cons':
-                $pros = $data['pros'] ?? [];
-                $cons = $data['cons'] ?? [];
-
-                $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
-                $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
-
-                Business::where('id', $businessId)->update([
-                    'pro_cons_intro'   => $prosText,
-                    'pro_cons_summary' => $consText,
-                ]);
                 break;
 
             case 'metatags':
@@ -808,40 +1183,60 @@ class ContentGenerationController extends Controller
         }
 
         switch ($field) {
-            case 'content':
-                if (!isset($data['content']) || !is_string($data['content'])) {
-                    return 'Expected {"content": "..."}, got: ' . substr($rawContent, 0, 100);
+            case 'short_description':
+                if (!isset($data['short_description']) || !is_string($data['short_description'])) {
+                    return 'Expected {"short_description": "..."}';
+                }
+                break;
+            case 'long_description':
+                if (!isset($data['long_preview_description']) && !isset($data['long_description'])) {
+                    return 'Expected {"long_preview_description": "..."}';
+                }
+                break;
+            case 'usps':
+                $usps = $data['usps'] ?? ($data['features'] ?? null);
+                if (!is_array($usps)) {
+                    return 'Expected {"usps": ["...", "..."]}';
+                }
+                break;
+            case 'what_is':
+                if (!isset($data['description']) && !isset($data['what_is']) && !isset($data['content'])) {
+                    return 'Expected {"description": "..."}';
+                }
+                break;
+            case 'pros_cons':
+                if (!isset($data['pros']) || !isset($data['cons']) || !is_array($data['pros']) || !is_array($data['cons'])) {
+                    return 'Expected {"pros": [...], "cons": [...]}';
+                }
+                break;
+            case 'services':
+                if (!isset($data['top_text']) && !isset($data['headline']) && !isset($data['bottom_text'])) {
+                    return 'Expected {"headline": "...", "top_text": "...", "bottom_text": "..."}';
                 }
                 break;
             case 'faqs':
                 if (!isset($data['faqs']) || !is_array($data['faqs'])) {
-                    return 'Expected {"faqs": [{"question":..., "answer":...}]}, got: ' . substr($rawContent, 0, 100);
+                    return 'Expected {"faqs": [{"question":..., "answer":...}]}';
                 }
-                foreach ($data['faqs'] as $i => $faq) {
-                    if (!isset($faq['question']) || !isset($faq['answer'])) {
-                        return "FAQ item #{$i} missing 'question' or 'answer' key.";
-                    }
+                break;
+            case 'categories':
+                if (!isset($data['category_id']) && !isset($data['subcategory_ids'])) {
+                    return 'Expected {"category_id":..., "subcategory_ids": [...]}';
                 }
+                break;
+            case 'active_countries':
+                if (!isset($data['active_all_countries']) && !isset($data['country_codes'])) {
+                    return 'Expected {"active_all_countries": true|false, "country_codes": [...]}';
+                }
+                break;
+            case 'content':
+                if (!isset($data['content'])) return 'Expected {"content": "..."}';
                 break;
             case 'features':
-                if (!isset($data['features']) || !is_array($data['features'])) {
-                    return 'Expected {"features": [{"title":..., "description":...}]}, got: ' . substr($rawContent, 0, 100);
-                }
-                foreach ($data['features'] as $i => $feat) {
-                    if (!isset($feat['title'])) {
-                        return "Feature item #{$i} missing 'title' key.";
-                    }
-                }
-                break;
-            case 'pros_cons':
-                if (!isset($data['pros']) || !isset($data['cons'])) {
-                    return 'Expected {"pros": [...], "cons": [...]}, got: ' . substr($rawContent, 0, 100);
-                }
+                if (!isset($data['features'])) return 'Expected {"features": [...]}';
                 break;
             case 'metatags':
-                if (!isset($data['meta_title']) && !isset($data['meta_description'])) {
-                    return 'Expected {"meta_title":..., "meta_description":...}, got: ' . substr($rawContent, 0, 100);
-                }
+                if (!isset($data['meta_title']) && !isset($data['meta_description'])) return 'Expected meta tags';
                 break;
         }
 
@@ -862,13 +1257,50 @@ class ContentGenerationController extends Controller
         };
     }
 
-    private function defaultPromptText(string $field, string $businessName, string $categoryName): string
+    private function defaultPromptText(string $field, string $businessName, string $categoryName, string $businessUrl = '', array $extra = []): string
     {
+        $urlInfo = !empty($businessUrl) ? " Website/URL: {$businessUrl}." : "";
+        $catInfo = !empty($categoryName) ? " Category: {$categoryName}." : "";
+
         return match ($field) {
+            'short_description' => "Write a concise, engaging summary for {$businessName}.{$catInfo}{$urlInfo} Length: 1-2 punchy sentences (under 160 characters) suitable for a directory listing card preview. Return JSON: {\"short_description\": \"...\"}",
+
+            'long_description' => "Write an extended, in-depth preview description for {$businessName}.{$catInfo}{$urlInfo} This will be displayed in the extended listing box on category pages. Highlight the company's core platform, key features, reliability, target users, and competitive advantages in 2-3 well-written HTML paragraphs. Return JSON: {\"long_preview_description\": \"<p>...</p><p>...</p>\"}",
+
+            'usps' => "Generate 4 to 6 Unique Selling Propositions (USPs) for {$businessName}.{$catInfo}{$urlInfo} Each USP must be concise (3-8 words) highlighting a standout benefit, guarantee, or key feature (e.g., 'Free domain & SSL certificate', '24/7 expert customer support', '99.9% uptime guarantee'). Return JSON: {\"usps\": [\"USP 1\", \"USP 2\", \"USP 3\", \"USP 4\"]}",
+
+            'what_is' => "Write an authoritative, detailed overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their profile page. Provide 2-3 structured HTML paragraphs explaining what the business is, what infrastructure or services it provides, who its ideal customers are, and why users choose it. Return JSON: {\"description\": \"<p>...</p><p>...</p>\"}",
+
+            'pros_cons' => "Evaluate {$businessName}.{$catInfo}{$urlInfo} Select the 3 to 5 most accurate Pros and 2 to 4 Cons strictly from the available category options below:
+
+Available Pros:
+" . ($extra['available_pros'] ?? "- High reliability
+- Good value for money
+- Affordable pricing
+- Easy to use
+- 24/7 customer support") . "
+
+Available Cons:
+" . ($extra['available_cons'] ?? "- Steep learning curve
+- Limited advanced features
+- Hidden additional fees
+- Unclear pricing") . "
+
+Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\", \"Con 2\"]}",
+
+            'services' => "Write the Services section for {$businessName}.{$catInfo}{$urlInfo} which accompanies product screenshots. Provide: 1. A catchy section headline. 2. Top text: 1-2 paragraphs introducing the core platform and user experience before the screenshot tour. 3. Bottom text: 1-2 paragraphs elaborating on extended services, add-ons, or integrations after the screenshots. Return JSON: {\"headline\": \"...\", \"top_text\": \"<p>...</p>\", \"bottom_text\": \"<p>...</p>\"}",
+
+            'faqs' => "Write 5 high-value FAQs for {$businessName}.{$catInfo}{$urlInfo} addressing common customer questions regarding plans, pricing, key features, setup, and support. Return JSON: {\"faqs\": [{\"question\": \"...\", \"answer\": \"...\"}]}",
+
+            'categories' => "Analyze {$businessName}.{$urlInfo} Select the most suitable primary category ID and up to 3 subcategory IDs from the following list:
+" . ($extra['category_list'] ?? "No category list provided") . "
+
+Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\": [2, 3]}",
+
+            'active_countries' => "Analyze {$businessName}.{$urlInfo} Determine whether this business operates globally (available in all countries) or is restricted to specific countries. Return JSON: {\"active_all_countries\": true, \"country_codes\": [\"US\", \"GB\", \"CA\", \"AU\", \"DE\"]}",
+
             'content'   => "Write a comprehensive overview for {$businessName} ({$categoryName}). Return JSON: {\"content\": \"...\"}",
-            'faqs'      => "Write 5 FAQs for {$businessName} ({$categoryName}). Return JSON: {\"faqs\": [{\"question\": \"...\", \"answer\": \"...\"}]}",
             'features'  => "List 6 key features of {$businessName} ({$categoryName}). Return JSON: {\"features\": [{\"title\": \"...\", \"description\": \"...\"}]}",
-            'pros_cons' => "Write pros and cons for {$businessName} ({$categoryName}). Return JSON: {\"pros\": [\"...\"], \"cons\": [\"...\"]}",
             'metatags'  => "Write SEO meta tags for {$businessName} ({$categoryName}). Return JSON: {\"meta_title\": \"...\", \"meta_description\": \"...\"}",
             default     => "Generate content for {$businessName}. Return JSON.",
         };
@@ -1069,4 +1501,304 @@ class ContentGenerationController extends Controller
             }
         }
     }
+
+    // -------------------------------------------------------------------------
+    // LOGO UPLOAD (SVG / Image direct upload from table)
+    // -------------------------------------------------------------------------
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'business_id' => 'required|integer|exists:businesses,id',
+            'logo'        => 'required|file|mimes:svg,png,jpg,jpeg,webp|max:5120',
+        ]);
+
+        $business = Business::findOrFail($request->business_id);
+        $file     = $request->file('logo');
+        $ext      = strtolower($file->getClientOriginalExtension() ?: 'svg');
+        $filename = time() . '_' . Str::random(10) . '.' . $ext;
+        $dest     = public_path('business/icon');
+
+        if (!\File::exists($dest)) {
+            \File::makeDirectory($dest, 0755, true);
+        }
+
+        $file->move($dest, $filename);
+        $relativePath = 'business/icon/' . $filename;
+
+        // Delete old custom icon if exists
+        $oldIcon = $business->getRawOriginal('icon_id');
+        if ($oldIcon && \File::exists(public_path($oldIcon)) && !in_array($oldIcon, [
+            'front/img/default_business_logo.svg', 'front/img/logo.svg', 'front/img/default.png', 'images/default.png'
+        ])) {
+            @unlink(public_path($oldIcon));
+        }
+
+        $business->icon_id = $relativePath;
+        $business->save();
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Logo uploaded successfully!',
+            'logo_url' => asset($relativePath),
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // BATCH SIZE CONFIGURATION SETTING
+    // -------------------------------------------------------------------------
+    public function updateBatchSetting(Request $request)
+    {
+        $request->validate([
+            'batch_size' => 'required|integer|min:1|max:50',
+        ]);
+
+        WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => (int)$request->batch_size]);
+
+        return back()->with('success', 'Batch size updated to ' . $request->batch_size . ' businesses per batch.');
+    }
+
+    // -------------------------------------------------------------------------
+    // DOWNLOAD BATCH JSON (For ChatGPT Prompt)
+    // -------------------------------------------------------------------------
+    public function downloadBatchJson(AiBatchJob $job)
+    {
+        if (!empty($job->input_payload)) {
+            $content = $job->input_payload;
+        } else {
+            $businessIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->toArray();
+            $businesses  = Business::with(['translations' => fn($q) => $q->where('lang_id', 1)])->whereIn('id', $businessIds)->get();
+            $bList = [];
+            foreach ($businesses as $b) {
+                $bList[] = [
+                    'business_id'   => $b->id,
+                    'business_name' => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                    'business_url'  => $b->permanent_url ?: ($b->affiliate_link ?: ''),
+                ];
+            }
+            $content = json_encode([
+                'batch_id'         => $job->batch_id ?: ('BATCH-' . $job->id),
+                'total_businesses' => count($bList),
+                'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
+                'fields_requested' => explode(',', $job->prompt_type ?: implode(',', self::CONTENT_FIELDS)),
+                'businesses'       => $bList,
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        $filename = 'batch_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
+
+        return response($content, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // UPLOAD BATCH RESULT JSON (From ChatGPT)
+    // -------------------------------------------------------------------------
+    public function uploadBatchResult(Request $request, AiBatchJob $job)
+    {
+        $request->validate([
+            'result_file' => 'nullable|file|max:10240',
+            'result_text' => 'nullable|string',
+        ]);
+
+        $rawJson = null;
+        if ($request->hasFile('result_file')) {
+            $rawJson = file_get_contents($request->file('result_file')->getRealPath());
+        } elseif ($request->filled('result_text')) {
+            $rawJson = trim($request->result_text);
+        }
+
+        if (empty($rawJson)) {
+            return back()->with('error', 'Please upload a JSON file or paste the JSON text.');
+        }
+
+        // Clean any markdown code blocks if user pasted ```json ... ```
+        $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
+        $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
+        $cleanJson = trim($cleanJson);
+
+        $parsed = json_decode($cleanJson, true);
+        if (!is_array($parsed)) {
+            return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+        }
+
+        // If wrapped in {"businesses": [...]} or {"results": [...]}
+        $businessList = [];
+        if (isset($parsed['businesses']) && is_array($parsed['businesses'])) {
+            $businessList = $parsed['businesses'];
+        } elseif (isset($parsed['results']) && is_array($parsed['results'])) {
+            $businessList = $parsed['results'];
+        } elseif (array_is_list($parsed)) {
+            $businessList = $parsed;
+        } else {
+            $businessList = [$parsed];
+        }
+
+        $appliedBusinessesCount = 0;
+        $appliedFieldsCount     = 0;
+
+        foreach ($businessList as $bData) {
+            if (!is_array($bData)) continue;
+
+            $rawBizId = $bData['business_id'] ?? ($bData['id'] ?? null);
+            $bizName  = trim($bData['business_name'] ?? ($bData['name'] ?? ''));
+
+            $biz = null;
+
+            // 1. If rawBizId is provided, check if it matches a business in this batch job
+            if ($rawBizId && $job) {
+                $isJobBiz = $job->queueItems()->where('resource_type', 'business')->where('resource_id', $rawBizId)->exists();
+                if ($isJobBiz) {
+                    $biz = Business::find($rawBizId);
+                }
+            }
+
+            // 2. Try matching by business name against businesses in this batch job
+            if (!$biz && !empty($bizName) && $job) {
+                $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique();
+                $biz = Business::whereIn('id', $jobBizIds)
+                    ->whereHas('translations', function($q) use ($bizName) {
+                        $q->where('name', 'like', "%{$bizName}%");
+                    })->first();
+            }
+
+            // 3. Fallback: If this batch job only has 1 business in its queue items
+            if (!$biz && $job) {
+                $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->values();
+                if ($jobBizIds->count() === 1) {
+                    $biz = Business::find($jobBizIds->first());
+                }
+            }
+
+            // 4. Try matching globally by rawBizId if it exists in the businesses table
+            if (!$biz && $rawBizId) {
+                $biz = Business::find($rawBizId);
+            }
+
+            // 5. Try matching globally by business name in translations
+            if (!$biz && !empty($bizName)) {
+                $matchedBizId = BusinessTranslation::where('name', $bizName)->value('business_id')
+                    ?? BusinessTranslation::where('name', 'like', "%{$bizName}%")->value('business_id');
+                if ($matchedBizId) {
+                    $biz = Business::find($matchedBizId);
+                }
+            }
+
+            if (!$biz) continue;
+            $bizId = $biz->id;
+            $appliedBusinessesCount++;
+
+            // Process each of the 9 fields
+            foreach (self::CONTENT_FIELDS as $field) {
+                if (!isset($bData[$field])) continue;
+
+                $fieldVal = $bData[$field];
+                $normalizedData = is_array($fieldVal) ? $fieldVal : [$field => $fieldVal];
+
+                if ($field === 'short_description' && is_string($fieldVal)) {
+                    $normalizedData = ['short_description' => $fieldVal];
+                } elseif ($field === 'long_description' && is_string($fieldVal)) {
+                    $normalizedData = ['long_preview_description' => $fieldVal, 'long_description' => $fieldVal];
+                } elseif ($field === 'what_is' && is_string($fieldVal)) {
+                    $normalizedData = ['description' => $fieldVal, 'what_is' => $fieldVal];
+                } elseif ($field === 'usps' && is_array($fieldVal)) {
+                    $normalizedData = ['usps' => $fieldVal];
+                } elseif ($field === 'faqs' && is_array($fieldVal)) {
+                    $normalizedData = ['faqs' => $fieldVal];
+                }
+
+                // Find or create AiContentQueue record
+                $queueItem = AiContentQueue::firstOrNew([
+                    'batch_job_id'  => $job->id,
+                    'resource_type' => 'business',
+                    'resource_id'   => $bizId,
+                    'content_field' => $field,
+                ]);
+
+                $queueItem->openai_request_id = "biz_{$bizId}_{$field}";
+                $queueItem->status            = 'completed';
+                $queueItem->result            = json_encode($normalizedData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                $queueItem->save();
+
+                // Apply directly to database record
+                try {
+                    $this->applyResultToRecord($queueItem, $normalizedData);
+                    $appliedFieldsCount++;
+                } catch (\Exception $e) {
+                    Log::error("Failed to auto-apply field {$field} for business {$bizId}: " . $e->getMessage());
+                }
+            }
+        }
+
+        $job->update([
+            'status'          => 'completed',
+            'completed_items' => $appliedFieldsCount,
+            'completed_at'    => now(),
+            'raw_response'    => $cleanJson,
+        ]);
+
+        return back()->with('success', "Batch result processed successfully! Applied content for {$appliedBusinessesCount} business(es) across {$appliedFieldsCount} field(s).");
+    }
+
+    // -------------------------------------------------------------------------
+    // EXAMPLE OUTPUT JSON FOR CHATGPT
+    // -------------------------------------------------------------------------
+    public static function getBatchResultExampleJson(): string
+    {
+        $example = [
+            [
+                "business_id"       => 101,
+                "business_name"     => "HostGator",
+                "short_description" => "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
+                "long_description"  => "HostGator offers robust shared, VPS, and dedicated web hosting built for high performance and reliability.",
+                "usps"              => [
+                    "99.9% uptime guarantee",
+                    "Free domain registration for the first year",
+                    "24/7/365 phone, chat, and email support",
+                    "One-click WordPress and CMS installs"
+                ],
+                "what_is"           => "HostGator is an established global web hosting provider and domain registrar serving businesses and web creators worldwide.",
+                "pros_cons"         => [
+                    "pros" => [
+                        "Affordable introductory pricing",
+                        "Unmetered bandwidth on all shared plans",
+                        "Responsive 24/7 technical customer support",
+                        "Generous 45-day money-back guarantee"
+                    ],
+                    "cons" => [
+                        "Higher renewal pricing upon term expiration",
+                        "Aggressive upsells during the checkout process",
+                        "Advanced speed optimization limited to higher tiers"
+                    ]
+                ],
+                "services"          => [
+                    "headline"    => "Full-Service Web Hosting & Domain Management",
+                    "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
+                    "bottom_text" => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
+                ],
+                "faqs"              => [
+                    [
+                        "question" => "Does HostGator provide a free domain name?",
+                        "answer"   => "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
+                    ],
+                    [
+                        "question" => "Can I easily migrate an existing site to HostGator?",
+                        "answer"   => "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
+                    ]
+                ],
+                "categories"        => [
+                    "category_id"     => 4,
+                    "subcategory_ids" => [12, 15]
+                ],
+                "active_countries"  => [
+                    "active_all_countries" => true,
+                    "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                ]
+            ]
+        ];
+
+        return json_encode($example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
 }

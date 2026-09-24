@@ -245,7 +245,7 @@ class Business extends Model
     public function getDisplayRatingAttribute()
     {
         $approvedCount = $this->reviews->where('status', 'active')->count();
-        if ($approvedCount > 0) {
+        if ($approvedCount >= 10) {
             return round($this->reviews->where('status', 'active')->avg('rating'), 1);
         }
         if ($this->admin_rating !== null && (float)$this->admin_rating > 0) {
@@ -321,7 +321,7 @@ class Business extends Model
      */
     public function getHasUserReviewsAttribute()
     {
-        return $this->reviews->where('status', 'active')->count() > 0;
+        return $this->reviews->where('status', 'active')->count() >= 10;
     }
 
 }

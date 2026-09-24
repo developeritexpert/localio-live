@@ -230,6 +230,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // ===== Content Generation =====
     Route::get('/admin-dashboard/content-generation/businesses', [ContentGenerationController::class, 'businesses'])->name('content-gen.businesses');
+    Route::post('/admin-dashboard/content-generation/import-json', [ContentGenerationController::class, 'importJson'])->name('content-gen.import-json');
     Route::get('/admin-dashboard/content-generation/features', [ContentGenerationController::class, 'features'])->name('content-gen.features');
     Route::post('/admin-dashboard/content-generation/features/submit-batch', [ContentGenerationController::class, 'submitFeaturesBatch'])->name('content-gen.features.submit-batch');
     Route::post('/admin-dashboard/content-generation/features/apply-all', [ContentGenerationController::class, 'applyAllFeatureCompleted'])->name('content-gen.features.apply-all');
@@ -243,6 +244,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/content-generation/apply-all', [ContentGenerationController::class, 'applyAllCompleted'])->name('content-gen.apply-all');
     Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/items', [ContentGenerationController::class, 'batchJobItems'])->name('content-gen.batch-job-items');
     Route::get('/admin-dashboard/content-generation/poll-now', [ContentGenerationController::class, 'pollNow'])->name('content-gen.poll-now');
+    Route::post('/admin-dashboard/content-generation/upload-logo', [ContentGenerationController::class, 'uploadLogo'])->name('content-gen.upload-logo');
+    Route::post('/admin-dashboard/content-generation/batch-setting', [ContentGenerationController::class, 'updateBatchSetting'])->name('content-gen.batch-setting');
+    Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/download', [ContentGenerationController::class, 'downloadBatchJson'])->name('content-gen.batch-jobs.download');
+    Route::post('/admin-dashboard/content-generation/batch-jobs/{job}/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-result');
 
 
 

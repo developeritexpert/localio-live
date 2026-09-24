@@ -1,3 +1,6 @@
+@php
+    $hasUserRatings = $hasUserRatings ?? (isset($business) && $business->reviews->where('status', 'active')->count() >= 10);
+@endphp
 
 
 
@@ -95,7 +98,8 @@
     cursor: pointer;
 }
 </style>  
-                        <!-- Ratings below headline -->
+                        @if(!empty($hasUserRatings))
+                    <!-- Ratings below headline -->
                     <div class="rating light" style="display: flex; align-items: center; gap: 6px; ">
                         <div class="inn_ul">
                             <div class="rating-stars" style="display: flex; gap: 2px;">
@@ -167,6 +171,7 @@
                         </div>
                         @endif
                     </div>
+                    @endif
                         <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                             {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                         </div>
@@ -308,6 +313,7 @@
                             </h3>
                             
                             <!-- Ratings below headline -->
+                        @if(!empty($hasUserRatings))
                         <div class="rating light" style="display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
                             <div class="inn_ul">
                                 <div class="rating-stars" style="display: flex; gap: 2px;">
@@ -383,6 +389,7 @@
                             </div>
                         </div>
                             <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
+                        @endif
                                 {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                             </div>
                         </div>
@@ -463,6 +470,7 @@
                                 @endif
                             </div>
                         </div>
+                        @if(!empty($hasUserRatings))
                         <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
                             <div class="inn_ul">
                                 <div class="rating-stars">
@@ -481,6 +489,7 @@
                                 {{ number_format($review->rating, 1) }}
                             </div>
                         </div>
+                        @endif
                     </div>
                     <div class="review_text size18">
                         <p class="review-title" style="margin-bottom: 4px;">

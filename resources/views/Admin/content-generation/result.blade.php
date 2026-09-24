@@ -84,17 +84,88 @@
                         <div class="mb-3">
                             <h6 class="text-muted text-uppercase fs-12px tracking-wider mb-2">Structured Output Preview</h6>
                             <div class="bg-light p-3 rounded border">
-                                @if($item->content_field === 'content' && isset($decoded['content']))
-                                    <div class="p-2">{!! nl2br(e($decoded['content'])) !!}</div>
+                                @if($item->content_field === 'short_description')
+                                    <div class="p-2 fs-15px text-dark">
+                                        {{ $decoded['short_description'] ?? '' }}
+                                    </div>
+                                @elseif($item->content_field === 'long_description')
+                                    <div class="p-2">
+                                        {!! $decoded['long_preview_description'] ?? ($decoded['long_description'] ?? '') !!}
+                                    </div>
+                                @elseif($item->content_field === 'usps')
+                                    <ul class="list-unstyled mb-0 p-2">
+                                        @foreach(($decoded['usps'] ?? ($decoded['features'] ?? [])) as $usp)
+                                            @php $uText = is_array($usp) ? ($usp['title'] ?? ($usp['text'] ?? '')) : (string)$usp; @endphp
+                                            <li class="d-flex align-items-center mb-2">
+                                                <em class="icon ni ni-check-circle-fill text-success fs-16px me-2"></em>
+                                                <span class="fw-medium text-dark">{{ $uText }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @elseif($item->content_field === 'what_is')
+                                    <div class="p-2">
+                                        {!! $decoded['description'] ?? ($decoded['what_is'] ?? ($decoded['content'] ?? '')) !!}
+                                    </div>
+                                @elseif($item->content_field === 'pros_cons')
+                                    <div class="row g-3 p-2">
+                                        <div class="col-md-6">
+                                            <h6 class="text-success mb-2"><em class="icon ni ni-plus-circle-fill me-1"></em> Selected Pros</h6>
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach(($decoded['pros'] ?? []) as $pro)
+                                                    <li class="mb-1"><span class="badge bg-success-dim text-success me-1">+</span> {{ $pro }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-danger mb-2"><em class="icon ni ni-minus-circle-fill me-1"></em> Selected Cons</h6>
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach(($decoded['cons'] ?? []) as $con)
+                                                    <li class="mb-1"><span class="badge bg-danger-dim text-danger me-1">-</span> {{ $con }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @elseif($item->content_field === 'services')
+                                    <div class="p-2">
+                                        @if(!empty($decoded['headline']))
+                                            <h5 class="fw-bold mb-2">{{ $decoded['headline'] }}</h5>
+                                        @endif
+                                        @if(!empty($decoded['top_text']))
+                                            <div class="mb-3">
+                                                <span class="badge bg-light text-muted mb-1">Top Text (Before Screenshots)</span>
+                                                <div class="bg-white p-2 border rounded">{!! $decoded['top_text'] !!}</div>
+                                            </div>
+                                        @endif
+                                        @if(!empty($decoded['bottom_text']))
+                                            <div>
+                                                <span class="badge bg-light text-muted mb-1">Bottom Text (After Screenshots)</span>
+                                                <div class="bg-white p-2 border rounded">{!! $decoded['bottom_text'] !!}</div>
+                                            </div>
+                                        @endif
+                                    </div>
                                 @elseif($item->content_field === 'faqs' && isset($decoded['faqs']))
                                     <div class="accordion" id="faqPreview">
                                         @foreach($decoded['faqs'] as $i => $faq)
                                             <div class="border-bottom py-2">
-                                                <strong>Q: {{ $faq['question'] ?? '' }}</strong>
-                                                <p class="mb-0 text-muted mt-1">{{ $faq['answer'] ?? '' }}</p>
+                                                <strong class="text-primary">Q: {{ $faq['question'] ?? '' }}</strong>
+                                                <p class="mb-0 text-dark mt-1">{{ $faq['answer'] ?? '' }}</p>
                                             </div>
                                         @endforeach
                                     </div>
+                                @elseif($item->content_field === 'categories')
+                                    <div class="p-2">
+                                        <p class="mb-1"><strong>Primary Category ID:</strong> <span class="badge bg-primary">{{ $decoded['category_id'] ?? 'Not set' }}</span> {{ $decoded['category_name'] ?? '' }}</p>
+                                        <p class="mb-0"><strong>Subcategories:</strong> {{ implode(', ', $decoded['subcategory_ids'] ?? []) }}</p>
+                                    </div>
+                                @elseif($item->content_field === 'active_countries')
+                                    <div class="p-2">
+                                        <p class="mb-1"><strong>Global (All Countries):</strong> <span class="badge {{ !empty($decoded['active_all_countries']) ? 'bg-success' : 'bg-warning' }}">{{ !empty($decoded['active_all_countries']) ? 'Yes (Global)' : 'No (Specific)' }}</span></p>
+                                        @if(!empty($decoded['country_codes']))
+                                            <p class="mb-0"><strong>Specific Country Codes:</strong> {{ implode(', ', $decoded['country_codes']) }}</p>
+                                        @endif
+                                    </div>
+                                @elseif($item->content_field === 'content' && isset($decoded['content']))
+                                    <div class="p-2">{!! nl2br(e($decoded['content'])) !!}</div>
                                 @elseif($item->content_field === 'features' && isset($decoded['features']))
                                     <ul class="list-group list-group-flush">
                                         @foreach($decoded['features'] as $f)
@@ -103,25 +174,6 @@
                                             </li>
                                         @endforeach
                                     </ul>
-                                @elseif($item->content_field === 'pros_cons')
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h6 class="text-success"><em class="icon ni ni-check-circle me-1"></em> Pros</h6>
-                                            <ul>
-                                                @foreach(($decoded['pros'] ?? []) as $pro)
-                                                    <li>{{ $pro }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6 class="text-danger"><em class="icon ni ni-cross-circle me-1"></em> Cons</h6>
-                                            <ul>
-                                                @foreach(($decoded['cons'] ?? []) as $con)
-                                                    <li>{{ $con }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
                                 @elseif($item->content_field === 'metatags')
                                     <table class="table table-sm">
                                         <tr><th style="width:150px">Meta Title:</th><td>{{ $decoded['meta_title'] ?? '-' }}</td></tr>
