@@ -1367,6 +1367,34 @@ class ContentTemplateService
             foreach ($replacements as $search => $replace) {
                 $text = str_replace($search, $replace, $text);
             }
+        } else {
+            $catFallback = '';
+            if ($business) {
+                $catFallback = $business->translations?->where('lang_id', $langId)->first()?->name 
+                    ?? $business->translations?->first()?->name 
+                    ?? $business->name ?? '';
+            }
+            $catFallbackCap = ucfirst(mb_strtolower($catFallback));
+            $catFallbackTc  = mb_convert_case($catFallback, MB_CASE_TITLE, 'UTF-8');
+            $catFallbackLc  = mb_strtolower($catFallback);
+
+            $text = str_replace([
+                '[category_cap]', '[Category]', '[Category Name]', '{Category}',
+                '[category_tc]',
+                '[category_lc]', '[category]', '[category name]', '{category}',
+                '[entity1_cap]', '[entity1_lc]', '[entities1_cap]', '[entities1_lc]',
+                '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]',
+                '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]',
+                '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]',
+            ], [
+                $catFallbackCap, $catFallbackCap, $catFallbackCap, $catFallbackCap,
+                $catFallbackTc,
+                $catFallbackLc, $catFallbackLc, $catFallbackLc, $catFallbackLc,
+                $catFallbackCap, $catFallbackLc, $catFallbackCap, $catFallbackLc,
+                $catFallbackCap, $catFallbackLc, $catFallbackCap, $catFallbackLc,
+                $catFallbackCap, $catFallbackLc, $catFallbackCap, $catFallbackLc,
+                $catFallbackCap, $catFallbackLc, $catFallbackCap, $catFallbackLc,
+            ], $text);
         }
 
         // Feature tags

@@ -16,6 +16,7 @@ class AiBatchJob extends Model
         'status',
         'submitted_at',
         'completed_at',
+        'input_payload',
         'raw_response',
         'error_message',
         'total_items',

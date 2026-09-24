@@ -325,13 +325,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             @php
             $activeReviews = $business->reviews->where('status', 'active');
             $ratingCount = $activeReviews->count();
+            $hasUserRatings = $ratingCount >= 10;
             $hasUserReviews = $ratingCount > 0;
-            if ($hasUserReviews) {
-            $averageRating = $activeReviews->avg('rating');
+            if ($hasUserRatings) {
+                $averageRating = round($activeReviews->avg('rating'), 1);
             } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
-            $averageRating = (float)$business->admin_rating;
+                $averageRating = (float)$business->admin_rating;
             } else {
-            $averageRating = null;
+                $averageRating = null;
             }
             @endphp
             <div class="container-fluid">
@@ -389,7 +390,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         @endif
                                                         @endfor
                                             </div>
-                                            @if ($hasUserReviews)
+                                            @if ($hasUserRatings)
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
                                                 ({{ $ratingCount }})
                                             </span>
@@ -457,7 +458,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         {{ $ratingWord }}
                                                     </span>
                                                     @endif
-                                                    <div class="d-flex align-items-center gap-2 my-1 mobile-rating-trigger" onclick="toggleMobileReviewBreakdown()" style="cursor: pointer; user-select: none;" title="Toggle rating breakdown">
+                                                    <div class="d-flex align-items-center gap-2 my-1 @if($hasUserRatings) mobile-rating-trigger @endif" @if($hasUserRatings) onclick="toggleMobileReviewBreakdown()" style="cursor: pointer; user-select: none;" title="Toggle rating breakdown" @endif>
                                                         <div class="d-flex align-items-center gap-1">
                                                             @for ($j = 1; $j <= 5; $j++)
                                                                 @if ($j <= floor($averageRating))
@@ -469,9 +470,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @endif
                                                             @endfor
                                                         </div>
+                                                        @if($hasUserRatings)
                                                         <span class="mobile-rating-arrow-wrap d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
                                                             <i class="fas fa-chevron-down mobile-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
                                                         </span>
+                                                        @endif
                                                     </div>
                                                     <span class="com-rating" style="font-size: 13px; color: #64748b;">
                                                         {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}
@@ -494,6 +497,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             </div>
 
                                             <!-- Collapsible Breakdown Section (Hidden by default, slides out when clicking stars or arrow) -->
+                                            @if($hasUserRatings)
                                             <div id="mobileReviewBreakdownContent" class="mobile-breakdown-collapsible" data-expanded="false" style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.35s ease-in-out, opacity 0.25s ease;">
                                                 @if(isset($criteria) && count($criteria) > 0)
                                                 <div class="pt-3">
@@ -543,6 +547,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                         @endif
             </div>
@@ -702,7 +707,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $pro->text }}
-                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -719,7 +724,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $con->text }}
-                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -755,7 +760,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $pro->text }}
-                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                         </span>
                                                     </li>
                                                     @endforeach
@@ -774,7 +779,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $con->text }}
-                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                         </span>
                                                     </li>
                                                     @endforeach
@@ -808,15 +813,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
                         @endif
 
-                        @if($business->is_affiliate && $business->offerings->count() > 0)
                         @php $offering = $business->offerings->first(); @endphp
+                        @if($offering && (!empty($offering->headline) || !empty($offering->top_text)))
                         <div class="col-lg-12 mt-4 mb-2">
-                            <div class="offering-section ">
-                                @if($offering->headline)
+                            <div class="offering-section">
+                                @if(!empty($offering->headline))
                                 <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{{ $offering->headline }}</h2>
                                 @endif
 
-                                @if($offering->top_text)
+                                @if(!empty($offering->top_text))
                                 <div class="mb-2">
                                     {!! $offering->top_text !!}
                                 </div>
@@ -886,7 +891,7 @@ if (empty($images)) {
 }
 @endphp
 
-                        @if ($business->is_affiliate && !empty($images))
+                        @if (!empty($images))
                         <div class="col-lg-12 mb-4">
                             <div class="is-asana-rgt">
                                 <div class="row is-asan-slider">
@@ -897,14 +902,14 @@ if (empty($images)) {
                                         $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
                                         @endphp
                                         <div class="asan-slider-inr">
-                                            <a href="{{ $business->getTrackedUrl() }}"
+                                            <a href="{{ $business->is_affiliate ? $business->getTrackedUrl() : ($business->permanent_url ?: 'javascript:void(0)') }}"
                                                 data-track="{{ json_encode([
                                                                             'type' => 'click',
                                                                             'business_id' => $business->id,
                                                                             'action' => 'visit_website',
                                                                             'label' => 'Visit Website',
                                                                         ]) }}"
-                                                target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
+                                                target="_blank" @if($business->is_affiliate) rel="sponsored" @else rel="noopener noreferrer" @endif class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
                                                 <img src="{{ $imgSrc }}"
                                                     alt="Business Image {{ $index + 1 }}" class="img-fluid w-100 preview-main-display"
                                                     style="width: 100%; max-height: 650px; min-height: 250px; object-fit: cover; border-radius: 8px;">
@@ -962,10 +967,13 @@ if (empty($images)) {
                             });
                         </script>
 
-                        @if (!empty($business->translations->first()->after_image_description))
+                        @php
+                        $afterImageDesc = $business->translations->first()->after_image_description ?? ($offering->bottom_text ?? null);
+                        @endphp
+                        @if (!empty($afterImageDesc))
                         <div class="col-lg-12 mt-2 after-image-desc">
                             <div class="is_text">
-                                {!! $business->translations->first()->after_image_description !!}
+                                {!! $afterImageDesc !!}
                             </div>
                         </div>
                         @endif
@@ -1012,6 +1020,7 @@ if (empty($images)) {
                             <div class="mb-3">{!! $ratingTexts['features']['intro_text'] !!}</div>
                             @endif
 
+                            @if($hasUserRatings)
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                 <div class="community-rating mb-2" style="">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
@@ -1023,6 +1032,7 @@ if (empty($images)) {
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
+                            @endif
 
                             @if(!empty($ratingTexts['features']['end_text']))
                             <div class="mb-3">{!! $ratingTexts['features']['end_text'] !!}</div>
@@ -1061,6 +1071,7 @@ if (empty($images)) {
                             <div class="mb-3">{!! $ratingTexts['ease_of_use']['intro_text'] !!}</div>
                             @endif
 
+                            @if($hasUserRatings)
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                 <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
@@ -1069,10 +1080,10 @@ if (empty($images)) {
                                         <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
                                     <span class="rating_bar_span">{{ formatRating($easeRatingVal) }}</span>
-
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
+                            @endif
 
                             @if(!empty($ratingTexts['ease_of_use']['end_text']))
                             <div class="mb-3">{!! $ratingTexts['ease_of_use']['end_text'] !!}</div>
@@ -1097,6 +1108,7 @@ if (empty($images)) {
                             <div class="mb-3">{!! $ratingTexts[$crKey]['intro_text'] !!}</div>
                             @endif
 
+                            @if($hasUserRatings)
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
                                 <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
@@ -1105,10 +1117,10 @@ if (empty($images)) {
                                         <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
                                     <span class="rating_bar_span">{{ formatRating($crRatingVal) }}</span>
-
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
+                            @endif
 
                             @if(!empty($ratingTexts[$crKey]['end_text']))
                             <div class="mb-3">{!! $ratingTexts[$crKey]['end_text'] !!}</div>
@@ -1131,6 +1143,7 @@ if (empty($images)) {
                             <div class="mb-3">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
                             @endif
 
+                            @if($hasUserRatings)
                             <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                 <div class="community-rating mb-2">User rating </div>
                                 <div class="d-flex align-items-center mb-2" style="gap: 12px;">
@@ -1139,10 +1152,10 @@ if (empty($images)) {
                                         <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
                                     <span class="rating_bar_span">{{ formatRating($vfmRatingVal) }}</span>
-
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
+                            @endif
 
                             @if(!empty($ratingTexts['value_for_money']['end_text']))
                             <div class="mb-3">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
@@ -1861,29 +1874,34 @@ if (empty($images)) {
                                                                             <!-- Left Column: Big Rating & Stars -->
                                                                             <div class="col-lg-5 col-md-5 col-12 mt-0">
                                                                                 <div class="d-flex flex-column align-items-start">
-                                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ formatRating($averageRating) }}</span>
-                                                                                    @if($ratingWord = get_rating_label($averageRating))
-                                                                                    <span class="rating-word-label " style="">
-                                                                                        {{ $ratingWord }}
-                                                                                    </span>
-                                                                                    @endif
-                                                                                    <div class="d-flex align-items-center gap-2 mb-1 section14-rating-trigger" onclick="toggleSection14ReviewBreakdown()" style="user-select: none;">
-                                                                                        <div class="d-flex align-items-center gap-1">
-                                                                                            @for ($j = 1; $j <= 5; $j++)
-                                                                                                @if ($j <= floor($averageRating))
-                                                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                                                @elseif ($j - 0.5 <= $averageRating)
-                                                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                                                @else
-                                                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                                                                                @endif
-                                                                                            @endfor
-                                                                                        </div>
-                                                                                        <span class="section14-rating-arrow-wrap d-inline-flex align-items-center justify-content-center d-md-none" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
-                                                                                            <i class="fas fa-chevron-down section14-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                                                    @if ($averageRating !== null && (float)$averageRating > 0)
+                                                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ formatRating($averageRating) }}</span>
+                                                                                        @if($ratingWord = get_rating_label($averageRating))
+                                                                                        <span class="rating-word-label " style="">
+                                                                                            {{ $ratingWord }}
                                                                                         </span>
-                                                                                    </div>
-                                                                                    <!-- <span class="com-rating">Community rating</span> -->
+                                                                                        @endif
+                                                                                        <div class="d-flex align-items-center gap-2 mb-1 @if($hasUserRatings) section14-rating-trigger @endif" @if($hasUserRatings) onclick="toggleSection14ReviewBreakdown()" style="user-select: none;" @endif>
+                                                                                            <div class="d-flex align-items-center gap-1">
+                                                                                                @for ($j = 1; $j <= 5; $j++)
+                                                                                                    @if ($j <= floor((float)$averageRating))
+                                                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                    @elseif ($j - 0.5 <= (float)$averageRating)
+                                                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                                                    @else
+                                                                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                    @endif
+                                                                                                @endfor
+                                                                                            </div>
+                                                                                            @if($hasUserRatings)
+                                                                                            <span class="section14-rating-arrow-wrap d-inline-flex align-items-center justify-content-center d-md-none" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
+                                                                                                <i class="fas fa-chevron-down section14-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                                                            </span>
+                                                                                            @endif
+                                                                                        </div>
+                                                                                    @else
+                                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">Not rated yet</span>
+                                                                                    @endif
                                                                                     <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
 
                                                                                     
@@ -1892,6 +1910,7 @@ if (empty($images)) {
                                                                             </div>
 
                                                                             <!-- Right Column: Review Breakdown & Recommendation -->
+                                                                            @if($hasUserRatings)
                                                                             <div class="col-lg-7 col-md-7 col-12 mt-0 section14-breakdown-collapsible" id="section14ReviewBreakdownContent" data-expanded="false">
                                                                                 <div class="d-md-none border-top w-100 my-3" style="border-top: 1px solid #f0f0f0 !important;"></div>
                                                                                 @if(isset($criteria) && count($criteria) > 0)
@@ -1919,6 +1938,7 @@ if (empty($images)) {
                                                                                 </div>
                                                                                 @endif
                                                                             </div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1930,6 +1950,7 @@ if (empty($images)) {
                                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
 
                                                                 <!-- Filter Button with Dropdown & Clear filter on Left -->
+                                                                @if($hasUserRatings)
                                                                 <div class="d-flex align-items-center gap-2">
                                                                     <div class="dropdown" id="reviewFilterDropdownWrap">
                                                                         <button class="btn btn-outline-secondary d-flex align-items-center"
@@ -1983,6 +2004,7 @@ if (empty($images)) {
                                                                         <i class="fas fa-times me-1"></i>Clear filter
                                                                     </span>
                                                                 </div>
+                                                                @endif
 
                                                                 @php
                                                                 $reviewSortOptions = [
@@ -2590,6 +2612,7 @@ if (empty($images)) {
                                                     {{ $review->translations->first()->title ?? 'Review' }}
                                                 </p>
 
+                                                @if($hasUserRatings)
                                                 <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                                     <div class="rating-stars">
                                                         @for($i=1;$i<=5;$i++)
@@ -2603,6 +2626,7 @@ if (empty($images)) {
                                                                 @endfor
                                                     </div>
                                                 </div>
+                                                @endif
 
                                                 <p>
                                                     {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
@@ -2853,7 +2877,7 @@ if (empty($images)) {
                                             height: 7svh;
                                             background-color: #ffffff;
                                             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
-                                            z-index: 9;
+                                            z-index: 91;
                                             padding-bottom: calc(10px + env(safe-area-inset-bottom));
                                             /* iOS safe area */
                                             padding-top: 10px;
@@ -3565,11 +3589,12 @@ if (empty($images)) {
                             {{ $business->translations->first()->name }}
                         </h3>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; white-space: nowrap; flex-wrap: nowrap;">
+                            @if ($averageRating !== null && (float)$averageRating > 0)
                             <div style="color: #ff9d28; display: flex; gap: 2px; flex-shrink: 0; white-space: nowrap;">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    @if ($i <=floor($averageRating))
+                                    @if ($i <= floor((float)$averageRating))
                                     <i class="fas fa-star"></i>
-                                    @elseif ($i - 0.5 <= $averageRating)
+                                    @elseif ($i - 0.5 <= (float)$averageRating)
                                         <i class="fas fa-star-half-alt"></i>
                                         @else
                                         <i class="far fa-star"></i>
@@ -3577,6 +3602,7 @@ if (empty($images)) {
                                         @endfor
                             </div>
                             <span style="font-weight: 600; color: #333;">{{ formatRating($averageRating) }}</span>
+                            @endif
                             <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
                         </div>
                     </div>

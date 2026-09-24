@@ -48,7 +48,7 @@
 @endphp
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec all-com" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
@@ -89,7 +89,7 @@
 
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
-            <div class="col-md-8 col-12">
+            <div class="col-md-8 col-8">
                 <div class="top_head">
                     @php
                         $resolvedCompH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
@@ -121,9 +121,9 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-4 col-12 mt-4 mt-md-0">
-                <div class="comparison-header-icons d-flex justify-content-md-end justify-content-start">
-                    <div class="comp-header-icon-box" style="width: 84px; height: 84px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" title="{{ $bName }}">
+            <div class="col-md-4 col-4 mt-4 mt-md-0">
+                <div class="comparison-header-icons d-flex justify-content-md-end">
+                    <div class="comp-header-icon-box" style=" border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" title="{{ $bName }}">
                         <x-business-logo :business="$business" :name="$bName" size="xl" style="width: 100%; height: 100%; object-fit: contain;" />
                     </div>
                 </div>
@@ -348,7 +348,7 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <a href="{{ $seoUrlPop }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex;">
+                    <a href="{{ $seoUrlPop }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 ; color: inherit; text-decoration: none;">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
@@ -409,7 +409,7 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <a href="{{ $seoUrlRec }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #f7f9fb !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex;">
+                    <a href="{{ $seoUrlRec }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="border-radius: 12px !important; border: 1px solid #e2e8f0; color: inherit; text-decoration: none; ">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
@@ -471,6 +471,7 @@
                 }
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
             @endphp
             <div class="col-lg-4 col-md-6 col-12">
                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
@@ -488,7 +489,7 @@
                         <div class="d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $subcatItem->businesses()->count() ?? 0 }} FAQs
+                                {{ $listingsCount }} {{ $listingsCount == 1 ? 'Listing' : 'Listings' }}
                             </span>
                         </div>
                     </div>

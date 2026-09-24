@@ -21,7 +21,10 @@
                     </p>
                 </div>
                 <div class="nk-block-head-content d-flex gap-2">
-                    <a href="{{ route('content-gen.poll-now') }}" class="btn btn-info btn-sm">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#importJsonModal">
+                        <em class="icon ni ni-plus-circle me-1"></em> Add Businesses (JSON)
+                    </button>
+                    <a href="{{ route('content-gen.poll-now') }}"  class="btn btn-info btn-sm">
                         <em class="icon ni ni-reload me-1"></em> Poll Status Now
                     </a>
                     <a href="{{ route('content-gen.batch-jobs') }}" class="btn btn-secondary btn-sm">
@@ -67,8 +70,8 @@
                         <label class="form-label mb-1 small">Status</label>
                         <select name="status" class="form-select form-select-sm">
                             <option value="">All</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Live</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Offline</option>
+                            <option value="1" {{ (request('status') === '1' || request('status') === 'active') ? 'selected' : '' }}>Live</option>
+                            <option value="0" {{ (request('status') === '0' || request('status') === 'inactive') ? 'selected' : '' }}>Offline</option>
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -95,10 +98,16 @@
                             <span class="text-soft small">Provider:</span>
                         </div>
                         <div class="col-auto">
-                            <select name="provider" class="form-select form-select-sm" style="width:150px">
-                                <option value="openai">OpenAI (ChatGPT)</option>
-                                <option value="anthropic">Anthropic (Claude)</option>
+                            <select name="provider" class="form-select form-select-sm" style="width:200px" title="Batch Generation Mode">
+                                <option value="manual" selected>Manual Batch (JSON for ChatGPT)</option>
+                                <option value="openai">OpenAI (ChatGPT API)</option>
+                                <option value="anthropic">Anthropic (Claude API)</option>
                             </select>
+                        </div>
+                        <div class="col-auto d-flex align-items-center gap-1">
+                            <span class="text-soft small">Batch Size:</span>
+                            <input type="number" name="batch_size" class="form-control form-control-sm text-center" value="{{ $batchSize ?? 5 }}" min="1" max="50" style="width:65px" title="Businesses merged per batch job">
+                            <span class="text-soft small">/ batch</span>
                         </div>
                         <div class="col-auto">
                             <span class="text-soft small">Fields:</span>
@@ -125,6 +134,7 @@
             {{-- Businesses Table --}}
             <div class="card card-bordered card-stretch">
                 <div class="card-inner p-0">
+                    <div class="table-responsive">
                     <table class="table table-hover content-gen-table" id="businessTable">
                         <thead class="table-light">
                             <tr>
@@ -134,6 +144,7 @@
                                 <th>Business</th>
                                 <th>Category</th>
                                 <th class="text-center" style="min-width:120px">Overall Status</th>
+                                <th class="text-center" style="min-width:85px">Logo</th>
                                 @foreach($fields as $field)
                                     <th class="text-center" style="min-width:105px">
                                         {{ \App\Models\AiContentQueue::$fieldLabels[$field] }}
@@ -155,7 +166,7 @@
                                 @php
                                     $name        = optional($business->translations->first())->name ?? 'Business #' . $business->id;
                                     $catName     = optional($business->category)->name ?? '-';
-                                    $isLive      = $business->status === 'active';
+                                    $isLive      = $business->status == 1 || $business->status === 'active';
                                     $bizFields   = $fieldStatusMap[$business->id] ?? [];
 
                                     $hasAny        = count($bizFields) > 0;
@@ -194,6 +205,24 @@
                                             <span class="badge bg-warning text-dark">Partial</span>
                                         @endif
                                     </td>
+                                    <td class="text-center" id="logo-cell-{{ $business->id }}">
+                                        <input type="file" id="logo-input-{{ $business->id }}" class="d-none" accept=".svg,image/svg+xml,image/*" onchange="uploadBusinessLogo({{ $business->id }}, this)">
+                                        @if($business->hasLogo())
+                                            <div class="d-inline-flex align-items-center justify-content-center gap-1">
+                                                <button type="button" class="btn btn-icon btn-trigger text-success p-0" title="Logo uploaded! Click to upload / replace logo." onclick="document.getElementById('logo-input-{{ $business->id }}').click()" style="cursor: pointer; background: none; border: none;">
+                                                    <em class="icon ni ni-check-circle-fill text-success" style="font-size: 22px;"></em>
+                                                </button>
+                                                @php $rawIcon = $business->getRawOriginal('icon_id') ?? $business->icon_id; @endphp
+                                                @if($rawIcon)
+                                                    <img src="{{ asset($rawIcon) }}" alt="Logo" class="rounded border p-1" style="width: 26px; height: 26px; object-fit: contain; background: #fff;" title="Current logo. Click check to change.">
+                                                @endif
+                                            </div>
+                                        @else
+                                            <button type="button" class="btn btn-icon btn-dim btn-outline-secondary btn-sm" title="Upload SVG Logo" onclick="document.getElementById('logo-input-{{ $business->id }}').click()" style="cursor: pointer; width: 30px; height: 30px;">
+                                                <em class="icon ni ni-upload-cloud" style="font-size: 16px;"></em>
+                                            </button>
+                                        @endif
+                                    </td>
                                     @foreach($fields as $field)
                                         @php $qi = $bizFields[$field] ?? null; @endphp
                                         <td class="text-center">
@@ -229,7 +258,7 @@
                                     @endforeach
                                     <td class="text-center">
                                         <div class="d-inline-flex">
-                                            <button type="button" class="btn btn-xs btn-primary" onclick="generateAll({{ $business->id }})">
+                                            <button type="button" class="btn btn-xs text-white fw-bold me-1" style="background-color: #ff6a00; border-color: #ff6a00;" onclick="generateAll({{ $business->id }})">
                                                 Generate all
                                             </button>
                                             @if($hasCompleted)
@@ -242,13 +271,14 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ 5 + count($fields) }}" class="text-center text-muted py-5">
+                                    <td colspan="{{ 6 + count($fields) }}" class="text-center text-muted py-5">
                                         No businesses found.
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 @if($businesses->hasPages())
                     <div class="card-inner">
@@ -309,6 +339,48 @@ document.getElementById('selectAllCheck').addEventListener('change', function() 
     updateCount();
 });
 
+function uploadBusinessLogo(businessId, input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const cell = document.getElementById('logo-cell-' + businessId);
+    const originalHtml = cell.innerHTML;
+    cell.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span>';
+
+    const formData = new FormData();
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('business_id', businessId);
+    formData.append('logo', file);
+
+    fetch('{{ route("content-gen.upload-logo") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            cell.innerHTML = `
+                <input type="file" id="logo-input-${businessId}" class="d-none" accept=".svg,image/svg+xml,image/*" onchange="uploadBusinessLogo(${businessId}, this)">
+                <div class="d-inline-flex align-items-center justify-content-center gap-1">
+                    <button type="button" class="btn btn-icon btn-trigger text-success p-0" title="Logo uploaded! Click to upload / replace logo." onclick="document.getElementById('logo-input-${businessId}').click()" style="cursor: pointer; background: none; border: none;">
+                        <em class="icon ni ni-check-circle-fill text-success" style="font-size: 22px;"></em>
+                    </button>
+                    <img src="${data.logo_url}" alt="Logo" class="rounded border p-1" style="width: 26px; height: 26px; object-fit: contain; background: #fff;" title="Current logo. Click check to change.">
+                </div>
+            `;
+        } else {
+            alert(data.message || 'Logo upload failed');
+            cell.innerHTML = originalHtml;
+        }
+    })
+    .catch(err => {
+        alert('Upload failed: ' + err.message);
+        cell.innerHTML = originalHtml;
+    });
+}
+
 function generateAll(businessId) {
     document.querySelectorAll('.business-check').forEach(c => c.checked = false);
     const bCheck = document.querySelector('.business-check[value="' + businessId + '"]');
@@ -336,5 +408,83 @@ function applyAllCompleted(businessId) {
         document.getElementById('applyAllForm').submit();
     }
 }
+
+function insertSampleJson() {
+    const sample = JSON.stringify([
+        {
+            "name": "HostGator",
+            "url": "https://www.hostgator.com"
+        },
+        {
+            "name": "Bluehost",
+            "url": "https://www.bluehost.com"
+        }
+    ], null, 2);
+    document.getElementById('jsonInputTextarea').value = sample;
+}
 </script>
+
+{{-- Add Businesses with JSON Modal --}}
+<div class="modal fade" id="importJsonModal" tabindex="-1" aria-labelledby="importJsonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="importJsonModalLabel">
+                    <em class="icon ni ni-plus-circle text-primary me-2"></em>Add Businesses via JSON
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('content-gen.import-json') }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">
+                        Add one or multiple businesses at once by pasting a JSON array below. For each business, specify the <strong>Business name</strong> and <strong>Business URL</strong>. These will be added to your directory and will immediately appear in this table ready for AI content generation.
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label fw-bold small mb-0">JSON Payload</label>
+                        <button type="button" class="btn btn-xs btn-outline-light text-dark" onclick="insertSampleJson()">
+                            <em class="icon ni ni-copy me-1"></em> Insert Sample JSON
+                        </button>
+                    </div>
+
+                    <textarea name="json_data" id="jsonInputTextarea" class="form-control font-monospace text-dark" rows="10" style="font-size: 13px; line-height: 1.5; background: #f8fafc;" placeholder='[
+  {
+    "name": "HostGator",
+    "url": "https://www.hostgator.com"
+  },
+  {
+    "name": "Bluehost",
+    "url": "https://www.bluehost.com"
+  }
+]' required></textarea>
+
+                    <div class="alert alert-light border mt-3 py-2 px-3 small text-muted">
+                        <em class="icon ni ni-info-fill text-info me-1"></em>
+                        Supported keys: <code>name</code> (or <code>business_name</code>) and <code>url</code> (or <code>business_url</code>, <code>website</code>).
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light">
+                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <em class="icon ni ni-check me-1"></em> Import Businesses
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-gen-table th {
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    padding: 10px 8px !important;
+}
+.content-gen-table td {
+    padding: 10px 8px !important;
+    vertical-align: middle;
+}
+</style>
 @endsection

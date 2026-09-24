@@ -25,11 +25,19 @@ class AiContentQueue extends Model
 
     // Human-readable field labels
     public static array $fieldLabels = [
-        'content'   => 'Content',
-        'faqs'      => 'FAQs',
-        'features'  => 'Features',
-        'pros_cons' => 'Pros & Cons',
-        'metatags'  => 'Metatags',
+        'short_description' => 'Short Description',
+        'long_description'  => 'Long Description',
+        'usps'              => 'USPs',
+        'what_is'           => 'What is',
+        'pros_cons'         => 'Pros & Cons',
+        'services'          => 'Services',
+        'faqs'              => 'FAQs',
+        'categories'        => 'Categories',
+        'active_countries'  => 'Active countries/regions',
+        // Legacy support
+        'content'           => 'Content',
+        'features'          => 'Features',
+        'metatags'          => 'Metatags',
     ];
 
     public function batchJob()

@@ -140,7 +140,7 @@
 
 
 <!-- Main Discussion Body Container -->
-<div class="container my-4" data-category-id="{{ $category->id }}">
+<div class="container my-4 dis-ask" data-category-id="{{ $category->id }}">
     <div class="row g-4">
         <!-- Left Column: Discussion Feed -->
         <div class="col-lg-8">
@@ -177,7 +177,7 @@
             <div id="discussionsFeedContainer" style="transition: opacity 0.2s ease;">
             @if($discussions->isEmpty())
                 <div class="boxshadow_border bg-white text-center p-4 pb-5" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <div class="d-flex align-items-center gap-2 pb-2 mb-4" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;">
+                    <div class="d-flex align-items-center gap-2 pb-2 mb-4" style="font-size: 13.5px; color: #475569; font-weight: 500; border-bottom: 1px solid #f1f5f9;     flex-wrap: wrap;">
                     <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
                     <span>&bull;</span>
                     <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>

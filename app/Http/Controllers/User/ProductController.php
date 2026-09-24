@@ -72,10 +72,13 @@ class ProductController extends Controller
         ])->firstOrFail();
         // dd($business);
         $languages = Language::all();
-        // Calculate average rating: User rating if active user reviews exist; fallback to admin_rating if set
+        // 10-Review Threshold Rule:
+        // As long as a business has < 10 approved reviews, show admin_rating (and no detailed rating).
+        // As soon as review #10 is approved, show user rating and user pros & cons.
         $approvedReviewsCount = $business->reviews->where('status', 'active')->count();
+        $hasUserRatings = $approvedReviewsCount >= 10;
         $hasUserReviews = $approvedReviewsCount > 0;
-        if ($hasUserReviews) {
+        if ($hasUserRatings) {
             $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
         } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
             $averageRating = (float)$business->admin_rating;
@@ -202,7 +205,8 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
                 'default_image',
                 'averageRating',
                 'ratingCount',
-                'criteria'
+                'criteria',
+                'hasUserRatings'
             ))->render();
         }
 
@@ -401,6 +405,47 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $aggregatedPros = $aggregatedProCons->where('type', 'pro')->values();
         $aggregatedCons = $aggregatedProCons->where('type', 'con')->values();
 
+        // 10-Review Threshold Rule:
+        // As long as business has < 10 reviews, show ONLY uploaded/selected pros & cons from business_pro_cons
+        if ($totalReviews < 10) {
+            $aggregatedPros = $business->proCons->where('type', 'pro')->map(function($item) {
+                return (object)[
+                    'id'   => $item->id,
+                    'type' => 'pro',
+                    'text' => $item->text,
+                ];
+            })->values();
+
+            $aggregatedCons = $business->proCons->where('type', 'con')->map(function($item) {
+                return (object)[
+                    'id'   => $item->id,
+                    'type' => 'con',
+                    'text' => $item->text,
+                ];
+            })->values();
+        } else {
+            // When >= 10 reviews, show user-aggregated pros and cons
+            if ($aggregatedProCons->isEmpty() && $business->proCons->isNotEmpty()) {
+                $aggregatedPros = $business->proCons->where('type', 'pro')->map(function($item) {
+                    return (object)[
+                        'id'           => $item->id,
+                        'type'         => 'pro',
+                        'text'         => $item->text,
+                        'review_count' => 1,
+                    ];
+                })->values();
+
+                $aggregatedCons = $business->proCons->where('type', 'con')->map(function($item) {
+                    return (object)[
+                        'id'           => $item->id,
+                        'type'         => 'con',
+                        'text'         => $item->text,
+                        'review_count' => 1,
+                    ];
+                })->values();
+            }
+        }
+
         $default_image=WebSetting::where('key','user_default_image')->value('value');
         return view('User.product.product_detail', compact(
             'business','alternativeBusiness','additional_info','link','default_image',
@@ -412,6 +457,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             'timeUnit',
             'averageRating',
             'hasUserReviews',
+            'hasUserRatings',
             'reviews',
             'userInactiveReviewMessage',
             'languages',

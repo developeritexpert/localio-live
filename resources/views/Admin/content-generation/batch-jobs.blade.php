@@ -10,19 +10,20 @@
                 <div class="nk-block-head-content">
                     <h3 class="nk-block-title page-title">Batch Jobs</h3>
                     <p class="nk-block-des text-soft">
-                        History of all AI content generation batch requests.
+                        Manage AI content generation batch jobs. Download input JSON for ChatGPT and upload completed JSON results.
                         @if($lastPollAt)
                             &bull; <span class="text-success"><em class="icon ni ni-clock me-1"></em>Last poll: {{ \Carbon\Carbon::parse($lastPollAt)->diffForHumans() }}</span>
-                        @else
-                            &bull; <span class="text-warning"><em class="icon ni ni-alert-circle me-1"></em>Scheduler poll not recorded yet</span>
                         @endif
                     </p>
                 </div>
                 <div class="nk-block-head-content d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleFormatModal">
+                        <em class="icon ni ni-file-code me-1"></em> Result JSON Format
+                    </button>
                     <a href="{{ route('content-gen.poll-now') }}" class="btn btn-outline-info btn-sm">
                         <em class="icon ni ni-reload me-1"></em> Poll Status Now
                     </a>
-                    <a href="{{ route('content-gen.businesses') }}" class="btn btn-outline-primary btn-sm">
+                    <a href="{{ route('content-gen.businesses') }}" class="btn btn-primary btn-sm">
                         <em class="icon ni ni-arrow-left me-1"></em> Back to Businesses
                     </a>
                 </div>
@@ -42,6 +43,29 @@
             </div>
         @endif
 
+        {{-- Configuration Section for Batch Size --}}
+        <div class="card card-bordered mb-3">
+            <div class="card-inner py-2">
+                <form action="{{ route('content-gen.batch-setting') }}" method="POST" class="row g-2 align-items-center">
+                    @csrf
+                    <div class="col-auto">
+                        <span class="fw-bold small text-dark"><em class="icon ni ni-setting me-1 text-primary"></em>Batch Configuration:</span>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light">Businesses per batch</span>
+                            <input type="number" name="batch_size" class="form-control text-center" value="{{ $batchSize ?? 5 }}" min="1" max="50" style="width: 70px;">
+                            <button type="submit" class="btn btn-primary">Save Setting</button>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <span class="text-soft small">Each batch job merges N businesses into one downloadable JSON for ChatGPT prompt testing and optimization.</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Batch Jobs Table --}}
         <div class="card card-bordered card-stretch">
             <div class="card-inner p-0">
                 <div class="table-responsive">
@@ -56,7 +80,7 @@
                                 <th>Items</th>
                                 <th>Submitted</th>
                                 <th>Completed</th>
-                                <th class="text-end">Actions</th>
+                                <th class="text-end" style="min-width: 250px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,17 +88,19 @@
                                 <tr>
                                     <td class="text-muted small">{{ $job->id }}</td>
                                     <td>
-                                        @if($job->provider === 'openai')
-                                            <span class="badge bg-success">OpenAI</span>
+                                        @if($job->provider === 'manual')
+                                            <span class="badge bg-primary">Manual (ChatGPT)</span>
+                                        @elseif($job->provider === 'openai')
+                                            <span class="badge bg-success">OpenAI API</span>
                                         @else
-                                            <span class="badge bg-warning text-dark">Anthropic</span>
+                                            <span class="badge bg-warning text-dark">Anthropic API</span>
                                         @endif
                                     </td>
                                     <td><code class="small">{{ $job->batch_id ?? '-' }}</code></td>
                                     <td>
                                         @if($job->prompt_type)
                                             @foreach(explode(',', $job->prompt_type ?? '') as $f)
-                                                <span class="badge badge-dim bg-secondary mb-1">
+                                                <span class="badge badge-dim bg-secondary mb-1" style="font-size: 11px;">
                                                     {{ \App\Models\AiContentQueue::$fieldLabels[trim($f)] ?? trim($f) }}
                                                 </span>
                                             @endforeach
@@ -102,14 +128,25 @@
                                     </td>
                                     <td class="text-soft small">{{ $job->submitted_at ? $job->submitted_at->diffForHumans() : '-' }}</td>
                                     <td class="text-soft small">{{ $job->completed_at ? $job->completed_at->diffForHumans() : '-' }}</td>
-                                    <td class="text-end">
-                                        <a href="{{ route('content-gen.batch-job-items', $job->id) }}" class="btn btn-xs btn-outline-primary">
-                                            <em class="icon ni ni-list-check me-1"></em> View Items ({{ $job->queue_items_count }})
+                                    <td class="text-end text-nowrap">
+                                        {{-- Download JSON for ChatGPT --}}
+                                        <a href="{{ route('content-gen.batch-jobs.download', $job->id) }}" class="btn btn-xs btn-outline-info me-1" title="Download input JSON with business info for ChatGPT">
+                                            <em class="icon ni ni-download me-1"></em> Download JSON
+                                        </a>
+
+                                        {{-- Upload Result JSON --}}
+                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}')" title="Upload ChatGPT result JSON for this batch">
+                                            <em class="icon ni ni-upload me-1"></em> Upload Result
+                                        </button>
+
+                                        {{-- View Items --}}
+                                        <a href="{{ route('content-gen.batch-job-items', $job->id) }}" class="btn btn-xs btn-outline-secondary" title="View individual queue items">
+                                            <em class="icon ni ni-list-check me-1"></em> Items ({{ $job->queue_items_count }})
                                         </a>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -121,4 +158,119 @@
         </div>
     </div>
 </div>
+
+{{-- Upload Batch Result Modal --}}
+<div class="modal fade" id="uploadResultModal" tabindex="-1" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="uploadResultModalLabel">
+                    <em class="icon ni ni-upload-cloud text-success me-2"></em>Upload Batch Result JSON
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="uploadResultForm" action="" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">
+                        Upload the output JSON generated by ChatGPT for Batch <strong id="uploadModalBatchId" class="text-dark"></strong>.
+                        You can either upload a <code>.json</code> file or paste the JSON text directly below.
+                        Localio will parse the results and automatically apply them across all fields to the corresponding businesses.
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Upload JSON File</label>
+                        <input type="file" name="result_file" class="form-control form-control-sm" accept=".json,application/json">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label fw-bold small mb-0">Or Paste JSON Text</label>
+                        <button type="button" class="btn btn-xs btn-outline-light text-dark" onclick="insertSampleResult()">
+                            <em class="icon ni ni-copy me-1"></em> Insert Sample Result
+                        </button>
+                    </div>
+                    <textarea name="result_text" id="resultTextInput" class="form-control font-monospace text-dark" rows="12" style="font-size: 12px; line-height: 1.4; background: #f8fafc;" placeholder="Paste the output JSON from ChatGPT here..."></textarea>
+
+                    <div class="mt-3 p-2 bg-light rounded border d-flex justify-content-between align-items-center small text-muted">
+                        <span><em class="icon ni ni-info me-1 text-primary"></em> Supports either direct array <code>[...]</code> or wrapped <code>{"businesses": [...]}</code>. Markdown backticks (```json) are automatically stripped.</span>
+                        <a href="javascript:void(0)" onclick="openExampleModal()" class="text-primary fw-bold text-nowrap ms-2">View Format Example</a>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light">
+                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <em class="icon ni ni-check me-1"></em> Process & Apply Result
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Example Format Modal --}}
+<div class="modal fade" id="exampleFormatModal" tabindex="-1" aria-labelledby="exampleFormatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="exampleFormatModalLabel">
+                    <em class="icon ni ni-file-code text-primary me-2"></em>Expected Output JSON Schema & Example
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <p class="text-muted small mb-0">
+                        When prompting ChatGPT, ask it to output a JSON array of objects matching this exact structure for each business:
+                    </p>
+                    <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                        <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded" style="max-height: 480px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="copyExampleJson()">
+                    <em class="icon ni ni-copy me-1"></em> Copy JSON
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const sampleResultJson = `{!! addslashes($batchResultExample ?? '') !!}`;
+
+function openUploadModal(jobId, batchId) {
+    const form = document.getElementById('uploadResultForm');
+    form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}/upload-result`;
+    document.getElementById('uploadModalBatchId').textContent = batchId || ('#' + jobId);
+    document.getElementById('resultTextInput').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('uploadResultModal'));
+    modal.show();
+}
+
+function openExampleModal() {
+    const modal = new bootstrap.Modal(document.getElementById('exampleFormatModal'));
+    modal.show();
+}
+
+function insertSampleResult() {
+    document.getElementById('resultTextInput').value = sampleResultJson;
+}
+
+function copyExampleJson() {
+    navigator.clipboard.writeText(sampleResultJson).then(() => {
+        alert('Example JSON copied to clipboard!');
+    }).catch(err => {
+        const textarea = document.createElement('textarea');
+        textarea.value = sampleResultJson;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Example JSON copied to clipboard!');
+    });
+}
+</script>
 @endsection
