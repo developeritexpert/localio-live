@@ -868,7 +868,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $listingsCount }} {{ $listingsCount == 1 ? 'FAQ' : 'FAQs' }}
+                                {{ $listingsCount }} {{ $listingsCount == 1 ? 'listings' : 'listing' }}
                             </span>
                         </div>
                     </div>

@@ -2853,7 +2853,7 @@ if (empty($images)) {
                                             height: 7svh;
                                             background-color: #ffffff;
                                             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
-                                            z-index: 9;
+                                            z-index: 91;
                                             padding-bottom: calc(10px + env(safe-area-inset-bottom));
                                             /* iOS safe area */
                                             padding-top: 10px;
