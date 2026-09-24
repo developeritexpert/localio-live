@@ -718,7 +718,7 @@ class ContentGenerationController extends Controller
         $request->validate([
             'business_id' => 'required|integer|exists:businesses,id',
             'field'       => 'required|string|in:' . implode(',', $validFields),
-            'provider'    => 'required|in:openai,anthropic',
+            'provider'    => 'required|in:manual,openai,anthropic',
         ]);
 
         // GAP 8: Allow re-generation of completed items too
@@ -1185,7 +1185,8 @@ class ContentGenerationController extends Controller
                 }
                 break;
             case 'usps':
-                if (!isset($data['usps']) && !isset($data['features'])) {
+                $usps = $data['usps'] ?? ($data['features'] ?? null);
+                if (!is_array($usps)) {
                     return 'Expected {"usps": ["...", "..."]}';
                 }
                 break;
@@ -1195,7 +1196,7 @@ class ContentGenerationController extends Controller
                 }
                 break;
             case 'pros_cons':
-                if (!isset($data['pros']) || !isset($data['cons'])) {
+                if (!isset($data['pros']) || !isset($data['cons']) || !is_array($data['pros']) || !is_array($data['cons'])) {
                     return 'Expected {"pros": [...], "cons": [...]}';
                 }
                 break;
