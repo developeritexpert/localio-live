@@ -1022,6 +1022,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         $featRatingVal = $featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0);
                         $featPercent = min(100, max(0, ($featRatingVal / 5) * 100));
                         @endphp
+                        @if($hasUserRatings || $business->features->count() > 0)
                         <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                             <div class="mb-3">
                                 <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>
@@ -1067,7 +1068,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
                             @endif
                         </div>
+                        @endif
 
+                        @if($hasUserRatings)
                         @php
                         $easeRating = $getRatingForCriterion('Ease of use', 'ease_of_use');
                         $easeRatingVal = $easeRating > 0 ? $easeRating : ($averageRating > 0 ? $averageRating : 4.2);
@@ -1172,6 +1175,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class="mb-3">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
                             @endif
                         </div>
+                        @endif
                     </div>
                     <!-- all new part here -->
                     <div class="con_table pb-0 all_sec_wrp" id="section2">
@@ -1798,6 +1802,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             font-size: 22px !important;
                                                         }
                                                     }
+
+                                                    @if(!$hasUserRatings)
+                                                    .review_detl.populr-alternative:first-child {
+                                                        margin-top: 24px;
+                                                    }
+                                                    @endif
                                                 </style>
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
@@ -1857,16 +1867,31 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <div class="review-sidebar-sticky">
 
                                                                 @php
-                                                                    $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews (' . number_format($ratingCount) . ')';
-                                                                    $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
-                                                                        $business,
-                                                                        'profile_reviews',
-                                                                        getCurrentLanguageID(),
-                                                                        ['[count]' => number_format($ratingCount)]
-                                                                    );
-                                                                    $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
-                                                                    if (!empty($resolvedBizReviews['headline']) && !str_contains($finalBizReviewsHeadline, '(') && !str_contains($finalBizReviewsHeadline, (string)$ratingCount)) {
-                                                                        $finalBizReviewsHeadline .= ' (' . number_format($ratingCount) . ')';
+                                                                    if ($hasUserRatings) {
+                                                                        $countStr = number_format($ratingCount);
+                                                                        $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews (' . $countStr . ')';
+                                                                        $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                            $business,
+                                                                            'profile_reviews',
+                                                                            getCurrentLanguageID(),
+                                                                            ['[count]' => $countStr]
+                                                                        );
+                                                                        $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
+                                                                        if (!str_contains($finalBizReviewsHeadline, '(') && !str_contains($finalBizReviewsHeadline, $countStr)) {
+                                                                            $finalBizReviewsHeadline .= ' (' . $countStr . ')';
+                                                                        }
+                                                                    } else {
+                                                                        $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews';
+                                                                        $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                            $business,
+                                                                            'profile_reviews',
+                                                                            getCurrentLanguageID(),
+                                                                            ['([count])' => '', '([count] reviews)' => '', '([count] review)' => '', '[count]' => '']
+                                                                        );
+                                                                        $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
+                                                                        $finalBizReviewsHeadline = preg_replace('/\s*\(\s*\d*\s*\)/', '', $finalBizReviewsHeadline);
+                                                                        $finalBizReviewsHeadline = preg_replace('/\s*\[count\]/i', '', $finalBizReviewsHeadline);
+                                                                        $finalBizReviewsHeadline = trim($finalBizReviewsHeadline);
                                                                     }
                                                                     $finalBizReviewsSubtext = !empty($resolvedBizReviews['subtext']) ? $resolvedBizReviews['subtext'] : null;
                                                                 @endphp
@@ -1958,12 +1983,24 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             </div>
                                                         </div>
 
+                                                        @php
+                                                        $reviewSortOptions = [
+                                                            'recent' => 'Most recent',
+                                                            'high-to-low' => 'Highest rated',
+                                                            'low-to-high' => 'Lowest rated',
+                                                        ];
+                                                        $currentSort = request('sort', 'recent');
+                                                        if (!array_key_exists($currentSort, $reviewSortOptions)) {
+                                                            $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
+                                                        }
+                                                        $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
+                                                        @endphp
                                                         <div class="col-lg-12">
 
+                                                            @if($hasUserRatings)
                                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
 
                                                                 <!-- Filter Button with Dropdown & Clear filter on Left -->
-                                                                @if($hasUserRatings)
                                                                 <div class="d-flex align-items-center gap-2">
                                                                     <div class="dropdown" id="reviewFilterDropdownWrap">
                                                                         <button class="btn btn-outline-secondary d-flex align-items-center"
@@ -2017,20 +2054,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         <i class="fas fa-times me-1"></i>Clear filter
                                                                     </span>
                                                                 </div>
-                                                                @endif
-
-                                                                @php
-                                                                $reviewSortOptions = [
-                                                                'recent' => 'Most recent',
-                                                                'high-to-low' => 'Highest rated',
-                                                                'low-to-high' => 'Lowest rated',
-                                                                ];
-                                                                $currentSort = request('sort', 'recent');
-                                                                if (!array_key_exists($currentSort, $reviewSortOptions)) {
-                                                                $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
-                                                                }
-                                                                $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
-                                                                @endphp
 
                                                                 <!-- Sort Dropdown on Right (Top Rated Style) -->
                                                                 <div class="dropdown" id="reviewSortDropdownWrap">
@@ -2068,6 +2091,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @endif
 
                                                             <div id="reviews-list-container">
                                                                 @include('User.product.partials.reviews_list')
@@ -2085,7 +2109,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         const sortOptions = document.querySelectorAll('.review-sort-option');
                                                         const sortLabelSpan = document.getElementById('current-sort-label');
 
-                                                        let currentSortValue = '{{ $currentSort }}';
+                                                        let currentSortValue = '{{ $currentSort ?? "recent" }}';
 
                                                         sortOptions.forEach(opt => {
                                                             opt.addEventListener('click', function(e) {
