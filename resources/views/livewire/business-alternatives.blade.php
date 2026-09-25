@@ -434,7 +434,7 @@ foreach ($altCriteria as $criterion) {
                                     </div>
 
                                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $businessName }}?</span>
+                                        <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $businessName }}?</span>
                                         <div style="display: flex; gap: 8px;">
                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                                                 <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>

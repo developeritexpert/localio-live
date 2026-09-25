@@ -701,7 +701,9 @@
                            onclick="openLoginModal()"
                        @endif>
                         <i class="fas fa-plus" style="font-size: 12px;"></i>
-                        Start a discussion 
+                        <span>
+                          Start Discussion
+                        </span>
                     </a>
                 </div>
 
