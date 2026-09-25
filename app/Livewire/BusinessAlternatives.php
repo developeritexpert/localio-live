@@ -294,13 +294,16 @@ class BusinessAlternatives extends Component
                 $q->where('status', 'active');
             }
         ])
-            ->where('is_affiliate', 1)
-            ->whereHas('languages', function ($query) {
-                $query->where('language_id', $this->lang_id);
+            ->whereHas('translations', function ($query) {
+                $query->where('lang_id', $this->lang_id);
             })
             ->where('id', '!=', $this->businessId)
+            ->where('status', 1)
             ->where(function ($query) {
                 $query->whereIn('category_id', $this->subCategoryIds)
+                    ->orWhereHas('subCategories', function ($subQ) {
+                        $subQ->whereIn('categories.id', $this->subCategoryIds);
+                    })
                     ->orWhereHas('products', function($pq) {
                         $pq->whereHas('categories', function($cq) {
                             $cq->whereIn('categories.id', $this->subCategoryIds);
@@ -316,16 +319,13 @@ class BusinessAlternatives extends Component
                             });
                     });
             })
-            ->withAvg(['reviews as avg_rating' => function ($q) {
-                $q->where('status', 'active');
-            }], 'rating')
             ->get();
 
         foreach ($businesses as $business) {
-            $avgRating = $business->reviews->avg('rating');
-            if ($avgRating) {
+            $effectiveRating = $business->display_rating;
+            if ($effectiveRating) {
                 foreach ([5, 4, 3, 2, 1] as $rating) {
-                    if ($avgRating >= $rating) {
+                    if ($effectiveRating >= $rating) {
                         $this->ratingCounts[$rating]++;
                     }
                 }
@@ -364,6 +364,7 @@ class BusinessAlternatives extends Component
         $subCatIds = $this->business->subCategories ? $this->business->subCategories->pluck('id')->toArray() : [];
         $allTargetCategoryIds = array_values(array_unique(array_filter(array_merge($categoryIds, $subCatIds))));
 
+        // 1. Fetch affiliated businesses in target categories
         $topBusinesses = Business::with([
             'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
             'reviews' => fn($q) => $q->where('status', 'active'),
@@ -371,9 +372,6 @@ class BusinessAlternatives extends Component
             'usps',
             'products.prices'
         ])
-        ->withAvg(['reviews as average_rating' => function ($q) {
-            $q->where('status', 'active');
-        }], 'rating')
         ->where('is_affiliate', 1)
         ->where('id', '!=', $this->businessId)
         ->where('status', 1)
@@ -383,10 +381,11 @@ class BusinessAlternatives extends Component
                   $subQ->whereIn('categories.id', $allTargetCategoryIds);
               });
         })
-        ->orderByDesc('average_rating')
-        ->take(10)
-        ->get();
+        ->get()
+        ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
+        ->take(10);
 
+        // 2. If < 10, fetch other affiliated businesses outside categories
         if ($topBusinesses->count() < 10) {
             $moreAff = Business::with([
                 'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
@@ -395,18 +394,59 @@ class BusinessAlternatives extends Component
                 'usps',
                 'products.prices'
             ])
-            ->withAvg(['reviews as average_rating' => function ($q) {
-                $q->where('status', 'active');
-            }], 'rating')
             ->where('is_affiliate', 1)
             ->where('id', '!=', $this->businessId)
             ->whereNotIn('id', $topBusinesses->pluck('id'))
             ->where('status', 1)
-            ->orderByDesc('average_rating')
-            ->take(10 - $topBusinesses->count())
-            ->get();
+            ->get()
+            ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
+            ->take(10 - $topBusinesses->count());
 
             $topBusinesses = $topBusinesses->merge($moreAff);
+        }
+
+        // 3. If < 10, fetch non-affiliated businesses from target categories
+        if ($topBusinesses->count() < 10) {
+            $moreCatNonAff = Business::with([
+                'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'category.ratingCriteria',
+                'usps',
+                'products.prices'
+            ])
+            ->where('id', '!=', $this->businessId)
+            ->whereNotIn('id', $topBusinesses->pluck('id'))
+            ->where('status', 1)
+            ->where(function ($q) use ($allTargetCategoryIds) {
+                $q->whereIn('category_id', $allTargetCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($allTargetCategoryIds) {
+                      $subQ->whereIn('categories.id', $allTargetCategoryIds);
+                  });
+            })
+            ->get()
+            ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
+            ->take(10 - $topBusinesses->count());
+
+            $topBusinesses = $topBusinesses->merge($moreCatNonAff);
+        }
+
+        // 4. If < 10, fetch any other active businesses
+        if ($topBusinesses->count() < 10) {
+            $moreActive = Business::with([
+                'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'category.ratingCriteria',
+                'usps',
+                'products.prices'
+            ])
+            ->where('id', '!=', $this->businessId)
+            ->whereNotIn('id', $topBusinesses->pluck('id'))
+            ->where('status', 1)
+            ->get()
+            ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
+            ->take(10 - $topBusinesses->count());
+
+            $topBusinesses = $topBusinesses->merge($moreActive);
         }
 
         return $topBusinesses;
@@ -478,15 +518,22 @@ class BusinessAlternatives extends Component
         if (!empty($this->selectedRatings)) {
             $minRating = min($this->selectedRatings);
             $query->where(function ($q) use ($minRating) {
-                $q->whereHas('reviews', function ($rq) use ($minRating) {
-                    $rq->select('business_id')
-                        ->where('status', 'active')
-                        ->groupBy('business_id')
-                        ->havingRaw('AVG(rating) >= ?', [$minRating]);
+                $q->where(function ($subQ) use ($minRating) {
+                    $subQ->whereHas('reviews', function ($rq) {
+                        $rq->where('status', 'active');
+                    }, '>=', 10)
+                    ->whereHas('reviews', function ($rq) use ($minRating) {
+                        $rq->select('business_id')
+                            ->where('status', 'active')
+                            ->groupBy('business_id')
+                            ->havingRaw('AVG(rating) >= ?', [$minRating]);
+                    });
                 })->orWhere(function ($adminQ) use ($minRating) {
                     $adminQ->whereDoesntHave('reviews', function ($rq) {
                         $rq->where('status', 'active');
-                    })->where('admin_rating', '>=', $minRating);
+                    }, '>=', 10)
+                    ->whereNotNull('admin_rating')
+                    ->where('admin_rating', '>=', $minRating);
                 });
             });
         }

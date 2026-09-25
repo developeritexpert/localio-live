@@ -19,8 +19,7 @@
         ])
         ->get()
         ->sortByDesc(function($b) {
-            $r = $b->reviews->where('status', 'active');
-            return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+            return $b->display_rating ?? 0;
         })
         ->take(3);
 
@@ -37,8 +36,7 @@
             ])
             ->get()
             ->sortByDesc(function ($b) {
-                $r = $b->reviews->where('status', 'active');
-                return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                return $b->display_rating ?? 0;
             })
             ->take(3 - $popularAltBusinesses->count());
 
@@ -60,8 +58,7 @@
             ])
             ->get()
             ->sortByDesc(function($b) {
-                $r = $b->reviews->where('status', 'active');
-                return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                return $b->display_rating ?? 0;
             })
             ->take(10);
 
@@ -77,12 +74,48 @@
                 ])
                 ->get()
                 ->sortByDesc(function($b) {
-                    $r = $b->reviews->where('status', 'active');
-                    return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                    return $b->display_rating ?? 0;
                 })
                 ->take(10 - $affiliatedTableBusinesses->count());
 
             $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
+        }
+
+        if ($affiliatedTableBusinesses->count() < 10) {
+            $moreCatNonAff = \App\Models\Business::where('id', '!=', $business->id)
+                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
+                ->where('status', 1)
+                ->whereIn('category_id', $bCategoryIds)
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'category.ratingCriteria'
+                ])
+                ->get()
+                ->sortByDesc(function($b) {
+                    return $b->display_rating ?? 0;
+                })
+                ->take(10 - $affiliatedTableBusinesses->count());
+
+            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreCatNonAff);
+        }
+
+        if ($affiliatedTableBusinesses->count() < 10) {
+            $moreActive = \App\Models\Business::where('id', '!=', $business->id)
+                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
+                ->where('status', 1)
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'category.ratingCriteria'
+                ])
+                ->get()
+                ->sortByDesc(function($b) {
+                    return $b->display_rating ?? 0;
+                })
+                ->take(10 - $affiliatedTableBusinesses->count());
+
+            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreActive);
         }
     }
 
@@ -435,10 +468,12 @@ foreach ($altCriteria as $criterion) {
                                         </div>
                                     @endif
 
+                                    @if($business->should_show_detailed_ratings)
                                     <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
                                         <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                                         <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $bRecommendPercent }}%</strong>
                                     </div>
+                                    @endif
 
                                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                         <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $businessName }}?</span>
@@ -509,22 +544,27 @@ foreach ($altCriteria as $criterion) {
                                                 $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
                                                 $rRevs = $rowBiz->reviews->where('status', 'active');
                                                 $rCount = $rRevs->count();
-                                                $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
-                                                $rRec = $rCount > 0 ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100) . '%' : '-';
+                                                $rRec = ($rowBiz->should_show_detailed_ratings && $rCount > 0)
+                                                    ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100) . '%'
+                                                    : '-';
 
                                                 $rCriteria = $rowBiz->category ? $rowBiz->category->getEffectiveRatingCriteria() : collect();
                                                 $critScores = [];
                                                 foreach(['Features', 'Ease of use', 'Value for money', 'Performance & reliability', 'Customer support'] as $cKey) {
+                                                    if (!$rowBiz->should_show_detailed_ratings) {
+                                                        $critScores[$cKey] = '-';
+                                                        continue;
+                                                    }
                                                     $foundCrit = $rCriteria->first(fn($c) => strtolower($c->name) === strtolower($cKey) || (strtolower($cKey) === 'customer support' && strtolower($c->name) === 'customer service') || (strtolower($cKey) === 'performance & reliability' && strtolower($c->name) === 'service management'));
                                                     if ($foundCrit) {
                                                         $cScore = 0; $cCnt = 0;
                                                         foreach($rRevs as $rev) {
                                                             $rrRecord = \App\Models\ReviewRating::where('review_id', $rev->id)->where('criteria_id', $foundCrit->id)->first();
-                                                            if ($rrRecord) { $cScore += $rrRecord->rating; $cCnt++; }
+                                                            if ($rrRecord && $rrRecord->rating !== null) { $cScore += $rrRecord->rating; $cCnt++; }
                                                         }
-                                                        $critScores[$cKey] = $cCnt > 0 ? round($cScore / $cCnt, 1) : number_format($rRating, 1);
+                                                        $critScores[$cKey] = $cCnt > 0 ? formatRating($cScore / $cCnt) : '-';
                                                     } else {
-                                                        $critScores[$cKey] = number_format($rRating, 1);
+                                                        $critScores[$cKey] = '-';
                                                     }
                                                 }
                                             @endphp
@@ -545,10 +585,14 @@ foreach ($altCriteria as $criterion) {
                                                     </div>
                                                 </td>
                                                 <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                    @if($rowBiz->should_show_rating)
                                                     <span class="d-inline-flex align-items-center gap-1">
                                                         <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                        <span>{{ number_format($rRating, 1) }}</span>
+                                                        <span>{{ formatRating($rowBiz->display_rating) }}</span>
                                                     </span>
+                                                    @else
+                                                        <span style="color: #5b6b7a;">-</span>
+                                                    @endif
                                                 </td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Features'] }}</td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Ease of use'] }}</td>
@@ -646,10 +690,14 @@ foreach ($altCriteria as $criterion) {
                                                     </div>
                                                 </td>
                                                 <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                    @if($rowBiz->should_show_rating)
                                                     <span class="d-inline-flex align-items-center gap-1">
                                                         <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                        <span>{{ number_format($rRating, 1) }}</span>
+                                                        <span>{{ formatRating($rowBiz->display_rating) }}</span>
                                                     </span>
+                                                    @else
+                                                        <span style="color: #5b6b7a;">-</span>
+                                                    @endif
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($proStr !== '-')
