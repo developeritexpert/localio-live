@@ -329,7 +329,14 @@ class ViewController extends Controller
         $allReviews = Review::where('business_id', $business->id)->get();
         $activeReviews = $allReviews->where('status', 'active');
         $ratingCount = $activeReviews->count();
-        $averageRating = $ratingCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
+        $hasUserRatings = $ratingCount >= 10;
+        if ($hasUserRatings) {
+            $averageRating = round($activeReviews->avg('rating'), 1);
+        } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+            $averageRating = (float)$business->admin_rating;
+        } else {
+            $averageRating = null;
+        }
 
         // Dynamic Rating Criteria Breakdown
         $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
@@ -529,11 +536,18 @@ class ViewController extends Controller
                 'usps',
             ])->firstOrFail();
 
-        $activeReviews = $business->reviews;
+        $activeReviews = $business->reviews->where('status', 'active');
         $totalReviews = $activeReviews->count();
-        $averageRating = $totalReviews > 0 ? round($activeReviews->avg('rating'), 1) : 0;
+        $hasUserRatings = $totalReviews >= 10;
+        if ($hasUserRatings) {
+            $averageRating = round($activeReviews->avg('rating'), 1);
+        } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+            $averageRating = (float)$business->admin_rating;
+        } else {
+            $averageRating = null;
+        }
         $recommendCount = $activeReviews->where('recommend', 1)->count();
-        $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
+        $recommendPercent = ($hasUserRatings && $totalReviews > 0) ? round(($recommendCount / $totalReviews) * 100) : 0;
 
         // Calculate Criteria ratings
         $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();

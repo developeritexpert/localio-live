@@ -5,22 +5,25 @@
     $bTrans = $business->translations->firstWhere('lang_id', $curLangId) ?? $business->translations->first();
     $bName = $bTrans->name ?? $business->name ?? '';
     
-    $bizTotalReviews = $business->reviews()->where('status', 'active')->count();
-    $bizAvgRating = $business->average_rating ?? null;
+    $bizTotalReviews = $business->approved_reviews_count;
+    $bizAvgRating = $business->display_rating;
+    $hasUserRatings = $business->should_show_detailed_ratings;
     
     $criteriaRatings = [];
-    foreach($business->category->ratingCriteria ?? [] as $criterion) {
-        $avg = $business->reviews()
-            ->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')
-            ->where('review_ratings.criteria_id', $criterion->id)
-            ->avg('review_ratings.rating');
-        if ($avg !== null) {
-            $criteriaRatings[$criterion->name] = round($avg, 1);
+    if ($hasUserRatings) {
+        foreach($business->category->ratingCriteria ?? [] as $criterion) {
+            $avg = $business->reviews()
+                ->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')
+                ->where('review_ratings.criteria_id', $criterion->id)
+                ->avg('review_ratings.rating');
+            if ($avg !== null) {
+                $criteriaRatings[$criterion->name] = round($avg, 1);
+            }
         }
     }
     
-    $recommendPercent = $business->reviews()->count() > 0 
-        ? round(($business->reviews()->where('recommend', 1)->count() / $business->reviews()->count()) * 100) 
+    $recommendPercent = ($hasUserRatings && $bizTotalReviews > 0)
+        ? round(($business->reviews()->where('recommend', 1)->where('status', 'active')->count() / $bizTotalReviews) * 100) 
         : 0;
 @endphp
 
@@ -33,6 +36,7 @@
             </div>
             <div>
                 <p style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</p>
+                @if($business->should_show_rating)
                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                     <span style="">{{ formatRating($bizAvgRating) }}</span>
                     <div class="rating-stars" style="display: flex; gap: 0px;">
@@ -46,8 +50,11 @@
                             @endif
                         @endfor
                     </div>
-                    <span style="   ">({{ number_format($bizTotalReviews) }})</span>
+                    @if($business->should_show_review_count)
+                        <span style="   ">({{ number_format($bizTotalReviews) }})</span>
+                    @endif
                 </div>
+                @endif
             </div>
         </div>
 
@@ -57,7 +64,7 @@
         </a>
     </div>
 
-    @if(count($criteriaRatings) > 0)
+    @if($hasUserRatings && count($criteriaRatings) > 0)
         <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
         <div class="mb-3">
             @foreach ($criteriaRatings as $cName => $cRating)
@@ -72,10 +79,12 @@
         </div>
     @endif
 
+    @if($hasUserRatings)
     <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
         <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
         <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
     </div>
+    @endif
 
     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>

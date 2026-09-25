@@ -872,17 +872,17 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                @if($item->should_show_rating)
                                                                 <div class="rating-group d-flex align-items-center"
                                                                     style="gap: 6px;">
                                                                     <span class="rate_box_num"
-                                                                        style="">{{ formatRating($item->reviews->avg('rating')) }}</span>
+                                                                        style="">{{ formatRating($item->display_rating) }}</span>
                                                                     <div class="">
                                                                         <div class="rating-stars ">
                                                                             @for ($i = 1; $i <= 5; $i++) @if ($i
-                                                                                <=floor($item->reviews->avg('rating')))
+                                                                                <=floor($item->display_rating))
                                                                                 <i class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $item->
-                                                                                    reviews->avg('rating'))
+                                                                                @elseif ($i - 0.5 <= $item->display_rating)
                                                                                     <i
                                                                                         class="fas fa-star-half-alt text-warning"></i>
                                                                                     @else
@@ -892,9 +892,12 @@
                                                                                     @endfor
                                                                         </div>
                                                                     </div>
+                                                                    @if($item->should_show_review_count)
                                                                     <span class="rate_box_count "
-                                                                        style="">({{ $item->reviews->count() }})</span>
+                                                                        style="">({{ $item->approved_reviews_count }})</span>
+                                                                    @endif
                                                                 </div>
+                                                                @endif
                                                             </div>
                                                             <!-- </div> -->
                                                         </div>
@@ -1506,21 +1509,31 @@
                                             </a>
                                         </td>
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
+                                            @if($biz->should_show_rating)
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
+                                                <span>{{ formatRating($biz->display_rating) }}</span>
                                             </span>
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                         @foreach($allCriteria as $criterion)
                                             @php
-                                                $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
+                                                $avg = $biz->should_show_detailed_ratings
+                                                    ? $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating')
+                                                    : null;
                                             @endphp
                                             <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight:500">
                                                 {{ $avg !== null ? formatRating($avg) : '-' }}
                                             </td>
                                         @endforeach
                                         <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
-                                            {{ $recommendPercent }}%
+                                            @if($biz->should_show_detailed_ratings)
+                                                {{ $recommendPercent }}%
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                         <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
                                             @if($bizStartingPrice && $bizAmount !== null && !empty($biz->is_affiliate))
@@ -1628,10 +1641,14 @@
                                                 </a>
                                             </td>
                                             <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
+                                                @if($biz->should_show_rating)
                                                 <span class="d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                    <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
+                                                    <span>{{ formatRating($biz->display_rating) }}</span>
                                                 </span>
+                                                @else
+                                                    <span style="color: #5b6b7a;">-</span>
+                                                @endif
                                             </td>
                                             <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                 @if($topPro)

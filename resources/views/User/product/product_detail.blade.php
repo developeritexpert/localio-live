@@ -476,9 +476,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         </span>
                                                         @endif
                                                     </div>
+                                                    @if($hasUserRatings)
                                                     <span class="com-rating" style="font-size: 13px; color: #64748b;">
                                                         {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}
                                                     </span>
+                                                    @endif
                                                     <div class="top-pro-btn tp_visit new-visit-anc review-visit">
                                                         <a href="{{ isset($business) && method_exists($business, 'getTrackedUrl') ? $business->getTrackedUrl() : 'javascript:void(0)' }}" data-track="{{ json_encode(['type' => 'click', 'business_id' => $business->id ?? null, 'action' => 'visit_website', 'label' => 'Visit Website']) }}" class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored" tabindex="0">
                                                             {{ static_text('visit_website') ?: 'Visit website' }}
@@ -1911,7 +1913,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                     @else
                                                                                         <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">Not rated yet</span>
                                                                                     @endif
-                                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                    @if($hasUserRatings)
+                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                    @endif
 
                                                                                     
 
@@ -2341,12 +2345,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 </span>
                                             </div>
 
-                                            @if ($hasUserReviews)
+                                            @if ($hasUserRatings)
                                             <span class="com-rating">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                             @endif
                                         </div>
 
-                                        @if ($hasUserReviews)
+                                        @if ($hasUserRatings)
                                         <a href="#section14" class="view-review-link" style="">
                                            Go to reviews 
                                         </a>
@@ -2356,7 +2360,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                     <!-- Collapsible Breakdown Section (Mobile: hidden by default, toggles; Desktop: always shown) -->
                                     <div id="bottomReviewBreakdownContent" class="bottom-breakdown-collapsible" data-expanded="false">
-                                        @if ($hasUserReviews)
+                                        @if ($hasUserRatings)
                                         <p class="breakdown-title" style="margin-bottom: 15px;">
                                             Review breakdown
                                         </p>
@@ -2760,7 +2764,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         @endif
                                                                         @endfor
                                                             </div>
-                                                            @if ($hasUserReviews)
+                                                            @if ($hasUserRatings)
                                                             <span class=""
                                                                 style="">({{ $ratingCount }})</span>
                                                             @endif
@@ -3612,7 +3616,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
                             <span style="font-weight: 600; color: #333;">{{ formatRating($averageRating) }}</span>
                             @endif
+                            @if ($hasUserRatings)
                             <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -1169,12 +1169,19 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             abort(404, 'Business not found');
         }
 
-        $totalReviews = $business->reviews->count();
-        $averageRating = $totalReviews > 0 ? round($business->reviews->avg('rating'), 1) : 0;
-        $businessRating = $averageRating;
+        $totalReviews = $business->reviews->where('status', 'active')->count();
+        $hasUserRatings = $totalReviews >= 10;
+        if ($hasUserRatings) {
+            $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
+        } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+            $averageRating = (float)$business->admin_rating;
+        } else {
+            $averageRating = null;
+        }
+        $businessRating = $averageRating ?? 0;
         
-        $recommendCount = $business->reviews->where('recommend', 1)->count();
-        $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
+        $recommendCount = $business->reviews->where('status', 'active')->where('recommend', 1)->count();
+        $recommendPercent = ($hasUserRatings && $totalReviews > 0) ? round(($recommendCount / $totalReviews) * 100) : 0;
 
         $reviews = Review::where('business_id', $business->id)->get();
         $activeReviews = $reviews->where('status', 'active');

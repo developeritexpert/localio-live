@@ -229,6 +229,7 @@
                             </div>
                             <div>
                                 <p style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</p>
+                                @if($business->should_show_rating)
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                     <span>{{ formatRating($averageRating) }}</span>
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
@@ -242,8 +243,11 @@
                                             @endif
                                         @endfor
                                     </div>
+                                    @if($business->should_show_review_count)
                                     <span>({{ number_format($totalReviews) }})</span>
+                                    @endif
                                 </div>
+                                @endif
                             </div>
                         </div>
 
@@ -253,7 +257,7 @@
                         </a>
                     </div>
 
-                    @if(isset($criteria) && count($criteria) > 0)
+                    @if($business->should_show_detailed_ratings && isset($criteria) && count($criteria) > 0)
                         <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
@@ -268,10 +272,12 @@
                         </div>
                     @endif
 
+                    @if($business->should_show_detailed_ratings)
                     <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
                         <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                         <strong style="font-weight: 600; color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
                     </div>
+                    @endif
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
@@ -340,7 +346,7 @@
             @foreach($popularComparisons->take(6) as $popItem)
                 @php
                     $popItemName = $popItem->translations->first()->name ?? 'Business';
-                    $popItemRating = round($popItem->reviews->avg('rating'), 1);
+                    $popItemRating = $popItem->display_rating ?? 0;
                     $seoUrlPop = route('product-comparison.seo', [
                         'locale' => app()->getLocale(),
                         'comparison_slug' => $compSlug,
@@ -401,7 +407,7 @@
             @foreach($recentlyViewedComparisons->take(6) as $recentItem)
                 @php
                     $recItemName = $recentItem->translations->first()->name ?? 'Business';
-                    $recItemRating = round($recentItem->reviews->avg('rating'), 1);
+                    $recItemRating = $recentItem->display_rating ?? 0;
                     $seoUrlRec = route('product-comparison.seo', [
                         'locale' => app()->getLocale(),
                         'comparison_slug' => $compSlug,

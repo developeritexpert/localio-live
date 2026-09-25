@@ -807,16 +807,16 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @if($item->should_show_rating)
                                                             <div class="rating-group  d-flex flex-col-mob">
                                                                 <span class="rate_box_num"
-                                                                    style="">{{ formatRating($item->reviews->avg('rating')) }}</span>
+                                                                    style="">{{ formatRating($item->display_rating) }}</span>
                                                                 <div class="">
                                                                     <div class="rating-stars " style="gap:1px;">
                                                                         @for ($i = 1; $i <= 5; $i++) @if ($i
-                                                                            <=floor($item->reviews->avg('rating')))
+                                                                            <=floor($item->display_rating))
                                                                             <i class="fas fa-star text-warning"></i>
-                                                                            @elseif ($i - 0.5 <= $item->
-                                                                                reviews->avg('rating'))
+                                                                            @elseif ($i - 0.5 <= $item->display_rating)
                                                                                 <i
                                                                                     class="fas fa-star-half-alt text-warning"></i>
                                                                                 @else
@@ -825,10 +825,13 @@
                                                                                 @endfor
                                                                     </div>
                                                                 </div>
+                                                                @if($item->should_show_review_count)
                                                                 <span class="" style="">
-                                                                    ({{ $item->reviews->count() }})
+                                                                    ({{ $item->approved_reviews_count }})
                                                                 </span>
+                                                                @endif
                                                             </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1201,22 +1204,25 @@
                                     <p class="m-0 d-flex align-items-center gap-1">
                                         {{ $business->translations->first()->name ?? $business->name }}
                                     </p>
+                                    @if($business->should_show_rating)
                                     <div class="rating-group">
                                         <span
-                                            class="rate_box_num">{{ formatRating($business->reviews->avg('rating')) }}</span>
+                                            class="rate_box_num">{{ formatRating($business->display_rating) }}</span>
                                         <div class="rating-stars">
-                                            @for ($i = 1; $i <= 5; $i++) @if ($i <=floor($business->
-                                                reviews->avg('rating')))
+                                            @for ($i = 1; $i <= 5; $i++) @if ($i <=floor($business->display_rating))
                                                 <i class="fas fa-star"></i>
-                                                @elseif ($i - 0.5 <= $business->reviews->avg('rating'))
+                                                @elseif ($i - 0.5 <= $business->display_rating)
                                                     <i class="fas fa-star-half-alt"></i>
                                                     @else
                                                     <i class="far fa-star"></i>
                                                     @endif
                                                     @endfor
                                         </div>
-                                        <span class="">({{ $business->reviews->count() }})</span>
+                                        @if($business->should_show_review_count)
+                                        <span class="">({{ $business->approved_reviews_count }})</span>
+                                        @endif
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </a>

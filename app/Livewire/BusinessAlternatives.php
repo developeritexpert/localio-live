@@ -552,7 +552,7 @@ class BusinessAlternatives extends Component
         });
 
         $filtered = $filtered->sortByDesc(function ($business) {
-            $avg = $business->avg_rating ?? ($business->admin_rating ?? 0);
+            $avg = $business->display_rating ?? 0.0;
             return ($business->is_affiliate ? 100 : 0) + $avg;
         })->values();
 

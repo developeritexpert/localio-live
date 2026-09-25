@@ -238,20 +238,52 @@ class Business extends Model
         return $approvedReviews->count() > 0 ? round($approvedReviews->avg('rating'), 1) : null;
     }
 
+
+
     /**
      * Get effective business display rating.
-     * Uses approved user review rating if available; falls back to admin_rating if set; otherwise null.
+     * When business has >= 10 reviews: uses user reviews average.
+     * When business has < 10 reviews: uses admin_rating if set, otherwise null.
      */
-    public function getDisplayRatingAttribute()
+    public function getDisplayRatingAttribute(): ?float
     {
-        $approvedCount = $this->reviews->where('status', 'active')->count();
+        $approvedCount = $this->approved_reviews_count;
         if ($approvedCount >= 10) {
-            return round($this->reviews->where('status', 'active')->avg('rating'), 1);
+            $avg = $this->relationLoaded('reviews')
+                ? $this->reviews->where('status', 'active')->avg('rating')
+                : $this->reviews()->where('status', 'active')->avg('rating');
+            return $avg !== null ? round((float) $avg, 1) : null;
         }
         if ($this->admin_rating !== null && (float)$this->admin_rating > 0) {
-            return (float)$this->admin_rating;
+            return round((float)$this->admin_rating, 1);
         }
         return null;
+    }
+
+    /**
+     * Whether rating stars and number should be shown.
+     */
+    public function getShouldShowRatingAttribute(): bool
+    {
+        return $this->display_rating !== null && (float)$this->display_rating > 0;
+    }
+
+    /**
+     * Whether review count (e.g. (5)) should be shown.
+     * Never shown when approved reviews < 10.
+     */
+    public function getShouldShowReviewCountAttribute(): bool
+    {
+        return $this->approved_reviews_count >= 10;
+    }
+
+    /**
+     * Whether detailed user ratings (criteria bars & recommend %) should be shown.
+     * Never shown when approved reviews < 10.
+     */
+    public function getShouldShowDetailedRatingsAttribute(): bool
+    {
+        return $this->approved_reviews_count >= 10;
     }
 
     /**

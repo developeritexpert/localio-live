@@ -157,8 +157,8 @@
                                                     $businessTranslation = $business->translations->first();
                                                     $review = $business->reviews->first();
                                                     $reviewTranslation = $review && $review->translations ? $review->translations->first() : null;
-                                                    $avgRating = $business->reviews_avg_rating ?? 0;  
-                                                    $ratingsCount = $business->reviews->count() ?? 0;
+                                                    $avgRating = $business->display_rating;  
+                                                    $ratingsCount = $business->approved_reviews_count;
                                                     $isBestValue = $index === 0;
                                                 @endphp
 
@@ -191,12 +191,12 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
+                                                                    @if($business->should_show_rating)
                                                                     <div class="rating-group" style="">
                                                                         <span class="rate_box_num" style="">{{ formatRating($avgRating) }}</span>
                                                                         <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
-                                                                                $avgRating = $business->reviews_avg_rating ?? 0;
                                                                                 $rating = round($avgRating);
                                                                                 @endphp
                                                                                 @for ($i = 1; $i <= 5; $i++)
@@ -204,8 +204,11 @@
                                                                                     @endfor
                                                                             </div>
                                                                         </div>
+                                                                        @if($business->should_show_review_count)
                                                                         <span class="rate_box_count" style="">({{ $ratingsCount }})</span>
+                                                                        @endif
                                                                     </div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
 

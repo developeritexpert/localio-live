@@ -37,15 +37,10 @@
     $pros = collect();
     $cons = collect();
     $activeReviews = $business->reviews->where('status', 'active');
-    $ratingCount = $activeReviews->count();
+    $ratingCount = $business->approved_reviews_count;
+    $hasUserRatings = $business->should_show_detailed_ratings;
     $hasUserReviews = $ratingCount > 0;
-    if ($hasUserReviews) {
-        $averageRating = $activeReviews->avg('rating');
-    } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
-        $averageRating = (float)$business->admin_rating;
-    } else {
-        $averageRating = null;
-    }
+    $averageRating = $business->display_rating;
 
     foreach ($activeReviews as $rev) {
         $rTrans = $rev->translations->where('language_id', $lang_id)->first() ?? $rev->translations->first();
@@ -439,11 +434,14 @@
                                                                         @endfor
                                                                     </div>
                                                                     <!-- <span class="com-rating">Community rating</span> -->
-                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    @if($hasUserRatings)
+<span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+@endif
                                                                 </div>
                                                             </div>
 
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
+                                                            @if($hasUserRatings)
                                                             <div class="col-lg-7 col-md-7 col-12">
                                                                 @if(isset($criteria) && count($criteria) > 0)
                                                                     <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
@@ -470,6 +468,7 @@
                                                                     </div>
                                                                 @endif
                                                             </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -630,19 +629,19 @@
                                             @endfor
                                         </div>
 
-                                        @if ($hasUserReviews)
+                                        @if ($hasUserRatings)
                                             <span class="com-rating">{{ number_format($totalReviewsCount) }} {{ $totalReviewsCount == 1 ? 'review' : 'reviews' }}</span>
                                         @endif
                                     </div>
 
-                                    @if ($hasUserReviews)
+                                    @if ($hasUserRatings)
                                         <a href="#section14" class="view-review-link">
                                             Go to reviews 
                                         </a>
                                     @endif
                                 </div>
 
-                                @if ($hasUserReviews && isset($criteria) && count($criteria) > 0)
+                                @if ($hasUserRatings && isset($criteria) && count($criteria) > 0)
                                     <p class="breakdown-title" style="margin-bottom: 15px;">
                                        Detailed user ratings 
                                     </p>
