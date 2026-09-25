@@ -280,7 +280,7 @@
                                                 </button>
                                                 <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $decodedHeadline }}</textarea>
                                                 <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{!! $decodedSubtext !!}</textarea>
-                                                <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete Option #{{ $item->option_number }}?');">
+                                                <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline form-delete-template" data-option="{{ $item->option_number }}" data-field="{{ $fKey }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-xs btn-danger">
@@ -375,6 +375,55 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let subtextEditor = null;
+
+    // AJAX Template Option Deletion
+    $(document).on('submit', '.form-delete-template', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let optNum = form.data('option') || '';
+        let fieldKey = form.data('field');
+
+        if (!confirm('Delete Option #' + optNum + '?')) {
+            return;
+        }
+
+        let submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                if (response && response.success) {
+                    let row = form.closest('tr');
+                    let tbody = row.closest('tbody');
+                    row.fadeOut(200, function() {
+                        $(this).remove();
+                        if (response.templates && response.templates.length > 0) {
+                            tbody.find('tr').each(function(idx) {
+                                let newNum = idx + 1;
+                                $(this).find('td:first .badge').text('#' + newNum);
+                                $(this).find('.btn-edit-tpl').data('option', newNum);
+                                $(this).find('.form-delete-template').data('option', newNum);
+                            });
+                        } else {
+                            tbody.html('<tr><td colspan="4" class="text-center py-4 text-muted">No template variations defined yet for this range under this category. Click <strong>Add New Option</strong> above.</td></tr>');
+                        }
+                    });
+                } else {
+                    location.reload();
+                }
+            },
+            error: function() {
+                submitBtn.prop('disabled', false).html('<em class="icon ni ni-trash"></em>');
+                alert('Failed to delete template option. Please try again.');
+            }
+        });
+    });
 
         function initSubtextEditor() {
         const el = document.querySelector('#inputSubtext');
