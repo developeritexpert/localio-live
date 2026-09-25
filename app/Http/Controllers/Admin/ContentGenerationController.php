@@ -33,6 +33,7 @@ class ContentGenerationController extends Controller
         'faqs',
         'categories',
         'active_countries',
+        'rating',
     ];
 
     const FEATURE_CONTENT_FIELDS = [
@@ -1131,6 +1132,14 @@ class ContentGenerationController extends Controller
                 }
                 break;
 
+            case 'rating':
+                $ratingVal = $data['rating'] ?? ($data['value'] ?? null);
+                if (is_numeric($ratingVal)) {
+                    $ratingVal = max(1.0, min(5.0, round((float) $ratingVal, 2)));
+                    Business::where('id', $businessId)->update(['admin_rating' => $ratingVal]);
+                }
+                break;
+
             // Legacy fallbacks
             case 'content':
                 $content = $data['content'] ?? null;
@@ -1229,6 +1238,12 @@ class ContentGenerationController extends Controller
                     return 'Expected {"active_all_countries": true|false, "country_codes": [...]}';
                 }
                 break;
+            case 'rating':
+                $rCheck = $data['rating'] ?? ($data['value'] ?? null);
+                if ($rCheck === null || !is_numeric($rCheck)) {
+                    return 'Expected {"rating": 4.5} (numeric rating between 1.0 and 5.0)';
+                }
+                break;
             case 'content':
                 if (!isset($data['content'])) return 'Expected {"content": "..."}';
                 break;
@@ -1298,6 +1313,8 @@ Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\",
 Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\": [2, 3]}",
 
             'active_countries' => "Analyze {$businessName}.{$urlInfo} Determine whether this business operates globally (available in all countries) or is restricted to specific countries. Return JSON: {\"active_all_countries\": true, \"country_codes\": [\"US\", \"GB\", \"CA\", \"AU\", \"DE\"]}",
+
+            'rating' => "Evaluate the overall market reputation, service quality, and reliability for {$businessName}.{$catInfo}{$urlInfo} Provide an initial overall editorial rating score between 1.0 and 5.0 (with one or two decimal places, e.g. 4.6 or 4.8) to be displayed on their directory profile until 10 approved user reviews are reached. Return JSON: {\"rating\": 4.6}",
 
             'content'   => "Write a comprehensive overview for {$businessName} ({$categoryName}). Return JSON: {\"content\": \"...\"}",
             'features'  => "List 6 key features of {$businessName} ({$categoryName}). Return JSON: {\"features\": [{\"title\": \"...\", \"description\": \"...\"}]}",
@@ -1706,6 +1723,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
                     $normalizedData = ['faqs' => $fieldVal];
+                } elseif ($field === 'rating') {
+                    $rVal = is_array($fieldVal) ? ($fieldVal['rating'] ?? $fieldVal['value'] ?? null) : $fieldVal;
+                    $rFloat = is_numeric($rVal) ? round((float)$rVal, 2) : 4.5;
+                    $rFloat = max(1.0, min(5.0, $rFloat));
+                    $normalizedData = ['rating' => $rFloat];
                 }
 
                 // Find or create AiContentQueue record
@@ -1794,7 +1816,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 "active_countries"  => [
                     "active_all_countries" => true,
                     "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
-                ]
+                ],
+                "rating"            => 4.7
             ]
         ];
 

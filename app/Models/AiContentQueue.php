@@ -34,6 +34,7 @@ class AiContentQueue extends Model
         'faqs'              => 'FAQs',
         'categories'        => 'Categories',
         'active_countries'  => 'Active countries/regions',
+        'rating'            => 'Rating',
         // Legacy support
         'content'           => 'Content',
         'features'          => 'Features',
