@@ -280,7 +280,7 @@
                                                 </button>
                                                 <textarea id="tpl_headline_{{ $item->id }}" class="d-none">{{ $decodedHeadline }}</textarea>
                                                 <textarea id="tpl_subtext_{{ $item->id }}" class="d-none">{!! $decodedSubtext !!}</textarea>
-                                                <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline form-delete-template" data-option="{{ $item->option_number }}" data-field="{{ $fKey }}">
+                                                <form action="{{ route('admin.content-templates.delete', $item->id) }}" method="POST" class="d-inline form-delete-template" data-option="{{ $item->option_number }}" data-field="{{ $key }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-xs btn-danger">
