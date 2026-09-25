@@ -476,9 +476,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         </span>
                                                         @endif
                                                     </div>
+                                                    @if($hasUserRatings)
                                                     <span class="com-rating" style="font-size: 13px; color: #64748b;">
                                                         {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}
                                                     </span>
+                                                    @endif
                                                     <div class="top-pro-btn tp_visit new-visit-anc review-visit">
                                                         <a href="{{ isset($business) && method_exists($business, 'getTrackedUrl') ? $business->getTrackedUrl() : 'javascript:void(0)' }}" data-track="{{ json_encode(['type' => 'click', 'business_id' => $business->id ?? null, 'action' => 'visit_website', 'label' => 'Visit Website']) }}" class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored" tabindex="0">
                                                             {{ static_text('visit_website') ?: 'Visit website' }}
@@ -817,9 +819,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @if($offering && (!empty($offering->headline) || !empty($offering->top_text)))
                         <div class="col-lg-12 mt-4 mb-2">
                             <div class="offering-section">
-                                @if(!empty($offering->headline))
-                                <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{{ $offering->headline }}</h2>
-                                @endif
+                                @php
+                                    $bizOffersFallback = 'What ' . ($business->translations->first()->name ?? $business->name ?? '') . ' offers';
+                                    $resolvedBizOffers = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_what_offers',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalBizOffers = !empty($resolvedBizOffers['headline']) 
+                                        ? $resolvedBizOffers['headline'] 
+                                        : (!empty($offering->headline) ? $offering->headline : $bizOffersFallback);
+                                @endphp
+                                <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalBizOffers) !!}</h2>
 
                                 @if(!empty($offering->top_text))
                                 <div class="mb-2">
@@ -831,65 +842,65 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endif
 
                         @php
-// Safely decode the business_images
-$images = [];
-$matchedCategory = null;
-$screenshotCategories = is_array($business->screenshot_categories) 
-    ? $business->screenshot_categories 
-    : json_decode($business->screenshot_categories ?? '[]', true);
-    
-if (!empty($screenshotCategories)) {
-    foreach ($screenshotCategories as $category) {
-        if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
-            if (in_array($lang_id, $category['target_regions'])) {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if (!$matchedCategory) {
-        foreach ($screenshotCategories as $category) {
-            if (!empty($category['is_default'])) {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if (!$matchedCategory) {
-        foreach ($screenshotCategories as $category) {
-            if (($category['target_regions_mode'] ?? 'all') === 'all') {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if ($matchedCategory && !empty($matchedCategory['images'])) {
-        $images = $matchedCategory['images'];
-    } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
-        foreach ($matchedCategory['urls'] as $url) {
-            if (!empty($url)) {
-                $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
-            }
-        }
-    }
-}
+                        // Safely decode the business_images
+                        $images = [];
+                        $matchedCategory = null;
+                        $screenshotCategories = is_array($business->screenshot_categories) 
+                            ? $business->screenshot_categories 
+                            : json_decode($business->screenshot_categories ?? '[]', true);
+                            
+                        if (!empty($screenshotCategories)) {
+                            foreach ($screenshotCategories as $category) {
+                                if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
+                                    if (in_array($lang_id, $category['target_regions'])) {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!$matchedCategory) {
+                                foreach ($screenshotCategories as $category) {
+                                    if (!empty($category['is_default'])) {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!$matchedCategory) {
+                                foreach ($screenshotCategories as $category) {
+                                    if (($category['target_regions_mode'] ?? 'all') === 'all') {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($matchedCategory && !empty($matchedCategory['images'])) {
+                                $images = $matchedCategory['images'];
+                            } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
+                                foreach ($matchedCategory['urls'] as $url) {
+                                    if (!empty($url)) {
+                                        $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
+                                    }
+                                }
+                            }
+                        }
 
-if (empty($images)) {
-    $images = is_array($business->business_images)
-        ? $business->business_images
-        : json_decode($business->business_images ?? '[]', true);
+                        if (empty($images)) {
+                            $images = is_array($business->business_images)
+                                ? $business->business_images
+                                : json_decode($business->business_images ?? '[]', true);
 
-    if (empty($images) && !empty($business->screenshot_urls)) {
-        $urls = is_array($business->screenshot_urls)
-            ? $business->screenshot_urls
-            : json_decode($business->screenshot_urls ?? '[]', true);
-        $urls = array_values(array_filter((array)$urls));
-        if (!empty($urls)) {
-            $images = $urls;
-        }
-    }
-}
-@endphp
+                            if (empty($images) && !empty($business->screenshot_urls)) {
+                                $urls = is_array($business->screenshot_urls)
+                                    ? $business->screenshot_urls
+                                    : json_decode($business->screenshot_urls ?? '[]', true);
+                                $urls = array_values(array_filter((array)$urls));
+                                if (!empty($urls)) {
+                                    $images = $urls;
+                                }
+                            }
+                        }
+                        @endphp
 
                         @if (!empty($images))
                         <div class="col-lg-12 mb-4">
@@ -1011,6 +1022,7 @@ if (empty($images)) {
                         $featRatingVal = $featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0);
                         $featPercent = min(100, max(0, ($featRatingVal / 5) * 100));
                         @endphp
+                        @if($hasUserRatings || $business->features->count() > 0)
                         <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                             <div class="mb-3">
                                 <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>
@@ -1056,7 +1068,9 @@ if (empty($images)) {
                             </div>
                             @endif
                         </div>
+                        @endif
 
+                        @if($hasUserRatings)
                         @php
                         $easeRating = $getRatingForCriterion('Ease of use', 'ease_of_use');
                         $easeRatingVal = $easeRating > 0 ? $easeRating : ($averageRating > 0 ? $averageRating : 4.2);
@@ -1161,6 +1175,7 @@ if (empty($images)) {
                             <div class="mb-3">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
                             @endif
                         </div>
+                        @endif
                     </div>
                     <!-- all new part here -->
                     <div class="con_table pb-0 all_sec_wrp" id="section2">
@@ -1525,7 +1540,7 @@ if (empty($images)) {
                                                     @forelse($peerComparisons as $peer)
                                                     @php
                                                     $peerName = $peer->translations->first()->name ?? 'Business';
-                                                    $peerRating = $peer->average_rating ?? 0;
+                                                    $peerRating = $peer->display_rating;
                                                     $vsKey = static_text('vs_keyword');
                                                     if (empty($vsKey) || $vsKey === 'vs_keyword') {
                                                     $vsKey = 'vs';
@@ -1556,11 +1571,13 @@ if (empty($images)) {
                             {{ $bName }}
                         </div>
 
+                        @if($business->should_show_rating)
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($averageRating) }}</span>
+                            <span>{{ formatRating($business->display_rating) }}</span>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -1580,11 +1597,13 @@ if (empty($images)) {
                             {{ $peerName }}
                         </div>
 
+                        @if($peer->should_show_rating)
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($peerRating) }}</span>
+                            <span>{{ formatRating($peer->display_rating) }}</span>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -1787,6 +1806,12 @@ if (empty($images)) {
                                                             font-size: 22px !important;
                                                         }
                                                     }
+
+                                                    @if(!$hasUserRatings)
+                                                    .review_detl.populr-alternative:first-child {
+                                                        margin-top: 24px;
+                                                    }
+                                                    @endif
                                                 </style>
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
@@ -1846,16 +1871,31 @@ if (empty($images)) {
                                                             <div class="review-sidebar-sticky">
 
                                                                 @php
-                                                                    $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews (' . number_format($ratingCount) . ')';
-                                                                    $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
-                                                                        $business,
-                                                                        'profile_reviews',
-                                                                        getCurrentLanguageID(),
-                                                                        ['[count]' => number_format($ratingCount)]
-                                                                    );
-                                                                    $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
-                                                                    if (!empty($resolvedBizReviews['headline']) && !str_contains($finalBizReviewsHeadline, '(') && !str_contains($finalBizReviewsHeadline, (string)$ratingCount)) {
-                                                                        $finalBizReviewsHeadline .= ' (' . number_format($ratingCount) . ')';
+                                                                    if ($hasUserRatings) {
+                                                                        $countStr = number_format($ratingCount);
+                                                                        $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews (' . $countStr . ')';
+                                                                        $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                            $business,
+                                                                            'profile_reviews',
+                                                                            getCurrentLanguageID(),
+                                                                            ['[count]' => $countStr]
+                                                                        );
+                                                                        $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
+                                                                        if (!str_contains($finalBizReviewsHeadline, '(') && !str_contains($finalBizReviewsHeadline, $countStr)) {
+                                                                            $finalBizReviewsHeadline .= ' (' . $countStr . ')';
+                                                                        }
+                                                                    } else {
+                                                                        $bizReviewsFallback = ($business->translations->first()->name ?? $business->name ?? '') . ' user reviews';
+                                                                        $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                            $business,
+                                                                            'profile_reviews',
+                                                                            getCurrentLanguageID(),
+                                                                            ['([count])' => '', '([count] reviews)' => '', '([count] review)' => '', '[count]' => '']
+                                                                        );
+                                                                        $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline']) ? $resolvedBizReviews['headline'] : $bizReviewsFallback;
+                                                                        $finalBizReviewsHeadline = preg_replace('/\s*\(\s*\d*\s*\)/', '', $finalBizReviewsHeadline);
+                                                                        $finalBizReviewsHeadline = preg_replace('/\s*\[count\]/i', '', $finalBizReviewsHeadline);
+                                                                        $finalBizReviewsHeadline = trim($finalBizReviewsHeadline);
                                                                     }
                                                                     $finalBizReviewsSubtext = !empty($resolvedBizReviews['subtext']) ? $resolvedBizReviews['subtext'] : null;
                                                                 @endphp
@@ -1902,7 +1942,9 @@ if (empty($images)) {
                                                                                     @else
                                                                                         <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">Not rated yet</span>
                                                                                     @endif
-                                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                    @if($hasUserRatings)
+                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                    @endif
 
                                                                                     
 
@@ -1945,12 +1987,24 @@ if (empty($images)) {
                                                             </div>
                                                         </div>
 
+                                                        @php
+                                                        $reviewSortOptions = [
+                                                            'recent' => 'Most recent',
+                                                            'high-to-low' => 'Highest rated',
+                                                            'low-to-high' => 'Lowest rated',
+                                                        ];
+                                                        $currentSort = request('sort', 'recent');
+                                                        if (!array_key_exists($currentSort, $reviewSortOptions)) {
+                                                            $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
+                                                        }
+                                                        $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
+                                                        @endphp
                                                         <div class="col-lg-12">
 
+                                                            @if($hasUserRatings)
                                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
 
                                                                 <!-- Filter Button with Dropdown & Clear filter on Left -->
-                                                                @if($hasUserRatings)
                                                                 <div class="d-flex align-items-center gap-2">
                                                                     <div class="dropdown" id="reviewFilterDropdownWrap">
                                                                         <button class="btn btn-outline-secondary d-flex align-items-center"
@@ -2004,20 +2058,6 @@ if (empty($images)) {
                                                                         <i class="fas fa-times me-1"></i>Clear filter
                                                                     </span>
                                                                 </div>
-                                                                @endif
-
-                                                                @php
-                                                                $reviewSortOptions = [
-                                                                'recent' => 'Most recent',
-                                                                'high-to-low' => 'Highest rated',
-                                                                'low-to-high' => 'Lowest rated',
-                                                                ];
-                                                                $currentSort = request('sort', 'recent');
-                                                                if (!array_key_exists($currentSort, $reviewSortOptions)) {
-                                                                $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
-                                                                }
-                                                                $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
-                                                                @endphp
 
                                                                 <!-- Sort Dropdown on Right (Top Rated Style) -->
                                                                 <div class="dropdown" id="reviewSortDropdownWrap">
@@ -2055,6 +2095,7 @@ if (empty($images)) {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @endif
 
                                                             <div id="reviews-list-container">
                                                                 @include('User.product.partials.reviews_list')
@@ -2072,7 +2113,7 @@ if (empty($images)) {
                                                         const sortOptions = document.querySelectorAll('.review-sort-option');
                                                         const sortLabelSpan = document.getElementById('current-sort-label');
 
-                                                        let currentSortValue = '{{ $currentSort }}';
+                                                        let currentSortValue = '{{ $currentSort ?? "recent" }}';
 
                                                         sortOptions.forEach(opt => {
                                                             opt.addEventListener('click', function(e) {
@@ -2332,12 +2373,12 @@ if (empty($images)) {
                                                 </span>
                                             </div>
 
-                                            @if ($hasUserReviews)
+                                            @if ($hasUserRatings)
                                             <span class="com-rating">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                             @endif
                                         </div>
 
-                                        @if ($hasUserReviews)
+                                        @if ($hasUserRatings)
                                         <a href="#section14" class="view-review-link" style="">
                                            Go to reviews 
                                         </a>
@@ -2347,7 +2388,7 @@ if (empty($images)) {
 
                                     <!-- Collapsible Breakdown Section (Mobile: hidden by default, toggles; Desktop: always shown) -->
                                     <div id="bottomReviewBreakdownContent" class="bottom-breakdown-collapsible" data-expanded="false">
-                                        @if ($hasUserReviews)
+                                        @if ($hasUserRatings)
                                         <p class="breakdown-title" style="margin-bottom: 15px;">
                                             Review breakdown
                                         </p>
@@ -2751,7 +2792,7 @@ if (empty($images)) {
                                                                         @endif
                                                                         @endfor
                                                             </div>
-                                                            @if ($hasUserReviews)
+                                                            @if ($hasUserRatings)
                                                             <span class=""
                                                                 style="">({{ $ratingCount }})</span>
                                                             @endif
@@ -3603,7 +3644,9 @@ if (empty($images)) {
                             </div>
                             <span style="font-weight: 600; color: #333;">{{ formatRating($averageRating) }}</span>
                             @endif
+                            @if ($hasUserRatings)
                             <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
+                            @endif
                         </div>
                     </div>
                 </div>

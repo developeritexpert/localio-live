@@ -266,13 +266,14 @@
                                                 <div class="inn_h" style="margin-bottom:0;">
                                                     <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
                                                 </div>
+                                                @if($business->should_show_rating)
                                                 <div class="rating-group">
                                                     @php
-                                                        $rating = round($business->reviews->avg('rating'), 1);
-                                                        $ratingCount = $business->reviews->count();
+                                                        $rating = $business->display_rating;
+                                                        $ratingCount = $business->approved_reviews_count;
                                                     @endphp
 
-                                                    <span style="">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                                    <span style="">{{ number_format($rating, 1) }}</span>
                                                     <div class="d-flex align-items-center">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($rating >= $i)
@@ -284,8 +285,11 @@
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="">({{ $ratingCount }})</span>
+                                                    @if($business->should_show_review_count)
+                                                        <span style="">({{ $ratingCount }})</span>
+                                                    @endif
                                                 </div>
+                                                @endif
                                                 
 
                                             </div>
@@ -309,6 +313,7 @@
                                         </div>
 
 
+                                        @if($business->should_show_detailed_ratings)
                                         <!-- Thin horizontal line -->
                                         <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
 
@@ -393,6 +398,7 @@
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                     <!-- <a href="javascript:void(0);" class="remove-from-comparison"
                                         data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $business->id]) }}">
@@ -718,11 +724,10 @@
                 <div class="row g-4 mb-4 d-none">
                     @foreach($businesses as $business)
                         @php
-                            $activeReviews = $business->reviews->where('status', 'active');
-                            $bAvgRating = $activeReviews->count() > 0
-                                ? round($activeReviews->avg('rating'), 1)
-                                : (float)($business->admin_rating ?? 0);
-                            $bTotalReviews = $activeReviews->count();
+                            $bAvgRating = $business->display_rating;
+                            $hasRating = $business->should_show_rating;
+                            $showCount = $business->should_show_review_count;
+                            $bTotalReviews = $business->approved_reviews_count;
                             $bName = $business->translations->first()?->name ?? 'Business';
                             $curLang = getCurrentLocale();
                             $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
@@ -739,6 +744,7 @@
                                         <h5 style="font-size: 15.5px; font-weight: 700; margin: 0 0 2px 0; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }}">
                                             {{ $bName }}
                                         </h5>
+                                        @if($hasRating)
                                         <div class="rating-group">
                                             <span >{{ number_format($bAvgRating, 1) }}</span>
                                             <div class="d-inline-flex align-items-center">
@@ -752,8 +758,11 @@
                                                     @endif
                                                 @endfor
                                             </div>
+                                            @if($showCount)
                                             <span >({{ number_format($bTotalReviews) }})</span>
+                                            @endif
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -944,7 +953,7 @@
                                                         </span>
                                                     </div>
 
-                                                    @if(isset($bizCriteria) && count($bizCriteria) > 0)
+                                                    @if($business->approved_reviews_count >= 10 && isset($bizCriteria) && count($bizCriteria) > 0)
                                                     <div class="dropdown-menu shadow-sm user-rating-breakdown-menu" style="display: none;">
                                                         <div class="user-rating-header">Detailed user ratings</div>
                                                         <div class="user-rating-body">
@@ -1233,8 +1242,7 @@
                                         @php
                                             $altName = $alt->translations->first()?->name ?? 'Product';
                                             $altProdId = $alt->products->first()?->id ?? $alt->id;
-                                            $altReviews = $alt->reviews->where('status', 'active');
-                                            $altRating = $altReviews->count() > 0 ? round($altReviews->avg('rating'), 1) : 0;
+                                            $altRating = $alt->display_rating ?? 0;
                                         @endphp
                                         <div class="comp-alt-item d-flex align-items-center justify-content-between p-2 rounded" style="background-color: #f8fafc; border: 1px solid #edf2f7;   ">
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">

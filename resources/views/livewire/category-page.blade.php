@@ -96,7 +96,7 @@
                             </h1>
 
                             <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
-                    <div class="host-parra row align-items-start">
+                    <div class="host-parra row ">
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
@@ -757,17 +757,17 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                @if($item->should_show_rating)
                                                                 <div class="rating-group d-flex align-items-center"
                                                                     style="gap: 6px;">
                                                                     <span class="rate_box_num"
-                                                                        style="">{{ formatRating($item->reviews->avg('rating')) }}</span>
+                                                                        style="">{{ formatRating($item->display_rating) }}</span>
                                                                     <div class="">
                                                                         <div class="rating-stars ">
                                                                             @for ($i = 1; $i <= 5; $i++) @if ($i
-                                                                                <=floor($item->reviews->avg('rating')))
+                                                                                <=floor($item->display_rating))
                                                                                 <i class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $item->
-                                                                                    reviews->avg('rating'))
+                                                                                @elseif ($i - 0.5 <= $item->display_rating)
                                                                                     <i
                                                                                         class="fas fa-star-half-alt text-warning"></i>
                                                                                     @else
@@ -777,9 +777,12 @@
                                                                                     @endfor
                                                                         </div>
                                                                     </div>
+                                                                    @if($item->should_show_review_count)
                                                                     <span class="rate_box_count "
-                                                                        style="">({{ $item->reviews->count() }})</span>
+                                                                        style="">({{ $item->approved_reviews_count }})</span>
+                                                                    @endif
                                                                 </div>
+                                                                @endif
                                                             </div>
                                                             <!-- </div> -->
                                                         </div>
@@ -1364,21 +1367,31 @@
                                             </a>
                                         </td>
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
+                                            @if($biz->should_show_rating)
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
+                                                <span>{{ formatRating($biz->display_rating) }}</span>
                                             </span>
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                         @foreach($allCriteria as $criterion)
                                             @php
-                                                $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
+                                                $avg = $biz->should_show_detailed_ratings
+                                                    ? $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating')
+                                                    : null;
                                             @endphp
                                             <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight:500">
                                                 {{ $avg !== null ? formatRating($avg) : '-' }}
                                             </td>
                                         @endforeach
                                         <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
-                                            {{ $recommendPercent }}%
+                                            @if($biz->should_show_detailed_ratings)
+                                                {{ $recommendPercent }}%
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                         <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
                                             @if($bizStartingPrice && $bizAmount !== null && !empty($biz->is_affiliate))
@@ -1479,10 +1492,14 @@
                                                 </a>
                                             </td>
                                             <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
+                                                @if($biz->should_show_rating)
                                                 <span class="d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                    <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
+                                                    <span>{{ formatRating($biz->display_rating) }}</span>
                                                 </span>
+                                                @else
+                                                    <span style="color: #5b6b7a;">-</span>
+                                                @endif
                                             </td>
                                             <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                 @if($topPro)
@@ -1559,10 +1576,12 @@
                                         <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
                                             {{ $comp['business_1_name'] }}
                                         </div>
+                                        @if($comp['business_1']->should_show_rating ?? ($comp['business_1_show_rating'] ?? false))
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_1_rating']) }}</span>
+                                            <span>{{ formatRating($comp['business_1']->display_rating ?? $comp['business_1_rating']) }}</span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -1578,10 +1597,12 @@
                                         <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
                                             {{ $comp['business_2_name'] }}
                                         </div>
+                                        @if($comp['business_2']->should_show_rating ?? ($comp['business_2_show_rating'] ?? false))
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_2_rating']) }}</span>
+                                            <span>{{ formatRating($comp['business_2']->display_rating ?? $comp['business_2_rating']) }}</span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -1972,7 +1993,7 @@
                         }
                         $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                         $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                        $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                        $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
                     @endphp
                     <div class="col-lg-4 col-md-6 col-6">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
@@ -1990,7 +2011,7 @@
                                 <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                                     <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                                     <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'Listing' : 'Listings' }}
+                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'listing' : 'listings' }}
                                     </span>
                                 </div>
                             </div>

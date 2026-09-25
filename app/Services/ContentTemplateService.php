@@ -189,6 +189,12 @@ class ContentTemplateService
             'field1_label' => 'Headline',
             'description' => 'Headline for the What is [business] section.',
         ],
+        'profile_what_offers' => [
+            'label' => 'WHAT OFFERS HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the What [business] offers section.',
+        ],
         'profile_pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',
@@ -899,14 +905,13 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $optData) {
-                $exists = ContentTemplate::where('section_group', 'category')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'category')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $optData) {
                     ContentTemplate::create([
                         'section_group' => 'category',
                         'field_key'     => $fieldKey,
@@ -966,16 +971,15 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
-                $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
-                $exists = ContentTemplate::where('section_group', 'category_faqs')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'category_faqs')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([
                         'section_group' => 'category_faqs',
                         'field_key'     => $fieldKey,
@@ -1014,14 +1018,13 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $headlineText) {
-                $exists = ContentTemplate::where('section_group', 'category_discussions')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'category_discussions')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $headlineText) {
                     ContentTemplate::create([
                         'section_group' => 'category_discussions',
                         'field_key'     => $fieldKey,
@@ -1057,14 +1060,13 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $headlineText) {
-                $exists = ContentTemplate::where('section_group', 'business_discussions')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'business_discussions')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $headlineText) {
                     ContentTemplate::create([
                         'section_group' => 'business_discussions',
                         'field_key'     => $fieldKey,
@@ -1082,6 +1084,10 @@ class ContentTemplateService
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_what_offers' => [
+                1 => 'What [business] offers',
+                2 => 'What does [business] offer?',
+            ],
             'profile_reviews' => [
                 1 => [
                     'headline' => '[business] user reviews ([count])',
@@ -1121,16 +1127,15 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
-                $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
-                $exists = ContentTemplate::where('section_group', 'business_profile')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'business_profile')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([
                         'section_group' => 'business_profile',
                         'field_key'     => $fieldKey,
@@ -1191,13 +1196,12 @@ class ContentTemplateService
         }
 
         if ($langId > 1) {
-            foreach (array_keys($fieldDefs) as $fKey) {
-                $hasKey = ContentTemplate::where('section_group', $sectionGroup)
-                    ->where('field_key', $fKey)
-                    ->where('lang_id', $langId)
-                    ->exists();
+            $hasAnySectionTemplate = ContentTemplate::where('section_group', $sectionGroup)
+                ->where('lang_id', $langId)
+                ->exists();
 
-                if (!$hasKey) {
+            if (!$hasAnySectionTemplate) {
+                foreach (array_keys($fieldDefs) as $fKey) {
                     $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
                         ->where('field_key', $fKey)
                         ->where('lang_id', 1)

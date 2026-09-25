@@ -10,14 +10,20 @@
                 <div class="nk-block-head-content">
                     <h3 class="nk-block-title page-title">Generated Content</h3>
                     <p class="nk-block-des text-soft">
-                        Business: <strong>{{ $businessName }}</strong> (ID: {{ $item->resource_id }})
-                        &bull; Field: <strong>{{ \App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field }}</strong>
+                        {{ ($item->resource_type === 'category_feature') ? 'Feature' : 'Business' }}: <strong>{{ $businessName }}</strong> (ID: {{ $item->resource_id }})
+                        &bull; Field: <strong>{{ ($item->resource_type === 'category_feature') ? (\App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[$item->content_field] ?? ucfirst($item->content_field)) : (\App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field) }}</strong>
                     </p>
                 </div>
                 <div class="nk-block-head-content">
-                    <a href="{{ route('content-gen.businesses') }}" class="btn btn-outline-secondary btn-sm">
-                        <em class="icon ni ni-arrow-left me-1"></em> Back to Businesses
-                    </a>
+                    @if($item->resource_type === 'category_feature')
+                        <a href="{{ route('content-gen.features') }}" class="btn btn-outline-secondary btn-sm">
+                            <em class="icon ni ni-arrow-left me-1"></em> Back to Features
+                        </a>
+                    @else
+                        <a href="{{ route('content-gen.businesses') }}" class="btn btn-outline-secondary btn-sm">
+                            <em class="icon ni ni-arrow-left me-1"></em> Back to Businesses
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -163,6 +169,31 @@
                                         @if(!empty($decoded['country_codes']))
                                             <p class="mb-0"><strong>Specific Country Codes:</strong> {{ implode(', ', $decoded['country_codes']) }}</p>
                                         @endif
+                                    </div>
+                                @elseif($item->content_field === 'rating')
+                                    <div class="p-3 text-center">
+                                        @php
+                                            $ratingVal = $decoded['rating'] ?? ($decoded['value'] ?? null);
+                                        @endphp
+                                        <div class="display-4 fw-bold text-dark mb-1">
+                                            {{ $ratingVal !== null ? number_format((float)$ratingVal, 1) : '--' }} <small class="fs-4 text-muted">/ 5.0</small>
+                                        </div>
+                                        <div class="fs-18px text-warning mb-2">
+                                            @php
+                                                $fullStars = floor((float)$ratingVal);
+                                                $halfStar = ((float)$ratingVal - $fullStars) >= 0.3;
+                                            @endphp
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $fullStars)
+                                                    <em class="icon ni ni-star-fill text-warning"></em>
+                                                @elseif($halfStar && $i == $fullStars + 1)
+                                                    <em class="icon ni ni-star-half text-warning"></em>
+                                                @else
+                                                    <em class="icon ni ni-star text-muted"></em>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <p class="text-muted small mb-0">Initial admin rating (active until the business receives 10 approved user reviews).</p>
                                     </div>
                                 @elseif($item->content_field === 'content' && isset($decoded['content']))
                                     <div class="p-2">{!! nl2br(e($decoded['content'])) !!}</div>

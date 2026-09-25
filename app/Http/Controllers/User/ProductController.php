@@ -194,7 +194,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $default_image = WebSetting::where('key','user_default_image')->value('value');
 
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
 
         if ($request->ajax()) {
             return view('User.product.partials.reviews_list', compact(
@@ -323,7 +323,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $link = $business->websites->first()->website_url ?? $business->affiliate_link ?? $business->permanent_url ?? '#';
         $reviews = Review::where('business_id', $business->id)->get();
 
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
         $activeReviews = $reviews->where('status', 'active');
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
@@ -1169,16 +1169,23 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             abort(404, 'Business not found');
         }
 
-        $totalReviews = $business->reviews->count();
-        $averageRating = $totalReviews > 0 ? round($business->reviews->avg('rating'), 1) : 0;
-        $businessRating = $averageRating;
+        $totalReviews = $business->reviews->where('status', 'active')->count();
+        $hasUserRatings = $totalReviews >= 10;
+        if ($hasUserRatings) {
+            $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
+        } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+            $averageRating = (float)$business->admin_rating;
+        } else {
+            $averageRating = null;
+        }
+        $businessRating = $averageRating ?? 0;
         
-        $recommendCount = $business->reviews->where('recommend', 1)->count();
-        $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
+        $recommendCount = $business->reviews->where('status', 'active')->where('recommend', 1)->count();
+        $recommendPercent = ($hasUserRatings && $totalReviews > 0) ? round(($recommendCount / $totalReviews) * 100) : 0;
 
         $reviews = Review::where('business_id', $business->id)->get();
         $activeReviews = $reviews->where('status', 'active');
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
         foreach ($criteria as $criterion) {

@@ -229,6 +229,7 @@
                             </div>
                             <div>
                                 <p style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</p>
+                                @if($business->should_show_rating)
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                     <span>{{ formatRating($averageRating) }}</span>
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
@@ -242,8 +243,11 @@
                                             @endif
                                         @endfor
                                     </div>
+                                    @if($business->should_show_review_count)
                                     <span>({{ number_format($totalReviews) }})</span>
+                                    @endif
                                 </div>
+                                @endif
                             </div>
                         </div>
 
@@ -253,7 +257,7 @@
                         </a>
                     </div>
 
-                    @if(isset($criteria) && count($criteria) > 0)
+                    @if($business->should_show_detailed_ratings && isset($criteria) && count($criteria) > 0)
                         <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
@@ -268,13 +272,15 @@
                         </div>
                     @endif
 
+                    @if($business->should_show_detailed_ratings)
                     <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
                         <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                         <strong style="font-weight: 600; color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
                     </div>
+                    @endif
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                        <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                                 <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
@@ -340,7 +346,7 @@
             @foreach($popularComparisons->take(6) as $popItem)
                 @php
                     $popItemName = $popItem->translations->first()->name ?? 'Business';
-                    $popItemRating = round($popItem->reviews->avg('rating'), 1);
+                    $popItemRating = $popItem->display_rating ?? 0;
                     $seoUrlPop = route('product-comparison.seo', [
                         'locale' => app()->getLocale(),
                         'comparison_slug' => $compSlug,
@@ -356,10 +362,12 @@
                                 </div>
                                 <div style="min-width: 0;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    @if($business->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
@@ -369,10 +377,12 @@
                                 </div>
                                 <div style="min-width: 0; text-align: left;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
+                                    @if($popItem->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItemRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItem->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -401,7 +411,7 @@
             @foreach($recentlyViewedComparisons->take(6) as $recentItem)
                 @php
                     $recItemName = $recentItem->translations->first()->name ?? 'Business';
-                    $recItemRating = round($recentItem->reviews->avg('rating'), 1);
+                    $recItemRating = $recentItem->display_rating ?? 0;
                     $seoUrlRec = route('product-comparison.seo', [
                         'locale' => app()->getLocale(),
                         'comparison_slug' => $compSlug,
@@ -417,10 +427,12 @@
                                 </div>
                                 <div style="min-width: 0;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    @if($business->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
@@ -430,10 +442,12 @@
                                 </div>
                                 <div style="min-width: 0; text-align: left;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $recItemName }}</div>
+                                    @if($recentItem->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recItemRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recentItem->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -471,7 +485,7 @@
                 }
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
             @endphp
             <div class="col-lg-4 col-md-6 col-12">
                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">

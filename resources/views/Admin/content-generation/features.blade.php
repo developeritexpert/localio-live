@@ -102,60 +102,45 @@
             </div>
         </div>
 
-        {{-- Bulk Batch Generation Form --}}
+        {{-- Bulk Batch Submit Form --}}
         <form id="batchForm" action="{{ route('content-gen.features.submit-batch') }}" method="POST">
             @csrf
 
-            {{-- Batch Configuration Bar --}}
-            <div class="card card-bordered mb-3 border-primary border-opacity-25" style="background:#f8fafc;">
-                <div class="card-inner py-3">
-                    <div class="row g-3 align-items-center">
-                        {{-- Provider Selection --}}
-                        <div class="col-lg-3 col-md-4">
-                            <label class="form-label mb-1 small fw-bold text-dark d-block">1. Select Provider:</label>
-                            <div class="d-flex gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="provider" id="provider_openai" value="openai" checked>
-                                    <label class="form-check-label small fw-semibold" for="provider_openai">
-                                        OpenAI
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="provider" id="provider_anthropic" value="anthropic">
-                                    <label class="form-check-label small fw-semibold" for="provider_anthropic">
-                                        Claude
-                                    </label>
-                                </div>
+            {{-- Batch Controls Bar --}}
+            <div class="card card-bordered mb-3">
+                <div class="card-inner py-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-auto">
+                            <span class="text-soft small">Provider:</span>
+                        </div>
+                        <div class="col-auto">
+                            <select name="provider" class="form-select form-select-sm" style="width:200px" title="Batch Generation Mode">
+                                <option value="manual" selected>Manual Batch (JSON for ChatGPT)</option>
+                                <option value="openai">OpenAI (ChatGPT API)</option>
+                                <option value="anthropic">Anthropic (Claude API)</option>
+                            </select>
+                        </div>
+                        <div class="col-auto d-flex align-items-center gap-1">
+                            <span class="text-soft small">Batch Size:</span>
+                            <input type="number" name="batch_size" class="form-control form-control-sm text-center" value="{{ $batchSize ?? 5 }}" min="1" max="50" style="width:65px" title="Features merged per batch job">
+                            <span class="text-soft small">/ batch</span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="text-soft small">Fields:</span>
+                        </div>
+                        @foreach($fields as $field)
+                        <div class="col-auto">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input field-checkbox" type="checkbox" name="fields[]" value="{{ $field }}" id="field_{{ $field }}" checked>
+                                <label class="form-check-label small" for="field_{{ $field }}">{{ \App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[$field] ?? ucfirst($field) }}</label>
                             </div>
                         </div>
-
-                        {{-- Content Fields Selection --}}
-                        <div class="col-lg-6 col-md-8">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                <label class="form-label mb-0 small fw-bold text-dark">2. Choose Content to Generate:</label>
-                                <div>
-                                    <a href="javascript:void(0)" onclick="selectAllFields()" class="small text-primary me-2">Select All</a>
-                                    <a href="javascript:void(0)" onclick="clearAllFields()" class="small text-muted">Clear</a>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach($fields as $field)
-                                    <div class="form-check form-check-inline me-2 mb-1">
-                                        <input class="form-check-input field-checkbox" type="checkbox" name="fields[]" value="{{ $field }}" id="field_{{ $field }}" checked>
-                                        <label class="form-check-label small" for="field_{{ $field }}">
-                                            {{ \App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[$field] ?? ucfirst($field) }}
-                                        </label>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        {{-- Action Button --}}
-                        <div class="col-lg-3 col-md-12 d-flex justify-content-lg-end gap-2">
+                        @endforeach
+                        <div class="col-auto ms-auto d-flex gap-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAll()">Select All Rows</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">Clear Rows</button>
                             <button type="submit" class="btn btn-sm btn-primary" id="submitBatchBtn" disabled>
-                                <em class="icon ni ni-spark"></em> Generate (<span id="selectedCount">0</span>)
+                                <em class="icon ni ni-send me-1"></em> Submit Batch (<span id="selectedCount">0</span>)
                             </button>
                         </div>
                     </div>
@@ -313,7 +298,7 @@
 
                                         {{-- Actions --}}
                                         <td class="text-center">
-                                            <div class="d-inline-flex">
+                                            <div class="d-inline-flex" style="gap: 10px;">
                                                 <button type="button" class="btn btn-xs btn-primary" title="Generate all fields for this feature" onclick="generateAll({{ $feature->id }})">
                                                     <em class="icon ni ni-spark"></em>
                                                 </button>
@@ -325,7 +310,7 @@
                                                 @endif
 
                                                 @if($content)
-                                                    <a href="{{ route('admin.category-feature-content.edit', $content->id) }}" class="btn btn-xs btn-secondary" title="Edit Content Manually" style="margin-left: 15px;">
+                                                    <a href="{{ route('admin.category-feature-content.edit', $content->id) }}" class="btn btn-xs btn-secondary" title="Edit Content Manually">
                                                         <em class="icon ni ni-edit"></em>
                                                     </a>
                                                 @else
@@ -423,7 +408,7 @@ function generateAll(featureId) {
 }
 
 function retryField(featureId, field) {
-    const provider = document.querySelector('input[name="provider"]:checked').value;
+    const provider = document.querySelector('[name="provider"]').value;
     if (confirm('Generate content for field "' + field + '"?')) {
         document.getElementById('retry_feature_id').value = featureId;
         document.getElementById('retry_field').value = field;

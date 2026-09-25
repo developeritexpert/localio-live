@@ -36,6 +36,7 @@ class AiPrompt extends Model
         'faqs',
         'categories',
         'active_countries',
+        'rating',
     ];
 
     // Label map for content fields
@@ -49,6 +50,7 @@ class AiPrompt extends Model
         'faqs'              => 'FAQs',
         'categories'        => 'Categories',
         'active_countries'  => 'Active countries/regions',
+        'rating'            => 'Rating',
     ];
 
     public function getProcessedPrompt($variables = [])

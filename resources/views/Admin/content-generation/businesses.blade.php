@@ -208,15 +208,10 @@
                                     <td class="text-center" id="logo-cell-{{ $business->id }}">
                                         <input type="file" id="logo-input-{{ $business->id }}" class="d-none" accept=".svg,image/svg+xml,image/*" onchange="uploadBusinessLogo({{ $business->id }}, this)">
                                         @if($business->hasLogo())
-                                            <div class="d-inline-flex align-items-center justify-content-center gap-1">
-                                                <button type="button" class="btn btn-icon btn-trigger text-success p-0" title="Logo uploaded! Click to upload / replace logo." onclick="document.getElementById('logo-input-{{ $business->id }}').click()" style="cursor: pointer; background: none; border: none;">
-                                                    <em class="icon ni ni-check-circle-fill text-success" style="font-size: 22px;"></em>
-                                                </button>
-                                                @php $rawIcon = $business->getRawOriginal('icon_id') ?? $business->icon_id; @endphp
-                                                @if($rawIcon)
-                                                    <img src="{{ asset($rawIcon) }}" alt="Logo" class="rounded border p-1" style="width: 26px; height: 26px; object-fit: contain; background: #fff;" title="Current logo. Click check to change.">
-                                                @endif
-                                            </div>
+                                            @php $rawIcon = $business->getRawOriginal('icon_id') ?? $business->icon_id; @endphp
+                                            @if($rawIcon)
+                                                <img src="{{ asset($rawIcon) }}" alt="Logo" class="rounded border p-1" style="width: 32px; height: 32px; object-fit: contain; background: #fff; cursor: pointer;" title="Logo uploaded. Click to change / replace logo." onclick="document.getElementById('logo-input-{{ $business->id }}').click()">
+                                            @endif
                                         @else
                                             <button type="button" class="btn btn-icon btn-dim btn-outline-secondary btn-sm" title="Upload SVG Logo" onclick="document.getElementById('logo-input-{{ $business->id }}').click()" style="cursor: pointer; width: 30px; height: 30px;">
                                                 <em class="icon ni ni-upload-cloud" style="font-size: 16px;"></em>
@@ -227,11 +222,30 @@
                                         @php $qi = $bizFields[$field] ?? null; @endphp
                                         <td class="text-center">
                                             @if(!$qi)
-                                                <span class="text-muted small">--</span>
+                                                @if($field === 'rating' && $business->admin_rating !== null && (float)$business->admin_rating > 0)
+                                                    <span class="badge badge-dim bg-warning text-dark" title="Current admin rating: {{ number_format((float)$business->admin_rating, 1) }} (active until 10 reviews)">
+                                                        <em class="icon ni ni-star-fill text-warning me-1"></em>{{ number_format((float)$business->admin_rating, 1) }}
+                                                    </span>
+                                                    <button type="button"
+                                                        class="btn btn-icon btn-xs btn-dim btn-outline-secondary ms-1"
+                                                        title="Generate rating with AI"
+                                                        onclick="retryField({{ $business->id }}, 'rating')"
+                                                    >
+                                                        <em class="icon ni ni-reload"></em>
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted small">--</span>
+                                                @endif
                                             @elseif($qi->status === 'completed')
-                                                <span class="badge badge-dim bg-success" title="{{ Str::limit($qi->result, 100) }}">
-                                                    <em class="icon ni ni-check"></em>
-                                                </span>
+                                                @if($field === 'rating' && $business->admin_rating !== null)
+                                                    <span class="badge badge-dim bg-success" title="Admin rating: {{ number_format((float)$business->admin_rating, 1) }} (active until 10 reviews)">
+                                                        <em class="icon ni ni-star-fill text-warning me-1"></em>{{ number_format((float)$business->admin_rating, 1) }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge badge-dim bg-success" title="{{ Str::limit($qi->result, 100) }}">
+                                                        <em class="icon ni ni-check"></em>
+                                                    </span>
+                                                @endif
                                                 <a href="{{ route('content-gen.view-result', $qi->id) }}" class="btn btn-icon btn-xs btn-dim btn-outline-primary ms-1" title="View Result">
                                                     <em class="icon ni ni-eye"></em>
                                                 </a>
@@ -363,12 +377,7 @@ function uploadBusinessLogo(businessId, input) {
         if (data.success) {
             cell.innerHTML = `
                 <input type="file" id="logo-input-${businessId}" class="d-none" accept=".svg,image/svg+xml,image/*" onchange="uploadBusinessLogo(${businessId}, this)">
-                <div class="d-inline-flex align-items-center justify-content-center gap-1">
-                    <button type="button" class="btn btn-icon btn-trigger text-success p-0" title="Logo uploaded! Click to upload / replace logo." onclick="document.getElementById('logo-input-${businessId}').click()" style="cursor: pointer; background: none; border: none;">
-                        <em class="icon ni ni-check-circle-fill text-success" style="font-size: 22px;"></em>
-                    </button>
-                    <img src="${data.logo_url}" alt="Logo" class="rounded border p-1" style="width: 26px; height: 26px; object-fit: contain; background: #fff;" title="Current logo. Click check to change.">
-                </div>
+                <img src="${data.logo_url}" alt="Logo" class="rounded border p-1" style="width: 32px; height: 32px; object-fit: contain; background: #fff; cursor: pointer;" title="Logo uploaded. Click to change / replace logo." onclick="document.getElementById('logo-input-${businessId}').click()">
             `;
         } else {
             alert(data.message || 'Logo upload failed');
@@ -432,7 +441,9 @@ function insertSampleJson() {
                 <h5 class="modal-title" id="importJsonModalLabel">
                     <em class="icon ni ni-plus-circle text-primary me-2"></em>Add Businesses via JSON
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <form action="{{ route('content-gen.import-json') }}" method="POST">
                 @csrf
@@ -465,7 +476,7 @@ function insertSampleJson() {
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
-                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-sm btn-primary">
                         <em class="icon ni ni-check me-1"></em> Import Businesses
                     </button>

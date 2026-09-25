@@ -13,6 +13,7 @@ use App\Models\BusinessTranslation;
 use App\Models\BusinessUsp;
 use App\Models\Category;
 use App\Models\Feature;
+use App\Models\FeatureTransalte;
 use App\Models\CategoryFeatureContent;
 use App\Models\WebSetting;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class ContentGenerationController extends Controller
         'faqs',
         'categories',
         'active_countries',
+        'rating',
     ];
 
     const FEATURE_CONTENT_FIELDS = [
@@ -101,8 +103,10 @@ class ContentGenerationController extends Controller
             });
         $fields     = self::FEATURE_CONTENT_FIELDS;
 
+        $batchSize = (int) (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+
         return view('Admin.content-generation.features', compact(
-            'features', 'fieldStatusMap', 'existingContents', 'categories', 'fields', 'lastPollAt'
+            'features', 'fieldStatusMap', 'existingContents', 'categories', 'fields', 'lastPollAt', 'batchSize'
         ));
     }
 
@@ -116,12 +120,88 @@ class ContentGenerationController extends Controller
             'feature_ids.*' => 'integer|exists:features,id',
             'fields'        => 'required|array|min:1',
             'fields.*'      => 'string|in:header,top_rated,top_10,pros_cons,explore_comparisons,metatags',
-            'provider'      => 'required|in:openai,anthropic',
+            'provider'      => 'required|in:manual,openai,anthropic',
+            'batch_size'    => 'nullable|integer|min:1|max:50',
         ]);
 
         $provider   = $request->provider;
-        $featureIds = $request->feature_ids;
+        $featureIds = array_values(array_unique($request->feature_ids));
         $fields     = $request->fields;
+
+        if ($request->filled('batch_size')) {
+            WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => (int)$request->batch_size]);
+        }
+        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5));
+
+        // ---------------------------------------------------------------------
+        // MANUAL BATCH WORKFLOW FOR FEATURES (Download/Copy JSON for ChatGPT & Upload Results)
+        // ---------------------------------------------------------------------
+        if ($provider === 'manual') {
+            $chunks = array_chunk($featureIds, $batchSize);
+            $createdJobs = [];
+
+            $allFields = self::FEATURE_CONTENT_FIELDS;
+            $isAll = empty(array_diff($allFields, $fields));
+            $fieldsValue = $isAll ? 'ALL' : array_values($fields);
+
+            foreach ($chunks as $chunk) {
+                $featuresData = [];
+                $featureModels = Feature::with([
+                    'translations'         => fn($q) => $q->where('lang_id', 1),
+                    'category.translation' => fn($q) => $q->where('lang_id', 1),
+                ])->whereIn('id', $chunk)->get();
+
+                foreach ($chunk as $featId) {
+                    $feat = $featureModels->firstWhere('id', $featId);
+                    if (!$feat) continue;
+                    $fName   = optional($feat->translations->first())->name ?? 'Feature #' . $featId;
+                    $catName = optional($feat->category)->translation?->name ?? (optional($feat->category)->name ?? 'General');
+
+                    $featuresData[] = [
+                        'feature_id'       => $featId,
+                        'feature_name'     => $fName,
+                        'category_id'      => $feat->category_id,
+                        'category_name'    => $catName,
+                        'fields_requested' => $fieldsValue,
+                    ];
+                }
+
+                $batchJobCode = 'BATCH-FEAT-MANUAL-' . strtoupper(Str::random(8));
+                $inputPayload = [
+                    'batch_id'       => $batchJobCode,
+                    'batch_type'     => 'features',
+                    'total_features' => count($featuresData),
+                    'features'       => $featuresData,
+                ];
+
+                $batchJob = AiBatchJob::create([
+                    'provider'      => 'manual',
+                    'batch_id'      => $batchJobCode,
+                    'prompt_type'   => 'feature:' . implode(',', $fields),
+                    'status'        => 'pending',
+                    'submitted_at'  => now(),
+                    'total_items'   => count($featuresData) * count($fields),
+                    'input_payload' => json_encode($inputPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                ]);
+
+                foreach ($featuresData as $fItem) {
+                    foreach ($fields as $field) {
+                        AiContentQueue::create([
+                            'batch_job_id'      => $batchJob->id,
+                            'resource_type'     => 'category_feature',
+                            'resource_id'       => $fItem['feature_id'],
+                            'content_field'     => $field,
+                            'openai_request_id' => "feat_{$fItem['feature_id']}_{$field}",
+                            'status'            => 'pending',
+                        ]);
+                    }
+                }
+                $createdJobs[] = $batchJob;
+            }
+
+            $countJobs = count($createdJobs);
+            return redirect()->route('content-gen.batch-jobs')->with('success', "Created {$countJobs} manual batch job(s) ({$batchSize} features per batch). You can now copy the JSON and upload the results!");
+        }
 
         $apiKey = $provider === 'openai'
             ? optional(WebSetting::where('key', 'openai_api_key')->first())->value
@@ -256,7 +336,7 @@ class ContentGenerationController extends Controller
         $request->validate([
             'feature_id' => 'required|integer|exists:features,id',
             'field'      => 'required|string|in:header,top_rated,top_10,pros_cons,explore_comparisons,metatags',
-            'provider'   => 'required|in:openai,anthropic',
+            'provider'   => 'required|in:manual,openai,anthropic',
         ]);
 
         return $this->submitFeaturesBatch(new Request([
@@ -484,21 +564,28 @@ class ContentGenerationController extends Controller
             $chunks = array_chunk($businessIds, $batchSize);
             $createdJobs = [];
 
+            $allFields = self::CONTENT_FIELDS;
+            $isAll = empty(array_diff($allFields, $fields));
+            $fieldsValue = $isAll ? 'ALL' : array_values($fields);
+
             foreach ($chunks as $chunk) {
                 $businessesData = [];
                 $businessModels = Business::with([
                     'translations' => fn($q) => $q->where('lang_id', 1),
+                    'websites',
                 ])->whereIn('id', $chunk)->get();
 
                 foreach ($chunk as $bizId) {
                     $b = $businessModels->firstWhere('id', $bizId);
                     if (!$b) continue;
                     $bName = optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $bizId;
-                    $bUrl  = $b->permanent_url ?: ($b->affiliate_link ?: '');
+                    // Official business URL only — never affiliate link!
+                    $bUrl  = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
                     $businessesData[] = [
-                        'business_id'   => $bizId,
-                        'business_name' => $bName,
-                        'business_url'  => $bUrl,
+                        'business_id'      => $bizId,
+                        'business_name'    => $bName,
+                        'business_url'     => $bUrl,
+                        'fields_requested' => $fieldsValue,
                     ];
                 }
 
@@ -506,8 +593,6 @@ class ContentGenerationController extends Controller
                 $inputPayload = [
                     'batch_id'         => $batchJobCode,
                     'total_businesses' => count($businessesData),
-                    'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
-                    'fields_requested' => $fields,
                     'businesses'       => $businessesData,
                 ];
 
@@ -743,12 +828,13 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function batchJobs()
     {
-        $jobs               = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
-        $lastPollAt         = Cache::get('ai_batch_last_poll');
-        $batchSize          = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
-        $batchResultExample = self::getBatchResultExampleJson();
+        $jobs                      = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
+        $lastPollAt                = Cache::get('ai_batch_last_poll');
+        $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+        $batchResultExample        = self::getBatchResultExampleJson();
+        $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
 
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample'));
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample'));
     }
 
     // -------------------------------------------------------------------------
@@ -762,12 +848,23 @@ class ContentGenerationController extends Controller
             ->orderBy('content_field')
             ->paginate(50);
 
-        $businessIds   = $items->pluck('resource_id')->unique()->toArray();
-        $businessNames = BusinessTranslation::whereIn('business_id', $businessIds)
-            ->where('lang_id', 1)
-            ->pluck('name', 'business_id');
+        $isFeatureJob = $job->queueItems()->where('resource_type', 'category_feature')->exists()
+            || str_starts_with($job->prompt_type ?? '', 'feature:');
 
-        return view('Admin.content-generation.batch-job-items', compact('job', 'items', 'businessNames'));
+        $businessNames = [];
+        if ($isFeatureJob) {
+            $featureIds    = $items->pluck('resource_id')->unique()->toArray();
+            $businessNames = FeatureTransalte::whereIn('feature_id', $featureIds)
+                ->where('lang_id', 1)
+                ->pluck('name', 'feature_id');
+        } else {
+            $businessIds   = $items->pluck('resource_id')->unique()->toArray();
+            $businessNames = BusinessTranslation::whereIn('business_id', $businessIds)
+                ->where('lang_id', 1)
+                ->pluck('name', 'business_id');
+        }
+
+        return view('Admin.content-generation.batch-job-items', compact('job', 'items', 'businessNames', 'isFeatureJob'));
     }
 
     // -------------------------------------------------------------------------
@@ -775,11 +872,18 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function viewResult(AiContentQueue $item)
     {
-        $businessName = BusinessTranslation::where('business_id', $item->resource_id)
-            ->where('lang_id', 1)
-            ->value('name') ?? 'Business #' . $item->resource_id;
+        $isFeature = ($item->resource_type === 'category_feature');
+        if ($isFeature) {
+            $businessName = FeatureTransalte::where('feature_id', $item->resource_id)
+                ->where('lang_id', 1)
+                ->value('name') ?? 'Feature #' . $item->resource_id;
+        } else {
+            $businessName = BusinessTranslation::where('business_id', $item->resource_id)
+                ->where('lang_id', 1)
+                ->value('name') ?? 'Business #' . $item->resource_id;
+        }
 
-        return view('Admin.content-generation.result', compact('item', 'businessName'));
+        return view('Admin.content-generation.result', compact('item', 'businessName', 'isFeature'));
     }
 
     // -------------------------------------------------------------------------
@@ -1131,6 +1235,14 @@ class ContentGenerationController extends Controller
                 }
                 break;
 
+            case 'rating':
+                $ratingVal = $data['rating'] ?? ($data['value'] ?? null);
+                if (is_numeric($ratingVal)) {
+                    $ratingVal = max(1.0, min(5.0, round((float) $ratingVal, 2)));
+                    Business::where('id', $businessId)->update(['admin_rating' => $ratingVal]);
+                }
+                break;
+
             // Legacy fallbacks
             case 'content':
                 $content = $data['content'] ?? null;
@@ -1229,6 +1341,12 @@ class ContentGenerationController extends Controller
                     return 'Expected {"active_all_countries": true|false, "country_codes": [...]}';
                 }
                 break;
+            case 'rating':
+                $rCheck = $data['rating'] ?? ($data['value'] ?? null);
+                if ($rCheck === null || !is_numeric($rCheck)) {
+                    return 'Expected {"rating": 4.5} (numeric rating between 1.0 and 5.0)';
+                }
+                break;
             case 'content':
                 if (!isset($data['content'])) return 'Expected {"content": "..."}';
                 break;
@@ -1297,7 +1415,9 @@ Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\",
 
 Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\": [2, 3]}",
 
-            'active_countries' => "Analyze {$businessName}.{$urlInfo} Determine whether this business operates globally (available in all countries) or is restricted to specific countries. Return JSON: {\"active_all_countries\": true, \"country_codes\": [\"US\", \"GB\", \"CA\", \"AU\", \"DE\"]}",
+            'active_countries' => 'Analyze ' . $businessName . '.' . $urlInfo . ' Determine whether this business operates globally (available in all countries) or is restricted to specific countries. If available globally in all countries, return JSON: {"active_all_countries": true}. If restricted to specific countries, return JSON: {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]} using standard 2-letter ISO country codes.',
+
+            'rating' => "Evaluate the overall market reputation, service quality, and reliability for {$businessName}.{$catInfo}{$urlInfo} Provide an initial overall editorial rating score between 1.0 and 5.0 (with one or two decimal places, e.g. 4.6 or 4.8) to be displayed on their directory profile until 10 approved user reviews are reached. Return JSON: {\"rating\": 4.6}",
 
             'content'   => "Write a comprehensive overview for {$businessName} ({$categoryName}). Return JSON: {\"content\": \"...\"}",
             'features'  => "List 6 key features of {$businessName} ({$categoryName}). Return JSON: {\"features\": [{\"title\": \"...\", \"description\": \"...\"}]}",
@@ -1558,37 +1678,147 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     }
 
     // -------------------------------------------------------------------------
-    // DOWNLOAD BATCH JSON (For ChatGPT Prompt)
+    // CLEAN BATCH JSON PAYLOAD BUILDER
     // -------------------------------------------------------------------------
-    public function downloadBatchJson(AiBatchJob $job)
+    public function buildCleanBatchPayload(AiBatchJob $job): array
     {
-        if (!empty($job->input_payload)) {
-            $content = $job->input_payload;
-        } else {
-            $businessIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->toArray();
-            $businesses  = Business::with(['translations' => fn($q) => $q->where('lang_id', 1)])->whereIn('id', $businessIds)->get();
-            $bList = [];
-            foreach ($businesses as $b) {
-                $bList[] = [
-                    'business_id'   => $b->id,
-                    'business_name' => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
-                    'business_url'  => $b->permanent_url ?: ($b->affiliate_link ?: ''),
+        $hasFeatures = $job->queueItems()->where('resource_type', 'category_feature')->exists()
+            || str_starts_with($job->prompt_type ?: '', 'feature:');
+
+        if ($hasFeatures) {
+            $featureIds = $job->queueItems()->where('resource_type', 'category_feature')->pluck('resource_id')->unique()->toArray();
+            $features   = Feature::with([
+                'translations'         => fn($q) => $q->where('lang_id', 1),
+                'category.translation' => fn($q) => $q->where('lang_id', 1),
+            ])->whereIn('id', $featureIds)->get();
+
+            $promptType = str_replace('feature:', '', $job->prompt_type ?: '');
+            $requestedFields = array_values(array_filter(explode(',', $promptType)));
+            if (empty($requestedFields)) {
+                $requestedFields = self::FEATURE_CONTENT_FIELDS;
+            }
+            $isAll = empty(array_diff(self::FEATURE_CONTENT_FIELDS, $requestedFields));
+            $fieldsValue = $isAll ? 'ALL' : $requestedFields;
+
+            $fList = [];
+            foreach ($features as $f) {
+                $fName   = optional($f->translations->first())->name ?? 'Feature #' . $f->id;
+                $catName = optional($f->category)->translation?->name ?? (optional($f->category)->name ?? 'General');
+
+                $fList[] = [
+                    'feature_id'       => $f->id,
+                    'feature_name'     => $fName,
+                    'category_id'      => $f->category_id,
+                    'category_name'    => $catName,
+                    'fields_requested' => $fieldsValue,
                 ];
             }
-            $content = json_encode([
-                'batch_id'         => $job->batch_id ?: ('BATCH-' . $job->id),
-                'total_businesses' => count($bList),
-                'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
-                'fields_requested' => explode(',', $job->prompt_type ?: implode(',', self::CONTENT_FIELDS)),
-                'businesses'       => $bList,
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+            return [
+                'batch_id'       => $job->batch_id ?: ('BATCH-' . $job->id),
+                'batch_type'     => 'features',
+                'total_features' => count($fList),
+                'features'       => $fList,
+            ];
         }
 
-        $filename = 'batch_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
+        $businessIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->toArray();
+        $businesses  = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', 1),
+            'websites',
+        ])->whereIn('id', $businessIds)->get();
+
+        $requestedFields = array_values(array_filter(explode(',', $job->prompt_type ?: '')));
+        if (empty($requestedFields)) {
+            $requestedFields = self::CONTENT_FIELDS;
+        }
+        $isAll = empty(array_diff(self::CONTENT_FIELDS, $requestedFields));
+        $fieldsValue = $isAll ? 'ALL' : $requestedFields;
+
+        $bList = [];
+        foreach ($businesses as $b) {
+            $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+            $bList[] = [
+                'business_id'      => $b->id,
+                'business_name'    => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                'business_url'     => $bUrl,
+                'fields_requested' => $fieldsValue,
+            ];
+        }
+
+        return [
+            'batch_id'         => $job->batch_id ?: ('BATCH-' . $job->id),
+            'total_businesses' => count($bList),
+            'businesses'       => $bList,
+        ];
+    }
+
+    public function getBatchJson(AiBatchJob $job)
+    {
+        $payload = $this->buildCleanBatchPayload($job);
+        return response()->json($payload, 200, [
+            'Content-Type' => 'application/json; charset=utf-8'
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    public function downloadBatchJson(AiBatchJob $job)
+    {
+        $payload = $this->buildCleanBatchPayload($job);
+        $content = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $type = isset($payload['batch_type']) ? $payload['batch_type'] : 'businesses';
+        $filename = 'batch_' . $type . '_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
 
         return response($content, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadCategories()
+    {
+        $categories = Category::whereNull('parent_id')
+            ->with([
+                'translation' => fn($q) => $q->where('lang_id', 1),
+                'children.translation' => fn($q) => $q->where('lang_id', 1),
+            ])
+            ->orderBy('id')
+            ->get()
+            ->map(function($parent) {
+                return [
+                    'category_id'   => $parent->id,
+                    'category_name' => optional($parent->translation)->name ?? ('Category #' . $parent->id),
+                    'subcategories' => $parent->children->map(fn($child) => [
+                        'subcategory_id'   => $child->id,
+                        'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
+                    ])->values(),
+                ];
+            });
+
+        $json = json_encode($categories, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_categories_and_ids.json"',
+        ]);
+    }
+
+    public function downloadCountries()
+    {
+        $countries = \App\Models\Country::where('status', 1)
+            ->orderBy('name')
+            ->get()
+            ->map(fn($c) => [
+                'country_code' => strtoupper($c->country_code),
+                'country_name' => $c->name,
+                'country_id'   => $c->id,
+            ])
+            ->values();
+
+        $json = json_encode($countries, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_country_codes.json"',
         ]);
     }
 
@@ -1621,6 +1851,141 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $parsed = json_decode($cleanJson, true);
         if (!is_array($parsed)) {
             return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+        }
+
+        $isFeatureJob = $job->queueItems()->where('resource_type', 'category_feature')->exists()
+            || str_starts_with($job->prompt_type ?: '', 'feature:')
+            || isset($parsed['features']);
+
+        if ($isFeatureJob) {
+            $featureList = [];
+            if (isset($parsed['features']) && is_array($parsed['features'])) {
+                $featureList = $parsed['features'];
+            } elseif (isset($parsed['results']) && is_array($parsed['results'])) {
+                $featureList = $parsed['results'];
+            } elseif (array_is_list($parsed)) {
+                $featureList = $parsed;
+            } else {
+                $featureList = [$parsed];
+            }
+
+            $appliedFeaturesCount = 0;
+            $appliedFieldsCount   = 0;
+
+            foreach ($featureList as $fData) {
+                if (!is_array($fData)) continue;
+
+                $rawFeatId = $fData['feature_id'] ?? ($fData['id'] ?? null);
+                $featName  = trim($fData['feature_name'] ?? ($fData['name'] ?? ''));
+
+                $feat = null;
+                if ($rawFeatId) {
+                    $feat = Feature::find($rawFeatId);
+                }
+                if (!$feat && !empty($featName)) {
+                    $jobFeatIds = $job->queueItems()->where('resource_type', 'category_feature')->pluck('resource_id')->unique();
+                    $feat = Feature::whereIn('id', $jobFeatIds)
+                        ->whereHas('translations', function ($q) use ($featName) {
+                            $q->where('lang_id', 1)->where('name', 'like', $featName);
+                        })->first();
+                }
+
+                if (!$feat) {
+                    Log::warning("Batch result feature not found or not matched: ID '{$rawFeatId}', name '{$featName}'");
+                    continue;
+                }
+
+                $featId = $feat->id;
+                $appliedFeaturesCount++;
+
+                $jobFields = $job->queueItems()
+                    ->where('resource_type', 'category_feature')
+                    ->where('resource_id', $featId)
+                    ->pluck('content_field')
+                    ->toArray();
+
+                if (empty($jobFields)) {
+                    $jobFields = self::FEATURE_CONTENT_FIELDS;
+                }
+
+                foreach ($jobFields as $field) {
+                    $normalizedData = [];
+
+                    if ($field === 'header') {
+                        if (isset($fData['header']) && is_array($fData['header'])) {
+                            $normalizedData = [
+                                'page_title'  => $fData['header']['page_title'] ?? ($fData['header']['title'] ?? ''),
+                                'description' => $fData['header']['description'] ?? ($fData['header']['text'] ?? ''),
+                            ];
+                        } else {
+                            $normalizedData = [
+                                'page_title'  => $fData['page_title'] ?? ($fData['title'] ?? ''),
+                                'description' => $fData['description'] ?? ($fData['header_text'] ?? ''),
+                            ];
+                        }
+                    } elseif ($field === 'top_rated') {
+                        $src = (isset($fData['top_rated']) && is_array($fData['top_rated'])) ? $fData['top_rated'] : $fData;
+                        $normalizedData = [
+                            'top_rated_listing_headline' => $src['top_rated_listing_headline'] ?? ($src['headline'] ?? ''),
+                            'top_rated_listing_subtext'  => $src['top_rated_listing_subtext'] ?? ($src['subtext'] ?? ''),
+                        ];
+                    } elseif ($field === 'top_10') {
+                        $src = (isset($fData['top_10']) && is_array($fData['top_10'])) ? $fData['top_10'] : $fData;
+                        $normalizedData = [
+                            'compare_alternatives_headline' => $src['compare_alternatives_headline'] ?? ($src['headline'] ?? ''),
+                            'compare_alternatives_subtext'  => $src['compare_alternatives_subtext'] ?? ($src['subtext'] ?? ''),
+                        ];
+                    } elseif ($field === 'pros_cons') {
+                        $src = (isset($fData['pros_cons']) && is_array($fData['pros_cons'])) ? $fData['pros_cons'] : $fData;
+                        $normalizedData = [
+                            'community_says_headline' => $src['community_says_headline'] ?? ($src['headline'] ?? ''),
+                            'community_says_subtext'  => $src['community_says_subtext'] ?? ($src['subtext'] ?? ''),
+                        ];
+                    } elseif ($field === 'explore_comparisons') {
+                        $src = (isset($fData['explore_comparisons']) && is_array($fData['explore_comparisons'])) ? $fData['explore_comparisons'] : $fData;
+                        $normalizedData = [
+                            'explore_subcategories_headline' => $src['explore_subcategories_headline'] ?? '',
+                            'explore_subcategories_subtext'  => $src['explore_subcategories_subtext'] ?? '',
+                            'popular_comparisons_headline'   => $src['popular_comparisons_headline'] ?? '',
+                            'popular_comparisons_subtext'    => $src['popular_comparisons_subtext'] ?? '',
+                        ];
+                    } elseif ($field === 'metatags') {
+                        $src = (isset($fData['metatags']) && is_array($fData['metatags'])) ? $fData['metatags'] : $fData;
+                        $normalizedData = [
+                            'meta_title'       => $src['meta_title'] ?? '',
+                            'meta_description' => $src['meta_description'] ?? '',
+                        ];
+                    }
+
+                    $queueItem = AiContentQueue::firstOrNew([
+                        'batch_job_id'  => $job->id,
+                        'resource_type' => 'category_feature',
+                        'resource_id'   => $featId,
+                        'content_field' => $field,
+                    ]);
+
+                    $queueItem->openai_request_id = "feat_{$featId}_{$field}";
+                    $queueItem->status            = 'completed';
+                    $queueItem->result            = json_encode($normalizedData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    $queueItem->save();
+
+                    try {
+                        $this->applyResultToRecord($queueItem, $normalizedData);
+                        $appliedFieldsCount++;
+                    } catch (\Exception $e) {
+                        Log::error("Failed to auto-apply field {$field} for feature {$featId}: " . $e->getMessage());
+                    }
+                }
+            }
+
+            $job->update([
+                'status'          => 'completed',
+                'completed_items' => $appliedFieldsCount,
+                'completed_at'    => now(),
+                'raw_response'    => $cleanJson,
+            ]);
+
+            return back()->with('success', "Batch result processed successfully! Applied content for {$appliedFeaturesCount} feature(s) across {$appliedFieldsCount} field(s).");
         }
 
         // If wrapped in {"businesses": [...]} or {"results": [...]}
@@ -1706,6 +2071,22 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
                     $normalizedData = ['faqs' => $fieldVal];
+                } elseif ($field === 'active_countries' && is_array($fieldVal)) {
+                    $activeAll = !empty($fieldVal['active_all_countries']);
+                    if ($activeAll) {
+                        $normalizedData = ['active_all_countries' => true];
+                    } else {
+                        $countryCodes = $fieldVal['country_codes'] ?? ($fieldVal['countries'] ?? []);
+                        $normalizedData = [
+                            'active_all_countries' => false,
+                            'country_codes'        => is_array($countryCodes) ? array_values($countryCodes) : [],
+                        ];
+                    }
+                } elseif ($field === 'rating') {
+                    $rVal = is_array($fieldVal) ? ($fieldVal['rating'] ?? $fieldVal['value'] ?? null) : $fieldVal;
+                    $rFloat = is_numeric($rVal) ? round((float)$rVal, 2) : 4.5;
+                    $rFloat = max(1.0, min(5.0, $rFloat));
+                    $normalizedData = ['rating' => $rFloat];
                 }
 
                 // Find or create AiContentQueue record
@@ -1749,7 +2130,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $example = [
             [
                 "business_id"       => 101,
-                "business_name"     => "HostGator",
+                "business_name"     => "HostGator (Global Business Example)",
                 "short_description" => "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
                 "long_description"  => "HostGator offers robust shared, VPS, and dedicated web hosting built for high performance and reliability.",
                 "usps"              => [
@@ -1788,12 +2169,79 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ]
                 ],
                 "categories"        => [
-                    "category_id"     => 4,
-                    "subcategory_ids" => [12, 15]
+                    "category_id"     => 11,
+                    "subcategory_ids" => [19, 20]
                 ],
                 "active_countries"  => [
-                    "active_all_countries" => true,
+                    "active_all_countries" => true
+                ],
+                "rating"            => 4.7
+            ],
+            [
+                "business_id"       => 102,
+                "business_name"     => "Specific Region Provider (Specific Countries Example)",
+                "short_description" => "Regional infrastructure provider delivering dedicated servers and compliant cloud hosting in select countries.",
+                "long_description"  => "High-compliance hosting tailored for businesses operating in designated jurisdictions with localized data centers.",
+                "usps"              => [
+                    "Local data residency guarantee",
+                    "ISO 27001 certified security",
+                    "Sub-10ms localized latency",
+                    "Dedicated regional account manager"
+                ],
+                "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
+                "pros_cons"         => [
+                    "pros" => [
+                        "Fast regional latency",
+                        "Strict local data privacy compliance"
+                    ],
+                    "cons" => [
+                        "Restricted to specific operating countries"
+                    ]
+                ],
+                "services"          => [
+                    "headline"    => "Regional Cloud & Dedicated Servers",
+                    "top_text"    => "Secure regional infrastructure optimized for local compliance.",
+                    "bottom_text" => "Fully managed migration and disaster recovery solutions."
+                ],
+                "faqs"              => [
+                    [
+                        "question" => "Which countries do you operate in?",
+                        "answer"   => "Services are exclusively available in the United States, United Kingdom, Canada, Australia, and Germany."
+                    ]
+                ],
+                "categories"        => [
+                    "category_id"     => 11,
+                    "subcategory_ids" => [22, 25]
+                ],
+                "active_countries"  => [
+                    "active_all_countries" => false,
                     "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                ],
+                "rating"            => 4.5
+            ]
+        ];
+
+        return json_encode($example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+
+    public static function getFeatureBatchResultExampleJson(): string
+    {
+        $example = [
+            [
+                "feature_id"   => 1007,
+                "feature_name" => "Server resource isolation",
+                "header"       => [
+                    "page_title"  => "Top Web Hosting with Server Resource Isolation",
+                    "description" => "Discover leading web hosting providers featuring dedicated server resource isolation for enhanced stability, security, and consistent high performance."
+                ]
+            ],
+            [
+                "feature_id"   => 1006,
+                "feature_name" => "Control panel",
+                "header"       => [
+                    "page_title"  => "Best Web Hosting with Intuitive Control Panel",
+                    "description" => "Compare top-tier hosting plans providing comprehensive control panel management, effortless database configuration, and 1-click script deployments."
                 ]
             ]
         ];

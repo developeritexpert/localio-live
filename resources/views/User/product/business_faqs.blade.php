@@ -532,13 +532,16 @@
                                         @endif
                                     @endfor
                                 </div>
+                                @if($business->should_show_review_count)
                                 <span class="com-rating"> {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                @endif
                             </div>
                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 12px; text-decoration: none; padding-top: 5px;">
                                 View all reviews
                             </a>
                         </div>
 
+                        @if($business->should_show_detailed_ratings)
                         <p class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
                            Detailed user ratings 
                         </p>
@@ -557,11 +560,11 @@
                                 @endforeach
                             @endif
                         </div>
-
                         <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                             <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
                         </div>
+                        @endif
 
                         <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
@@ -845,7 +848,7 @@
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $catUrl = route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]);
 
-                $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
                 if ($listingsCount === 0) {
                     $listingsCount = \App\Models\Business::where('status', 1)->where(function ($bQ) use ($subcatItem) {
                         $bQ->where('category_id', $subcatItem->id)

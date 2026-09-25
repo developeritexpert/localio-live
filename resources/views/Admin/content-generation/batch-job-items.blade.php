@@ -82,7 +82,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Business</th>
+                                <th>{{ !empty($isFeatureJob) ? 'Feature' : 'Business' }}</th>
                                 <th>Field</th>
                                 <th>Request ID</th>
                                 <th>Status</th>
@@ -95,12 +95,12 @@
                                 <tr>
                                     <td class="text-muted small">{{ $item->id }}</td>
                                     <td>
-                                        <strong>{{ $businessNames[$item->resource_id] ?? ('Business #' . $item->resource_id) }}</strong>
-                                        <div class="text-soft small">ID: {{ $item->resource_id }}</div>
+                                        <strong>{{ $businessNames[$item->resource_id] ?? ((!empty($isFeatureJob) ? 'Feature #' : 'Business #') . $item->resource_id) }}</strong>
+                                        <div class="text-soft small">{{ !empty($isFeatureJob) ? 'Feature ID' : 'ID' }}: {{ $item->resource_id }}</div>
                                     </td>
                                     <td>
                                         <span class="badge badge-dim bg-primary">
-                                            {{ \App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field }}
+                                            {{ ($item->resource_type === 'category_feature') ? (\App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[$item->content_field] ?? ucfirst($item->content_field)) : (\App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field) }}
                                         </span>
                                     </td>
                                     <td><code class="small">{{ $item->openai_request_id }}</code></td>

@@ -16,8 +16,14 @@
                         @endif
                     </p>
                 </div>
-                <div class="nk-block-head-content d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleFormatModal">
+                <div class="nk-block-head-content d-flex flex-wrap gap-2">
+                    <a href="{{ route('content-gen.download-categories') }}" class="btn btn-outline-primary btn-sm" title="Download all category names with their IDs as JSON">
+                        <em class="icon ni ni-folder me-1"></em> Categories & IDs
+                    </a>
+                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-outline-primary btn-sm" title="Download all supported country codes and names as JSON">
+                        <em class="icon ni ni-globe me-1"></em> Country Codes
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openExampleModal()">
                         <em class="icon ni ni-file-code me-1"></em> Result JSON Format
                     </button>
                     <a href="{{ route('content-gen.poll-now') }}" class="btn btn-outline-info btn-sm">
@@ -98,7 +104,18 @@
                                     </td>
                                     <td><code class="small">{{ $job->batch_id ?? '-' }}</code></td>
                                     <td>
-                                        @if($job->prompt_type)
+                                        @if(str_starts_with($job->prompt_type ?? '', 'feature:'))
+                                            <span class="badge badge-dim bg-primary me-1"><em class="icon ni ni-spark me-1"></em>Feature</span>
+                                            @php
+                                                $fFields = explode(',', str_replace('feature:', '', $job->prompt_type));
+                                            @endphp
+                                            @foreach($fFields as $f)
+                                                <span class="badge badge-dim bg-secondary mb-1" style="font-size: 11px;">
+                                                    {{ \App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[trim($f)] ?? trim($f) }}
+                                                </span>
+                                            @endforeach
+                                        @elseif($job->prompt_type)
+                                            <span class="badge badge-dim bg-info me-1"><em class="icon ni ni-building me-1"></em>Business</span>
                                             @foreach(explode(',', $job->prompt_type ?? '') as $f)
                                                 <span class="badge badge-dim bg-secondary mb-1" style="font-size: 11px;">
                                                     {{ \App\Models\AiContentQueue::$fieldLabels[trim($f)] ?? trim($f) }}
@@ -129,13 +146,16 @@
                                     <td class="text-soft small">{{ $job->submitted_at ? $job->submitted_at->diffForHumans() : '-' }}</td>
                                     <td class="text-soft small">{{ $job->completed_at ? $job->completed_at->diffForHumans() : '-' }}</td>
                                     <td class="text-end text-nowrap">
-                                        {{-- Download JSON for ChatGPT --}}
-                                        <a href="{{ route('content-gen.batch-jobs.download', $job->id) }}" class="btn btn-xs btn-outline-info me-1" title="Download input JSON with business info for ChatGPT">
-                                            <em class="icon ni ni-download me-1"></em> Download JSON
-                                        </a>
+                                        {{-- Copy JSON for ChatGPT --}}
+                                        <button type="button" class="btn btn-xs btn-outline-info me-1" onclick="copyBatchJson({{ $job->id }}, this)" title="Copy batch JSON for ChatGPT to clipboard">
+                                            <em class="icon ni ni-copy me-1"></em> Copy JSON
+                                        </button>
 
                                         {{-- Upload Result JSON --}}
-                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}')" title="Upload ChatGPT result JSON for this batch">
+                                        @php
+                                            $isFeat = str_starts_with($job->prompt_type ?? '', 'feature:');
+                                        @endphp
+                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}', {{ $isFeat ? 'true' : 'false' }})" title="Upload ChatGPT result JSON for this batch">
                                             <em class="icon ni ni-upload me-1"></em> Upload Result
                                         </button>
 
@@ -146,7 +166,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> or <a href="{{ route('content-gen.features') }}">Features</a> to create one.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -160,14 +180,16 @@
 </div>
 
 {{-- Upload Batch Result Modal --}}
-<div class="modal fade" id="uploadResultModal" tabindex="-1" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal fade" id="uploadResultModal" tabindex="-1" role="dialog" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="uploadResultModalLabel">
                     <em class="icon ni ni-upload-cloud text-success me-2"></em>Upload Batch Result JSON
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" onclick="closeUploadModal()">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <form id="uploadResultForm" action="" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -197,7 +219,7 @@
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
-                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal" onclick="closeUploadModal()">Cancel</button>
                     <button type="submit" class="btn btn-sm btn-success">
                         <em class="icon ni ni-check me-1"></em> Process & Apply Result
                     </button>
@@ -208,28 +230,70 @@
 </div>
 
 {{-- Example Format Modal --}}
-<div class="modal fade" id="exampleFormatModal" tabindex="-1" aria-labelledby="exampleFormatModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+<div class="modal fade" id="exampleFormatModal" tabindex="-1" role="dialog" aria-labelledby="exampleFormatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="exampleFormatModalLabel">
                     <em class="icon ni ni-file-code text-primary me-2"></em>Expected Output JSON Schema & Example
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" onclick="closeExampleModal()">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <div class="modal-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <p class="text-muted small mb-0">
-                        When prompting ChatGPT, ask it to output a JSON array of objects matching this exact structure for each business:
-                    </p>
-                    <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
-                        <em class="icon ni ni-copy me-1"></em> Copy Example JSON
-                    </button>
+                <ul class="nav nav-tabs nav-tabs-mb-icon mb-3" id="formatExampleTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0)" onclick="switchExampleTab('business')">
+                            <em class="icon ni ni-building me-1"></em> Businesses Output Format
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="switchExampleTab('feature')">
+                            <em class="icon ni ni-spark me-1"></em> Features Output Format
+                        </a>
+                    </li>
+                </ul>
+
+                {{-- Business Format Panel --}}
+                <div id="businessFormatPanel">
+                    <div class="alert alert-info py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
+                        <ul class="mb-0 ps-3">
+                            <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
+                            <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="text-muted small mb-0">
+                            Ask ChatGPT to output a JSON array of businesses matching this exact structure:
+                        </p>
+                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                            <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                        </button>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded" style="max-height: 440px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
                 </div>
-                <pre class="bg-dark text-light p-3 rounded" style="max-height: 480px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
+
+                {{-- Feature Format Panel --}}
+                <div id="featureFormatPanel" style="display:none;">
+                    <div class="alert alert-primary py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-spark me-1"></em> Category Feature Content Schema:</div>
+                        <span class="text-muted">Supports either nested <code>"header": {"page_title": "...", "description": "..."}</code> or flat <code>{"page_title": "...", "description": "..."}</code>.</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="text-muted small mb-0">
+                            Ask ChatGPT to output a JSON array of features matching this exact structure:
+                        </p>
+                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                            <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                        </button>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded" style="max-height: 440px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="featureExampleJsonCode">{{ $featureBatchResultExample ?? '' }}</code></pre>
+                </div>
             </div>
             <div class="modal-footer border-top bg-light">
-                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal" onclick="closeExampleModal()">Close</button>
                 <button type="button" class="btn btn-sm btn-primary" onclick="copyExampleJson()">
                     <em class="icon ni ni-copy me-1"></em> Copy JSON
                 </button>
@@ -240,31 +304,158 @@
 
 <script>
 const sampleResultJson = `{!! addslashes($batchResultExample ?? '') !!}`;
+const sampleFeatureResultJson = `{!! addslashes($featureBatchResultExample ?? '') !!}`;
+let currentModalIsFeature = false;
+let currentExampleTab = 'business';
 
-function openUploadModal(jobId, batchId) {
+function openUploadModal(jobId, batchId, isFeature = false) {
+    currentModalIsFeature = isFeature;
     const form = document.getElementById('uploadResultForm');
     form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}/upload-result`;
-    document.getElementById('uploadModalBatchId').textContent = batchId || ('#' + jobId);
+    const label = (batchId || ('#' + jobId)) + (isFeature ? ' (Features)' : ' (Businesses)');
+    document.getElementById('uploadModalBatchId').textContent = label;
     document.getElementById('resultTextInput').value = '';
-    const modal = new bootstrap.Modal(document.getElementById('uploadResultModal'));
-    modal.show();
+    if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
+        $('#uploadResultModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('uploadResultModal')).show();
+    } else {
+        const el = document.getElementById('uploadResultModal');
+        el.classList.add('show');
+        el.style.display = 'block';
+    }
+}
+
+function closeUploadModal() {
+    if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
+        $('#uploadResultModal').modal('hide');
+    }
+    const el = document.getElementById('uploadResultModal');
+    if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
 }
 
 function openExampleModal() {
-    const modal = new bootstrap.Modal(document.getElementById('exampleFormatModal'));
-    modal.show();
+    if (window.jQuery && typeof $('#exampleFormatModal').modal === 'function') {
+        $('#exampleFormatModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('exampleFormatModal')).show();
+    } else {
+        const el = document.getElementById('exampleFormatModal');
+        el.classList.add('show');
+        el.style.display = 'block';
+    }
+}
+
+function closeExampleModal() {
+    if (window.jQuery && typeof $('#exampleFormatModal').modal === 'function') {
+        $('#exampleFormatModal').modal('hide');
+    }
+    const el = document.getElementById('exampleFormatModal');
+    if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+// Global modal dismiss handler for DashLite / Bootstrap 4 & 5 compatibility
+if (window.jQuery) {
+    $(document).on('click', '[data-bs-dismiss="modal"], [data-dismiss="modal"], .btn-close, .close', function(e) {
+        const modal = $(this).closest('.modal');
+        if (modal.length) {
+            modal.modal('hide');
+            modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true');
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+        }
+    });
+}
+
+function copyBatchJson(jobId, btn) {
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<em class="icon ni ni-loader me-1"></em> Copying...';
+
+    fetch(`/admin-dashboard/content-generation/batch-jobs/${jobId}/json`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('HTTP error ' + res.status);
+        return res.json();
+    })
+    .then(data => {
+        const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return Promise.resolve();
+        }
+    })
+    .then(() => {
+        btn.classList.remove('btn-outline-info');
+        btn.classList.add('btn-success');
+        btn.innerHTML = '<em class="icon ni ni-check me-1"></em> Copied!';
+        setTimeout(() => {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-info');
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }, 2000);
+    })
+    .catch(err => {
+        alert('Failed to copy JSON: ' + err.message);
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    });
 }
 
 function insertSampleResult() {
-    document.getElementById('resultTextInput').value = sampleResultJson;
+    document.getElementById('resultTextInput').value = currentModalIsFeature ? sampleFeatureResultJson : sampleResultJson;
+}
+
+function switchExampleTab(tab) {
+    currentExampleTab = tab;
+    const links = document.querySelectorAll('#formatExampleTabs .nav-link');
+    if (tab === 'feature') {
+        document.getElementById('businessFormatPanel').style.display = 'none';
+        document.getElementById('featureFormatPanel').style.display = 'block';
+        if (links[0]) links[0].classList.remove('active');
+        if (links[1]) links[1].classList.add('active');
+    } else {
+        document.getElementById('businessFormatPanel').style.display = 'block';
+        document.getElementById('featureFormatPanel').style.display = 'none';
+        if (links[0]) links[0].classList.add('active');
+        if (links[1]) links[1].classList.remove('active');
+    }
 }
 
 function copyExampleJson() {
-    navigator.clipboard.writeText(sampleResultJson).then(() => {
+    const textToCopy = currentExampleTab === 'feature' ? sampleFeatureResultJson : sampleResultJson;
+    navigator.clipboard.writeText(textToCopy).then(() => {
         alert('Example JSON copied to clipboard!');
     }).catch(err => {
         const textarea = document.createElement('textarea');
-        textarea.value = sampleResultJson;
+        textarea.value = textToCopy;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');

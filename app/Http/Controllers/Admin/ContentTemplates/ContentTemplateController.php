@@ -533,7 +533,9 @@ class ContentTemplateController extends Controller
             'is_active'     => true,
         ]);
 
-        return redirect()->back()->with('success', "Template Option #{$template->option_number} created successfully.");
+        return redirect()->back()
+            ->with('success', "Template Option #{$template->option_number} created successfully.")
+            ->with('open_manage_field', $request->field_key);
     }
 
     /**
@@ -557,18 +559,60 @@ class ContentTemplateController extends Controller
             'subtext'  => $request->subtext,
         ]);
 
-        return redirect()->back()->with('success', "Template Option #{$template->option_number} updated successfully.");
+        return redirect()->back()
+            ->with('success', "Template Option #{$template->option_number} updated successfully.")
+            ->with('open_manage_field', $template->field_key);
     }
 
     /**
      * Delete a template variation.
      */
-    public function deleteTemplate($id)
+    public function deleteTemplate($id, Request $request)
     {
         $template = ContentTemplate::findOrFail($id);
+        $sectionGroup = $template->section_group;
+        $fieldKey = $template->field_key;
+        $langId = $template->lang_id;
+        $deletedOptionNumber = $template->option_number;
+
         $template->delete();
 
-        return redirect()->back()->with('success', "Template Option #{$template->option_number} deleted successfully.");
+        // Renumber remaining options sequentially (1..N)
+        $remainingTemplates = ContentTemplate::where('section_group', $sectionGroup)
+            ->where('field_key', $fieldKey)
+            ->where('lang_id', $langId)
+            ->orderBy('option_number', 'asc')
+            ->get();
+
+        foreach ($remainingTemplates as $index => $item) {
+            $newOptNum = $index + 1;
+            if ($item->option_number !== $newOptNum) {
+                $item->option_number = $newOptNum;
+                $item->save();
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Template Option #{$deletedOptionNumber} deleted successfully.",
+                'deleted_id' => (int)$id,
+                'deleted_option' => $deletedOptionNumber,
+                'field_key' => $fieldKey,
+                'section_group' => $sectionGroup,
+                'remaining_count' => $remainingTemplates->count(),
+                'templates' => $remainingTemplates->map(fn($t) => [
+                    'id' => $t->id,
+                    'option_number' => $t->option_number,
+                    'headline' => $t->headline,
+                    'subtext' => $t->subtext,
+                ]),
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', "Template Option #{$deletedOptionNumber} deleted successfully.")
+            ->with('open_manage_field', $fieldKey);
     }
 
     /**

@@ -952,15 +952,9 @@ class TopRatedProduct extends Component
             }], 'rating')
             ->get();
 
+        // 10-review rule for top rated sorting
         foreach ($businesses as $b) {
-            $avgRating = $b->average_rating !== null ? (float) $b->average_rating : null;
-            if ($avgRating !== null && $avgRating > 0) {
-                $b->average_rating = round($avgRating, 1);
-            } elseif ($b->admin_rating !== null && (float) $b->admin_rating > 0) {
-                $b->average_rating = (float) $b->admin_rating;
-            } else {
-                $b->average_rating = 0.0;
-            }
+            $b->average_rating = $b->display_rating ?? 0.0;
         }
 
         $sortComparator = function ($a, $b) {

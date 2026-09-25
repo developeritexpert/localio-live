@@ -55,6 +55,11 @@ class MissingContentTemplatesSeeder extends Seeder
             ['headline' => 'Overview']
         ]);
 
+        $insertOptions('business_profile', 'profile_what_offers', [
+            ['headline' => 'What [business] offers'],
+            ['headline' => 'What does [business] offer?']
+        ]);
+
         $insertOptions('business_profile', 'profile_pros_cons', [
             ['headline' => 'Pros & Cons', 'subtext' => '<p>See what users love and what could be improved.</p>'],
             ['headline' => 'What users love (and hate)', 'subtext' => '<p>A balanced look at the strengths and weaknesses.</p>']
