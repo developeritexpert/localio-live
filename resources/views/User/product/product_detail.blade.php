@@ -1540,7 +1540,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     @forelse($peerComparisons as $peer)
                                                     @php
                                                     $peerName = $peer->translations->first()->name ?? 'Business';
-                                                    $peerRating = $peer->average_rating ?? 0;
+                                                    $peerRating = $peer->display_rating;
                                                     $vsKey = static_text('vs_keyword');
                                                     if (empty($vsKey) || $vsKey === 'vs_keyword') {
                                                     $vsKey = 'vs';
@@ -1571,11 +1571,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             {{ $bName }}
                         </div>
 
+                        @if($business->should_show_rating)
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($averageRating) }}</span>
+                            <span>{{ formatRating($business->display_rating) }}</span>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -1595,11 +1597,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             {{ $peerName }}
                         </div>
 
+                        @if($peer->should_show_rating)
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($peerRating) }}</span>
+                            <span>{{ formatRating($peer->display_rating) }}</span>
                         </div>
+                        @endif
                     </div>
                 </div>
 

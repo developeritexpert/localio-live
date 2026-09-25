@@ -362,10 +362,12 @@
                                 </div>
                                 <div style="min-width: 0;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    @if($business->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
@@ -375,10 +377,12 @@
                                 </div>
                                 <div style="min-width: 0; text-align: left;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
+                                    @if($popItem->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItemRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItem->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -423,10 +427,12 @@
                                 </div>
                                 <div style="min-width: 0;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    @if($business->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
@@ -436,10 +442,12 @@
                                 </div>
                                 <div style="min-width: 0; text-align: left;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $recItemName }}</div>
+                                    @if($recentItem->should_show_rating)
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recItemRating) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recentItem->display_rating) }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -477,7 +485,7 @@
                 }
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
             @endphp
             <div class="col-lg-4 col-md-6 col-12">
                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">

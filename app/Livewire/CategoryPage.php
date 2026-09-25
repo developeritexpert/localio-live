@@ -1181,10 +1181,12 @@ public function getFeatureDescriptionProperty()
                         $comparisons[] = [
                             'business_1' => $b1,
                             'business_1_name' => $b1Name,
-                            'business_1_rating' => $b1->average_rating ?? 0,
+                            'business_1_rating' => $b1->display_rating,
+                            'business_1_show_rating' => $b1->should_show_rating,
                             'business_2' => $b2,
                             'business_2_name' => $b2Name,
-                            'business_2_rating' => $b2->average_rating ?? 0,
+                            'business_2_rating' => $b2->display_rating,
+                            'business_2_show_rating' => $b2->should_show_rating,
                             'url' => route('product-comparison.seo', [
                                 'locale' => app()->getLocale(),
                                 'comparison_slug' => $compSlug,
@@ -1202,6 +1204,8 @@ public function getFeatureDescriptionProperty()
     public function getExploreSubcategoriesProperty()
     {
         $lang_id = $this->lang_id;
+        $country_id = $this->country_id;
+
         if ($this->category->parent_id === null) {
             $subcats = Category::where('parent_id', $this->category->id)
                 ->where('status', 1)
@@ -1211,14 +1215,8 @@ public function getFeatureDescriptionProperty()
                 ->with(['translations' => function ($q) use ($lang_id) {
                     $q->where('lang_id', $lang_id);
                 }])
-                ->withCount(['businesses' => function ($q) {
-                    $q->where('status', 1);
-                }])
                 ->get();
-            return [
-                'title' => 'Explore ' . ($this->category->translations->name ?? $this->category->name ?? '') . ' categories',
-                'items' => $subcats
-            ];
+            $title = 'Explore ' . ($this->category->translations->name ?? $this->category->name ?? '') . ' categories';
         } else {
             $parent = $this->category->parent;
             $parentName = $parent ? ($parent->translations->name ?? $parent->name ?? '') : '';
@@ -1231,15 +1229,55 @@ public function getFeatureDescriptionProperty()
                 ->with(['translations' => function ($q) use ($lang_id) {
                     $q->where('lang_id', $lang_id);
                 }])
-                ->withCount(['businesses' => function ($q) {
-                    $q->where('status', 1);
-                }])
                 ->get();
-            return [
-                'title' => 'Explore other ' . (!empty($parentName) ? $parentName : ($this->category->translations->name ?? '')) . ' categories',
-                'items' => $subcats
-            ];
+            $title = 'Explore other ' . (!empty($parentName) ? $parentName : ($this->category->translations->name ?? '')) . ' categories';
         }
+
+        if ($subcats->isNotEmpty()) {
+            $allSubcatIds = $subcats->pluck('id')->toArray();
+            $parentId = !empty($this->category->parent_id) ? (int)$this->category->parent_id : (int)$this->category->id;
+            $allCatIds = array_unique(array_merge([$parentId], $allSubcatIds));
+
+            $eligibleBusinesses = Business::where(function ($q) use ($allCatIds) {
+                    $q->whereIn('category_id', $allCatIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($allCatIds) {
+                          $subQ->whereIn('categories.id', $allCatIds);
+                      });
+                })
+                ->where('status', 1)
+                ->where(function ($query) use ($lang_id) {
+                    $query->whereHas('languages', function ($lq) use ($lang_id) {
+                        $lq->where('language_id', $lang_id);
+                    })->orWhereHas('translations', function ($tq) use ($lang_id) {
+                        $tq->where('lang_id', $lang_id);
+                    });
+                })
+                ->where(function ($query) use ($country_id) {
+                    $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($cq) use ($country_id) {
+                          $cq->where('country_id', $country_id);
+                      });
+                })
+                ->with(['subCategories' => function ($q) {
+                    $q->select('categories.id');
+                }])
+                ->get(['id', 'category_id']);
+
+            foreach ($subcats as $sub) {
+                $sId = (int)$sub->id;
+                $pId = (int)($sub->parent_id ?? $parentId);
+                $sub->listings_count = $eligibleBusinesses->filter(function ($b) use ($sId, $pId) {
+                    return $b->category_id === $sId 
+                        || ($pId && $b->category_id === $pId) 
+                        || $b->subCategories->contains('id', $sId);
+                })->count();
+            }
+        }
+
+        return [
+            'title' => $title,
+            'items' => $subcats
+        ];
     }
 
     public function getPopularBusinessesProperty()

@@ -9428,10 +9428,15 @@ button.btn-vote-faq i.far:hover {
 }
 
 .cat_img_header {
-    height: 270px;
+    /* height: 270px; */
     max-width: 600px;
     display: flex;
-    margin-left: auto;
+    /* margin-left: auto; */
+    justify-content: flex-end;
+}
+
+.host-parra.row {
+    justify-content: space-between;
 }
 
 .report-review-option-card.selected .report-check i {

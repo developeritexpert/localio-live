@@ -848,7 +848,7 @@
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $catUrl = route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]);
 
-                $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
                 if ($listingsCount === 0) {
                     $listingsCount = \App\Models\Business::where('status', 1)->where(function ($bQ) use ($subcatItem) {
                         $bQ->where('category_id', $subcatItem->id)

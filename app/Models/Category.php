@@ -294,4 +294,62 @@ public function imageMedia()
             ->orderBy('is_pinned', 'desc')
             ->latest();
     }
+
+    public function getListingsCount($lang_id = null, $country_id = null)
+    {
+        $catId = (int)$this->id;
+        $parentId = !empty($this->parent_id) ? (int)$this->parent_id : null;
+
+        $q = Business::where('status', 1);
+
+        if ($parentId === null) {
+            $childIds = self::where('parent_id', $catId)->pluck('id')->toArray();
+            $allIds = array_merge([$catId], $childIds);
+            $q->where(function ($sub) use ($allIds) {
+                $sub->whereIn('category_id', $allIds)
+                    ->orWhereHas('subCategories', function ($sq) use ($allIds) {
+                        $sq->whereIn('categories.id', $allIds);
+                    });
+            });
+        } else {
+            $q->where(function ($sub) use ($catId, $parentId) {
+                $sub->where('category_id', $catId)
+                    ->orWhere('category_id', $parentId)
+                    ->orWhereHas('subCategories', function ($sq) use ($catId) {
+                        $sq->where('categories.id', $catId);
+                    });
+            });
+        }
+
+        $lang_id = $lang_id ?? (function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : null);
+        if ($lang_id) {
+            $q->where(function ($query) use ($lang_id) {
+                $query->whereHas('languages', function ($lq) use ($lang_id) {
+                    $lq->where('language_id', $lang_id);
+                })->orWhereHas('translations', function ($tq) use ($lang_id) {
+                    $tq->where('lang_id', $lang_id);
+                });
+            });
+        }
+
+        $country_id = $country_id ?? (function_exists('getCurrentCountry') ? getCurrentCountry() : null);
+        if ($country_id) {
+            $q->where(function ($query) use ($country_id) {
+                $query->where('active_all_countries', 1)
+                    ->orWhereHas('countries', function ($cq) use ($country_id) {
+                        $cq->where('country_id', $country_id);
+                    });
+            });
+        }
+
+        return $q->count();
+    }
+
+    public function getListingsCountAttribute()
+    {
+        if (array_key_exists('listings_count', $this->attributes)) {
+            return $this->attributes['listings_count'];
+        }
+        return $this->getListingsCount();
+    }
 }

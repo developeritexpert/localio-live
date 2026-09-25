@@ -226,7 +226,16 @@ class Business extends Model
      */
     public function getApprovedReviewsCountAttribute()
     {
-        return $this->reviews->where('status', 'active')->count();
+        if (isset($this->attributes['approved_reviews_count'])) {
+            return (int) $this->attributes['approved_reviews_count'];
+        }
+        if (isset($this->attributes['active_reviews_count'])) {
+            return (int) $this->attributes['active_reviews_count'];
+        }
+        if ($this->relationLoaded('reviews')) {
+            return $this->reviews->where('status', 'active')->count();
+        }
+        return $this->reviews()->where('status', 'active')->count();
     }
 
     /**

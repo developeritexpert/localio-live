@@ -147,7 +147,7 @@
                             </h1>
 
                             <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
-                    <div class="host-parra row align-items-start">
+                    <div class="host-parra row ">
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
@@ -1728,10 +1728,12 @@
                                         <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
                                             {{ $comp['business_1_name'] }}
                                         </div>
+                                        @if($comp['business_1']->should_show_rating ?? ($comp['business_1_show_rating'] ?? false))
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_1_rating']) }}</span>
+                                            <span>{{ formatRating($comp['business_1']->display_rating ?? $comp['business_1_rating']) }}</span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -1747,10 +1749,12 @@
                                         <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
                                             {{ $comp['business_2_name'] }}
                                         </div>
+                                        @if($comp['business_2']->should_show_rating ?? ($comp['business_2_show_rating'] ?? false))
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_2_rating']) }}</span>
+                                            <span>{{ formatRating($comp['business_2']->display_rating ?? $comp['business_2_rating']) }}</span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -2145,7 +2149,7 @@
                         }
                         $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                         $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                        $listingsCount = $subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count();
+                        $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
                     @endphp
                     <div class="col-lg-4 col-md-6 col-6">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
@@ -2163,7 +2167,7 @@
                                 <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                                     <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                                     <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'Listing' : 'Listings' }}
+                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'listing' : 'listings' }}
                                     </span>
                                 </div>
                             </div>

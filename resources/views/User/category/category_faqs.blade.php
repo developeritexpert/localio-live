@@ -481,7 +481,7 @@
                                 @php
                                     $topBizTrans = $topBiz->translations->firstWhere('lang_id', $lang_id) ?? $topBiz->translations->first();
                                     $topBizName = $topBizTrans->name ?? $topBiz->name ?? 'Business';
-                                    $topBizRating = round($topBiz->average_rating ?? $topBiz->reviews->where('status', 'active')->avg('rating') ?? 0, 1);
+                                    $topBizRating = $topBiz->display_rating;
                                     $affiliateUrl = $topBiz->getTrackedUrl();
                                 @endphp
                                 <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="top-biz-sidebar-item d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style=" border: 1px solid #f1f5f9; background: #fdfdfd;">
@@ -491,6 +491,7 @@
                                         </div>
                                         <div>
                                             <p class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</p>
+                                            @if($topBiz->should_show_rating)
                                             <div class="d-flex align-items-center gap-1 mt-1">
                                                 <div class="d-flex align-items-center" style="color: #ff5722; font-size: 11px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -503,8 +504,9 @@
                                                         @endif
                                                     @endfor
                                                 </div>
-                                                <span style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-left: 3px;">{{ number_format($topBizRating, 1) }}</span>
+                                                <span style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-left: 3px;">{{ formatRating($topBizRating) }}</span>
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <i class="fas fa-external-link-alt text-muted" style="font-size: 12px; margin-right: 4px;"></i>

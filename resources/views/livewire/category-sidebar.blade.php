@@ -133,10 +133,11 @@
                                         <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             {{ $bizName }}
                                         </h6>
+                                        @if($business->should_show_rating)
                                         <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                            <span class="fw-medium text-dark">{{ number_format($business->average_rating, 1) }}</span>
+                                            <span class="fw-medium text-dark">{{ formatRating($business->display_rating) }}</span>
                                             <div class="d-flex" style="color: #ffc107;">
-                                                @php $rating = round($business->average_rating); @endphp
+                                                @php $rating = round($business->display_rating); @endphp
                                                 @for($i = 1; $i <= 5; $i++)
                                                     @if($i <= $rating)
                                                         <i class="fas fa-star" style="margin-right:1px;"></i>
@@ -145,8 +146,11 @@
                                                     @endif
                                                 @endfor
                                             </div>
-                                            <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
+                                            @if($business->should_show_review_count)
+                                            <span class="fw-medium text-dark">({{ $business->approved_reviews_count }})</span>
+                                            @endif
                                         </div>
+                                        @endif
                                     </div>
                                 </a>
                                 @endif
