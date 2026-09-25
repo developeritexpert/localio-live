@@ -10,14 +10,20 @@
                 <div class="nk-block-head-content">
                     <h3 class="nk-block-title page-title">Generated Content</h3>
                     <p class="nk-block-des text-soft">
-                        Business: <strong>{{ $businessName }}</strong> (ID: {{ $item->resource_id }})
-                        &bull; Field: <strong>{{ \App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field }}</strong>
+                        {{ ($item->resource_type === 'category_feature') ? 'Feature' : 'Business' }}: <strong>{{ $businessName }}</strong> (ID: {{ $item->resource_id }})
+                        &bull; Field: <strong>{{ ($item->resource_type === 'category_feature') ? (\App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[$item->content_field] ?? ucfirst($item->content_field)) : (\App\Models\AiContentQueue::$fieldLabels[$item->content_field] ?? $item->content_field) }}</strong>
                     </p>
                 </div>
                 <div class="nk-block-head-content">
-                    <a href="{{ route('content-gen.businesses') }}" class="btn btn-outline-secondary btn-sm">
-                        <em class="icon ni ni-arrow-left me-1"></em> Back to Businesses
-                    </a>
+                    @if($item->resource_type === 'category_feature')
+                        <a href="{{ route('content-gen.features') }}" class="btn btn-outline-secondary btn-sm">
+                            <em class="icon ni ni-arrow-left me-1"></em> Back to Features
+                        </a>
+                    @else
+                        <a href="{{ route('content-gen.businesses') }}" class="btn btn-outline-secondary btn-sm">
+                            <em class="icon ni ni-arrow-left me-1"></em> Back to Businesses
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

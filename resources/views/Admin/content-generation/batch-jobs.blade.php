@@ -104,7 +104,18 @@
                                     </td>
                                     <td><code class="small">{{ $job->batch_id ?? '-' }}</code></td>
                                     <td>
-                                        @if($job->prompt_type)
+                                        @if(str_starts_with($job->prompt_type ?? '', 'feature:'))
+                                            <span class="badge badge-dim bg-primary me-1"><em class="icon ni ni-spark me-1"></em>Feature</span>
+                                            @php
+                                                $fFields = explode(',', str_replace('feature:', '', $job->prompt_type));
+                                            @endphp
+                                            @foreach($fFields as $f)
+                                                <span class="badge badge-dim bg-secondary mb-1" style="font-size: 11px;">
+                                                    {{ \App\Http\Controllers\Admin\ContentGenerationController::$featureFieldLabels[trim($f)] ?? trim($f) }}
+                                                </span>
+                                            @endforeach
+                                        @elseif($job->prompt_type)
+                                            <span class="badge badge-dim bg-info me-1"><em class="icon ni ni-building me-1"></em>Business</span>
                                             @foreach(explode(',', $job->prompt_type ?? '') as $f)
                                                 <span class="badge badge-dim bg-secondary mb-1" style="font-size: 11px;">
                                                     {{ \App\Models\AiContentQueue::$fieldLabels[trim($f)] ?? trim($f) }}
@@ -141,7 +152,10 @@
                                         </button>
 
                                         {{-- Upload Result JSON --}}
-                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}')" title="Upload ChatGPT result JSON for this batch">
+                                        @php
+                                            $isFeat = str_starts_with($job->prompt_type ?? '', 'feature:');
+                                        @endphp
+                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}', {{ $isFeat ? 'true' : 'false' }})" title="Upload ChatGPT result JSON for this batch">
                                             <em class="icon ni ni-upload me-1"></em> Upload Result
                                         </button>
 
@@ -152,7 +166,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> or <a href="{{ route('content-gen.features') }}">Features</a> to create one.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -228,22 +242,55 @@
                 </a>
             </div>
             <div class="modal-body p-4">
-                <div class="alert alert-info py-2 px-3 mb-3 small">
-                    <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
-                    <ul class="mb-0 ps-3">
-                        <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
-                        <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
-                    </ul>
+                <ul class="nav nav-tabs nav-tabs-mb-icon mb-3" id="formatExampleTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0)" onclick="switchExampleTab('business')">
+                            <em class="icon ni ni-building me-1"></em> Businesses Output Format
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" onclick="switchExampleTab('feature')">
+                            <em class="icon ni ni-spark me-1"></em> Features Output Format
+                        </a>
+                    </li>
+                </ul>
+
+                {{-- Business Format Panel --}}
+                <div id="businessFormatPanel">
+                    <div class="alert alert-info py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
+                        <ul class="mb-0 ps-3">
+                            <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
+                            <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="text-muted small mb-0">
+                            Ask ChatGPT to output a JSON array of businesses matching this exact structure:
+                        </p>
+                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                            <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                        </button>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded" style="max-height: 440px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <p class="text-muted small mb-0">
-                        Output a valid JSON array matching the structure below. Both <strong>global</strong> and <strong>specific countries</strong> options are demonstrated:
-                    </p>
-                    <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
-                        <em class="icon ni ni-copy me-1"></em> Copy Example JSON
-                    </button>
+
+                {{-- Feature Format Panel --}}
+                <div id="featureFormatPanel" style="display:none;">
+                    <div class="alert alert-primary py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-spark me-1"></em> Category Feature Content Schema:</div>
+                        <span class="text-muted">Supports either nested <code>"header": {"page_title": "...", "description": "..."}</code> or flat <code>{"page_title": "...", "description": "..."}</code>.</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="text-muted small mb-0">
+                            Ask ChatGPT to output a JSON array of features matching this exact structure:
+                        </p>
+                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                            <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                        </button>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded" style="max-height: 440px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="featureExampleJsonCode">{{ $featureBatchResultExample ?? '' }}</code></pre>
                 </div>
-                <pre class="bg-dark text-light p-3 rounded" style="max-height: 480px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
             </div>
             <div class="modal-footer border-top bg-light">
                 <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal" onclick="closeExampleModal()">Close</button>
@@ -257,11 +304,16 @@
 
 <script>
 const sampleResultJson = `{!! addslashes($batchResultExample ?? '') !!}`;
+const sampleFeatureResultJson = `{!! addslashes($featureBatchResultExample ?? '') !!}`;
+let currentModalIsFeature = false;
+let currentExampleTab = 'business';
 
-function openUploadModal(jobId, batchId) {
+function openUploadModal(jobId, batchId, isFeature = false) {
+    currentModalIsFeature = isFeature;
     const form = document.getElementById('uploadResultForm');
     form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}/upload-result`;
-    document.getElementById('uploadModalBatchId').textContent = batchId || ('#' + jobId);
+    const label = (batchId || ('#' + jobId)) + (isFeature ? ' (Features)' : ' (Businesses)');
+    document.getElementById('uploadModalBatchId').textContent = label;
     document.getElementById('resultTextInput').value = '';
     if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
         $('#uploadResultModal').modal('show');
@@ -378,15 +430,32 @@ function copyBatchJson(jobId, btn) {
 }
 
 function insertSampleResult() {
-    document.getElementById('resultTextInput').value = sampleResultJson;
+    document.getElementById('resultTextInput').value = currentModalIsFeature ? sampleFeatureResultJson : sampleResultJson;
+}
+
+function switchExampleTab(tab) {
+    currentExampleTab = tab;
+    const links = document.querySelectorAll('#formatExampleTabs .nav-link');
+    if (tab === 'feature') {
+        document.getElementById('businessFormatPanel').style.display = 'none';
+        document.getElementById('featureFormatPanel').style.display = 'block';
+        if (links[0]) links[0].classList.remove('active');
+        if (links[1]) links[1].classList.add('active');
+    } else {
+        document.getElementById('businessFormatPanel').style.display = 'block';
+        document.getElementById('featureFormatPanel').style.display = 'none';
+        if (links[0]) links[0].classList.add('active');
+        if (links[1]) links[1].classList.remove('active');
+    }
 }
 
 function copyExampleJson() {
-    navigator.clipboard.writeText(sampleResultJson).then(() => {
+    const textToCopy = currentExampleTab === 'feature' ? sampleFeatureResultJson : sampleResultJson;
+    navigator.clipboard.writeText(textToCopy).then(() => {
         alert('Example JSON copied to clipboard!');
     }).catch(err => {
         const textarea = document.createElement('textarea');
-        textarea.value = sampleResultJson;
+        textarea.value = textToCopy;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
