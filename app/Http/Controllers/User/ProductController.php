@@ -194,7 +194,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $default_image = WebSetting::where('key','user_default_image')->value('value');
 
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
 
         if ($request->ajax()) {
             return view('User.product.partials.reviews_list', compact(
@@ -323,7 +323,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $link = $business->websites->first()->website_url ?? $business->affiliate_link ?? $business->permanent_url ?? '#';
         $reviews = Review::where('business_id', $business->id)->get();
 
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
         $activeReviews = $reviews->where('status', 'active');
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
@@ -1178,7 +1178,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
 
         $reviews = Review::where('business_id', $business->id)->get();
         $activeReviews = $reviews->where('status', 'active');
-        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
         foreach ($criteria as $criterion) {

@@ -29,6 +29,8 @@ class AddReview extends Component
     public $conSearch = '';
     public $reviewId;
 
+    protected $rules = [];
+
     #[On('openReviewModal')]
     #[On('openAddReviewModal')]
     public function openReviewModal($businessId = null, $recommend = null)
@@ -59,6 +61,7 @@ class AddReview extends Component
         $this->businessId = $businessId;
         if ($recommend !== null) {
             $this->recommend = filter_var($recommend, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+            $this->step = 2;
         }
 
         $business = Business::with(['translations', 'category', 'category.parent'])->find($businessId);
@@ -67,14 +70,16 @@ class AddReview extends Component
             $this->businessName = $business->translations->first()->name ?? 'Business';
             $this->businessIcon = $business->icon_id;
 
+            $category = $business->category ?? \App\Models\Category::whereNull('parent_id')->orderBy('id')->first();
+
             $categoryIds = array_filter(array_unique([
                 $business->category_id,
-                $business->category ? $business->category->parent_id : null,
-                $business->category ? $business->category->id : null,
+                $category ? $category->parent_id : null,
+                $category ? $category->id : null,
             ]));
 
-            if ($business->category) {
-                $this->criteria = $business->category->getEffectiveRatingCriteria()->toArray();
+            if ($category) {
+                $this->criteria = $category->getEffectiveRatingCriteria()->toArray();
                 foreach ($this->criteria as $criterion) {
                     $this->criteriaRatings[$criterion['id']] = 0;
                 }
@@ -196,7 +201,9 @@ class AddReview extends Component
             $messages['criteriaRatings.' . $criterion['id'] . '.required'] = 'Rating is required.';
         }
 
-        $this->validate($rules, $messages);
+        if (!empty($rules)) {
+            $this->validate($rules, $messages);
+        }
         $this->step = 3;
     }
 
