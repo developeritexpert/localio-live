@@ -160,14 +160,16 @@
 </div>
 
 {{-- Upload Batch Result Modal --}}
-<div class="modal fade" id="uploadResultModal" tabindex="-1" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal fade" id="uploadResultModal" tabindex="-1" role="dialog" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="uploadResultModalLabel">
                     <em class="icon ni ni-upload-cloud text-success me-2"></em>Upload Batch Result JSON
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" onclick="closeUploadModal()">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <form id="uploadResultForm" action="" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -197,7 +199,7 @@
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
-                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal" onclick="closeUploadModal()">Cancel</button>
                     <button type="submit" class="btn btn-sm btn-success">
                         <em class="icon ni ni-check me-1"></em> Process & Apply Result
                     </button>
@@ -208,14 +210,16 @@
 </div>
 
 {{-- Example Format Modal --}}
-<div class="modal fade" id="exampleFormatModal" tabindex="-1" aria-labelledby="exampleFormatModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+<div class="modal fade" id="exampleFormatModal" tabindex="-1" role="dialog" aria-labelledby="exampleFormatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="exampleFormatModalLabel">
                     <em class="icon ni ni-file-code text-primary me-2"></em>Expected Output JSON Schema & Example
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" onclick="closeExampleModal()">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <div class="modal-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -229,7 +233,7 @@
                 <pre class="bg-dark text-light p-3 rounded" style="max-height: 480px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode">{{ $batchResultExample ?? '' }}</code></pre>
             </div>
             <div class="modal-footer border-top bg-light">
-                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal" onclick="closeExampleModal()">Close</button>
                 <button type="button" class="btn btn-sm btn-primary" onclick="copyExampleJson()">
                     <em class="icon ni ni-copy me-1"></em> Copy JSON
                 </button>
@@ -246,13 +250,72 @@ function openUploadModal(jobId, batchId) {
     form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}/upload-result`;
     document.getElementById('uploadModalBatchId').textContent = batchId || ('#' + jobId);
     document.getElementById('resultTextInput').value = '';
-    const modal = new bootstrap.Modal(document.getElementById('uploadResultModal'));
-    modal.show();
+    if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
+        $('#uploadResultModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('uploadResultModal')).show();
+    } else {
+        const el = document.getElementById('uploadResultModal');
+        el.classList.add('show');
+        el.style.display = 'block';
+    }
+}
+
+function closeUploadModal() {
+    if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
+        $('#uploadResultModal').modal('hide');
+    }
+    const el = document.getElementById('uploadResultModal');
+    if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
 }
 
 function openExampleModal() {
-    const modal = new bootstrap.Modal(document.getElementById('exampleFormatModal'));
-    modal.show();
+    if (window.jQuery && typeof $('#exampleFormatModal').modal === 'function') {
+        $('#exampleFormatModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('exampleFormatModal')).show();
+    } else {
+        const el = document.getElementById('exampleFormatModal');
+        el.classList.add('show');
+        el.style.display = 'block';
+    }
+}
+
+function closeExampleModal() {
+    if (window.jQuery && typeof $('#exampleFormatModal').modal === 'function') {
+        $('#exampleFormatModal').modal('hide');
+    }
+    const el = document.getElementById('exampleFormatModal');
+    if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+// Global modal dismiss handler for DashLite / Bootstrap 4 & 5 compatibility
+if (window.jQuery) {
+    $(document).on('click', '[data-bs-dismiss="modal"], [data-dismiss="modal"], .btn-close, .close', function(e) {
+        const modal = $(this).closest('.modal');
+        if (modal.length) {
+            modal.modal('hide');
+            modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true');
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+        }
+    });
 }
 
 function insertSampleResult() {

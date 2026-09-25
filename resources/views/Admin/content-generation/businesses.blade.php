@@ -441,7 +441,9 @@ function insertSampleJson() {
                 <h5 class="modal-title" id="importJsonModalLabel">
                     <em class="icon ni ni-plus-circle text-primary me-2"></em>Add Businesses via JSON
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                    <em class="icon ni ni-cross"></em>
+                </a>
             </div>
             <form action="{{ route('content-gen.import-json') }}" method="POST">
                 @csrf
@@ -474,7 +476,7 @@ function insertSampleJson() {
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
-                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-light" data-dismiss="modal" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-sm btn-primary">
                         <em class="icon ni ni-check me-1"></em> Import Businesses
                     </button>
