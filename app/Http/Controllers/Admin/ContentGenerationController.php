@@ -485,21 +485,28 @@ class ContentGenerationController extends Controller
             $chunks = array_chunk($businessIds, $batchSize);
             $createdJobs = [];
 
+            $allFields = self::CONTENT_FIELDS;
+            $isAll = empty(array_diff($allFields, $fields));
+            $fieldsValue = $isAll ? 'ALL' : array_values($fields);
+
             foreach ($chunks as $chunk) {
                 $businessesData = [];
                 $businessModels = Business::with([
                     'translations' => fn($q) => $q->where('lang_id', 1),
+                    'websites',
                 ])->whereIn('id', $chunk)->get();
 
                 foreach ($chunk as $bizId) {
                     $b = $businessModels->firstWhere('id', $bizId);
                     if (!$b) continue;
                     $bName = optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $bizId;
-                    $bUrl  = $b->permanent_url ?: ($b->affiliate_link ?: '');
+                    // Official business URL only — never affiliate link!
+                    $bUrl  = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
                     $businessesData[] = [
-                        'business_id'   => $bizId,
-                        'business_name' => $bName,
-                        'business_url'  => $bUrl,
+                        'business_id'      => $bizId,
+                        'business_name'    => $bName,
+                        'business_url'     => $bUrl,
+                        'fields_requested' => $fieldsValue,
                     ];
                 }
 
@@ -507,8 +514,6 @@ class ContentGenerationController extends Controller
                 $inputPayload = [
                     'batch_id'         => $batchJobCode,
                     'total_businesses' => count($businessesData),
-                    'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
-                    'fields_requested' => $fields,
                     'businesses'       => $businessesData,
                 ];
 
@@ -1312,7 +1317,7 @@ Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\",
 
 Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\": [2, 3]}",
 
-            'active_countries' => "Analyze {$businessName}.{$urlInfo} Determine whether this business operates globally (available in all countries) or is restricted to specific countries. Return JSON: {\"active_all_countries\": true, \"country_codes\": [\"US\", \"GB\", \"CA\", \"AU\", \"DE\"]}",
+            'active_countries' => 'Analyze ' . $businessName . '.' . $urlInfo . ' Determine whether this business operates globally (available in all countries) or is restricted to specific countries. If available globally in all countries, return JSON: {"active_all_countries": true}. If restricted to specific countries, return JSON: {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]} using standard 2-letter ISO country codes.',
 
             'rating' => "Evaluate the overall market reputation, service quality, and reliability for {$businessName}.{$catInfo}{$urlInfo} Provide an initial overall editorial rating score between 1.0 and 5.0 (with one or two decimal places, e.g. 4.6 or 4.8) to be displayed on their directory profile until 10 approved user reviews are reached. Return JSON: {\"rating\": 4.6}",
 
@@ -1575,37 +1580,106 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     }
 
     // -------------------------------------------------------------------------
-    // DOWNLOAD BATCH JSON (For ChatGPT Prompt)
+    // CLEAN BATCH JSON PAYLOAD BUILDER
     // -------------------------------------------------------------------------
-    public function downloadBatchJson(AiBatchJob $job)
+    public function buildCleanBatchPayload(AiBatchJob $job): array
     {
-        if (!empty($job->input_payload)) {
-            $content = $job->input_payload;
-        } else {
-            $businessIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->toArray();
-            $businesses  = Business::with(['translations' => fn($q) => $q->where('lang_id', 1)])->whereIn('id', $businessIds)->get();
-            $bList = [];
-            foreach ($businesses as $b) {
-                $bList[] = [
-                    'business_id'   => $b->id,
-                    'business_name' => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
-                    'business_url'  => $b->permanent_url ?: ($b->affiliate_link ?: ''),
-                ];
-            }
-            $content = json_encode([
-                'batch_id'         => $job->batch_id ?: ('BATCH-' . $job->id),
-                'total_businesses' => count($bList),
-                'instructions'     => 'For each business below, generate high quality directory content in valid JSON matching the schema.',
-                'fields_requested' => explode(',', $job->prompt_type ?: implode(',', self::CONTENT_FIELDS)),
-                'businesses'       => $bList,
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $businessIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->toArray();
+        $businesses  = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', 1),
+            'websites',
+        ])->whereIn('id', $businessIds)->get();
+
+        $requestedFields = array_values(array_filter(explode(',', $job->prompt_type ?: '')));
+        if (empty($requestedFields)) {
+            $requestedFields = self::CONTENT_FIELDS;
+        }
+        $isAll = empty(array_diff(self::CONTENT_FIELDS, $requestedFields));
+        $fieldsValue = $isAll ? 'ALL' : $requestedFields;
+
+        $bList = [];
+        foreach ($businesses as $b) {
+            $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+            $bList[] = [
+                'business_id'      => $b->id,
+                'business_name'    => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                'business_url'     => $bUrl,
+                'fields_requested' => $fieldsValue,
+            ];
         }
 
+        return [
+            'batch_id'         => $job->batch_id ?: ('BATCH-' . $job->id),
+            'total_businesses' => count($bList),
+            'businesses'       => $bList,
+        ];
+    }
+
+    public function getBatchJson(AiBatchJob $job)
+    {
+        $payload = $this->buildCleanBatchPayload($job);
+        return response()->json($payload, 200, [
+            'Content-Type' => 'application/json; charset=utf-8'
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    public function downloadBatchJson(AiBatchJob $job)
+    {
+        $payload = $this->buildCleanBatchPayload($job);
+        $content = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $filename = 'batch_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
 
         return response($content, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadCategories()
+    {
+        $categories = Category::whereNull('parent_id')
+            ->with([
+                'translation' => fn($q) => $q->where('lang_id', 1),
+                'children.translation' => fn($q) => $q->where('lang_id', 1),
+            ])
+            ->orderBy('id')
+            ->get()
+            ->map(function($parent) {
+                return [
+                    'category_id'   => $parent->id,
+                    'category_name' => optional($parent->translation)->name ?? ('Category #' . $parent->id),
+                    'subcategories' => $parent->children->map(fn($child) => [
+                        'subcategory_id'   => $child->id,
+                        'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
+                    ])->values(),
+                ];
+            });
+
+        $json = json_encode($categories, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_categories_and_ids.json"',
+        ]);
+    }
+
+    public function downloadCountries()
+    {
+        $countries = \App\Models\Country::where('status', 1)
+            ->orderBy('name')
+            ->get()
+            ->map(fn($c) => [
+                'country_code' => strtoupper($c->country_code),
+                'country_name' => $c->name,
+                'country_id'   => $c->id,
+            ])
+            ->values();
+
+        $json = json_encode($countries, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_country_codes.json"',
         ]);
     }
 
@@ -1723,6 +1797,17 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
                     $normalizedData = ['faqs' => $fieldVal];
+                } elseif ($field === 'active_countries' && is_array($fieldVal)) {
+                    $activeAll = !empty($fieldVal['active_all_countries']);
+                    if ($activeAll) {
+                        $normalizedData = ['active_all_countries' => true];
+                    } else {
+                        $countryCodes = $fieldVal['country_codes'] ?? ($fieldVal['countries'] ?? []);
+                        $normalizedData = [
+                            'active_all_countries' => false,
+                            'country_codes'        => is_array($countryCodes) ? array_values($countryCodes) : [],
+                        ];
+                    }
                 } elseif ($field === 'rating') {
                     $rVal = is_array($fieldVal) ? ($fieldVal['rating'] ?? $fieldVal['value'] ?? null) : $fieldVal;
                     $rFloat = is_numeric($rVal) ? round((float)$rVal, 2) : 4.5;
@@ -1771,7 +1856,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $example = [
             [
                 "business_id"       => 101,
-                "business_name"     => "HostGator",
+                "business_name"     => "HostGator (Global Business Example)",
                 "short_description" => "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
                 "long_description"  => "HostGator offers robust shared, VPS, and dedicated web hosting built for high performance and reliability.",
                 "usps"              => [
@@ -1810,14 +1895,55 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ]
                 ],
                 "categories"        => [
-                    "category_id"     => 4,
-                    "subcategory_ids" => [12, 15]
+                    "category_id"     => 11,
+                    "subcategory_ids" => [19, 20]
                 ],
                 "active_countries"  => [
-                    "active_all_countries" => true,
-                    "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                    "active_all_countries" => true
                 ],
                 "rating"            => 4.7
+            ],
+            [
+                "business_id"       => 102,
+                "business_name"     => "Specific Region Provider (Specific Countries Example)",
+                "short_description" => "Regional infrastructure provider delivering dedicated servers and compliant cloud hosting in select countries.",
+                "long_description"  => "High-compliance hosting tailored for businesses operating in designated jurisdictions with localized data centers.",
+                "usps"              => [
+                    "Local data residency guarantee",
+                    "ISO 27001 certified security",
+                    "Sub-10ms localized latency",
+                    "Dedicated regional account manager"
+                ],
+                "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
+                "pros_cons"         => [
+                    "pros" => [
+                        "Fast regional latency",
+                        "Strict local data privacy compliance"
+                    ],
+                    "cons" => [
+                        "Restricted to specific operating countries"
+                    ]
+                ],
+                "services"          => [
+                    "headline"    => "Regional Cloud & Dedicated Servers",
+                    "top_text"    => "Secure regional infrastructure optimized for local compliance.",
+                    "bottom_text" => "Fully managed migration and disaster recovery solutions."
+                ],
+                "faqs"              => [
+                    [
+                        "question" => "Which countries do you operate in?",
+                        "answer"   => "Services are exclusively available in the United States, United Kingdom, Canada, Australia, and Germany."
+                    ]
+                ],
+                "categories"        => [
+                    "category_id"     => 11,
+                    "subcategory_ids" => [22, 25]
+                ],
+                "active_countries"  => [
+                    "active_all_countries" => false,
+                    "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                ],
+                "rating"            => 4.5
             ]
         ];
 

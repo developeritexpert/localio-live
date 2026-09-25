@@ -247,6 +247,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/content-generation/upload-logo', [ContentGenerationController::class, 'uploadLogo'])->name('content-gen.upload-logo');
     Route::post('/admin-dashboard/content-generation/batch-setting', [ContentGenerationController::class, 'updateBatchSetting'])->name('content-gen.batch-setting');
     Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/download', [ContentGenerationController::class, 'downloadBatchJson'])->name('content-gen.batch-jobs.download');
+    Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/json', [ContentGenerationController::class, 'getBatchJson'])->name('content-gen.batch-jobs.json');
+    Route::get('/admin-dashboard/content-generation/download-categories', [ContentGenerationController::class, 'downloadCategories'])->name('content-gen.download-categories');
+    Route::get('/admin-dashboard/content-generation/download-countries', [ContentGenerationController::class, 'downloadCountries'])->name('content-gen.download-countries');
     Route::post('/admin-dashboard/content-generation/batch-jobs/{job}/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-result');
 
 

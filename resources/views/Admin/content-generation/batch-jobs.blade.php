@@ -16,8 +16,14 @@
                         @endif
                     </p>
                 </div>
-                <div class="nk-block-head-content d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleFormatModal">
+                <div class="nk-block-head-content d-flex flex-wrap gap-2">
+                    <a href="{{ route('content-gen.download-categories') }}" class="btn btn-outline-primary btn-sm" title="Download all category names with their IDs as JSON">
+                        <em class="icon ni ni-folder me-1"></em> Categories & IDs
+                    </a>
+                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-outline-primary btn-sm" title="Download all supported country codes and names as JSON">
+                        <em class="icon ni ni-globe me-1"></em> Country Codes
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openExampleModal()">
                         <em class="icon ni ni-file-code me-1"></em> Result JSON Format
                     </button>
                     <a href="{{ route('content-gen.poll-now') }}" class="btn btn-outline-info btn-sm">
@@ -129,10 +135,10 @@
                                     <td class="text-soft small">{{ $job->submitted_at ? $job->submitted_at->diffForHumans() : '-' }}</td>
                                     <td class="text-soft small">{{ $job->completed_at ? $job->completed_at->diffForHumans() : '-' }}</td>
                                     <td class="text-end text-nowrap">
-                                        {{-- Download JSON for ChatGPT --}}
-                                        <a href="{{ route('content-gen.batch-jobs.download', $job->id) }}" class="btn btn-xs btn-outline-info me-1" title="Download input JSON with business info for ChatGPT">
-                                            <em class="icon ni ni-download me-1"></em> Download JSON
-                                        </a>
+                                        {{-- Copy JSON for ChatGPT --}}
+                                        <button type="button" class="btn btn-xs btn-outline-info me-1" onclick="copyBatchJson({{ $job->id }}, this)" title="Copy batch JSON for ChatGPT to clipboard">
+                                            <em class="icon ni ni-copy me-1"></em> Copy JSON
+                                        </button>
 
                                         {{-- Upload Result JSON --}}
                                         <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}')" title="Upload ChatGPT result JSON for this batch">
@@ -222,9 +228,16 @@
                 </a>
             </div>
             <div class="modal-body p-4">
+                <div class="alert alert-info py-2 px-3 mb-3 small">
+                    <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
+                    <ul class="mb-0 ps-3">
+                        <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
+                        <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
+                    </ul>
+                </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <p class="text-muted small mb-0">
-                        When prompting ChatGPT, ask it to output a JSON array of objects matching this exact structure for each business:
+                        Output a valid JSON array matching the structure below. Both <strong>global</strong> and <strong>specific countries</strong> options are demonstrated:
                     </p>
                     <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
                         <em class="icon ni ni-copy me-1"></em> Copy Example JSON
@@ -315,6 +328,52 @@ if (window.jQuery) {
             $('.modal-backdrop').remove();
             $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
         }
+    });
+}
+
+function copyBatchJson(jobId, btn) {
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<em class="icon ni ni-loader me-1"></em> Copying...';
+
+    fetch(`/admin-dashboard/content-generation/batch-jobs/${jobId}/json`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('HTTP error ' + res.status);
+        return res.json();
+    })
+    .then(data => {
+        const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return Promise.resolve();
+        }
+    })
+    .then(() => {
+        btn.classList.remove('btn-outline-info');
+        btn.classList.add('btn-success');
+        btn.innerHTML = '<em class="icon ni ni-check me-1"></em> Copied!';
+        setTimeout(() => {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-info');
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }, 2000);
+    })
+    .catch(err => {
+        alert('Failed to copy JSON: ' + err.message);
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
     });
 }
 

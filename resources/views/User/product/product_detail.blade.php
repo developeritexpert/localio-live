@@ -840,65 +840,65 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endif
 
                         @php
-// Safely decode the business_images
-$images = [];
-$matchedCategory = null;
-$screenshotCategories = is_array($business->screenshot_categories) 
-    ? $business->screenshot_categories 
-    : json_decode($business->screenshot_categories ?? '[]', true);
-    
-if (!empty($screenshotCategories)) {
-    foreach ($screenshotCategories as $category) {
-        if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
-            if (in_array($lang_id, $category['target_regions'])) {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if (!$matchedCategory) {
-        foreach ($screenshotCategories as $category) {
-            if (!empty($category['is_default'])) {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if (!$matchedCategory) {
-        foreach ($screenshotCategories as $category) {
-            if (($category['target_regions_mode'] ?? 'all') === 'all') {
-                $matchedCategory = $category;
-                break;
-            }
-        }
-    }
-    if ($matchedCategory && !empty($matchedCategory['images'])) {
-        $images = $matchedCategory['images'];
-    } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
-        foreach ($matchedCategory['urls'] as $url) {
-            if (!empty($url)) {
-                $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
-            }
-        }
-    }
-}
+                        // Safely decode the business_images
+                        $images = [];
+                        $matchedCategory = null;
+                        $screenshotCategories = is_array($business->screenshot_categories) 
+                            ? $business->screenshot_categories 
+                            : json_decode($business->screenshot_categories ?? '[]', true);
+                            
+                        if (!empty($screenshotCategories)) {
+                            foreach ($screenshotCategories as $category) {
+                                if (($category['target_regions_mode'] ?? '') === 'specific' && !empty($category['target_regions'])) {
+                                    if (in_array($lang_id, $category['target_regions'])) {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!$matchedCategory) {
+                                foreach ($screenshotCategories as $category) {
+                                    if (!empty($category['is_default'])) {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!$matchedCategory) {
+                                foreach ($screenshotCategories as $category) {
+                                    if (($category['target_regions_mode'] ?? 'all') === 'all') {
+                                        $matchedCategory = $category;
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($matchedCategory && !empty($matchedCategory['images'])) {
+                                $images = $matchedCategory['images'];
+                            } elseif ($matchedCategory && !empty($matchedCategory['urls'])) {
+                                foreach ($matchedCategory['urls'] as $url) {
+                                    if (!empty($url)) {
+                                        $images[] = 'https://image.thum.io/get/width/600/crop/800/noanimate/' . $url;
+                                    }
+                                }
+                            }
+                        }
 
-if (empty($images)) {
-    $images = is_array($business->business_images)
-        ? $business->business_images
-        : json_decode($business->business_images ?? '[]', true);
+                        if (empty($images)) {
+                            $images = is_array($business->business_images)
+                                ? $business->business_images
+                                : json_decode($business->business_images ?? '[]', true);
 
-    if (empty($images) && !empty($business->screenshot_urls)) {
-        $urls = is_array($business->screenshot_urls)
-            ? $business->screenshot_urls
-            : json_decode($business->screenshot_urls ?? '[]', true);
-        $urls = array_values(array_filter((array)$urls));
-        if (!empty($urls)) {
-            $images = $urls;
-        }
-    }
-}
-@endphp
+                            if (empty($images) && !empty($business->screenshot_urls)) {
+                                $urls = is_array($business->screenshot_urls)
+                                    ? $business->screenshot_urls
+                                    : json_decode($business->screenshot_urls ?? '[]', true);
+                                $urls = array_values(array_filter((array)$urls));
+                                if (!empty($urls)) {
+                                    $images = $urls;
+                                }
+                            }
+                        }
+                        @endphp
 
                         @if (!empty($images))
                         <div class="col-lg-12 mb-4">
