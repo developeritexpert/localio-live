@@ -189,6 +189,12 @@ class ContentTemplateService
             'field1_label' => 'Headline',
             'description' => 'Headline for the What is [business] section.',
         ],
+        'profile_what_offers' => [
+            'label' => 'WHAT OFFERS HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the What [business] offers section.',
+        ],
         'profile_pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',
@@ -1078,6 +1084,10 @@ class ContentTemplateService
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_what_offers' => [
+                1 => 'What [business] offers',
+                2 => 'What does [business] offer?',
+            ],
             'profile_reviews' => [
                 1 => [
                     'headline' => '[business] user reviews ([count])',
