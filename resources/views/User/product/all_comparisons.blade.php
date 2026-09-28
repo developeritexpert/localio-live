@@ -183,7 +183,7 @@
                         <div id="compareSearchInputWrapper" class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
                             <div style="position: relative; display: flex; align-items: center;">
                                 <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
-                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-8" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-8" placeholder="{{ static_text('search_product_to_compare_placeholder') ?: 'Search business to compare...' }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
                             </div>
                             <!-- Custom Auto-complete Container -->
                             <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
@@ -296,7 +296,7 @@
                 @if(isset($popularComparisons) && count($popularComparisons) > 0)
                     <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
-                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin: 0;">Popular comparisons</h6>
+                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin: 0;">{{ static_text('popular_comparisons_heading') ?: 'Popular comparisons' }}</h6>
                             <a href="#grid-all-comparisons-section" style="color: #002347; font-weight: 600; font-size: 13px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                 View all comparisons
                             </a>

@@ -1381,7 +1381,7 @@
             </pre> --}}
             <div class="foot-btm d-flex justify-content-between">
                 <div class="ft-btm-lft">
-                    <p>©<?php echo date('Y'); ?> Localio. All rights reserved.</p>
+                    <p>©<?php echo date('Y'); ?> Localio. {{ static_text('all_rights_reserved_text') ?: 'All rights reserved.' }}</p>
                 </div>
                 <div class="ft-btm-rgt">
                     <div class="select-menu ">
@@ -1395,7 +1395,7 @@
                         <ul class="options">
                             <div class="container">
                                 <div class="country-modal-header d-flex align-items-center justify-content-between">
-                                    <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">Choose your Country or region</h3>
+                                    <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">{{ static_text('choose_country_region_heading') ?: 'Choose your Country or region' }}</h3>
                                     <button type="button" class="close-country-menu" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();" aria-label="Close modal" title="Close">
                                         ✕
                                     </button>
@@ -1451,7 +1451,7 @@
                 </div>
 
                 <div class="modal-disclaimer" style="display: block !important; background-color: #f1f5f9; padding: 15px 20px; border-radius: 8px; font-size: 14px; color: #4a5568; line-height: 1.5; margin-bottom: 20px;">
-                    <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
+                    <strong>{{ static_text('disclosure_label') ?: 'Disclosure:' }}</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
                 </div>
 
                 <div style="display: block !important;">
@@ -1492,7 +1492,7 @@
                     </p>
 
                     <div class="mt-3">
-                        <a class="btn-g-link" href="{{ route('community-guidelines', ['locale' => session('lang_code', 'en-us')]) }}">Learn more in our Community guidelines</a>
+                        <a class="btn-g-link" href="{{ route('community-guidelines', ['locale' => session('lang_code', 'en-us')]) }}">{{ static_text('community_guidelines_link_text') ?: 'Learn more in our Community guidelines' }}</a>
                     </div>
                 </div>
             </div>
@@ -1514,10 +1514,10 @@
             <div class="text-center">
                 <h2 id="modal-title" class="modal-title">
                     <div class="hd_text">
-                        <h2 class="text-center">Sign in or create an account</h2>
+                        <h2 class="text-center">{{ static_text('sign_in_or_create_account_title') ?: 'Sign in or create an account' }}</h2>
                     </div>
                 </h2>
-                <p class="text-center" style="margin-bottom: 20px;">Continue with Google or use your email and password.
+                <p class="text-center" style="margin-bottom: 20px;">{{ static_text('continue_with_google_button') ?: 'Continue with Google' }} or use your email and password.
                 </p>
 
                 <div class="button">
@@ -1536,7 +1536,7 @@
                                                         <span class="scl-icn"
                                                             style="margin-right: 12px; font-size: 20px;"><i
                                                                 class="fa-brands fa-google"></i></span>
-                                                        <span>Continue with Google</span>
+                                                        <span>{{ static_text('continue_with_google_button') ?: 'Continue with Google' }}</span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -1612,7 +1612,7 @@
 
             <div class="text-center mb-4">
                 <div class="hd_text">
-                    <h2 class="text-center">Create your profile</h2>
+                    <h2 class="text-center">{{ static_text('create_your_profile_title') ?: 'Create your profile' }}</h2>
                 </div>
                 <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your
                     account.</p>
@@ -1625,21 +1625,21 @@
                     <div class="col-6">
                         <div class="form-floating">
                             <input type="text" name="first_name" id="modalFirstName" class="form-control"
-                                placeholder="First name" value="{{ old('first_name', $pendingFirstName) }}" required>
+                                placeholder="{{ static_text('first_name_placeholder') ?: 'First name' }}" value="{{ old('first_name', $pendingFirstName) }}" required>
                             <label for="modalFirstName">First name</label>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="form-floating">
                             <input type="text" name="last_name" id="modalLastName" class="form-control"
-                                placeholder="Last name" value="{{ old('last_name', $pendingLastName) }}" required>
+                                placeholder="{{ static_text('last_name_placeholder') ?: 'Last name' }}" value="{{ old('last_name', $pendingLastName) }}" required>
                             <label for="modalLastName">Last name</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="Job title"
+                    <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="{{ static_text('job_title_placeholder') ?: 'Job title' }}"
                         value="{{ old('job_title') }}" required>
                     <label for="modalJobTitle">Job title</label>
                 </div>
@@ -1655,7 +1655,7 @@
                         <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)
                         </option>
                     </select>
-                    <label for="modalCompanySize">Company size</label>
+                    <label for="modalCompanySize">{{ static_text('company_size_dropdown_label') ?: 'Company size' }}</label>
                 </div>
                 <div class="row mt-4">
                     <div class="col-12">
@@ -2812,7 +2812,7 @@
 <div id="bookingSharePopover" class="booking-share-popover" style="display: none;" onclick="event.stopPropagation();">
     <div class="booking-share-arrow"></div>
     <div class="booking-share-inner">
-        <h4 class="booking-share-title">Share this</h4>
+        <h4 class="booking-share-title">{{ static_text('share_this_heading') ?: 'Share this' }}</h4>
         <div class="booking-share-list">
             <button type="button" class="booking-share-item" id="btnShareCopyLink" onclick="triggerShareCopy(event)">
                 <div class="booking-share-icon">
@@ -2821,8 +2821,8 @@
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </div>
-                <span class="booking-share-label">Copy link</span>
-                <span id="shareCopiedFeedback" class="booking-share-copied-badge" style="display: none;">Copied!</span>
+                <span class="booking-share-label">{{ static_text('copy_link_button') ?: 'Copy link' }}</span>
+                <span id="shareCopiedFeedback" class="booking-share-copied-badge" style="display: none;">{{ static_text('copied_toast') ?: 'Copied!' }}</span>
             </button>
             <a href="javascript:void(0)" class="booking-share-item" id="btnShareFacebook" onclick="triggerShareFacebook(event)">
                 <div class="booking-share-icon">

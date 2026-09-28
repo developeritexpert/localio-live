@@ -1218,7 +1218,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content border-0 shadow-lg">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="reviewPopupLabel">Submit Your Review</h5>
+                                                        <h5 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
 
@@ -1232,9 +1232,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @endfor
                                                         </div>
 
-                                                        <textarea id="popupComment" class="form-control mb-3" rows="3" placeholder="Write a review (optional)"></textarea>
+                                                        <textarea id="popupComment" class="form-control mb-3" rows="3" placeholder="{{ static_text('write_a_review_placeholder') ?: 'Write a review (optional)' }}"></textarea>
 
-                                                        <button id="submitPopupReview" class="btn btn-primary w-100">Submit Review</button>
+                                                        <button id="submitPopupReview" class="btn btn-primary w-100">{{ static_text('submit_review_button') ?: 'Submit Review' }}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1615,7 +1615,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
 
                                                     @empty
-                                                    <div class="col-12 text-muted p-0">No comparisons available for this business yet.</div>
+                                                    <div class="col-12 text-muted p-0">{{ static_text('no_comparisons_available') ?: 'No comparisons available for this business yet.' }}</div>
                                                     @endforelse
                                                 </div>
 
@@ -1822,7 +1822,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             </div>
                                                             <div>
                                                                 <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
-                                                                <p style="margin: 0; font-size: 13.5px; ">Share your experience with the community</p>
+                                                                <p style="margin: 0; font-size: 13.5px; ">{{ static_text('share_experience_subheading') ?: 'Share your experience with the community' }}</p>
                                                             </div>
                                                         </div>
                                                         <div style="display: flex; gap: 12px; align-items: center;">
@@ -1940,7 +1940,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                             @endif
                                                                                         </div>
                                                                                     @else
-                                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">Not rated yet</span>
+                                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">{{ static_text('not_rated_yet') ?: 'Not rated yet' }}</span>
                                                                                     @endif
                                                                                     @if($hasUserRatings)
                                                     <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
@@ -1989,9 +1989,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                         @php
                                                         $reviewSortOptions = [
-                                                            'recent' => 'Most recent',
-                                                            'high-to-low' => 'Highest rated',
-                                                            'low-to-high' => 'Lowest rated',
+                                                            'recent' => (static_text('sort_most_recent') ?: 'Most recent'),
+                                                            'high-to-low' => (static_text('sort_highest_rated') ?: 'Highest rated'),
+                                                            'low-to-high' => (static_text('sort_lowest_rated') ?: 'Lowest rated'),
                                                         ];
                                                         $currentSort = request('sort', 'recent');
                                                         if (!array_key_exists($currentSort, $reviewSortOptions)) {
@@ -2015,7 +2015,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             aria-expanded="false"
                                                                             style="border-color: #ced4da; color: #002347; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fdfdfd; gap: 4px;">
                                                                             <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
-                                                                            <span>Filter by rating</span>
+                                                                            <span>{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                                             <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; flex-shrink: 0;">
                                                                                 <polyline points="6 9 12 15 18 9" />
@@ -2025,7 +2025,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             aria-labelledby="reviewFilterDropdownBtn"
                                                                             style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
                                                                             <div class="mb-3 pb-2 border-bottom">
-                                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                                             </div>
 
                                                                             <div class="review-star-box">
@@ -2067,7 +2067,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         data-bs-toggle="dropdown"
                                                                         aria-expanded="false"
                                                                         style="background-color: #fdfdfd; color: #002347; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
-                                                                        <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
+                                                                        <span>{{ static_text('sort_label') ?: 'Sort:' }} <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
                                                                             <polyline points="6 9 12 15 18 9" />
                                                                         </svg>
@@ -2516,7 +2516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 'action' => 'claim_now',
                                                                 'label' => 'Claim Now',
                                                             ]) }}"
-                                                type="button" style="text-transform:none !important;">Claim now</a>
+                                                type="button" style="text-transform:none !important;">{{ static_text('claim_now_button') ?: 'Claim now' }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -2594,7 +2594,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <div class="feture_box review-breakdown-box not-on-mobile">
 
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
-                                                <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
+                                                <h2 class="size22 big-bld m-0">{{ static_text('highlighted_reviews_heading') ?: 'Highlighted reviews' }} </h2>
                                                 <a href="#section14" class="view-review-link">
                                                     Go to reviews 
                                                 </a>
@@ -2685,7 +2685,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="main_feature_lg">
                                         <div class="feture_box review-breakdown-box not-on-mobile">
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                                <h2 class="size22 big-bld m-0">Recent discussions</h2>
+                                                <h2 class="size22 big-bld m-0">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
                                                      Go to discussions 
                                                 </a>
@@ -2877,18 +2877,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
-                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">Description</a></li>
+                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">{{ static_text('tab_description') ?: 'Description' }}</a></li>
                                                 @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">Alternatives</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">{{ static_text('tab_alternatives') ?: 'Alternatives' }}</a></li>
                                                 @endif
                                                 @if (isset($business->faqs) && $business->faqs->count() > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">FAQs</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">{{ static_text('tab_faqs') ?: 'FAQs' }}</a></li>
                                                 @endif
                                                 @if (isset($peerComparisons) && count($peerComparisons) > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">{{ static_text('tab_compare') ?: 'Compare' }}</a></li>
                                                 @endif
-                                                <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
-                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">Community</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">{{ static_text('tab_reviews') ?: 'Reviews' }}</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">{{ static_text('tab_discussions') ?: 'Community' }}</a></li>
                                             </ul>
                                         </div>
 
@@ -4054,8 +4054,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
-                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
+                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h5>
+                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">{{ static_text('select_issue_reason_subtext') ?: 'Select the reason that best describes the issue' }}</p>
                 </div>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
             </div>
@@ -4093,8 +4093,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                 <!-- Textarea (hidden initially) -->
                 <div id="reportReviewDetailsWrapper" class="mt-4" style="display: none;">
-                    <label class="form-label fw-bold" style="font-size: 13.5px; color: #334155;">Additional details (optional)</label>
-                    <textarea id="reportReviewDetails" class="form-control" rows="3" placeholder="Please provide any additional context..." style="font-size: 14px; border-radius: 12px; padding: 12px; resize: none;"></textarea>
+                    <label class="form-label fw-bold" style="font-size: 13.5px; color: #334155;">{{ static_text('additional_details_optional') ?: 'Additional details (optional)' }}</label>
+                    <textarea id="reportReviewDetails" class="form-control" rows="3" placeholder="{{ static_text('additional_details_placeholder') ?: 'Please provide any additional context...' }}" style="font-size: 14px; border-radius: 12px; padding: 12px; resize: none;"></textarea>
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">

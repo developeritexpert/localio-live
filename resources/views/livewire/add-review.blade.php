@@ -210,14 +210,14 @@
                                                     class="recommend-btn w-50 {{ $recommend === 1 ? 'selected_btn_recommend' : '' }}" 
                                                     wire:click="selectRecommend(1)">
                                                 <i class="fas fa-thumbs-up"></i>
-                                                <span>Yes, I recommend it</span>
+                                                <span>{{ static_text('recommend_yes_option') ?: 'Yes, I recommend it' }}</span>
                                             </button>
 
                                             <button type="button" 
                                                     class="recommend-btn w-50 {{ $recommend === 0 && $recommend !== null ? 'selected_btn_recommend' : '' }}" 
                                                     wire:click="selectRecommend(0)">
                                                 <i class="fas fa-thumbs-down"></i>
-                                                <span>No, I don't recommend it</span>
+                                                <span>{{ static_text('recommend_no_option') ?: "No, I don't recommend it" }}</span>
                                             </button>
                                         </div>
                                         @error('recommend')
@@ -252,7 +252,7 @@
                                                          @endfor
                                                      </div>
                                                      @error('criteriaRatings.' . $cId)
-                                                         <small class="text-danger d-block mt-1" style="font-size: 11px;">Rating is required.</small>
+                                                         <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ static_text('rating_required_error') ?: 'Rating is required.' }}</small>
                                                      @enderror
                                                  </div>
                                              @endforeach
@@ -274,13 +274,13 @@
                                     <!-- Step 3: Title and Review Description -->
                                     <div class="step-content step2" wire:key="step-3">
                                         <div class="form-floating text-inpt mb-3">
-                                            <input type="text" id="title2" class="form-control" wire:model.defer="title2" placeholder="Title">
+                                            <input type="text" id="title2" class="form-control" wire:model.defer="title2" placeholder="{{ static_text('review_title_placeholder') ?: 'Title' }}">
                                             <label for="title2">Title</label>
                                             @error('title2') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
                                         </div>
 
                                         <div class="form-floating mb-3">
-                                            <textarea id="comment" class="form-control" wire:model.defer="comment" placeholder="Your review" style="height: 120px;"></textarea>
+                                            <textarea id="comment" class="form-control" wire:model.defer="comment" placeholder="{{ static_text('review_text_placeholder') ?: 'Your review' }}" style="height: 120px;"></textarea>
                                             <label for="comment">Your review</label>
                                             @error('comment') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
                                         </div>
@@ -304,7 +304,7 @@
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
                                                     <!-- <i class="fas fa-plus-circle text-success me-1"></i> Pros <span class="fw-normal text-muted" style="font-size: 12px;">(What you liked)</span> -->
-                                                    What you liked
+                                                    {{ static_text('review_pros_subtext') ?: 'What you liked' }}
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedPros) }}/5 selected
@@ -317,7 +317,7 @@
                                                     <input type="text" 
                                                            wire:model.live.debounce.300ms="proSearch" 
                                                            class="form-control" 
-                                                           placeholder="Search or filter pros..." 
+                                                           placeholder="{{ static_text('search_pros_placeholder') ?: 'Search or filter pros...' }}" 
                                                            style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
                                                     @if(!empty($proSearch))
                                                         <button type="button" wire:click="clearProSearch" class="clear-search-btn" title="Clear search">
@@ -390,7 +390,7 @@
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
                                                     <!-- <i class="fas fa-minus-circle text-danger me-1"></i> Cons <span class="fw-normal text-muted" style="font-size: 12px;">(What you disliked)</span> -->
-                                                     What you disliked 
+                                                     {{ static_text('review_cons_subtext') ?: 'What you disliked' }} 
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedCons) }}/5 selected
@@ -403,7 +403,7 @@
                                                     <input type="text" 
                                                            wire:model.live.debounce.300ms="conSearch" 
                                                            class="form-control" 
-                                                           placeholder="Search or filter cons..." 
+                                                           placeholder="{{ static_text('search_cons_placeholder') ?: 'Search or filter cons...' }}" 
                                                            style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
                                                     @if(!empty($conSearch))
                                                         <button type="button" wire:click="clearConSearch" class="clear-search-btn" title="Clear search">
@@ -497,7 +497,7 @@
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly
                                             </div>
-                                            <p class="m-0 text-muted" style="font-size: 12px;">Your ratings should reflect your overall experience with this business.</p>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">{{ static_text('rating_guideline_1') ?: 'Your ratings should reflect your overall experience with this business.' }}</p>
                                         @elseif($step === 3)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> Be specific

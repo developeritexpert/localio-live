@@ -310,7 +310,7 @@
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('real_ratings_badge') ?: 'Real Ratings' }}</h6>
                                     </div>
                                     <p style=" margin-bottom: 8px; ">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.

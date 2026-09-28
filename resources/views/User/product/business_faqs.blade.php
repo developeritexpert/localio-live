@@ -285,10 +285,10 @@
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                         </div>
 
-                                                        <!-- Was this helpful? Row -->
+                                                        <!-- {{ static_text('was_this_helpful_question') ?: 'Was this helpful?' }} Row -->
                                                         <div class="faq-feedback-row">
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <span>Was this helpful?</span>
+                                                                <span>{{ static_text('was_this_helpful_question') ?: 'Was this helpful?' }}</span>
                                                                 <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                     <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
                                                                         <i class="far fa-thumbs-up"></i>
@@ -344,10 +344,10 @@
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>
 
-                                                    <!-- Was this helpful? Row -->
+                                                    <!-- {{ static_text('was_this_helpful_question') ?: 'Was this helpful?' }} Row -->
                                                     <div class="faq-feedback-row">
                                                         <div class="d-flex align-items-center gap-2">
-                                                            <span>Was this helpful?</span>
+                                                            <span>{{ static_text('was_this_helpful_question') ?: 'Was this helpful?' }}</span>
                                                             <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                 <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
                                                                     <i class="far fa-thumbs-up"></i>
@@ -462,7 +462,7 @@
                                     <span>Frequently asked questions</span>
                                 </a>
                                 <a href="#section-ask-community" class="sticky-nav-item" data-target="section-ask-community">
-                                    <span>Ask the community</span>
+                                    <span>{{ static_text('tab_discussions') ?: 'Ask the community' }}</span>
                                 </a>
                                 <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
                                     <span>Discussions</span>

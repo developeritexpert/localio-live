@@ -174,7 +174,7 @@
                                         <div class="verified-insights-card">
                                             <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                                 <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('real_ratings_badge') ?: 'Real Ratings' }}</h6>
                                             </div>
                                             <p>
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
@@ -573,7 +573,7 @@
                                 <!-- Product Count and Sort -->
                                 @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
-                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">{{ static_text('selected_features_label') ?: 'Selected features:' }}</span>
                                         @foreach($availableFeatures ?? [] as $fItem)
                                             @if(in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? [])))
                                                 @php
@@ -590,7 +590,7 @@
                                                 </button>
                                             @endif
                                         @endforeach
-                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">{{ static_text('clear_features_button') ?: 'Clear features' }}</a>
                                     </div>
                                 @endif
 
@@ -1031,7 +1031,7 @@
                             <div class="auto-choice-rgt">
                                 @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
-                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">{{ static_text('selected_features_label') ?: 'Selected features:' }}</span>
                                         @foreach($availableFeatures ?? [] as $fItem)
                                             @if(in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? [])))
                                                 @php
@@ -1048,7 +1048,7 @@
                                                 </button>
                                             @endif
                                         @endforeach
-                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">{{ static_text('clear_features_button') ?: 'Clear features' }}</a>
                                     </div>
                                 @endif
                                 @if($products->count() > 0)
@@ -1061,10 +1061,10 @@
 
                                 <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     @if ($this->hasActiveFilters())
-                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
                                         <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
                                     @else
-                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
                                     @endif
                                 </div>
                             </div>
@@ -1205,7 +1205,7 @@
                                                                 </span>
                                                             </li>
                                                             @empty
-                                                            <li class="text-muted" style="font-size: 14px;">No pros available</li>
+                                                            <li class="text-muted" style="font-size: 14px;">{{ static_text('no_pros_available') ?: 'No pros available' }}</li>
                                                             @endforelse
                                                         </ul>
                                                     </div>
@@ -1224,7 +1224,7 @@
                                                                 </span>
                                                             </li>
                                                             @empty
-                                                            <li class="text-muted" style="font-size: 14px;">No cons available</li>
+                                                            <li class="text-muted" style="font-size: 14px;">{{ static_text('no_cons_available') ?: 'No cons available' }}</li>
                                                             @endforelse
                                                         </ul>
                                                     </div>
@@ -1312,7 +1312,7 @@
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
                                         <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
                                         @php
                                             $allCriteria = [];
                                             if (count($topAffiliatedBusinesses) > 0) {
@@ -1437,7 +1437,7 @@
                                         {!! $commFeedbackSubtext !!}
                                     </div>
                                 @else
-                                    <p style="font-size: 16px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
+                                    <p style="font-size: 16px; color: #64748b; margin: 0;">{{ static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.' }}</p>
                                 @endif
                             </div>
                             
@@ -1446,9 +1446,9 @@
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned pro</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned con</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1861,7 +1861,7 @@
                     }
 
                     if (matches.length === 0) {
-                        dropdown.innerHTML = '<div class="p-3 text-muted small text-center">No businesses found matching "' + rawQuery + '"</div>';
+                        dropdown.innerHTML = '<div class="p-3 text-muted small text-center">{{ static_text('no_businesses_found_search') ?: 'No businesses found matching' }} "' + rawQuery + '"</div>';
                         dropdown.style.display = 'block';
                         return;
                     }

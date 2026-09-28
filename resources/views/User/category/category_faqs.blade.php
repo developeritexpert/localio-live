@@ -307,7 +307,7 @@
                     <!-- 1. Recent Reviews Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">Recent reviews</h2>
+                            <h2 class="m-0 card-h-title">{{ static_text('highlighted_reviews_heading') ?: 'Recent reviews' }}</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" >
                                 View all
                             </a>
@@ -417,7 +417,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">Recent discussions</h2>
+                            <h2 class="m-0 card-h-title">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>

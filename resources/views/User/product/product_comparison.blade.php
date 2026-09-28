@@ -166,10 +166,10 @@
 <!-- section product comparison -->
 <section class="lts-wht-bg product_comp_sec p_120 light new-white-bg" style="padding-top: 30px;">
     <div class="container">
-        <!-- Your comparison top bar (Capterra style in Localio design) -->
+        <!-- {{ static_text('your_comparison_heading') ?: 'Your comparison' }} top bar (Capterra style in Localio design) -->
         <div class="your-comparison-wrapper position-relative">
             <div class="your-comp-pills-wrap">
-                <span class="your-comp-title">Your comparison</span>
+                <span class="your-comp-title">{{ static_text('your_comparison_heading') ?: 'Your comparison' }}</span>
                 @foreach($businesses as $biz)
                     @php
                         $bTitle = $biz->translations->first()?->name ?? $biz->name ?? 'Business';
@@ -233,10 +233,10 @@
                                 @endif
                             @endforeach
                             @if($unselectedCount === 0)
-                                <div class="p-3 text-muted small text-center">All products in this category are already added</div>
+                                <div class="p-3 text-muted small text-center">{{ static_text('all_products_already_added') ?: 'All products in this category are already added' }}</div>
                             @endif
                         @else
-                            <div class="p-3 text-muted small text-center">No other products found in this category</div>
+                            <div class="p-3 text-muted small text-center">{{ static_text('no_other_products_in_category') ?: 'No other products found in this category' }}</div>
                         @endif
                     </div>
                 </div>
@@ -332,7 +332,7 @@
                                             }
                                         @endphp
                                         <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
-                                            <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
+                                            <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }} </p>
                                             <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
                                                 @forelse($criteria as $criterion)
                                                     @php
@@ -388,7 +388,7 @@
                                                     </li>
                                                 @empty
                                                     <li class="d-flex justify-content-between align-items-center text-muted small">
-                                                        <span>No criteria available</span>
+                                                        <span>{{ static_text('no_criteria_available') ?: 'No criteria available' }}</span>
                                                     </li>
                                                 @endforelse
                                             </ul>
@@ -414,7 +414,7 @@
                                     <a href="javascript:void(0);" id="addFromCompareCardBtn" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease; cursor: pointer;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
                                             <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 44px; height: 44px;">
-                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
+                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> {{ static_text('add_to_compare_button') ?: 'Add to compare' }} </span>
                                         </div>
                                     </a>
                                 </div>
@@ -465,7 +465,7 @@
                                                 @if(!empty($bDesc))
                                                     {!! $bDesc !!}
                                                 @else
-                                                    <p class="text-muted mb-0">No description available.</p>
+                                                    <p class="text-muted mb-0">{{ static_text('no_description_available') ?: 'No description available.' }}</p>
                                                 @endif
                                             </div>
                                         </div>
@@ -551,7 +551,7 @@
                                                         @endforeach
                                                     </ul>
                                                 @else
-                                                    <p class="text-muted small mb-0 py-1">No pros added yet.</p>
+                                                    <p class="text-muted small mb-0 py-1">{{ static_text('no_pros_added_yet') ?: 'No pros added yet.' }}</p>
                                                 @endif
                                             </div>
 
@@ -582,7 +582,7 @@
                                                         @endforeach
                                                     </ul>
                                                 @else
-                                                    <p class="text-muted small mb-0 py-1">No cons added yet.</p>
+                                                    <p class="text-muted small mb-0 py-1">{{ static_text('no_cons_added_yet') ?: 'No cons added yet.' }}</p>
                                                 @endif
                                             </div>
                                         @else
@@ -660,11 +660,11 @@
                                         <h5 style="font-size: 16px; font-weight: 700; color: #1e3050; margin: 0;">{{ $bName }}</h5>
                                     </div>
                                     <div class="row g-3">
-                                        <!-- Starting price card -->
+                                        <!-- {{ static_text('starting_price_label') ?: 'Starting price' }} card -->
                                         <div class="col-6">
                                             <div class="p-3 bg-white border h-100 d-flex flex-column text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                                 <div>
-                                                    <p class="starting-price-title">Starting price</p>
+                                                    <p class="starting-price-title">{{ static_text('starting_price_label') ?: 'Starting price' }}</p>
                                                     @if($startingPrice)
                                                         <p class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</p>
                                                         @if(!empty($startingPrice['additional_info']) && !in_array(strtoupper(trim((string)$startingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
@@ -673,13 +673,13 @@
                                                             <p class="starting-price-text">per {{ strtolower($timeUnit) }}</p>
                                                         @endif
                                                     @else
-                                                        <!-- <p class="starting-price-value">Starting price</p> -->
-                                                        <p class="starting-price-value">Contact</p>
-                                                        <p class="starting-price-text">Custom subscription</p>
+                                                        <!-- <p class="starting-price-value">{{ static_text('starting_price_label') ?: 'Starting price' }}</p> -->
+                                                        <p class="starting-price-value">{{ static_text('contact_pricing_label') ?: 'Contact' }}</p>
+                                                        <p class="starting-price-text">{{ static_text('custom_subscription_label') ?: 'Custom subscription' }}</p>
                                                     @endif
                                                 </div>
                                                 <div class="starting-price-link">
-                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{ static_text('view_pricing_link') ?: 'View pricing' }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -691,7 +691,7 @@
                                                     <div class="grn_check_big">
                                                         <img src="{{ asset('front/img/new-grn-chk.svg') }}" alt="Check">
                                                     </div>
-                                                    <h6 class="blue-text big-bld mt-2">Free Trial<br>Available</h6>
+                                                    <h6 class="blue-text big-bld mt-2">{{ static_text('free_trial_label') ?: 'Free Trial' }}<br>{{ static_text('available_label') ?: 'Available' }}</h6>
                                                 </div>
                                                 <div class="mt-3">
                                                     <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
@@ -934,7 +934,7 @@
                                             <!-- Stars below headline + Arrow + Detailed User Ratings Breakdown Popup -->
                                             <div class="rating light mb-2" style="display: flex; align-items: center; gap: 6px;">
                                                 <div class="user-rating-breakdown-wrapper position-relative d-inline-block">
-                                                    <div class="user-rating-trigger d-inline-flex align-items-center" style="cursor: pointer; gap: 4px;" title="Detailed user ratings">
+                                                    <div class="user-rating-trigger d-inline-flex align-items-center" style="cursor: pointer; gap: 4px;" title="{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}">
                                                         <div class="rating-stars" style="display: flex; gap: 2px;">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <= floor($rev->rating))
@@ -955,7 +955,7 @@
 
                                                     @if($business->approved_reviews_count >= 10 && isset($bizCriteria) && count($bizCriteria) > 0)
                                                     <div class="dropdown-menu shadow-sm user-rating-breakdown-menu" style="display: none;">
-                                                        <div class="user-rating-header">Detailed user ratings</div>
+                                                        <div class="user-rating-header">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}</div>
                                                         <div class="user-rating-body">
                                                             @foreach ($bizCriteria as $criterion)
                                                             @php

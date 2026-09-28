@@ -109,9 +109,9 @@
         </div>
         <div class="col-sm-4 col-12">
             <select id="previewDiscussionSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                <option value="popular">Top / Popular</option>
-                <option value="recent">Most Recent</option>
-                <option value="commented">Most Active</option>
+                <option value="popular">{{ static_text('sort_top_popular') ?: 'Top / Popular' }}<option>
+                <option value="recent">{{ static_text('sort_most_recent_disc') ?: 'Most Recent' }}<option>
+                <option value="commented">{{ static_text('sort_most_active_disc') ?: 'Most Active' }}<option>
             </select>
         </div>
     </form>
@@ -124,7 +124,7 @@
             <span>&bull;</span>
             <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
             <span>&bull;</span>
-            <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+            <span><strong>{{ number_format($totalActiveToday) }}</strong> {{ static_text('active_today_label') ?: 'active today' }}</span>
         </div>
 
         <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0 d-none">
@@ -307,7 +307,7 @@
                                     <h4 class="m-0 text-truncate" style="font-size: 15px; font-weight: 600; line-height: 1.4;">
                                         <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="discussion-title-link" style="color: #1e3050; text-decoration: none;">
                                             @if($pDisc->is_pinned)
-                                                <span class="badge bg-warning text-dark me-1" style="font-size: 10px; font-weight: 600;"><i class="fas fa-thumbtack"></i> Pinned</span>
+                                                <span class="badge bg-warning text-dark me-1" style="font-size: 10px; font-weight: 600;"><i class="fas fa-thumbtack"></i> {{ static_text('pinned_discussion_badge') ?: 'Pinned' }}</span>
                                             @endif
                                             {{ $pDisc->title }}
                                         </a>
@@ -514,13 +514,13 @@
                 @endif
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">Title / Question <span class="text-danger">*</span></label>
-                        <input type="text" name="title" class="form-control" placeholder="What would you like to ask or share?" required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;">
+                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">{{ static_text('discussion_title_field_label') ?: 'Title / Question' }} <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" placeholder="{{ static_text('discussion_title_placeholder') ?: 'What would you like to ask or share?' }}" required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">Details & Context <span class="text-danger">*</span></label>
-                        <textarea name="content" class="form-control" rows="5" placeholder="Provide background context, specific questions, or personal experience..." required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;"></textarea>
+                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">{{ static_text('discussion_details_field_label') ?: 'Details & Context' }} <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control" rows="5" placeholder="{{ static_text('discussion_details_placeholder') ?: 'Provide background context, specific questions, or personal experience...' }}" required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer px-4 py-3" style="border-top: 1px solid #f1f5f9;">
