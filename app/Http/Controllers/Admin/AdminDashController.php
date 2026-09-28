@@ -104,12 +104,8 @@ class AdminDashController extends Controller
 
     public function whoWeAreContent()
     {
-        $lang = getCurrentLocale();
-
-        $redis_lang_code = Redis::get('admin_lang_code'); // Fetch lang_code from Redis
-        $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null; // Fetch Language model if lang_code exists
-
-        $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
         $whoWeAre = WhoWeAre::where('lang_id', $lang_id)->first(); // Get the record to edit
 
@@ -204,8 +200,7 @@ class AdminDashController extends Controller
     public function updateWhoWeAre(Request $request)
     {
         // dd($request->all());
-        // Ensure lang_id is retrieved from Redis
-        $lang_id = Redis::get('admin_lang_id') ?? 1;
+        $lang_id = getAdminLangId();
 
         // Validate incoming request
         $validatedData = $request->validate([
@@ -424,12 +419,8 @@ class AdminDashController extends Controller
 
 public function ExpertGuide()
 {
-    $lang = getCurrentLocale();
-
-    $redis_lang_code = Redis::get('admin_lang_code'); // Fetch lang_code from Redis
-    $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null; // Fetch Language model if lang_code exists
-
-    $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+    $lang = getAdminLangCode();
+    $lang_id = getAdminLangId();
 
     // Create translations if they don't exist
     $this->ensureTranslationsExist($lang_id);
@@ -560,8 +551,7 @@ protected function ensureTranslationsExist(int $langId): void
     // expert guide update
     public function ExperGuideUpdate(Request $request)
     {
-        // Ensure lang_id is retrieved from Redis
-        $lang_id = Redis::get('admin_lang_id') ?? 1;
+        $lang_id = getAdminLangId();
 
         // Validate incoming request
         $validatedData = $request->validate([
@@ -656,13 +646,8 @@ protected function ensureTranslationsExist(int $langId): void
 
     }
     public function Contact(){
-
-    $lang = getCurrentLocale();
-
-    $redis_lang_code = Redis::get('admin_lang_code');// Fetch lang_code from Redis
-    $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null; // Fetch Language model if lang_code exists
-
-    $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
         $contact = ContactContent::where('lang_id', $lang_id)->first();
         $pageTileTranslationRightTool = PageTile::where('source', 'right_tool_item')->where('lang_id', $lang_id)
@@ -674,8 +659,7 @@ protected function ensureTranslationsExist(int $langId): void
     public function ContactUpdate(Request $request)
     {
         // dd($request->all());
-        // Ensure lang_id is retrieved from Redis
-        $lang_id = Redis::get('admin_lang_id') ?? 1;
+        $lang_id = getAdminLangId();
 
         // Validate incoming request
         $validatedData = $request->validate([
@@ -723,12 +707,8 @@ protected function ensureTranslationsExist(int $langId): void
     }
 
     public function helpCenter(){
-        $lang = getCurrentLocale();
-
-        $redis_lang_code = Redis::get('admin_lang_code'); // Fetch lang_code from Redis
-        $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null;
-
-        $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
         $help = HelpCenterContent::where('lang_id', $lang_id)
             ->with('categories')
@@ -741,7 +721,7 @@ protected function ensureTranslationsExist(int $langId): void
 
     public function HelpCenterUpdate(Request $request)
     {
-        $lang_id = Redis::get('admin_lang_id') ?? 1;
+        $lang_id = getAdminLangId();
         $content = HelpCenterContent::firstOrNew(['lang_id' => $lang_id]);
         $isUpdate = $content->exists;
 

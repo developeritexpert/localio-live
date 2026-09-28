@@ -608,8 +608,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
 
     // Site Content
-    Route::get('/admin-dashboard/site-content',[StaticContentController::class,'allContent'])->name('admin-all-static-content');
-    Route::post('/admin-dashboard/site-content/update', [StaticContentController::class, 'updateContent'])->name('admin-static-content-update');
 
 
     // vendor Change Request

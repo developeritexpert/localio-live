@@ -7,9 +7,9 @@
             </div>
         </div>
         <?php
-            use Illuminate\Support\Facades\Redis;
-            $lang_code = Redis::get('admin_lang_code') ?? getCurrentLocale();
-        ?>
+    $lang_code = getAdminLangCode();
+    $lang_id = getAdminLangId();
+?>
         @if (isset($homeContents) && isset($allHomeContents))
         <form action="{{ route('home-content-update') }}" class="form-validate" novalidate="novalidate" method="post" enctype="multipart/form-data">
         @csrf

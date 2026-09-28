@@ -100,7 +100,7 @@
 @if($selectedPros->isNotEmpty())
     <div style="margin-top: 18px;">
         <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
-            Pros
+            {{ static_text('pros_label') ?: 'Pros' }}
         </div>
 
         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -118,7 +118,7 @@
 @if($selectedCons->isNotEmpty())
     <div style="margin-top: 14px;">
         <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
-            Cons
+            {{ static_text('cons_label') ?: 'Cons' }}
         </div>
 
         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -139,7 +139,7 @@
                         data-review-id="{{ $review->id }}"
                         data-type="original"
                         data-language-id="{{ getCurrentLanguageID() }}">
-                        View Original
+                        {{ static_text('view_original_translation') ?: 'View Original' }}
                     </a>
                 </div>
 
@@ -162,7 +162,7 @@
         @endforeach
     @else
         <div class="p-4 text-center text-muted">
-            <p>No reviews found matching the selected criteria.</p>
+            <p>{{ static_text('no_reviews_found') ?: 'No reviews found matching the selected criteria.' }}</p>
         </div>
     @endif
 </div>

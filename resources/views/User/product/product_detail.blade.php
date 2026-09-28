@@ -1218,7 +1218,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content border-0 shadow-lg">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="reviewPopupLabel">Submit Your Review</h5>
+                                                        <h5 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
 
@@ -1232,9 +1232,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @endfor
                                                         </div>
 
-                                                        <textarea id="popupComment" class="form-control mb-3" rows="3" placeholder="Write a review (optional)"></textarea>
+                                                        <textarea id="popupComment" class="form-control mb-3" rows="3" placeholder="{{ static_text('write_a_review_placeholder') ?: 'Write a review (optional)' }}"></textarea>
 
-                                                        <button id="submitPopupReview" class="btn btn-primary w-100">Submit Review</button>
+                                                        <button id="submitPopupReview" class="btn btn-primary w-100">{{ static_text('submit_review_button') ?: 'Submit Review' }}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1615,7 +1615,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
 
                                                     @empty
-                                                    <div class="col-12 text-muted p-0">No comparisons available for this business yet.</div>
+                                                    <div class="col-12 text-muted p-0">{{ static_text('no_comparisons_available') ?: 'No comparisons available for this business yet.' }}</div>
                                                     @endforelse
                                                 </div>
 
@@ -1822,7 +1822,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             </div>
                                                             <div>
                                                                 <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
-                                                                <p style="margin: 0; font-size: 13.5px; ">Share your experience with the community</p>
+                                                                <p style="margin: 0; font-size: 13.5px; ">{{ static_text('share_experience_subheading') ?: 'Share your experience with the community' }}</p>
                                                             </div>
                                                         </div>
                                                         <div style="display: flex; gap: 12px; align-items: center;">
@@ -1940,7 +1940,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                             @endif
                                                                                         </div>
                                                                                     @else
-                                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">Not rated yet</span>
+                                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">{{ static_text('not_rated_yet') ?: 'Not rated yet' }}</span>
                                                                                     @endif
                                                                                     @if($hasUserRatings)
                                                     <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
@@ -1989,9 +1989,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                         @php
                                                         $reviewSortOptions = [
-                                                            'recent' => 'Most recent',
-                                                            'high-to-low' => 'Highest rated',
-                                                            'low-to-high' => 'Lowest rated',
+                                                            'recent' => (static_text('sort_most_recent') ?: 'Most recent'),
+                                                            'high-to-low' => (static_text('sort_highest_rated') ?: 'Highest rated'),
+                                                            'low-to-high' => (static_text('sort_lowest_rated') ?: 'Lowest rated'),
                                                         ];
                                                         $currentSort = request('sort', 'recent');
                                                         if (!array_key_exists($currentSort, $reviewSortOptions)) {
@@ -2015,7 +2015,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             aria-expanded="false"
                                                                             style="border-color: #ced4da; color: #002347; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fdfdfd; gap: 4px;">
                                                                             <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
-                                                                            <span>Filter by rating</span>
+                                                                            <span>{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                                             <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; flex-shrink: 0;">
                                                                                 <polyline points="6 9 12 15 18 9" />
@@ -2025,7 +2025,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             aria-labelledby="reviewFilterDropdownBtn"
                                                                             style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
                                                                             <div class="mb-3 pb-2 border-bottom">
-                                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                                             </div>
 
                                                                             <div class="review-star-box">
@@ -2067,7 +2067,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         data-bs-toggle="dropdown"
                                                                         aria-expanded="false"
                                                                         style="background-color: #fdfdfd; color: #002347; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
-                                                                        <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
+                                                                        <span>{{ static_text('sort_label') ?: 'Sort:' }} <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
                                                                             <polyline points="6 9 12 15 18 9" />
                                                                         </svg>
@@ -2516,7 +2516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 'action' => 'claim_now',
                                                                 'label' => 'Claim Now',
                                                             ]) }}"
-                                                type="button" style="text-transform:none !important;">Claim now</a>
+                                                type="button" style="text-transform:none !important;">{{ static_text('claim_now_button') ?: 'Claim now' }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -2594,7 +2594,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <div class="feture_box review-breakdown-box not-on-mobile">
 
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
-                                                <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
+                                                <h2 class="size22 big-bld m-0">{{ static_text('highlighted_reviews_heading') ?: 'Highlighted reviews' }} </h2>
                                                 <a href="#section14" class="view-review-link">
                                                     Go to reviews 
                                                 </a>
@@ -2685,7 +2685,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="main_feature_lg">
                                         <div class="feture_box review-breakdown-box not-on-mobile">
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                                <h2 class="size22 big-bld m-0">Recent discussions</h2>
+                                                <h2 class="size22 big-bld m-0">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
                                                      Go to discussions 
                                                 </a>
@@ -2877,18 +2877,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
-                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">Description</a></li>
+                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">{{ static_text('tab_description') ?: 'Description' }}</a></li>
                                                 @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">Alternatives</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">{{ static_text('tab_alternatives') ?: 'Alternatives' }}</a></li>
                                                 @endif
                                                 @if (isset($business->faqs) && $business->faqs->count() > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">FAQs</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">{{ static_text('tab_faqs') ?: 'FAQs' }}</a></li>
                                                 @endif
                                                 @if (isset($peerComparisons) && count($peerComparisons) > 0)
-                                                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">{{ static_text('tab_compare') ?: 'Compare' }}</a></li>
                                                 @endif
-                                                <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
-                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">Community</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">{{ static_text('tab_reviews') ?: 'Reviews' }}</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">{{ static_text('tab_discussions') ?: 'Community' }}</a></li>
                                             </ul>
                                         </div>
 
@@ -3712,206 +3712,185 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('write_review')) {
-            // Remove the parameter from the address bar for clean UX
             const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.replaceState({
                 path: cleanUrl
             }, '', cleanUrl);
 
-            @auth
             setTimeout(() => {
                 Livewire.dispatch('openReviewModal', {
-                    businessId: {
-                        {
-                            $business - > id
-                        }
-                    }
+                    businessId: {{ $business->id }}
                 });
             }, 500);
-            @else
-            setTimeout(() => {
-                Livewire.dispatch('openReviewModal', {
-                    businessId: {
-                        {
-                            $business - > id
-                        }
-                    }
-                });
-            }, 500);
-            @endauth
         }
     });
 
-    // Sticky Sidebar Navigation Active Link & Smooth Scroll
+    // Unified Sticky Sidebar Navigation: Active on Scroll & Smooth Click
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Sticky Sidebar JS loaded!');
-        const stickyNavLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
-        if (stickyNavLinks.length > 0) {
-            stickyNavLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    console.log('CLICK FIRED on link:', this);
-                    const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+        const desktopLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
+        const mobileLinks = document.querySelectorAll('.msbn-item');
+        const mobileActiveText = document.getElementById('msbn-active-text');
 
-                    if (targetId === 'top' || targetId === 'section1') {
-                        e.preventDefault();
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                        stickyNavLinks.forEach(l => l.classList.remove('active'));
-                        this.classList.add('active');
-                        return;
-                    }
+        const navSectionTargets = [
+            { id: 'section1', target: 'section1' },
+            { id: 'section9', target: 'section9' },
+            { id: 'section15', target: 'section15' },
+            { id: 'section-compare', target: 'section-compare' },
+            { id: 'section14', target: 'section14' },
+            { id: 'sectionDiscussions', target: 'sectionDiscussions' }
+        ];
 
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        e.preventDefault();
-                        const headerOffset = 90;
-                        const elementPosition = targetElement.getBoundingClientRect().top;
-                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        function isTargetMatch(link, targetKey) {
+            const dataTarget = link.getAttribute('data-target');
+            const href = link.getAttribute('href');
+            const hrefClean = href ? href.replace('#', '') : '';
 
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
-                        });
-
-                        stickyNavLinks.forEach(l => l.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                });
-            });
-
-            const msbnNavLinks = document.querySelectorAll('.msbn-item');
-            if (msbnNavLinks.length > 0) {
-                msbnNavLinks.forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
-
-                        if (targetId === 'top' || targetId === 'section1') {
-                            e.preventDefault();
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                            return;
-                        }
-
-                        const targetElement = document.getElementById(targetId);
-                        if (targetElement) {
-                            e.preventDefault();
-                            const headerOffset = 90;
-                            const elementPosition = targetElement.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    });
-                });
+            if (targetKey === 'section1') {
+                return dataTarget === 'section1' || dataTarget === 'top' || href === '#top' || href === '#section1' || hrefClean === 'top' || hrefClean === 'section1';
             }
 
-            // Update active link on scroll
-            const navSectionTargets = [{
-                    id: 'section1',
-                    target: 'section1'
-                },
-                {
-                    id: 'section9',
-                    target: 'section9'
-                },
-                {
-                    id: 'section15',
-                    target: 'section15'
-                },
-                {
-                    id: 'section-compare',
-                    target: 'section-compare'
-                },
-                {
-                    id: 'section14',
-                    target: 'section14'
-                },
-                {
-                    id: 'sectionDiscussions',
-                    target: 'sectionDiscussions'
+            return dataTarget === targetKey || href === '#' + targetKey || hrefClean === targetKey;
+        }
+
+        function setActiveNav(targetKey) {
+            if (!targetKey) return;
+
+            desktopLinks.forEach(link => {
+                if (isTargetMatch(link, targetKey)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
                 }
-            ];
+            });
 
-            window.addEventListener('scroll', function() {
-                const scrollPos = window.scrollY + 250;
-                let activeId = '';
-                
-                const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50;
-                
-                console.log('SCROLL FIRED. scrollY:', window.scrollY, 'isAtBottom:', isAtBottom);
-
-                if (isAtBottom) {
-                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
-                        if (document.getElementById(navSectionTargets[i].id)) {
-                            activeId = navSectionTargets[i].target;
-                            break;
-                        }
+            mobileLinks.forEach(link => {
+                if (isTargetMatch(link, targetKey)) {
+                    link.classList.add('active');
+                    if (mobileActiveText) {
+                        mobileActiveText.textContent = link.textContent.trim();
                     }
                 } else {
-                    for (let i = navSectionTargets.length - 1; i >= 0; i--) {
-                        const item = navSectionTargets[i];
-                        const el = document.getElementById(item.id);
-                        if (el) {
-                            const rect = el.getBoundingClientRect();
-                            const top = rect.top + window.scrollY;
-                            if (scrollPos >= top) {
-                                activeId = item.target;
-                                break;
-                            }
-                        }
-                    }
+                    link.classList.remove('active');
                 }
-                
-                if (!activeId && navSectionTargets.length > 0) {
-                    activeId = navSectionTargets[0].target;
-                }
-
-                if (activeId) {
-                    console.log('active class on this now:', activeId);
-                    stickyNavLinks.forEach(link => {
-                        let checkTarget = link.getAttribute('data-target');
-                        if (checkTarget === 'top' && activeId === 'section1') {
-                            checkTarget = 'section1';
-                        }
-                        
-                        if (checkTarget === activeId || link.getAttribute('href') === '#' + activeId) {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-
-                    // Update Mobile Dropdown
-                    const msbnItems = document.querySelectorAll('.msbn-item');
-                    if (msbnItems.length > 0) {
-                        msbnItems.forEach(item => {
-                            let checkTarget = item.getAttribute('data-target');
-                            if (checkTarget === 'top' && activeId === 'section1') {
-                                checkTarget = 'section1';
-                            }
-                            if (checkTarget === activeId || item.getAttribute('href') === '#' + activeId) {
-                                item.classList.add('active');
-                                const activeTextSpan = document.getElementById('msbn-active-text');
-                                if (activeTextSpan) {
-                                    activeTextSpan.textContent = item.innerText;
-                                }
-                            } else {
-                                item.classList.remove('active');
-                            }
-                        });
-                    }
-                }
-            }, {
-                passive: true
             });
         }
+
+        let isManualScrolling = false;
+        let manualScrollTimer = null;
+
+        function updateActiveOnScroll() {
+            if (isManualScrolling) return;
+
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+
+            const visibleSections = [];
+            navSectionTargets.forEach(item => {
+                const el = document.getElementById(item.id);
+                if (el && el.offsetParent !== null) {
+                    visibleSections.push({
+                        id: item.id,
+                        target: item.target,
+                        top: el.getBoundingClientRect().top + scrollY
+                    });
+                }
+            });
+
+            if (visibleSections.length === 0) return;
+
+            // 1. Near the very top of page
+            if (scrollY < 200) {
+                setActiveNav(visibleSections[0].target);
+                return;
+            }
+
+            // 2. Near the bottom of page
+            if (windowHeight + scrollY >= docHeight - 80) {
+                setActiveNav(visibleSections[visibleSections.length - 1].target);
+                return;
+            }
+
+            // 3. Section based on viewport offset (130px header offset)
+            const currentPos = scrollY + 130;
+            let activeTarget = visibleSections[0].target;
+
+            for (let i = 0; i < visibleSections.length; i++) {
+                if (currentPos >= visibleSections[i].top) {
+                    activeTarget = visibleSections[i].target;
+                } else {
+                    break;
+                }
+            }
+
+            setActiveNav(activeTarget);
+        }
+
+        // Attach click events for both desktop and mobile nav items
+        function handleNavClick(e) {
+            const dataTarget = this.getAttribute('data-target');
+            const href = this.getAttribute('href');
+            const targetAttr = dataTarget || (href ? href.replace('#', '') : '');
+
+            if (!targetAttr) return;
+
+            let targetEl = null;
+            let targetKey = targetAttr;
+
+            if (targetAttr === 'top' || targetAttr === 'section1') {
+                targetEl = document.getElementById('section1') || document.body;
+                targetKey = 'section1';
+            } else {
+                targetEl = document.getElementById(targetAttr);
+            }
+
+            if (targetEl) {
+                e.preventDefault();
+                setActiveNav(targetKey);
+
+                isManualScrolling = true;
+                clearTimeout(manualScrollTimer);
+                manualScrollTimer = setTimeout(() => {
+                    isManualScrolling = false;
+                }, 800);
+
+                const headerOffset = 90;
+                let offsetPosition = 0;
+
+                if (targetAttr === 'top' && !document.getElementById('section1')) {
+                    offsetPosition = 0;
+                } else {
+                    offsetPosition = targetEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - headerOffset;
+                }
+
+                window.scrollTo({
+                    top: Math.max(0, offsetPosition),
+                    behavior: 'smooth'
+                });
+
+                if (window.history && window.history.pushState) {
+                    window.history.pushState(null, null, '#' + (targetAttr === 'section1' ? 'top' : targetAttr));
+                }
+            }
+        }
+
+        desktopLinks.forEach(link => link.addEventListener('click', handleNavClick));
+        mobileLinks.forEach(link => link.addEventListener('click', handleNavClick));
+
+        // Listen for scroll events with passive performance
+        window.addEventListener('scroll', updateActiveOnScroll, { passive: true });
+
+        // Initial check on page load or anchor hash
+        setTimeout(() => {
+            const hash = window.location.hash;
+            if (hash) {
+                let cleanHash = hash.replace('#', '');
+                if (cleanHash === 'top') cleanHash = 'section1';
+                setActiveNav(cleanHash);
+            } else {
+                updateActiveOnScroll();
+            }
+        }, 120);
     });
 </script>
 
@@ -4054,8 +4033,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
-                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
+                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h5>
+                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">{{ static_text('select_issue_reason_subtext') ?: 'Select the reason that best describes the issue' }}</p>
                 </div>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
             </div>
@@ -4093,8 +4072,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                 <!-- Textarea (hidden initially) -->
                 <div id="reportReviewDetailsWrapper" class="mt-4" style="display: none;">
-                    <label class="form-label fw-bold" style="font-size: 13.5px; color: #334155;">Additional details (optional)</label>
-                    <textarea id="reportReviewDetails" class="form-control" rows="3" placeholder="Please provide any additional context..." style="font-size: 14px; border-radius: 12px; padding: 12px; resize: none;"></textarea>
+                    <label class="form-label fw-bold" style="font-size: 13.5px; color: #334155;">{{ static_text('additional_details_optional') ?: 'Additional details (optional)' }}</label>
+                    <textarea id="reportReviewDetails" class="form-control" rows="3" placeholder="{{ static_text('additional_details_placeholder') ?: 'Please provide any additional context...' }}" style="font-size: 14px; border-radius: 12px; padding: 12px; resize: none;"></textarea>
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
@@ -4204,25 +4183,5 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             });
     }
 </script>
-<script>
-    $(document).ready(function() {
-        let hash = window.location.hash;
-        if (hash) {
-            setTimeout(function() {
-                let targetData = hash.replace('#', '');
-                let $targetLink = $('.sticky-nav-item[data-target="' + targetData + '"], .sticky-nav-item[href="' + hash + '"]');
-                
-                if ($targetLink.length) {
-                    $('.sticky-nav-item').removeClass('active');
-                    $targetLink.addClass('active');
-                }
-            }, 100);
-        }
-        
-        $(document).on('click', '.sticky-nav-item', function (e) {
-            $('.sticky-nav-item').removeClass('active');
-            $(this).addClass('active');
-        });
-    });
-</script>
+
 @endsection

@@ -19,7 +19,7 @@
 
 <div class="boxshadow_border bg-white p-4 more-about-business-card" style="border-radius: 16px !important;">
     <div class="pb-2 mb-1" style="border-bottom: 1px solid #f0f0f0;">
-        <p class="m-0 card-h-title">More about {{ $bName }}</p>
+        <p class="m-0 card-h-title">{{ static_text('more_about_business_heading') ?: 'More about' }} {{ $bName }}</p>
     </div>
 
     <div class="more-about-links-list d-flex flex-column">
@@ -43,7 +43,7 @@
                 <span class="more-about-link-icon">
                     <img src="{{ asset('front/img/alternatives.svg') }}" alt="Alternatives">
                 </span>
-                <span class="more-about-link-text">Alternatives</span>
+                <span class="more-about-link-text">{{ static_text('tab_alternatives') ?: 'Alternatives' }}</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
@@ -55,7 +55,7 @@
                 <span class="more-about-link-icon">
                     <img src="{{ asset('front/img/FAQs.svg') }}" alt="FAQs">
                 </span>
-                <span class="more-about-link-text">FAQs</span>
+                <span class="more-about-link-text">{{ static_text('tab_faqs') ?: 'FAQs' }}</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
@@ -67,7 +67,7 @@
                 <span class="more-about-link-icon">
                     <img src="{{ asset('front/img/compare.svg') }}" alt="Compare">
                 </span>
-                <span class="more-about-link-text">Compare</span>
+                <span class="more-about-link-text">{{ static_text('tab_compare') ?: 'Compare' }}</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
@@ -79,7 +79,7 @@
                 <span class="more-about-link-icon">
                     <img src="{{ asset('front/img/reviews.svg') }}" alt="Reviews">
                 </span>
-                <span class="more-about-link-text">Reviews</span>
+                <span class="more-about-link-text">{{ static_text('tab_reviews') ?: 'Reviews' }}</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
@@ -91,7 +91,7 @@
                 <span class="more-about-link-icon">
                     <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions">
                 </span>
-                <span class="more-about-link-text">Discussions</span>
+                <span class="more-about-link-text">{{ static_text('tab_discussions') ?: 'Discussions' }}</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>

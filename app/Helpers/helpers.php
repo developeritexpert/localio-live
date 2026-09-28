@@ -36,6 +36,83 @@ function getCurrentLocale($type = "lang_code")
     }
 }
 
+
+/**
+ * Get currently selected language code for Admin Content pages.
+ * Priority: Session -> Redis (safe try-catch) -> Current Locale -> 'en-us'
+ */
+function getAdminLangCode()
+{
+    if (Session::has('admin_lang_code') && !empty(Session::get('admin_lang_code'))) {
+        return Session::get('admin_lang_code');
+    }
+
+    try {
+        if (class_exists(Redis::class)) {
+            $redisCode = Redis::get('admin_lang_code');
+            if (!empty($redisCode)) {
+                Session::put('admin_lang_code', $redisCode);
+                return $redisCode;
+            }
+        }
+    } catch (\Throwable $e) {
+        // Silently catch Redis connection/server errors
+    }
+
+    return getCurrentLocale('lang_code') ?: 'en-us';
+}
+
+/**
+ * Get currently selected language ID for Admin Content pages.
+ * Priority: Session -> Redis (safe try-catch) -> Language DB lookup -> Current Language ID -> 1
+ */
+function getAdminLangId()
+{
+    if (Session::has('admin_lang_id') && !empty(Session::get('admin_lang_id'))) {
+        return (int) Session::get('admin_lang_id');
+    }
+
+    try {
+        if (class_exists(Redis::class)) {
+            $redisId = Redis::get('admin_lang_id');
+            if (!empty($redisId)) {
+                Session::put('admin_lang_id', (int) $redisId);
+                return (int) $redisId;
+            }
+        }
+    } catch (\Throwable $e) {
+        // Silently catch Redis connection/server errors
+    }
+
+    $code = getAdminLangCode();
+    $lang = Language::where('lang_code', $code)->first();
+    if ($lang) {
+        Session::put('admin_lang_id', (int) $lang->id);
+        return (int) $lang->id;
+    }
+
+    return (int) (getCurrentLanguageID() ?: 1);
+}
+
+/**
+ * Set selected language for Admin Content pages.
+ * Stores in Session and safely syncs to Redis if available.
+ */
+function setAdminLanguage($langCode, $langId)
+{
+    Session::put('admin_lang_code', $langCode);
+    Session::put('admin_lang_id', (int) $langId);
+
+    try {
+        if (class_exists(Redis::class)) {
+            Redis::set('admin_lang_code', $langCode);
+            Redis::set('admin_lang_id', (int) $langId);
+        }
+    } catch (\Throwable $e) {
+        // Silently catch Redis connection/server errors
+    }
+}
+
 function getCurrentCountry()
 {
     $lang_id = getCurrentLanguageID();

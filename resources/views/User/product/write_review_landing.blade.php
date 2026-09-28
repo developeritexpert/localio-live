@@ -4,9 +4,9 @@
 <!-- Hero Section -->
 <section class="write-review-hero text-center  text-white" style="background-color:#fdfdfd;">
     <div class="container">
-        <h1 class=" mb-3" style="color: #002347;"> Share your experience </h1>
+        <h1 class=" mb-3" style="color: #002347;"> {{ static_text('write_review_hero_title') ?: 'Share your experience' }} </h1>
         <p class=" mb-5 mx-auto" style="margin-bottom: 0;">
-            Help the Localio community make better choices by sharing your experience with a business or product
+            {{ static_text('write_review_hero_subtitle') ?: 'Help the Localio community make better choices by sharing your experience with a business or product' }}
         </p>
         
         @livewire('write-review-search')
@@ -19,8 +19,8 @@
         
         <!-- Trending Section -->
         <div class="mb-5">
-            <h2>Popular with our community</h2>
-            <p class=" mb-4">See what the Localio community is reviewing right now</p>
+            <h2>{{ static_text('popular_with_community_title') ?: 'Popular with our community' }}</h2>
+            <p class=" mb-4">{{ static_text('popular_with_community_desc') ?: 'See what the Localio community is reviewing right now' }}</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($trendingBusinesses as $business)
                     @php
@@ -68,8 +68,8 @@
                 <!-- Be the first to review Section -->
         @if(isset($unreviewedBusinesses) && $unreviewedBusinesses->count() > 0)
         <div class="mb-5 share_exp_wrp">
-            <h2>Be the first to review</h2>
-            <p class="mb-4">Share your experience and help our community</p>
+            <h2>{{ static_text('be_first_to_review_title') ?: 'Be the first to review' }}</h2>
+            <p class="mb-4">{{ static_text('be_first_to_review_desc') ?: 'Share your experience and help our community' }}</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($unreviewedBusinesses as $business)
                     <div class="col">
@@ -94,8 +94,8 @@
 
         <!-- Recently Reviewed Section -->
         <div class="recently_reviewed_wrp">
-            <h2>Recently reviewed</h2>
-            <p class=" mb-4">The latest experiences shared by the Localio community</p>
+            <h2>{{ static_text('recently_reviewed_title') ?: 'Recently reviewed' }}</h2>
+            <p class=" mb-4">{{ static_text('recently_reviewed_desc') ?: 'The latest experiences shared by the Localio community' }}</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($recentlyReviewed as $business)
                     @php

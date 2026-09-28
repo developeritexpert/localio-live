@@ -1160,6 +1160,15 @@
     .remove-all {
         max-width: 790px;
     }
+
+    /* 28-sept-26  */
+    .top-automotive-sec.cat_pg .slider_content_sec .main_feature_lg {
+        max-width: 100%;
+    }
+
+    .top-automotive-sec.cat_pg .usp-grid-container {
+        gap: 20px !important;
+    }
 }
 
 @media only screen and (max-width: 1199px) {
@@ -2893,10 +2902,10 @@
         margin-bottom: 20px;
     }
 
-    .right_tool_sec .right-tool-pack>div {
+    /* .right_tool_sec .right-tool-pack>div {
         flex-direction: column;
         gap: 20px;
-    }
+    } */
 
     .popular-accordion-wrp .accor-img {
         height: 40px;
@@ -4538,9 +4547,50 @@
     .mobile-cat-nav-bar .mobile-cat-nav-scroll {
         padding-bottom: 10px;
     }
+
+    /*======== 28-sept-26 ========= */
+    .comparison-table-sec table th {
+        white-space: nowrap;
+    }
+
+    .community-feedback-sec table th {
+        min-width: 220px;
+    }
+
+    .blue-host_rvw .main_cls_diss {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .blue-host_rvw .main_cls_diss .preview-vote-sidebar {
+        margin: 0;
+        padding: 0;
+    }
+
+    .blue-host_rvw .mobile-pros-cons .tab-pane {
+        height: fit-content;
+    }
+
+    .right_tool_sec .right-tool-pack>div {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .foot-col {
+        width: 47%;
+    }
+
+    .foot-row-lft {
+        gap: 15px;
+
+    }
 }
 
 @media only screen and (max-width: 575px) {
+    .card.card-bordered .card-body ul {
+        font-size: 14px;
+    }
+
     .custom-pagination-wrapper {
         gap: 4px;
     }
@@ -5660,7 +5710,7 @@
     }
 
     .latest-reviews-slider .draggable {
-        padding-right: 90px !important;
+        padding-right: 0 !important;
     }
 
     .con_table .col-lg-9 {
@@ -5943,7 +5993,7 @@
     }
 
     .latest_review_part_footer {
-        padding: 40px 10px !important;
+        padding: 40px 0 !important;
         overflow: hidden;
     }
 
@@ -6523,6 +6573,7 @@
 
     .auto-choice-btn {
         flex-direction: row-reverse !important;
+        flex-wrap: wrap;
     }
 
     .auto-choice-btn .cta {
@@ -6654,7 +6705,8 @@
     .product_integra_sec .sftware-alternative-pck {
         max-width: 100%;
     }
-/* 
+
+    /* 
     .banner_row,
     .footer-wrp,
     .top-auto-btm,
@@ -6724,14 +6776,15 @@
     .mobile-cat-nav-bar {
         padding: 0 8px;
     }
+
     /* .top_rate_pg.common_detail_sec{
         padding-top:40px;       
     }
       section.top-automotive-sec.top_rate_pg.common_detail_sec{
            margin-top:0 !important;
       }      */
-    section.top-automotive-sec.top_rate_pg.light{
-        margin-top:0 !important;
+    section.top-automotive-sec.top_rate_pg.light {
+        margin-top: 0 !important;
     }
 
 }
