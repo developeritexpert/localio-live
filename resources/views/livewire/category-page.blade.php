@@ -118,7 +118,7 @@
                 </div>
             </div>
         </section>
-        <section class="top-automotive-sec cat_pg light"
+        <section class="top-automotive-sec cat_pg  light"
             style="padding-top:25px !important; background-color: #fdfdfd !important;">
             <div class="top-auto-btm">
                 <div class="container">
@@ -733,7 +733,7 @@
                                                 style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
                                                 <!-- Left Column -->
                                                 <div
-                                                    style="flex: 1 1 0%; min-width: 320px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                                    style="flex: 1 1 0%; display: flex; flex-direction: column; justify-content: flex-start;">
                                                     <!-- Logo & Title -->
                                                     <div class="auto-choice-hd"
                                                         style="border: none; padding: 0; margin-bottom: 0;">
@@ -1995,7 +1995,7 @@
                         $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                         $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
                     @endphp
-                    <div class="col-lg-4 col-md-6 col-6">
+                    <div class="col-lg-4 col-sm-6 col-12">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
                             <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                                 

@@ -784,7 +784,7 @@
                                             style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
                                             <!-- Left Column -->
                                             <div
-                                                style="flex: 1 1 0%; min-width: 320px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                                style="flex: 1 1 0%; display: flex; flex-direction: column; justify-content: flex-start;">
                                                 <!-- Logo & Title -->
                                                 <div class="auto-choice-hd"
                                                     style="border: none; padding: 0; margin-bottom: 0;">
