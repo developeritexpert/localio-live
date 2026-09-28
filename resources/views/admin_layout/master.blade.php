@@ -98,11 +98,6 @@
                                                 <span class="nk-menu-text">Business Images</span>
                                             </a>
                                         </li>
-                                        {{-- <li class="nk-menu-item">
-                                            <a href="{{ route('business') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">All Businesses (old)</span>
-                                            </a>
-                                        </li> --}}
                                         <li class="nk-menu-item">
                                             <a href="{{ route('categories') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Business Categories</span>
@@ -113,11 +108,6 @@
                                                 <span class="nk-menu-text">Pros & cons categories</span>
                                             </a>
                                         </li>
-                                        <!-- <li class="nk-menu-item">
-                                            <a href="{{ route('priceoptions') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Offer Options</span>
-                                            </a>
-                                        </li> -->
                                     </ul>
                                 </li>
 
@@ -649,24 +639,6 @@
                                     </ul>
                                 </li>
 
-                                {{-- support ticket --}}
-                                {{-- <li class="nk-menu-item has-sub">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon">
-
-                                             <em class="icon ni ni-chat-circle-fill"></em>
-                                    </span>
-                                        <span class="nk-menu-text">Support</span>
-                                    </a>
-                                    <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('faqs') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Tickets</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li> --}}
-                                {{-- support ticket --}}
 
                                 {{-- vendor request --}}
                                 {{-- <li class="nk-menu-item has-sub">
@@ -745,24 +717,7 @@
 
 
 
-                                {{-- site content --}}
-                                <li class="nk-menu-item has-sub">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon">
-                                            <!-- <em class="icon ni ni-article"></em> -->
-                                            <em class="icon ni ni-text2"></em>
-                                    </span>
-                                        <span class="nk-menu-text">Site Content</span>
-                                    </a>
-                                    <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('admin-all-static-content') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Content</span>
-                                            </a>
-                                        </li>
-                                    </ul>
 
-                                </li>
 
 
 

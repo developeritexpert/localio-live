@@ -188,7 +188,9 @@
                                                     'category_badge_label' => 'Top Rated Badge (formerly "Top choice")',
                                                     'recommend_this' => 'Recommendation Text (e.g. "of users recommend")',
                                                     'product_badge_label' => 'Product Feature Badge (e.g. "Key Features")',
-                                     'compare_search_placeholder' => 'Compare Tool Search Placeholder (e.g. "Search by name...")',
+                                                    'compare_search_placeholder' => 'Compare Tool Search Placeholder (e.g. "Search by name...")',
+                                                    'already_to_localio' => 'Already Have an Account Text (e.g. "Already have an Account?")',
+                                                    'reviews_word' => 'Word for "reviews" (e.g. "reviews")',
                                                 ];
                                                 $displayLabel = $keyLabels[$key] ?? ucwords(str_replace('_', ' ', $key));
 
@@ -196,7 +198,9 @@
                                                     'category_badge_label' => 'Displays in the star pill badge on top recommended listings (e.g., "Top rated").',
                                                     'recommend_this' => 'Displays after the percentage on category/top-rated listing cards (e.g., "100% of users recommend").',
                                                     'product_badge_label' => 'Displays in the USP/features badge on the product detail page (e.g., "Key Features").',
-                                     'compare_search_placeholder' => 'Placeholder text for the category page comparison tool search inputs (e.g., "Search by name...")',
+                                                    'compare_search_placeholder' => 'Placeholder text for the category page comparison tool search inputs (e.g., "Search by name...")',
+                                                    'already_to_localio' => 'Displays on the registration pages next to the login link.',
+                                                    'reviews_word' => 'Used in review count labels and comparison headers.',
                                                 ];
                                                 $displayHint = $keyHints[$key] ?? null;
                                             @endphp

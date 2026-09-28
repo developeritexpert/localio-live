@@ -196,14 +196,10 @@ class StaticContentController extends Controller
             'common' => [
                 'title' => 'Common Page Text',
                 'keys' => [
-                    'compare_with_alternative',
                     'compare_search_placeholder',
-                    'top_reviews',
                     'latest_reviews',
-                    'suggested_products',
                     'view_more',
-                    'trending',
-                    'learn_more',
+                    'reviews_word',
                 ],
             ],
             'filters' => [
@@ -216,33 +212,20 @@ class StaticContentController extends Controller
                     'no_prod_mach_fil',
                 ],
             ],
-            'faqs' => [
-                'title' => 'FAQs Section',
-                'keys' => [
-                    'faqs_sub_heading',
-                    'faqs_heading',
-                ],
-            ],
             'auth' => [
                 'title' => 'Authentication Text',
                 'keys' => [
-                    'login_to_your_account',
                     'login',
                     'sign_up',
                     'forgot_password',
-                    'already_have_an_account',
-                    'welcome_back',
+                    'already_to_localio',
                     'register_to_localio',
                     'create_an_account',
-                    'new_to_localio',
                 ],
             ],
             'product' => [
                 'title' => 'Product Section Text',
                 'keys' => [
-                    'explore_products',
-                    'top_rated_product_title',
-                    'top_rated_product_des',
                     'exclusive_deals_title',
                     'exclusive_deals_des',
                     'product_search_placeholder',
@@ -361,35 +344,7 @@ class StaticContentController extends Controller
         }
     }
 
-    public function allContent(){
-        // $langId = $request->input('lang_id', 1); // default to lang_id = 1
-        $langId = getCurrentLanguageID();
-        $siteContent = StaticContentKey::with('translations')->get();
-    
-        $siteContent->each(function ($item) use ($langId) {
-            $item->value = $item->getTranslation($langId);
-        });
-        // dd(['data' => $siteContent]);
 
-        return view('Admin.site-content.edit_site_content', ['data' => $siteContent]);
-    }
-
-
-    public function updateContent(Request $request)
-    {
-        $contentKeys = StaticContentKey::all();
-
-        foreach ($contentKeys as $contentKey) {
-            $inputValue = $request->input($contentKey->key);
-
-            if ($inputValue !== null) {
-                $contentKey->default_value = $inputValue;
-                $contentKey->save();
-            }
-        }
-
-        return redirect()->back()->with('success', 'Static content updated successfully.');
-    }
 
 
 }
