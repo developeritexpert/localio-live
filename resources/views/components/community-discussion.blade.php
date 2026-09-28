@@ -144,7 +144,7 @@
                 @if($loop->first)
                     {{-- First Discussion Thread: Partially Expanded with Active Conversation --}}
                     <div class="boxshadow_border bg-white p-3 p-md-4 mb-3 discussion-preview-card discussion-first-expanded" style="border-radius: 16px; border: 1px solid #eef2f6;">
-                        <div class="d-flex align-items-start">
+                        <div class="d-flex align-items-start main_cls_diss">
                             <div class="preview-vote-sidebar">
                                 <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
                                     <i class="fas fa-chevron-up"></i>
@@ -244,7 +244,7 @@
                                 <!-- Active Discussion Conversation Preview -->
                                 @if($pDisc->comments && $pDisc->comments->isNotEmpty())
                                     <div class="preview-active-discussion mt-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #edf2f7;">
-                                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #eef2f6;">
+                                        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #eef2f6;">
                                             <span style="font-size: 13px; font-weight: 700; color: #1e3050;">
                                                 <i class="far fa-comments text-primary me-1"></i> Community Discussion ({{ $pDisc->comments_count }} {{ $pDisc->comments_count == 1 ? 'reply' : 'replies' }})
                                             </span>
