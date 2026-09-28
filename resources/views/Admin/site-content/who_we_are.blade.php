@@ -2,11 +2,9 @@
 @section('content')
 
     <?php
-    use Illuminate\Support\Facades\Redis;
-    $lang_code = Redis::get('admin_lang_code') ?? getCurrentLocale();
-    $lang_id = Redis::get('admin_lang_id');
-
-    ?>
+    $lang_code = getAdminLangCode();
+    $lang_id = getAdminLangId();
+?>
 
     <div id="update-message" style="display: none; color: green; font-weight: bold;"></div>
 

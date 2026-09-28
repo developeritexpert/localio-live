@@ -22,10 +22,8 @@ class SiteContentController extends Controller
 {
     public function homeContent()
     {
-        $lang = getCurrentLocale();
-        $redis_lang_code = Redis::get('admin_lang_code');
-        $redis_lang =Language::where('lang_code',$redis_lang_code)->first();
-        $lang_id = $redis_lang ? $redis_lang->id : getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
         if (session()->has('lang_code')) {
             $lang = session()->get('lang_code');
@@ -168,8 +166,9 @@ class SiteContentController extends Controller
     $formLangId = $request->get('language') ?? getCurrentLanguageID();
     $defaultLangId = 1;
     foreach (['profile_and_reviews', 'visit_website'] as $btnKey) {
-        if ($request->has($btnKey) && is_array($request->get($btnKey))) {
-            $btnVal = reset($request->get($btnKey));
+        $btnData = $request->get($btnKey);
+        if (!empty($btnData)) {
+            $btnVal = is_array($btnData) ? (array_values($btnData)[0] ?? '') : $btnData;
             if (!empty($btnVal)) {
                 // Ensure HomeContent has it
                 HomeContent::updateOrCreate(
@@ -217,9 +216,7 @@ class SiteContentController extends Controller
     // Handle homepage categories configuration
     if ($request->has('category_config')) {
         $catConfigs = $request->input('category_config', []);
-        $redis_lang_code = Redis::get('admin_lang_code');
-        $redis_lang = Language::where('lang_code', $redis_lang_code)->first();
-        $currentLangId = $redis_lang ? $redis_lang->id : getCurrentLanguageID();
+        $currentLangId = getAdminLangId();
 
         $submittedCatIds = array_keys($catConfigs);
         \App\Models\Category::whereNotIn('id', $submittedCatIds)->update(['show_on_homepage' => 0]);
@@ -1078,11 +1075,9 @@ if (!$headerLogo) {
         // return $request->all();
 
         $lang_id = $request->language_id;
-        $lang =Language::where('id',$lang_id)->first();
+        $lang = Language::where('id', $lang_id)->first();
         if ($lang) {
-            // Store both lang_code and lang_id in Redis
-            Redis::set('admin_lang_code', $lang->lang_code);
-            Redis::set('admin_lang_id', $lang->id);
+            setAdminLanguage($lang->lang_code, $lang->id);
         }
 
 

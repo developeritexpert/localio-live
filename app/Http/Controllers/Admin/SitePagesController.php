@@ -810,12 +810,8 @@ class SitePagesController extends Controller
     }
 
     public function vendorListed(){
-        $lang = getCurrentLocale();
-
-        $redis_lang_code = Redis::get('admin_lang_code'); // Fetch lang_code from Redis
-        $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null; // Fetch Language model if lang_code exists
-
-        $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
 
         $vendorList=GetListed::where('lang_id', $lang_id)->first();
@@ -826,7 +822,7 @@ class SitePagesController extends Controller
 
     public function vendorWorkUpdate(Request $request)
     {
-        $lang_code = Redis::get('admin_lang_code') ?? getCurrentLocale();
+        $lang_code = getAdminLangCode();
         $language = Language::where('lang_code', $lang_code)->firstOrFail();
 
         // Validate request
@@ -957,10 +953,7 @@ class SitePagesController extends Controller
 
     public function vendorListedUpdate(Request $request)
     {
-        // Uncomment for debugging
-        // dd($request->all());
-
-        $lang_code = Redis::get('admin_lang_code') ?? getCurrentLocale();
+        $lang_code = getAdminLangCode();
         $language = Language::where('lang_code', $lang_code)->firstOrFail();
 
         $validated = $request->validate([
@@ -1064,12 +1057,8 @@ class SitePagesController extends Controller
 
 
     public function vendorWork(){
-        $lang = getCurrentLocale();
-
-        $redis_lang_code = Redis::get('admin_lang_code'); // Fetch lang_code from Redis
-        $redis_lang = $redis_lang_code ? Language::where('lang_code', $redis_lang_code)->first() : null; // Fetch Language model if lang_code exists
-
-        $lang_id = optional($redis_lang)->id ?? getCurrentLanguageID();
+        $lang = getAdminLangCode();
+        $lang_id = getAdminLangId();
 
 
         $howItWorks=HowItWork::where('lang_id', $lang_id)->first();

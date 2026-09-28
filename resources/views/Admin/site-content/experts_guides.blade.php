@@ -2,9 +2,8 @@
 @section('content')
 
 <?php
-use Illuminate\Support\Facades\Redis;
-$lang_code = Redis::get('admin_lang_code') ?? getCurrentLocale();
-$lang_id = Redis::get('admin_lang_id');
+    $lang_code = getAdminLangCode();
+    $lang_id = getAdminLangId();
 ?>
 <div class="nk-block nk-block-lg pages-expert-guide">
     <div class="nk-block-head d-flex justify-content-between">
