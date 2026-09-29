@@ -216,7 +216,9 @@
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $pro->text }}
-                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @if($hasUserRatings && isset($pro->review_count))
+                                                            <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -242,7 +244,9 @@
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $con->text }}
-                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @if($hasUserRatings && isset($con->review_count))
+                                                            <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                        @endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -340,6 +344,13 @@
                             <div class="container px-0">
                                  
                                 <div class="crm_review_box review_sec" id="all-reviews">
+                                    @if(!$hasUserRatings)
+                                    <style>
+                                        .review_detl.populr-alternative:first-child {
+                                            margin-top: 24px;
+                                        }
+                                    </style>
+                                    @endif
 
                                 
 <div class="review-prompt-banner" id="reviewPromptBanner"
@@ -407,44 +418,79 @@
                                         <div class="col-lg-12">
                                             <div class="review-sidebar-sticky">
 
-                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3; text-align: left;">
-                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews ({{ $totalReviewsCount }})
+                                                @php
+                                                    $totalReviewsCount = $ratingCount;
+                                                    $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                        $business,
+                                                        'business_page_reviews',
+                                                        getCurrentLanguageID(),
+                                                        ['[count]' => number_format($totalReviewsCount)]
+                                                    );
+                                                    $finalBizReviewsHeadline = !empty($resolvedBizReviews['headline'])
+                                                        ? $resolvedBizReviews['headline']
+                                                        : (($business->translations->first()->name ?? $business->name ?? '') . ' user reviews' . ($hasUserRatings ? ' (' . number_format($totalReviewsCount) . ')' : ''));
+                                                    if (!$hasUserRatings) {
+                                                        $finalBizReviewsHeadline = preg_replace('/\s*\(\d+\)/', '', $finalBizReviewsHeadline);
+                                                        $finalBizReviewsHeadline = preg_replace('/\s*\[count\]/i', '', $finalBizReviewsHeadline);
+                                                        $finalBizReviewsHeadline = trim($finalBizReviewsHeadline);
+                                                    }
+                                                    $finalBizReviewsSubtext = !empty($resolvedBizReviews['subtext']) ? $resolvedBizReviews['subtext'] : null;
+                                                @endphp
+
+                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: {{ !empty($finalBizReviewsSubtext) ? '6px' : '16px' }}; color: #1e3050; line-height: 1.3; text-align: left;">
+                                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalBizReviewsHeadline) !!}
                                                 </h2>
+                                                @if(!empty($finalBizReviewsSubtext))
+                                                    <div class="reviews-section-subtext mb-3" style="color: #475569; font-size: 14.5px;">
+                                                        {!! $finalBizReviewsSubtext !!}
+                                                    </div>
+                                                @endif
                                                 <div class="review-filter-sec" style="display: block;">
                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
-                                                        <div class="row align-items-start g-4">
+                                                        <div class="row align-items-start">
                                                             <!-- Left Column: Big Rating & Stars -->
-                                                            <div class="col-lg-5 col-md-5 col-12">
+                                                            <div class="col-lg-5 col-md-5 col-12 mt-0">
                                                                 <div class="d-flex flex-column align-items-start">
-                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ formatRating($averageRating) }}</span>
-                                                                    @if($ratingWord = get_rating_label($averageRating))
-                                                                        <span class="rating-word-label" style="font-size: 15px; font-weight: 700; color: #1e3050;">
-                                                                            {{ $ratingWord }}
-                                                                        </span>
-                                                                    @endif
-                                                                    <div class="d-flex align-items-center gap-1 mb-1">
-                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                            @if ($j <= floor($averageRating))
-                                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                            @elseif ($j - 0.5 <= $averageRating)
-                                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                            @else
-                                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                    @if ($averageRating !== null && (float)$averageRating > 0)
+                                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ formatRating($averageRating) }}</span>
+                                                                        @if($ratingWord = get_rating_label($averageRating))
+                                                                            <span class="rating-word-label" style="font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                                                {{ $ratingWord }}
+                                                                            </span>
+                                                                        @endif
+                                                                        <div class="d-flex align-items-center gap-2 mb-1 @if($hasUserRatings) section14-rating-trigger @endif" @if($hasUserRatings) onclick="toggleSection14ReviewBreakdown()" style="user-select: none;" @endif>
+                                                                            <div class="d-flex align-items-center gap-1">
+                                                                                @for ($j = 1; $j <= 5; $j++)
+                                                                                    @if ($j <= floor((float)$averageRating))
+                                                                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                    @elseif ($j - 0.5 <= (float)$averageRating)
+                                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                                    @else
+                                                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                    @endif
+                                                                                @endfor
+                                                                            </div>
+                                                                            @if($hasUserRatings)
+                                                                            <span class="section14-rating-arrow-wrap d-inline-flex align-items-center justify-content-center d-md-none" style="width: 22px; height: 22px; border-radius: 50%; background-color: #f1f5f9; transition: background-color 0.2s ease;">
+                                                                                <i class="fas fa-chevron-down section14-rating-chevron" style="font-size: 11px; color: #64748b; transition: transform 0.3s ease;"></i>
+                                                                            </span>
                                                                             @endif
-                                                                        @endfor
-                                                                    </div>
-                                                                    <!-- <span class="com-rating">Community rating</span> -->
+                                                                        </div>
+                                                                    @else
+                                                                        <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">{{ static_text('not_rated_yet') ?: 'Not rated yet' }}</span>
+                                                                    @endif
                                                                     @if($hasUserRatings)
-<span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
-@endif
+                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    @endif
                                                                 </div>
                                                             </div>
 
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                             @if($hasUserRatings)
-                                                            <div class="col-lg-7 col-md-7 col-12">
+                                                            <div class="col-lg-7 col-md-7 col-12 mt-0 section14-breakdown-collapsible" id="section14ReviewBreakdownContent" data-expanded="false">
+                                                                <div class="d-md-none border-top w-100 my-3" style="border-top: 1px solid #f0f0f0 !important;"></div>
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
+                                                                    <p class="breakdown-title" style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">{{ static_text('detailed_user_ratings') ?: 'Detailed user ratings' }}</p>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
@@ -463,7 +509,7 @@
 
                                                                 @if(isset($recommendPercent) && $recommendPercent > 0)
                                                                     <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                                                                         <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                                                                     </div>
                                                                 @endif
@@ -477,6 +523,7 @@
 
                                         <div class="col-lg-12">
 
+                                            @if($hasUserRatings)
                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
                                                 
                                                 <!-- Filter Button with Dropdown & Clear filter on Left -->
@@ -583,6 +630,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
 
                                             <div id="reviews-list-container">
                                                 @include('User.review.partials.reviews_list')
@@ -603,7 +651,7 @@
                     <div class="fetru_row">
 
                         <!-- 1. Review Breakdown Card -->
-                        @if ($averageRating !== null)
+                        @if ($averageRating !== null && (float)$averageRating > 0)
                         <div class="main_feature_lg">
                             <div class="feture_box review-breakdown-card">
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
@@ -765,6 +813,7 @@
                                             </p>
                                         @endif
 
+                                        @if($hasUserRatings)
                                         <div class="d-flex align-items-center gap-1 mb-2" style="margin-top: 4px;">
                                             @for($i = 1; $i <= 5; $i++)
                                                 @if($i <= floor($review->rating))
@@ -776,6 +825,7 @@
                                                 @endif
                                             @endfor
                                         </div>
+                                        @endif
 
                                         @if($review->translations && $review->translations->first() && $review->translations->first()->description)
                                             <p>
@@ -819,7 +869,7 @@
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    @if ($hasUserReviews)
+                                                    @if ($hasUserRatings)
                                                         <span>({{ $ratingCount }})</span>
                                                     @endif
                                                 </div>
@@ -1244,6 +1294,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateFilterUi();
 });
+
+function toggleSection14ReviewBreakdown() {
+    if (window.innerWidth >= 768) return;
+
+    const content = document.getElementById('section14ReviewBreakdownContent');
+    const chevron = document.querySelector('.section14-rating-chevron');
+    if (!content) return;
+
+    const isExpanded = content.getAttribute('data-expanded') === 'true';
+
+    if (isExpanded) {
+        content.style.maxHeight = '0px';
+        content.style.opacity = '0';
+        content.setAttribute('data-expanded', 'false');
+        if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+            chevron.style.color = '#64748b';
+        }
+    } else {
+        content.style.maxHeight = (content.scrollHeight + 50) + 'px';
+        content.style.opacity = '1';
+        content.setAttribute('data-expanded', 'true');
+        if (chevron) {
+            chevron.style.transform = 'rotate(180deg)';
+            chevron.style.color = '#002347';
+        }
+    }
+}
 
 function openReviewReportModal(reviewId) {
     @if(!auth()->check())
