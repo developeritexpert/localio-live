@@ -1,4 +1,5 @@
 @extends('user_layout.master')
+@section('body_class', 'product-page-body')
 @php
     $bizNames = isset($businesses) && is_iterable($businesses) ? collect($businesses)->map(function($b) {
         $trans = $b->translations ?? collect();
@@ -606,8 +607,10 @@
                                     $startingPriceBusiness = getBusinessesWithStartingPrice($business);
                                     $startingPrice = $startingPriceBusiness[0]['starting_price'] ?? null;
 
-                                    if (!$startingPrice && $business->products && $business->products->count() > 0) {
-                                        $allPrices = $business->products
+                                    if (!$startingPrice) {
+                                        $allPrices = $business->products()
+                                            ->with('prices')
+                                            ->get()
                                             ->flatMap(function ($product) {
                                                 return $product->prices;
                                             })
