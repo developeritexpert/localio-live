@@ -184,8 +184,8 @@ class AddReview extends Component
         $this->validate([
             'recommend' => 'required|in:0,1',
         ], [
-            'recommend.required' => 'Please select whether you recommend this business.',
-            'recommend.in'       => 'Please select whether you recommend this business.',
+            'recommend.required' => static_text('error_review_recommend_required') ?: 'Please select whether you recommend this business.',
+            'recommend.in'       => static_text('error_review_recommend_required') ?: 'Please select whether you recommend this business.',
         ]);
 
         $this->step = 2;
@@ -195,10 +195,11 @@ class AddReview extends Component
     {
         $rules = [];
         $messages = [];
+        $ratingReqMsg = static_text('rating_required_error') ?: 'Rating is required.';
         foreach ($this->criteria as $criterion) {
             $rules['criteriaRatings.' . $criterion['id']] = 'required|integer|min:1|max:5';
-            $messages['criteriaRatings.' . $criterion['id'] . '.min'] = 'Rating is required.';
-            $messages['criteriaRatings.' . $criterion['id'] . '.required'] = 'Rating is required.';
+            $messages['criteriaRatings.' . $criterion['id'] . '.min'] = $ratingReqMsg;
+            $messages['criteriaRatings.' . $criterion['id'] . '.required'] = $ratingReqMsg;
         }
 
         if (!empty($rules)) {

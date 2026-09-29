@@ -490,7 +490,7 @@ class ViewController extends Controller
 
         // return $review;
         if (!$review) {
-            return response()->json(['error' => 'Review not found'], 404);
+            return response()->json(['error' => static_text('error_review_not_found') ?: 'Review not found'], 404);
         }
 
         if ($request->type == 'original') {
@@ -997,7 +997,7 @@ class ViewController extends Controller
             return response()->json([
                 'success' => false,
                 'require_login' => true,
-                'message' => 'Please sign in to vote.'
+                'message' => static_text('error_discussion_login_vote') ?: 'Please sign in to vote.'
             ], 401);
         }
 
@@ -1062,7 +1062,7 @@ class ViewController extends Controller
             return response()->json([
                 'success' => false,
                 'require_login' => true,
-                'message' => 'Please sign in to report an issue.'
+                'message' => static_text('error_report_login_issue') ?: 'Please sign in to report an issue.'
             ], 401);
         }
 
@@ -1086,7 +1086,7 @@ class ViewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Thank you! Your report has been submitted.'
+            'message' => static_text('msg_report_submitted_success') ?: 'Thank you! Your report has been submitted.'
         ]);
     }
 
@@ -1096,7 +1096,7 @@ class ViewController extends Controller
             return response()->json([
                 'success' => false,
                 'require_login' => true,
-                'message' => 'Please sign in to report a review.'
+                'message' => static_text('error_report_login_review') ?: 'Please sign in to report a review.'
             ], 401);
         }
 
@@ -1116,7 +1116,7 @@ class ViewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Review reported successfully. Thank you for your feedback!'
+            'message' => static_text('msg_review_report_success') ?: 'Review reported successfully. Thank you for your feedback!'
         ]);
     }
 
@@ -1302,9 +1302,9 @@ class ViewController extends Controller
     {
         if (!auth()->check()) {
             if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Please sign in to post a discussion.', 'require_login' => true], 401);
+                return response()->json(['success' => false, 'message' => static_text('error_discussion_login_post') ?: 'Please sign in to post a discussion.', 'require_login' => true], 401);
             }
-            return redirect()->back()->with('error', 'Please sign in to post a discussion.');
+            return redirect()->back()->with('error', static_text('error_discussion_login_post') ?: 'Please sign in to post a discussion.');
         }
 
         $request->validate([
@@ -1333,19 +1333,19 @@ class ViewController extends Controller
         ]);
 
         if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Discussion posted successfully!', 'discussion' => $discussion]);
+            return response()->json(['success' => true, 'message' => static_text('msg_discussion_posted_success') ?: 'Discussion posted successfully!', 'discussion' => $discussion]);
         }
 
-        return redirect()->back()->with('success', 'Discussion posted successfully!');
+        return redirect()->back()->with('success', static_text('msg_discussion_posted_success') ?: 'Discussion posted successfully!');
     }
 
     public function storeDiscussionComment(Request $request)
     {
         if (!auth()->check()) {
             if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Please sign in to post a comment.', 'require_login' => true], 401);
+                return response()->json(['success' => false, 'message' => static_text('error_discussion_login_comment') ?: 'Please sign in to post a comment.', 'require_login' => true], 401);
             }
-            return redirect()->back()->with('error', 'Please sign in to post a comment.');
+            return redirect()->back()->with('error', static_text('error_discussion_login_comment') ?: 'Please sign in to post a comment.');
         }
         $request->validate([
             'business_discussion_id' => 'required|exists:business_discussions,id',
@@ -1473,7 +1473,7 @@ class ViewController extends Controller
         ]);
 
         if (!auth()->check()) {
-            return response()->json(['success' => false, 'message' => 'Kindly login to pin items.'], 401);
+            return response()->json(['success' => false, 'message' => static_text('error_discussion_login_pin') ?: 'Kindly login to pin items.'], 401);
         }
 
         if ($request->type === 'discussion') {
@@ -1532,10 +1532,10 @@ class ViewController extends Controller
         $user = auth()->user();
         $isAdminOrOwner = ($user->user_type === 'admin') || ($user->business_id && $user->business_id == $discussion->business_id);
         if ($discussion->user_id !== $user->id && !$isAdminOrOwner) {
-            return response()->json(['success' => false, 'message' => 'Permission denied.'], 403);
+            return response()->json(['success' => false, 'message' => static_text('error_permission_denied') ?: 'Permission denied.'], 403);
         }
         $discussion->update(['status' => 'deleted']);
-        return response()->json(['success' => true, 'message' => 'Discussion deleted successfully!']);
+        return response()->json(['success' => true, 'message' => static_text('msg_discussion_deleted_success') ?: 'Discussion deleted successfully!']);
     }
 
     public function destroyDiscussionComment(Request $request, $id)
@@ -1547,13 +1547,13 @@ class ViewController extends Controller
         $user = auth()->user();
         $isAdminOrOwner = ($user->user_type === 'admin') || ($user->business_id && $comment->discussion && $user->business_id == $comment->discussion->business_id);
         if ($comment->user_id !== $user->id && !$isAdminOrOwner) {
-            return response()->json(['success' => false, 'message' => 'Permission denied.'], 403);
+            return response()->json(['success' => false, 'message' => static_text('error_permission_denied') ?: 'Permission denied.'], 403);
         }
         $comment->update(['status' => 'deleted']);
         if ($comment->discussion) {
             $comment->discussion->decrement('comments_count');
         }
-        return response()->json(['success' => true, 'message' => 'Comment deleted successfully!']);
+        return response()->json(['success' => true, 'message' => static_text('msg_comment_deleted_success') ?: 'Comment deleted successfully!']);
     }
 
 }

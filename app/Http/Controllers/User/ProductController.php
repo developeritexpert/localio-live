@@ -912,7 +912,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             if (count($comparedProducts) >= 4) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You can compare a maximum of 4 products.'
+                    'message' => static_text('error_compare_max_limit') ?: 'You can compare a maximum of 4 products.'
                 ], 422);
             }
             $comparedProducts[] = $productId;
@@ -1092,7 +1092,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         // Check if product exists
         $product = Product::find($id);
         if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+            return response()->json(['error' => static_text('error_product_not_found') ?: 'Product not found'], 404);
         }
 
         // Check if product is already in wishlist
@@ -1392,7 +1392,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
     if (!Auth::check()) {
         return response()->json([
             'success' => false,
-            'message' => 'You must be logged in to submit a review.'
+            'message' => static_text('error_review_login_required') ?: 'You must be logged in to submit a review.'
         ], 401);
     }
 

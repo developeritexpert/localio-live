@@ -523,13 +523,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                 @if(isset($recommendPercent) && $recommendPercent > 0)
                                                 <div class="pt-3 mt-2 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                                                     <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                                                 </div>
                                                 @endif
 
                                                 <div class="do-you-recommend mt-3 pt-3 border-top" style="border-top-color: #f1f5f9 !important; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
                                                         <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
@@ -1975,7 +1975,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                                                 @if(isset($recommendPercent) && $recommendPercent > 0)
                                                                                 <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                                                                                     <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                                                                                 </div>
                                                                                 @endif
@@ -2380,7 +2380,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         @if ($hasUserRatings)
                                         <a href="#section14" class="view-review-link" style="">
-                                           Go to reviews 
+                                           {{ static_text('go_to_reviews_link') ?: 'Go to reviews' }}
                                         </a>
                                         @endif
                                     </div>
@@ -2390,7 +2390,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div id="bottomReviewBreakdownContent" class="bottom-breakdown-collapsible" data-expanded="false">
                                         @if ($hasUserRatings)
                                         <p class="breakdown-title" style="margin-bottom: 15px;">
-                                            Review breakdown
+                                            {{ static_text('review_breakdown_heading') ?: 'Review breakdown' }}
                                         </p>
 
                                         <div class="review-progress-list ">
@@ -2408,13 +2408,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
 
                                         <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                                             <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
                                         </div>
                                         @endif
 
                                         <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                            <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                             <div style="display: flex; gap: 8px;">
                                                 @auth
                                                 <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
@@ -2456,7 +2456,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 <div class="feture_box str_prc_box">
 
                     <p class="starting-price-title">
-                        Starting price
+                        {{ static_text('starting_price_label') ?: 'Starting price' }}
                     </p>
 
                     <p class="starting-price-value">
@@ -2475,7 +2475,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     </p>
 @elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
     <p class="starting-price-text">
-        per {{ strtolower($timeUnit) }}
+        {{ static_text('pricing_per_prefix') ?: 'per' }} {{ strtolower($timeUnit) }}
     </p>
 @endif
 
@@ -2489,7 +2489,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         target="_blank"
                         rel="sponsored"
                         class="starting-price-link">
-                        View pricing
+                        {{ static_text('view_pricing_link') ?: 'View pricing' }}
                     </a>
 
                 </div>
@@ -2505,9 +2505,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <div class="grn_check_big">
                                             <img src="{{ asset('front/img/new-grn-chk.svg') }}">
                                         </div>
-                                        <h6 class="blue-text big-bld">Free trial
-                                            available
-                                        </h6>
+                                        <h6 class="blue-text big-bld">{{ static_text('free_trial_available_heading') ?: 'Free trial available' }}</h6>
                                         <div class="accor-btn">
                                             <a class="cta cta_white blue-btn"
                                                 data-track="{{ json_encode([
@@ -2596,7 +2594,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
                                                 <h2 class="size22 big-bld m-0">{{ static_text('highlighted_reviews_heading') ?: 'Highlighted reviews' }} </h2>
                                                 <a href="#section14" class="view-review-link">
-                                                    Go to reviews 
+                                                    {{ static_text('go_to_reviews_link') ?: 'Go to reviews' }}
                                                 </a>
                                             </div>
 
@@ -2687,7 +2685,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                 <h2 class="size22 big-bld m-0">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
-                                                     Go to discussions 
+                                                     {{ static_text('go_to_discussions_link') ?: 'Go to discussions' }}
                                                 </a>
                                             </div>
 
@@ -3596,12 +3594,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         },
                         error: function(xhr) {
                             if (xhr.status === 401) {
-                                toastr.error('You must be logged in to submit a review.');
+                                toastr.error("{{ static_text('error_review_login_required') ?: 'You must be logged in to submit a review.' }}");
                             } else if (xhr.status === 422 && xhr.responseJSON?.errors) {
                                 const errors = Object.values(xhr.responseJSON.errors).flat().join('<br>');
                                 toastr.error(errors);
                             } else {
-                                toastr.error(' Error submitting review. Please try again.');
+                                toastr.error("{{ static_text('error_review_submit_failed') ?: 'Error submitting review. Please try again.' }}");
                             }
                         },
                         complete: function() {

@@ -26,7 +26,7 @@ class UserDashboardController extends Controller
     {
         $userId = Auth::id(); // Get logged-in user ID
         if (!$userId) {
-            return redirect()->route('login')->with('error', 'You need to log in first!');
+            return redirect()->route('login')->with('error', static_text('error_login_required') ?: 'You need to log in first!');
         }
         $wishlistItems = Wishlist::where('user_id', $userId)
         ->with([
@@ -146,7 +146,7 @@ class UserDashboardController extends Controller
         ], [
             'old_password.required'     => 'Please enter your current password.',
             'new_password.required'     => 'Please enter a new password.',
-            'new_password.min'          => 'The new password must be at least 8 characters.',
+            'new_password.min'          => static_text('error_password_min_length') ?: 'The new password must be at least 8 characters.',
             'new_password.confirmed'    => 'The new password confirmation does not match.',
         ]);
 
@@ -154,11 +154,11 @@ class UserDashboardController extends Controller
 
         if (!Hash::check($request->old_password, $user->password)) {
 
-            return back()->withErrors(['old_password' => 'The current password you entered is incorrect.']);
+            return back()->withErrors(['old_password' => static_text('error_password_current_incorrect') ?: 'The current password you entered is incorrect.']);
         }
 
         if ($request->old_password === $request->new_password) {
-            return back()->withErrors(['new_password' => 'The new password cannot be the same as the current password.']);
+            return back()->withErrors(['new_password' => static_text('error_password_same_as_current') ?: 'The new password cannot be the same as the current password.']);
         }
 
         $user->password = Hash::make($request->new_password);

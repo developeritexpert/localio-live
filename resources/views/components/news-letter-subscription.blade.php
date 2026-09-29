@@ -4,8 +4,8 @@
     <div class="container">
         <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
             <div class="otr_rgtool">
-                <h2>Join Localio</h2>
-                <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                <h2>{{ static_text('join_community_heading') ?: 'Join Localio' }}</h2>
+                <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">{{ static_text('join_community_subheading') ?: 'Write reviews, join discussions, and help others make better buying decisions.' }}</p>
             </div>
             <div class="right-tool-pack">
                 <div class="row">
@@ -15,7 +15,7 @@
                                 <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
                             </div>
                             <div class="tool-crd-bdy">
-                                <p class="tool_hed">Share your experience</p>
+                                <p class="tool_hed">{{ static_text('join_benefit_share_exp') ?: 'Share your experience' }}</p>
                             </div>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                                 <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
                             </div>
                             <div class="tool-crd-bdy">
-                                <p class="tool_hed">Join discussions</p>
+                                <p class="tool_hed">{{ static_text('join_benefit_discussions') ?: 'Join discussions' }}</p>
                             </div>
                         </div>
                     </div>
@@ -35,14 +35,14 @@
                                 <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
                             </div>
                             <div class="tool-crd-bdy">
-                                <p class="tool_hed">Build your reputation</p>
+                                <p class="tool_hed">{{ static_text('join_benefit_reputation') ?: 'Build your reputation' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="right-tool-btn text-center">
-                <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Get started </a>
+                <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">{{ static_text('get_started_button') ?: 'Get started' }}</a>
             </div>
         </div>
     </div>

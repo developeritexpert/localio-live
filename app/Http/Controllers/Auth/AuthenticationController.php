@@ -98,7 +98,7 @@ class AuthenticationController extends Controller
 
         if ($user->status === 'pending') {
             Auth::logout();
-            return redirect()->back()->with('error', 'Your account has been deactivated.');
+            return redirect()->back()->with('error', static_text('error_auth_account_deactivated') ?: 'Your account has been deactivated.');
         }
 
         // Create a token once at login and save it to session
@@ -136,11 +136,11 @@ class AuthenticationController extends Controller
                 return redirect()->route('vendor-overview', ['locale' => session('lang_code', 'en-us')]);
             default:
                 Auth::logout();
-                return redirect()->route('login')->with('error', 'Invalid email or password');
+                return redirect()->route('login')->with('error', static_text('error_auth_invalid_credentials') ?: 'Invalid email or password.');
         }
     }
 
-        return redirect()->back()->with('error', 'Invalid email or password.');
+        return redirect()->back()->with('error', static_text('error_auth_invalid_credentials') ?: 'Invalid email or password.');
     }
 
     public function registerDetailsForm()
@@ -162,7 +162,7 @@ class AuthenticationController extends Controller
         $password = session('register_password');
 
         if (!$email || !$password) {
-            return redirect()->route('login', ['locale' => session('lang_code', 'en-us')])->with('error', 'Session expired. Please try again.');
+            return redirect()->route('login', ['locale' => session('lang_code', 'en-us')])->with('error', static_text('error_auth_session_expired') ?: 'Session expired. Please try again.');
         }
 
         $request->validate([
@@ -222,7 +222,7 @@ class AuthenticationController extends Controller
 
             return redirect()->intended(route('user-dashboard', ['locale' => session('lang_code', 'en-us')]))->with('success', 'Successfully registered!');
         } else {
-            return redirect()->back()->withErrors(['error' => 'Registration failed']);
+            return redirect()->back()->withErrors(['error' => static_text('error_auth_registration_failed') ?: 'Registration failed. Please try again.']);
         }
     }
 
@@ -282,7 +282,7 @@ class AuthenticationController extends Controller
                 }
                 return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')])->with('success','Success full Register');
             } else {
-                return redirect()->back()->withErrors(['error' => 'Authentication failed']);
+                return redirect()->back()->withErrors(['error' => static_text('error_auth_failed') ?: 'Authentication failed.']);
             }
         }
     }
@@ -312,7 +312,7 @@ class AuthenticationController extends Controller
 
         session(['reset_email' => $request->email]);
         if (!$user) {
-            return redirect()->back()->with('error', 'User not found');
+            return redirect()->back()->with('error', static_text('error_auth_user_not_found') ?: 'User not found.');
         }
         $otp = rand(123456, 999999);
         $data['otp'] = $otp;
@@ -362,7 +362,7 @@ class AuthenticationController extends Controller
                                             ->first();
 
         if (!$verificationExists) {
-            return redirect()->back()->with('error', 'Your OTP is not correct or has expired');
+            return redirect()->back()->with('error', static_text('error_auth_otp_invalid') ?: 'Your OTP is not correct or has expired.');
         }
 
         $verificationExists->update([
@@ -387,7 +387,7 @@ class AuthenticationController extends Controller
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            return redirect()->back()->with('error','User not found');
+            return redirect()->back()->with('error', static_text('error_auth_user_not_found') ?: 'User not found.');
         }
 
         $password = Hash::make($request->password);
@@ -402,7 +402,7 @@ class AuthenticationController extends Controller
             return redirect("/{$lang}/user-dashboard")->with('success', 'Your new password has been created successfully');
             }
         }
-        return redirect()->back()->with('error', 'Failed to authenticate user');
+        return redirect()->back()->with('error', static_text('error_auth_failed') ?: 'Failed to authenticate user.');
     }
     public function redirectToGoogle()
     {
@@ -498,7 +498,7 @@ class AuthenticationController extends Controller
             \Log::error('Facebook authentication error: ' . $e->getMessage());
 
             // Redirect back to the login page if authentication fails
-            return redirect("/{$lang}/login")->with('error', 'Facebook authentication failed.');
+            return redirect("/{$lang}/login")->with('error', static_text('error_auth_social_failed') ?: 'Facebook authentication failed.');
         }
 
         // Log the returned user data for debugging

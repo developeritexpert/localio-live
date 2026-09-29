@@ -196,7 +196,7 @@
                     <div class="col-lg-12 mt-4 mb-4" id="section-pros-cons">
                         <div class="pros-cons-header mb-3">
                             <h2 style="margin-bottom: 8px;">
-                                What the Localio community says
+                                {{ static_text('community_sentiment_heading') ?: 'What the community says' }}
                             </h2>
                             @if(!empty($reviewsProConsIntro))
                                 <p style="font-size: 15px; margin-bottom: 20px; line-height: 1.6; color: #475569;">
@@ -209,7 +209,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">Pros</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('pros_label') ?: 'Pros' }}</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -237,7 +237,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">Cons</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('cons_label') ?: 'Cons' }}</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)
@@ -490,7 +490,7 @@
                                                             <div class="col-lg-7 col-md-7 col-12 mt-0 section14-breakdown-collapsible" id="section14ReviewBreakdownContent" data-expanded="false">
                                                                 <div class="d-md-none border-top w-100 my-3" style="border-top: 1px solid #f0f0f0 !important;"></div>
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <p class="breakdown-title" style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">{{ static_text('detailed_user_ratings') ?: 'Detailed user ratings' }}</p>
+                                                                    <p class="breakdown-title" style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}</p>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
@@ -537,7 +537,7 @@
                                                                 aria-expanded="false" 
                                                                 style="border-color: #ced4da; color: #002347; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
                                                             <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
-                                                            <span>Filter by rating</span>
+                                                            <span>{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                             <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; flex-shrink: 0;">
                                                                 <polyline points="6 9 12 15 18 9" />
@@ -547,7 +547,7 @@
                                                              aria-labelledby="reviewFilterDropdownBtn" 
                                                              style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
                                                             <div class="mb-3 pb-2 border-bottom">
-                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                                <span style="font-size: 14px; font-weight: 600; color: #002655;">{{ static_text('filter_by_rating_label') ?: 'Filter by rating' }}</span>
                                                             </div>
 
                                                             <div class="review-star-box">
@@ -583,9 +583,9 @@
 
                                                 @php
                                                     $reviewSortOptions = [
-                                                        'recent' => 'Most recent',
-                                                        'high-to-low' => 'Highest rated',
-                                                        'low-to-high' => 'Lowest rated',
+                                                        'recent' => static_text('sort_most_recent') ?: 'Most recent',
+                                                        'high-to-low' => static_text('sort_highest_rated') ?: 'Highest rated',
+                                                        'low-to-high' => static_text('sort_lowest_rated') ?: 'Lowest rated',
                                                     ];
                                                     $currentSort = request('sort', 'recent');
                                                     if (!array_key_exists($currentSort, $reviewSortOptions)) {
@@ -602,7 +602,7 @@
                                                         data-bs-toggle="dropdown" 
                                                         aria-expanded="false"
                                                         style="background-color: #fdfdfd; color: #0f172a;  padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
-                                                        <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
+                                                        <span>{{ static_text('sort_label') ?: 'Sort:' }} <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
                                                             <polyline points="6 9 12 15 18 9" />
                                                         </svg>
@@ -1034,7 +1034,7 @@
                         button.data('cached-translation', response.translated);
                         button.data('mode', 'translation');
                     } else {
-                        alert('Translation not available.');
+                        alert("{{ static_text('error_translation_unavailable') ?: 'Translation not available.' }}");
                         button.text('View Translation');
                         button.data('mode', 'original');
                     }
@@ -1407,7 +1407,7 @@ function submitReviewReport() {
         console.error('Error:', error);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit report';
-        alert('An error occurred. Please check your connection.');
+        alert("{{ static_text('error_connection_issue') ?: 'An error occurred. Please check your connection.' }}");
     });
 }
 </script>

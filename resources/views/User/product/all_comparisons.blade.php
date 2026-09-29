@@ -258,7 +258,7 @@
                     </div>
 
                     @if($business->should_show_detailed_ratings && isset($criteria) && count($criteria) > 0)
-                        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
+                        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}</p>
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -274,13 +274,13 @@
 
                     @if($business->should_show_detailed_ratings)
                     <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
-                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                        <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                         <strong style="font-weight: 600; color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
                     </div>
                     @endif
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                        <span style="font-weight: 600; color:#002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                                 <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
@@ -370,7 +370,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">{{ static_text('vs_keyword') ?: 'vs' }}</div>
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                     <x-business-logo :business="$popItem" :name="$popItemName" />
@@ -435,7 +435,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">{{ static_text('vs_keyword') ?: 'vs' }}</div>
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                     <x-business-logo :business="$recentItem" :name="$recItemName" />

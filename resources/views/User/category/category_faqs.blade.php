@@ -247,13 +247,13 @@
                                                         <!-- FAQ Feedback Row -->
                                                         <div class="faq-feedback-row">
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <span>Was this answer helpful?</span>
+                                                                <span>{{ static_text('was_this_answer_helpful') ?: 'Was this answer helpful?' }}</span>
                                                                 <div class="faq-feedback-actions">
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
-                                                                        <i class="far fa-thumbs-up"></i> Yes
+                                                                        <i class="far fa-thumbs-up"></i> {{ static_text('helpful_yes') ?: 'Yes' }}
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
-                                                                        <i class="far fa-thumbs-down"></i> No
+                                                                        <i class="far fa-thumbs-down"></i> {{ static_text('helpful_no') ?: 'No' }}
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -284,7 +284,7 @@
                 <div class="ask-community-banner">
                     <div>
                         <h2 >
-                            Still have a question about {{ $catName }}?
+                            {{ static_text('still_have_questions_prompt') ?: 'Still have a question?' }} ({{ $catName }})
                         </h2>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
                             Ask the Localio community
@@ -292,7 +292,7 @@
                     </div>
                     <div>
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="blue-btn ask-community-btn ">
-                            Ask a question <i class="fa-solid fa-arrow-right"></i>
+                            {{ static_text('ask_community_button') ?: 'Ask a question' }} <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
