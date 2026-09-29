@@ -290,7 +290,7 @@ class MetaPagesController extends Controller
     } catch (\Exception $e) {
         return redirect()->back()->with(
             'error',
-            'Something went wrong. Please try again.'
+            static_text('error_general_something_went_wrong') ?: 'Something went wrong. Please try again.'
         );
     }
 }
@@ -342,7 +342,7 @@ class MetaPagesController extends Controller
 
     //     } catch (\Exception $e) {
     //         // dd($e);
-    //         return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+    //         return redirect()->back()->with('error', static_text('error_general_something_went_wrong') ?: 'Something went wrong. Please try again.');
            
     //     }
     // }

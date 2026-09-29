@@ -143,7 +143,7 @@
             @foreach($discList as $pDisc)
                 @if($loop->first)
                     {{-- First Discussion Thread: Partially Expanded with Active Conversation --}}
-                    <div class="boxshadow_border bg-white p-3 p-md-4 mb-3 discussion-preview-card discussion-first-expanded" style="border-radius: 16px; border: 1px solid #eef2f6;">
+                    <div class="discussion-preview-card discussion-first-expanded{{ !$loop->last ? ' pb-4 mb-4' : '' }}" @if(!$loop->last) style="border-bottom: 1px solid #f1f5f9;" @endif>
                         <div class="d-flex align-items-start main_cls_diss">
                             <div class="preview-vote-sidebar">
                                 <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
@@ -279,7 +279,7 @@
                     </div>
                 @else
                     {{-- Subsequent Discussions: Title-Only Compact Card --}}
-                    <div class="boxshadow_border bg-white p-3 mb-2 discussion-preview-card discussion-title-only-card" style="border-radius: 12px; border: 1px solid #eef2f6; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
+                    <div class="bg-white p-3 mb-2 discussion-preview-card discussion-title-only-card" style="border-radius: 12px; border: 1px solid #eef2f6; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
                                 <div class="asn-img" style="flex-shrink: 0;">

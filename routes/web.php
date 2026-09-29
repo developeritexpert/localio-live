@@ -607,9 +607,6 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/ad-tracking', [AdminSettingsController::class, 'trackingStats'])->name('admin-ad-tracking-status');
 
 
-    // Site Content
-
-
     // vendor Change Request
     Route::get('/admin-dashboard/vendor-change-requests',[AdminBusinessController::class,'allVendorRequest'])->name('admin-vendor-change-request');
     Route::get('admin-dashboard//vendor-change/{id}/{action}', [AdminBusinessController::class, 'handleRequest'])->name('admin-vendor-change.handle')->where('action', 'approve|reject');

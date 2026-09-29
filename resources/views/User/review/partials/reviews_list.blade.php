@@ -1,3 +1,12 @@
+@php
+    if (!isset($hasUserRatings)) {
+        if (isset($business)) {
+            $hasUserRatings = $business->should_show_detailed_ratings ?? ($business->reviews->where('status', 'active')->count() >= 10);
+        } else {
+            $hasUserRatings = false;
+        }
+    }
+@endphp
 <div class="review-cntnt-btm">
     @if ($reviews->isNotEmpty())
         @foreach ($reviews as $review)
@@ -69,6 +78,7 @@
                         </h3>
                     @endif
                     
+                    @if(!empty($hasUserRatings))
                     <!-- Ratings below headline -->
                     <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                         <div class="inn_ul">
@@ -85,6 +95,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                         <p class="review-text">

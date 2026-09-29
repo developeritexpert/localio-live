@@ -70,7 +70,7 @@ class CountryController extends Controller
 
             return redirect()->route('country.index')->with('success', 'Country/region updated successfully.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Country/region not found.');
+            return redirect()->back()->with('error', static_text('error_country_not_found') ?: 'Country/region not found.');
         }
     }
 

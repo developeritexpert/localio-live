@@ -149,42 +149,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                @php
-                                    $country1 = $categoryPageContents->where('meta_key', 'country1')->first();
-                                    $country2 = $categoryPageContents->where('meta_key', 'country2')->first();
-                                @endphp
-
-                                <div class="col-12">
-                                    <div class="card border">
-                                        <div class="card-header bg-light fw-bold py-2">
-                                            Global Dynamic Variables (Used in Category Page Titles)
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row g-4">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="form-label" for="country1">Country 1 (e.g., Canada)</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control" name="country1[{{ $country1->id ?? 'new' }}]" id="country1"
-                                                                value="{{ $country1->meta_value ?? '' }}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="form-label" for="country2">Country 2 (e.g., for Canada, for the US)</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control" name="country2[{{ $country2->id ?? 'new' }}]" id="country2"
-                                                                value="{{ $country2->meta_value ?? '' }}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 {{-- Category Card Descriptions Section --}}
                                 <div class="col-12">
                                     <div class="card border">
@@ -209,16 +173,9 @@
                                                             $parentDesc = $parent->translations?->all_categories_description ?? '';
                                                         @endphp
                                                         <div class="parent-category-card card border mb-3" data-parent-name="{{ strtolower($parent->name) }}">
-                                                            <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
-                                                                <div class="d-flex align-items-center gap-2">
-                                                                    <span class="badge bg-primary text-white">Parent Category</span>
-                                                                    <strong class="fs-14px text-dark ms-1">{{ $parent->name }}</strong>
-                                                                    <span class="badge bg-outline-light text-secondary rounded-pill ms-2">{{ $parent->subCategories->count() }} subcategories</span>
-                                                                </div>
-                                                            </div>
                                                             <div class="card-body p-3">
                                                                 {{-- Parent's own description --}}
-                                                                <div class="category-item-card mb-3 p-2 bg-light rounded border" data-cat-name="{{ strtolower($parent->name) }}">
+                                                                <div class="category-item-card p-2 bg-light rounded border" data-cat-name="{{ strtolower($parent->name) }}">
                                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                                         <label class="form-label mb-0 fw-bold small">
                                                                             <em class="icon ni ni-folder me-1 text-primary"></em> {{ $parent->name }} (Parent Category Description)
@@ -233,36 +190,6 @@
                                                                         id="cat_desc_{{ $parent->id }}"
                                                                         rows="2"
                                                                         placeholder="Description for {{ $parent->name }} on All Categories page...">{{ $parentDesc }}</textarea>
-                                                                </div>
-
-                                                                {{-- Subcategories under this parent --}}
-                                                                <div class="subcategories-grid">
-                                                                    <div class="row g-2">
-                                                                        @foreach ($parent->subCategories as $sub)
-                                                                            @php
-                                                                                $subDesc = $sub->translations?->all_categories_description ?? '';
-                                                                            @endphp
-                                                                            <div class="col-md-6 category-item-card" data-cat-name="{{ strtolower($sub->name) }}">
-                                                                                <div class="p-2 bg-white rounded border h-100">
-                                                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                                        <label class="form-label mb-0 fw-semibold small text-truncate" title="{{ $sub->name }}">
-                                                                                            <span class="badge bg-light text-secondary me-1">#{{ $sub->id }}</span>
-                                                                                            {{ $sub->name }}
-                                                                                        </label>
-                                                                                        <button type="button" class="btn btn-xs btn-outline-primary btn-save-desc" data-cat-id="{{ $sub->id }}">
-                                                                                            <span class="btn-text">Quick Save</span>
-                                                                                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <textarea class="form-control form-control-sm cat-desc-textarea"
-                                                                                        name="all_categories_description[{{ $sub->id }}]"
-                                                                                        id="cat_desc_{{ $sub->id }}"
-                                                                                        rows="2"
-                                                                                        placeholder="Description for {{ $sub->name }} on All Categories page...">{{ $subDesc }}</textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -304,21 +231,8 @@
                 $('.parent-category-card').each(function() {
                     var parentCard = $(this);
                     var parentName = parentCard.data('parent-name') || '';
-                    var subcards = parentCard.find('.category-item-card');
-                    var matchedSubcards = 0;
 
-                    subcards.each(function() {
-                        var catCard = $(this);
-                        var catName = catCard.data('cat-name') || '';
-                        if (query === '' || catName.indexOf(query) !== -1 || parentName.indexOf(query) !== -1) {
-                            catCard.show();
-                            matchedSubcards++;
-                        } else {
-                            catCard.hide();
-                        }
-                    });
-
-                    if (matchedSubcards > 0 || query === '' || parentName.indexOf(query) !== -1) {
+                    if (query === '' || parentName.indexOf(query) !== -1) {
                         parentCard.show();
                         anyVisible = true;
                     } else {

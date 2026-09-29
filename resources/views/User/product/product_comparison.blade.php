@@ -1,4 +1,5 @@
 @extends('user_layout.master')
+@section('body_class', 'product-page-body')
 @php
     $bizNames = isset($businesses) && is_iterable($businesses) ? collect($businesses)->map(function($b) {
         $trans = $b->translations ?? collect();
@@ -140,7 +141,7 @@
                             Businesses Comparison
                         @endif
                     </h1>
-                    <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
+                    <p class="text-meta">{{ static_text('last_updated_prefix') ?: 'Last updated' }} {{ now()->subDay()->format('F j, Y') }}</p>
                     <p style="margin-bottom: 0; ">
                         @if(!empty($catName))
                             Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
@@ -606,8 +607,10 @@
                                     $startingPriceBusiness = getBusinessesWithStartingPrice($business);
                                     $startingPrice = $startingPriceBusiness[0]['starting_price'] ?? null;
 
-                                    if (!$startingPrice && $business->products && $business->products->count() > 0) {
-                                        $allPrices = $business->products
+                                    if (!$startingPrice) {
+                                        $allPrices = $business->products()
+                                            ->with('prices')
+                                            ->get()
                                             ->flatMap(function ($product) {
                                                 return $product->prices;
                                             })

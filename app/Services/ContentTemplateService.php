@@ -1297,6 +1297,8 @@ class ContentTemplateService
         $text = str_replace('[Year]', $currentYear, $text);
         $text = str_replace('[country1]', $c1, $text);
         $text = str_replace('[country2]', $c2, $text);
+        $site = config('app.name', 'Localio');
+        $text = str_replace(['[website]', '[Site Name]', '[site_name]', '{site_name}'], $site, $text);
 
         if ($business) {
             $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
