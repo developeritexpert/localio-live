@@ -267,6 +267,44 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
         ],
+        'faq_search_headline' => [
+            'label' => 'SEARCH HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Search Headline',
+            'description' => 'Headline above the FAQ search box on the Business FAQs page.',
+        ],
+        'faq_search_placeholder' => [
+            'label' => 'SEARCH PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text inside the FAQ search box on the Business FAQs page.',
+        ],
+        'faq_accordion_headline' => [
+            'label' => 'FAQ LIST HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'FAQ List Headline (H2)',
+            'description' => 'Headline (H2) directly above the FAQ accordion list on the Business FAQs page.',
+        ],
+        'faq_explore' => [
+            'label' => 'EXPLORE CATEGORIES',
+            'type' => 'combined',
+            'field1_label' => 'Explore Categories Headline (H2)',
+            'field2_label' => 'Explore Categories Subtext',
+            'description' => 'Headline and subtext above the explore related categories on the Business FAQs page.',
+        ],
+        'faq_page_discussions' => [
+            'label' => 'DISCUSSIONS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussions section headline and subtext on the Business FAQs page.',
+        ],
+        'faq_discussions_prompt_placeholder' => [
+            'label' => 'PROMPT PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business FAQs page.',
+        ],
     ];
 
     public const BUSINESS_COMPARE_FIELDS = [
@@ -1192,6 +1230,95 @@ class ContentTemplateService
         }
     }
 
+    public static function seedDefaultBusinessFaqOptionsIfMissing(): void
+    {
+        $defaults = [
+            'faq_search_headline' => [
+                1 => 'Search [business] FAQs',
+                2 => 'Looking for specific [business] answers?',
+                3 => 'Find answers in [business] FAQs',
+                4 => 'Quick search: [business] FAQs',
+            ],
+            'faq_search_placeholder' => [
+                1 => 'Search questions...',
+                2 => 'Search FAQs for [business]...',
+                3 => 'Search questions about [business]...',
+                4 => 'Type your question here...',
+            ],
+            'faq_accordion_headline' => [
+                1 => 'Frequently asked questions about [business]',
+                2 => 'Frequently asked questions',
+                3 => '[business] FAQs & answers',
+                4 => 'Common questions about [business]',
+            ],
+            'faq_explore' => [
+                1 => [
+                    'headline' => 'Explore more [category_lc] FAQs',
+                    'subtext'  => '<p>Looking into a more specific [category_lc] type? Open the FAQ pages for related [category_lc] categories and continue directly with questions and answers for that category.</p>',
+                ],
+                2 => [
+                    'headline' => 'Browse related [category_cap] FAQs',
+                    'subtext'  => '<p>Browse specialized categories to find the exact tools and solutions for your requirements.</p>',
+                ],
+                3 => [
+                    'headline' => 'More [category_cap] categories & FAQs',
+                    'subtext'  => '<p>Discover FAQ guides across related [category_lc] niches and topics.</p>',
+                ],
+                4 => [
+                    'headline' => 'Explore other [category_cap] categories',
+                    'subtext'  => '<p>Find questions and answers for specialized [category_lc] tools and services.</p>',
+                ],
+            ],
+            'faq_page_discussions' => [
+                1 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext'  => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                2 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext'  => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext'  => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext'  => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+            'faq_discussions_prompt_placeholder' => [
+                1 => 'Ask a question or share something about [business]...',
+                2 => 'Have a question about [business]? Ask the community...',
+                3 => 'Share your thoughts or ask a question about [business]...',
+                4 => 'Start a conversation or ask about [business]...',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_faqs')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'business_faqs',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
@@ -1208,6 +1335,8 @@ class ContentTemplateService
             self::seedDefaultBusinessProfileOptionsIfMissing();
         } elseif ($sectionGroup === 'business_discussions') {
             self::seedDefaultBusinessDiscussionsOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_faqs') {
+            self::seedDefaultBusinessFaqOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -1901,6 +2030,49 @@ class ContentTemplateService
             }
         }
 
+        // Cross-section fallback: if faq_page_discussions has no explicit lock, check profile_discussions
+        if (!$hasExplicitAsgn && $fieldKey === 'faq_page_discussions') {
+            $hasProfDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_discussions')
+                ->exists();
+            if ($hasProfDisc) {
+                $profDiscTpl = self::getTemplateForResolution('business', $business->id, 'profile_discussions', $langId, 'business_profile');
+                if ($profDiscTpl) {
+                    $headline = self::replacePlaceholders($profDiscTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profDiscTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profDiscTpl,
+                        'option_number' => $profDiscTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if faq_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'faq_discussions_prompt_placeholder') {
+            $hasPromptDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasPromptDisc) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
+                    ];
+                }
+            }
+        }
+
         // Cross-section fallback: if profile_alternatives has no explicit lock, check alternatives_h1 from business_alternatives
         if (!$hasExplicitAsgn && $fieldKey === 'profile_alternatives') {
             $hasAltAsgn = ContentTemplateAssignment::where('entity_type', 'business')
@@ -1936,7 +2108,7 @@ class ContentTemplateService
             $optionNumber = $template->option_number;
         }
 
-        if (in_array($fieldKey, ['faq_search', 'discussions_prompt_placeholder', 'business_discussions_prompt_placeholder'], true)) {
+        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder'], true)) {
             return [
                 'headline' => self::cleanPlaceholder($headline),
                 'subtext' => $subtext,

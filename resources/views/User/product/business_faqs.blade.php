@@ -214,14 +214,36 @@
             <!-- Left Side: FAQs Content, Search & Accordion -->
             <div class="col-lg-8 col-12">
                 
+                @php
+                    $resolvedSearchH = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'faq_search_headline',
+                        getCurrentLanguageID()
+                    );
+                    $finalSearchHeadline = !empty($resolvedSearchH['headline']) ? $resolvedSearchH['headline'] : ('Search ' . $bName . ' FAQs');
+
+                    $resolvedSearchP = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'faq_search_placeholder',
+                        getCurrentLanguageID()
+                    );
+                    $finalSearchPlaceholder = !empty($resolvedSearchP['headline']) ? $resolvedSearchP['headline'] : 'Search questions...';
+
+                    $resolvedAccordionH = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'faq_accordion_headline',
+                        getCurrentLanguageID()
+                    );
+                    $finalAccordionHeadline = !empty($resolvedAccordionH['headline']) ? $resolvedAccordionH['headline'] : ('Frequently asked questions about ' . $bName);
+                @endphp
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
                     <p style="margin-bottom: 14px;">
-                        Search {{ $bName }} FAQs
+                        {!! \App\Services\ContentTemplateService::cleanHeading($finalSearchHeadline) !!}
                     </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
+                        <input type="text" id="faqSearchInput" placeholder="{{ $finalSearchPlaceholder }}" autocomplete="off">
                     </div>
                 </div>
 
@@ -229,7 +251,7 @@
                 <div class="main-faq-container" id="section-faq-list">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="margin: 0;">
-                            Frequently asked questions about {{ $bName }}
+                            {!! \App\Services\ContentTemplateService::cleanHeading($finalAccordionHeadline) !!}
                         </h2>
                     </div>
 
@@ -807,29 +829,33 @@
 @php
     $exploreCat = $exploreSubcategories['category'] ?? ($business->category->parent ?? $business->category ?? null);
     $exploreCatTrans = $exploreCat ? ($exploreCat->translations->firstWhere('lang_id', $lang_id) ?? $exploreCat->translations->first()) : null;
-    $exploreHeadline = !empty($exploreCatTrans->faq_explore_headline) 
+    $defaultExpHeadline = !empty($exploreCatTrans->faq_explore_headline) 
         ? $exploreCatTrans->faq_explore_headline 
         : (!empty($exploreCatTrans->explore_subcategories_headline) 
             ? $exploreCatTrans->explore_subcategories_headline 
             : ($exploreSubcategories['title'] ?? 'Explore categories'));
-    $exploreSubtext = !empty($exploreCatTrans->faq_explore_subtext) 
+    $defaultExpSubtext = !empty($exploreCatTrans->faq_explore_subtext) 
         ? $exploreCatTrans->faq_explore_subtext 
-        : ($exploreCatTrans->explore_subcategories_subtext ?? null);
+        : ($exploreCatTrans->explore_subcategories_subtext ?? 'Browse specialized categories to find the exact tools and solutions for your requirements.');
+
+    $resolvedFaqExplore = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'faq_explore',
+        getCurrentLanguageID()
+    );
+    $exploreHeadline = !empty($resolvedFaqExplore['headline']) ? $resolvedFaqExplore['headline'] : $defaultExpHeadline;
+    $exploreSubtext = !empty($resolvedFaqExplore['subtext']) ? $resolvedFaqExplore['subtext'] : $defaultExpSubtext;
 @endphp
 <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
-                {{ $exploreHeadline }}
+                {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
             </h2>
             @if(!empty($exploreSubtext))
                 <div class="explore-cat-subtext" style="color: #475569; margin: 0; font-size: 15px;">
                     {!! $exploreSubtext !!}
                 </div>
-            @else
-                <p style="color: #475569; margin: 0; font-size: 15px;">
-                    Browse specialized categories to find the exact tools and solutions for your requirements.
-                </p>
             @endif
         </div>
 
@@ -890,7 +916,7 @@
         $totalDiscsCount = $business->discussions()->count();
         $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
             $business,
-            'profile_discussions',
+            'faq_page_discussions',
             getCurrentLanguageID(),
             ['[count]' => number_format($totalDiscsCount)]
         );
@@ -905,8 +931,15 @@
         if (!empty($resolvedBizDiscussions['subtext'])) {
             $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
         }
+
+        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'faq_discussions_prompt_placeholder',
+            getCurrentLanguageID()
+        );
+        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
     @endphp
-    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
+    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
     </div>
 </section>
 
