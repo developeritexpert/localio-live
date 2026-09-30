@@ -61,7 +61,7 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
-    $finalHeadline = $headline ?? $discHeadline ?? ($bName . ' discussions (' . number_format($totalDiscs) . ')');
+    $finalHeadline = $headline ?? $discHeadline ?? (' Discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
 @endphp
 

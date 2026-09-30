@@ -267,10 +267,10 @@
                                                                 <span>Was this answer helpful?</span>
                                                                 <div class="faq-feedback-actions">
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
-                                                                        <i class="far fa-thumbs-up"></i> Yes
+                                                                        <i class="far fa-thumbs-up"></i>
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
-                                                                        <i class="far fa-thumbs-down"></i> No
+                                                                        <i class="far fa-thumbs-down"></i>
                                                                     </button>
                                                                 </div>
                                                             </div>

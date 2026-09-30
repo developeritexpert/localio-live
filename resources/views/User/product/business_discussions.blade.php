@@ -702,7 +702,7 @@
                        @endif>
                         <i class="fas fa-plus" style="font-size: 12px;"></i>
                         <span>
-                          Start Discussion
+                          Start a discussion
                         </span>
                     </a>
                 </div>
