@@ -1,4 +1,4 @@
-@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false, 'headline' => null, 'subtext' => null, 'promptPlaceholder' => null])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false, 'headline' => null, 'subtext' => null, 'promptPlaceholder' => null, 'emptyHeadline' => null])
 
 @php
     if ($isTopRated) {
@@ -61,9 +61,10 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
-    $finalHeadline = $headline ?? $discHeadline ?? (' Discussions (' . number_format($totalDiscs) . ')');
+    $finalHeadline = $headline ?? $discHeadline ?? (($bName ? $bName . ' ' : '') . 'discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
-    $finalPromptPlaceholder = $promptPlaceholder ?? ('Ask a question or share something about ' . $bName . '...');
+    $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
+    $finalEmptyHeadline = $emptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.'));
 @endphp
 
 <div class="mb-4 text-start">
@@ -137,7 +138,7 @@
 
     @if($discList->isEmpty())
         <div class="text-center py-4 text-muted">
-            <p class="m-0">No discussions about {{ $bName }}.</p>
+            <p class="m-0">{{ $finalEmptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.')) }}</p>
         </div>
     @else
         <div class="discussions-preview-list" id="previewDiscussionsList">
