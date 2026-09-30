@@ -1863,6 +1863,10 @@
                                             </div>
                                         </div>
                                         @endforeach
+                                        @php
+                                            $vendAllRevCount = $business->approved_reviews_count ?? $reviews->count();
+                                        @endphp
+                                        @if($vendAllRevCount >= 10)
                                         <div class="btm-bttn light">
                                             @php
                                             $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
@@ -1875,6 +1879,7 @@
                                             </a>
                                         @endif
                                         </div>
+                                        @endif
                                     </div>
                                     <div class="tab-pane fade" id="nav-profile" role="tabpanel"
                                         aria-labelledby="nav-profile-tab">
@@ -1934,6 +1939,7 @@
                                         </div>
                                         @endif
                                         @endforeach
+                                        @if($ourReviews->count() >= 10)
                                         <div class="btm-bttn light">
                                             @php
                                             $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
@@ -1946,6 +1952,7 @@
                                             </a>
                                         @endif
                                         </div>
+                                        @endif
                                     </div>
                                     <div class="tab-pane fade" id="nav-contact" role="tabpanel"
                                         aria-labelledby="nav-contact-tab">
@@ -2002,6 +2009,7 @@
                                             </div>
                                         </div>
                                         @endforeach
+                                        @if($trustpilotReviews->count() >= 10)
                                         <div class="btm-bttn light">
                                             @php
                                             $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
@@ -2014,6 +2022,7 @@
                                             </a>
                                         @endif
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

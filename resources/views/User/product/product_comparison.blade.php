@@ -1286,12 +1286,17 @@
                                     </div>
                                 @endforelse
 
-                                {{-- Link to see all reviews for this business --}}
+                                {{-- Link to see all reviews for this business (hidden if less than 10 reviews) --}}
+                                @php
+                                    $bizRevCount = $business->approved_reviews_count ?? $activeReviews->count();
+                                @endphp
+                                @if($bizRevCount >= 10)
                                 <div class="text-center pt-2">
                                     <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="btn-g-link">
                                         View all reviews 
                                     </a>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach

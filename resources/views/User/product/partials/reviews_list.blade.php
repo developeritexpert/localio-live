@@ -238,10 +238,15 @@
             $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
             $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
         @endphp
+        @php
+            $tabAllCount = isset($business) ? ($business->approved_reviews_count ?? $business->reviews->where('status', 'active')->count()) : $allReviews->count();
+        @endphp
+        @if($tabAllCount >= 10)
         <div class="btm-bttn light" >
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 > View all reviews</a>
         </div>
+        @endif
     </div>
     
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -413,10 +418,12 @@
                 @endif
             @endforeach
         @endif
+        @if($ourReviews->count() >= 10)
         <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
+        @endif
     </div>
     
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
@@ -501,10 +508,12 @@
                 </div>
             @endforeach
         @endif
+        @if($trustpilotReviews->count() >= 10)
         <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
+        @endif
     </div>
 </div>
 

@@ -558,9 +558,11 @@
                                 <span class="com-rating"> {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                 @endif
                             </div>
+                            @if(($totalReviews ?? 0) >= 10)
                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 12px; text-decoration: none; padding-top: 5px;">
                                 View all reviews
                             </a>
+                            @endif
                         </div>
 
                         @if($business->should_show_detailed_ratings)

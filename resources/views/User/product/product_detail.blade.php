@@ -493,9 +493,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
+                                                @if(($ratingCount ?? 0) >= 10)
                                                 <a href="#section14" class="view-review-link" style="color: #003f7d; font-weight: 600; font-size: 13px; text-decoration: none; padding-top: 4px;" onclick="document.getElementById('section14')?.scrollIntoView({behavior: 'smooth'})">
                                                     View all reviews
                                                 </a>
+                                                @endif
                                             </div>
 
                                             <!-- Collapsible Breakdown Section (Hidden by default, slides out when clicking stars or arrow) -->
