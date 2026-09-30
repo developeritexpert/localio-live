@@ -73,7 +73,7 @@
                     <div class="top_head d-flex align-items-center gap-3">
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
+                                <h1 style="margin: 0; color: #1e3050; line-height: 1.2;">
                                     {{ $mainHeadline }}
                                 </h1>
                             </div>
@@ -113,7 +113,7 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask questions or share something with other Localio users…" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
                     <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
@@ -163,7 +163,7 @@
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
-                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions about {{ $bName }}.</h3>
+                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions yet.</h3>
                     <p class="text-muted mb-3 d-none" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
                     <button type="button" class="blue-btn btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
                         <i class="fas fa-plus me-1"></i> Start a discussion 
@@ -351,7 +351,7 @@
                                             @csrf
                                             <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
                                             <div class="mb-2">
-                                                <textarea name="content" class="form-control" rows="2" placeholder="What are your thoughts?" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
+                                                <textarea name="content" class="form-control" rows="2" placeholder="{{ static_text('join_conversation_placeholder') ?: 'Join the conversation...' }}" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
                                             </div>
                                             <div class="d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-sm btn-primary px-3 py-1 fw-semibold" style="border-radius: 6px; font-size: 12.5px;">
@@ -360,10 +360,12 @@
                                             </div>
                                         </form>
                                     @else
-                                        <div class="p-3 mb-3 text-center bg-light rounded-3" style="border: 1px dashed #cbd5e1;">
-                                            <span class="text-muted" style="font-size: 13.5px;">Want to join this discussion? </span>
-                                            <a href="javascript:void(0)" onclick="openLoginModal()" class="fw-semibold text-primary" style="font-size: 13.5px; text-decoration: underline;">Log in or create an account</a>
-                                        </div>
+                                        <div class="reddit-join-pill-bar mb-3">
+    <div class="reddit-join-pill d-flex align-items-center justify-content-between px-3 py-2 rounded-pill bg-light border" onclick="openLoginModal()" style="border-color: #cbd5e1 !important; color: #64748b; font-size: 13px; cursor: pointer;">
+        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_placeholder') ?: 'Join the conversation' }}</span>
+        <span class="text-primary fw-semibold" style="font-size: 12px;">Log in to reply &rarr;</span>
+    </div>
+</div>
                                     @endif
 
                                     <!-- Top-Level Comments List -->
@@ -415,7 +417,7 @@
                         border: 1px solid #eef2f6;
                         text-align: left;
                      ">
-                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2" style="flex-wrap: wrap;">
                         <p style="
                             margin: 0;
                             font-weight: 700;
@@ -448,7 +450,7 @@
                        @endif>
                         <i class="fas fa-plus" style="font-size: 12px;"></i>
                          <span>
-                          Start Discussion
+                          Start a discussion
                         </span>
                     </a>
                 </div>

@@ -272,21 +272,42 @@
                 <div class="alert alert-info py-5 px-3 mb-3 small">
                     <strong>Supported Variables:</strong> Click any tag to insert into the active input:
                     <div class="d-flex flex-wrap gap-1 mt-2">
-                        @foreach([
-                            '[business]' => 'FlowSync Tech',
-                            '[business_cap]' => 'FlowSync Tech',
-                            '[count]' => '3',
-                            '[category_cap]' => 'Web hosting',
-                            '[category_tc]' => 'Web Hosting',
-                            '[category_lc]' => 'web hosting',
-                            '[entity1_cap]' => 'Web hosting provider',
-                            '[entity1_lc]' => 'web hosting provider',
-                            '[entities1_cap]' => 'Web hosting providers',
-                            '[entities1_lc]' => 'web hosting providers',
-                            '[year]' => date('Y'),
-                            '[country1]' => 'United States',
-                            '[country2]' => 'U.S.',
-                        ] as $tag => $example)
+                        @php
+                            $tagsList = [
+                                '[business1]' => 'Bluehost',
+                                '[business2]' => 'EduNectar',
+                                '[business3]' => 'Hostinger',
+                                '[business_vs]' => 'Bluehost vs EduNectar',
+                                '[businesses]' => 'Bluehost vs EduNectar',
+                                '[category]' => 'web hosting',
+                                '[category_cap]' => 'Web hosting',
+                                '[category_tc]' => 'Web Hosting',
+                                '[category_lc]' => 'web hosting',
+                                '[entity1_cap]' => 'Web hosting provider',
+                                '[entity1_lc]' => 'web hosting provider',
+                                '[year]' => date('Y'),
+                                '[country1]' => 'United States',
+                                '[country2]' => 'U.S.',
+                            ];
+                            if (isset($sectionGroup) && $sectionGroup !== 'comparison') {
+                                $tagsList = [
+                                    '[business]' => 'FlowSync Tech',
+                                    '[business_cap]' => 'FlowSync Tech',
+                                    '[count]' => '3',
+                                    '[category_cap]' => 'Web hosting',
+                                    '[category_tc]' => 'Web Hosting',
+                                    '[category_lc]' => 'web hosting',
+                                    '[entity1_cap]' => 'Web hosting provider',
+                                    '[entity1_lc]' => 'web hosting provider',
+                                    '[entities1_cap]' => 'Web hosting providers',
+                                    '[entities1_lc]' => 'web hosting providers',
+                                    '[year]' => date('Y'),
+                                    '[country1]' => 'United States',
+                                    '[country2]' => 'U.S.',
+                                ];
+                            }
+                        @endphp
+                        @foreach($tagsList as $tag => $example)
                             <button type="button" class="btn btn-xs btn-primary btn-tag-insert py-0 px-2" data-tag="{{ $tag }}">{{ $tag }}</button>
                         @endforeach
                     </div>

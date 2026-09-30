@@ -493,9 +493,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
+                                                @if(($ratingCount ?? 0) >= 10)
                                                 <a href="#section14" class="view-review-link" style="color: #003f7d; font-weight: 600; font-size: 13px; text-decoration: none; padding-top: 4px;" onclick="document.getElementById('section14')?.scrollIntoView({behavior: 'smooth'})">
                                                     View all reviews
                                                 </a>
+                                                @endif
                                             </div>
 
                                             <!-- Collapsible Breakdown Section (Hidden by default, slides out when clicking stars or arrow) -->
@@ -1258,11 +1260,26 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="container">
                                                 <div class="sftwre-like-innr">
                                                     <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
-
-                                                        <h2>{{ $business->translations->first()->name }} Alternatives & Competitors</h2>
-                                                        <p>Based on other buyer's searches, these are the products that could be a good fit
-                                                            for you.
-                                                        </p>
+                                                        @php
+                                                            $bName = $business->translations->first()->name ?? $business->name ?? 'Business';
+                                                            $bizAltFallbackH2 = $bName . ' Alternatives & Competitors';
+                                                            $bizAltFallbackSub = "Based on other buyer's searches, these are the products that could be a good fit for you.";
+                                                            $resolvedBizAlternatives = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                                $business,
+                                                                'profile_alternatives',
+                                                                getCurrentLanguageID()
+                                                            );
+                                                            $finalBizAltH2 = !empty($resolvedBizAlternatives['headline']) ? $resolvedBizAlternatives['headline'] : $bizAltFallbackH2;
+                                                            $finalBizAltSubtext = !empty($resolvedBizAlternatives['subtext']) ? $resolvedBizAlternatives['subtext'] : $bizAltFallbackSub;
+                                                        @endphp
+                                                        <h2>{!! \App\Services\ContentTemplateService::cleanHeading($finalBizAltH2) !!}</h2>
+                                                        @if(!empty($finalBizAltSubtext))
+                                                            @if(str_starts_with(trim($finalBizAltSubtext), '<'))
+                                                                {!! $finalBizAltSubtext !!}
+                                                            @else
+                                                                <p>{!! $finalBizAltSubtext !!}</p>
+                                                            @endif
+                                                        @endif
                                                     </div>
                                                     <div class="sft_ware_test"
                                                         style="display: flex; justify-content:center; align-items: center;">
@@ -1445,6 +1462,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
                                         $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
                                         $bName = $business->translations->first()->name ?? $business->name ?? 'this provider';
+                                        $bizFaqFallbackH2 = $faq_title?->default_value ?: 'Frequently asked questions';
+                                        $bizFaqFallbackSub = $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.');
+                                        $resolvedBizFaqs = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'profile_faqs',
+                                            getCurrentLanguageID()
+                                        );
+                                        $finalBizFaqH2 = !empty($resolvedBizFaqs['headline']) ? $resolvedBizFaqs['headline'] : $bizFaqFallbackH2;
+                                        $finalBizFaqSubtext = !empty($resolvedBizFaqs['subtext']) ? $resolvedBizFaqs['subtext'] : $bizFaqFallbackSub;
                                         @endphp
                                         <!-- Business FAQs Section -->
                                         <section class="faq-section product_inr_faq py-5 light" id="section15">
@@ -1453,11 +1479,17 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <div class="">
                                                         <div class="text-start mb-4">
                                                             <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
-                                                                {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
+                                                                {!! \App\Services\ContentTemplateService::cleanHeading($finalBizFaqH2) !!}
                                                             </h2>
-                                                            <p style="font-size: 15px; margin-bottom: 0;">
-                                                                {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
-                                                            </p>
+                                                            @if(!empty($finalBizFaqSubtext))
+                                                                @if(str_starts_with(trim($finalBizFaqSubtext), '<'))
+                                                                    {!! $finalBizFaqSubtext !!}
+                                                                @else
+                                                                    <p style="font-size: 15px; margin-bottom: 0;">
+                                                                        {!! $finalBizFaqSubtext !!}
+                                                                    </p>
+                                                                @endif
+                                                            @endif
                                                         </div>
 
                                                         <div class="accordion" id="businessFaqAccordion">

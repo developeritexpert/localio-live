@@ -1,4 +1,4 @@
-@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false, 'headline' => null, 'subtext' => null])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null, 'isTopRated' => false, 'headline' => null, 'subtext' => null, 'promptPlaceholder' => null, 'emptyHeadline' => null])
 
 @php
     if ($isTopRated) {
@@ -61,8 +61,10 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
-    $finalHeadline = $headline ?? $discHeadline ?? ($bName . ' discussions (' . number_format($totalDiscs) . ')');
+    $finalHeadline = $headline ?? $discHeadline ?? (($bName ? $bName . ' ' : '') . 'discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
+    $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
+    $finalEmptyHeadline = $emptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.'));
 @endphp
 
 <div class="mb-4 text-start">
@@ -86,7 +88,7 @@
                 {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
             </div>
         @endif
-        <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
+        <input type="text" class="form-control discussion-prompt-input" placeholder="{{ $finalPromptPlaceholder }}" readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 8px; font-size: 13px; padding-left: 16px; height: 38.45px;">
         <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 30px; font-size: 13px; font-weight: 600;  height: 40px; padding: 0 18px; background: #002347; border-color: #002347;">
             <i class="fas fa-pen" style="font-size: 12px;"></i> Post
         </button>
@@ -136,7 +138,7 @@
 
     @if($discList->isEmpty())
         <div class="text-center py-4 text-muted">
-            <p class="m-0">No discussions about {{ $bName }}.</p>
+            <p class="m-0">{{ $finalEmptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.')) }}</p>
         </div>
     @else
         <div class="discussions-preview-list" id="previewDiscussionsList">
@@ -145,7 +147,7 @@
                     {{-- First Discussion Thread: Partially Expanded with Active Conversation --}}
                     <div class="discussion-preview-card discussion-first-expanded{{ !$loop->last ? ' pb-4 mb-4' : '' }}" @if(!$loop->last) style="border-bottom: 1px solid #f1f5f9;" @endif>
                         <div class="d-flex align-items-start main_cls_diss">
-                            <div class="preview-vote-sidebar">
+                            <div class="preview-vote-sidebar d-none d-sm-flex">
                                 <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
                                     <i class="fas fa-chevron-up"></i>
                                 </button>
@@ -167,17 +169,17 @@
                                             @if ($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
                                                 <img src="{{ asset($pDisc->user->profile_image) }}"
                                                     class="img-fluid profile-circle"
-                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                    style="width: 36px; height: 36px; object-fit: cover; border-radius: 50%;"
                                                     alt="{{ $pDisc->author_display_name }}">
                                             @elseif ($pDisc->author_avatar)
                                                 <img src="{{ asset($pDisc->author_avatar) }}"
                                                     class="img-fluid profile-circle"
-                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                    style="width: 36px; height: 36px; object-fit: cover; border-radius: 50%;"
                                                     alt="{{ $pDisc->author_display_name }}">
                                             @else
                                                 <div class="profile-circle"
-                                                    style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                    <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                    style="width: 36px; height: 36px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                    <span style="color: white; font-weight: bold; font-size: 15px;">
                                                         {{ $pDisc->author_initial ?: 'A' }}
                                                     </span>
                                                 </div>
@@ -230,29 +232,61 @@
                                 </div>
 
                                 <!-- Discussion Title -->
-                                <h3 class="discussion-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 12px 0 8px; line-height: 1.35;">
+                                <h3 class="discussion-title" style="font-size: 15.5px; font-weight: 700; color: #1e3050; margin: 8px 0 6px; line-height: 1.35;">
                                     <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="discussion-title-link" style="color: inherit; text-decoration: none;">
                                         {{ $pDisc->title }}
                                     </a>
                                 </h3>
 
                                 <!-- Discussion Body Text -->
-                                <div class="text-secondary mb-3 discussion-body-text" style="font-size: 14px; line-height: 1.6; color: #334155; word-break: break-word;">
+                                <div class="text-secondary mb-2 discussion-body-text" style="font-size: 13px; line-height: 1.5; color: #334155; word-break: break-word;">
                                     {!! nl2br(e($pDisc->content)) !!}
                                 </div>
 
-                                <!-- Active Discussion Conversation Preview -->
-                                @if($pDisc->comments && $pDisc->comments->isNotEmpty())
-                                    <div class="preview-active-discussion mt-3 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #edf2f7;">
-                                        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #eef2f6;">
-                                            <span style="font-size: 13px; font-weight: 700; color: #1e3050;">
-                                                <i class="far fa-comments text-primary me-1"></i> Community Discussion ({{ $pDisc->comments_count }} {{ $pDisc->comments_count == 1 ? 'reply' : 'replies' }})
-                                            </span>
-                                            <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="text-primary text-decoration-none fw-semibold" style="font-size: 12.5px;">
-                                                Join discussion <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
-                                            </a>
+                                <!-- Post Action Toolbar (Reddit style) -->
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 pb-1" style="border-top: 1px solid #f8fafc;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Mobile Vote Pill -->
+                                        <div class="comment-vote-pill d-inline-flex d-sm-none align-items-center">
+                                            <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" aria-label="Upvote">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                            <span class="comment-vote-count vote-score-{{ $pDisc->id }}">{{ $pDisc->upvotes_count - $pDisc->downvotes_count }}</span>
+                                            <button type="button" class="comment-vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="down" aria-label="Downvote">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
                                         </div>
 
+                                        <!-- Comments Link -->
+                                        <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="post-action-btn d-inline-flex align-items-center gap-1 text-muted text-decoration-none" style="font-size: 12px; font-weight: 600;" title="Comments">
+                                            <i class="far fa-comment"></i>
+                                            <span>{{ $pDisc->comments_count }}</span>
+                                        </a>
+
+                                        <!-- Share Button -->
+                                        <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}', '{{ addslashes($pDisc->title) }}', event)" title="Share discussion" aria-label="Share discussion">
+                                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="18" cy="5" r="3"></circle>
+                                                <circle cx="6" cy="12" r="3"></circle>
+                                                <circle cx="18" cy="19" r="3"></circle>
+                                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Reddit Style: Join the conversation pill (Image 3) -->
+                                <div class="reddit-join-pill-bar my-2">
+                                    <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="reddit-join-pill text-decoration-none d-flex align-items-center justify-content-between px-3 py-2 rounded-pill bg-light border" style="border-color: #cbd5e1 !important; color: #64748b; font-size: 13px; transition: all 0.2s ease;">
+                                        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_placeholder') ?: 'Join the conversation' }}</span>
+                                        <span class="text-primary fw-semibold" style="font-size: 12px;">Reply &rarr;</span>
+                                    </a>
+                                </div>
+
+                                <!-- Clean Comments Thread directly below (Image 2 banner removed) -->
+                                @if($pDisc->comments && $pDisc->comments->isNotEmpty())
+                                    <div class="preview-active-discussion mt-2 pt-2" style="border-top: 1px solid #f1f5f9;">
                                         <div class="top-level-comments-list">
                                             @foreach($pDisc->comments->take(1) as $comment)
                                                 @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $pDisc, 'level' => 0])
@@ -261,17 +295,11 @@
 
                                         @if($pDisc->comments_count > 1)
                                             <div class="mt-2 pt-2 text-center" style="border-top: 1px dashed #e2e8f0;">
-                                                <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="text-muted text-decoration-none fw-semibold" style="font-size: 12.5px;">
+                                                <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="text-muted text-decoration-none fw-semibold" style="font-size: 12px;">
                                                     + View all {{ $pDisc->comments_count }} replies on Discussions page &rarr;
                                                 </a>
                                             </div>
                                         @endif
-                                    </div>
-                                @else
-                                    <div class="mt-2 d-flex align-items-center gap-3" style="font-size: 12.5px; color: #64748b; font-weight: 600;">
-                                        <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="btn btn-sm btn-outline-primary fw-semibold" style="border-radius: 20px; font-size: 12.5px; padding: 4px 14px; text-decoration: none;">
-                                            <i class="fas fa-reply me-1"></i> Be the first to join this discussion
-                                        </a>
                                     </div>
                                 @endif
                             </div>

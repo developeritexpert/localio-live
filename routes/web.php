@@ -453,6 +453,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
         Route::get('/business-alternatives', [ContentTemplateController::class, 'businessAlternatives'])->name('admin.content-templates.business-alternatives');
         Route::get('/business-faqs', [ContentTemplateController::class, 'businessFaqs'])->name('admin.content-templates.business-faqs');
         Route::get('/business-compare', [ContentTemplateController::class, 'businessCompare'])->name('admin.content-templates.business-compare');
+        Route::get('/comparison', [ContentTemplateController::class, 'comparison'])->name('admin.content-templates.comparison');
+        Route::get('/a-vs-b-comparisons', [ContentTemplateController::class, 'comparison'])->name('admin.content-templates.a-vs-b-comparisons');
         Route::get('/business-reviews', [ContentTemplateController::class, 'businessReviews'])->name('admin.content-templates.business-reviews');
         Route::get('/business-discussions', [ContentTemplateController::class, 'businessDiscussions'])->name('admin.content-templates.business-discussions');
         Route::get('/criteria-ratings', [ContentTemplateController::class, 'criteriaRatings'])->name('admin.content-templates.criteria-ratings');

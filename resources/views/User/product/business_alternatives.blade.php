@@ -94,7 +94,7 @@
                         $finalAltSub = !empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $subHeadline;
                     @endphp
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
-                        <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                        <h1 style="color: #1e3050; margin: 0; line-height: 1.2;">
                             {!! \App\Services\ContentTemplateService::cleanHeading($finalAltH1) !!}
                         </h1>
                     </div>

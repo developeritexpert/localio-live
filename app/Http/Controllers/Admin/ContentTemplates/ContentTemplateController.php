@@ -219,6 +219,7 @@ class ContentTemplateController extends Controller
     public function businessCompare(Request $request) { return $this->genericBusinessView($request, 'business_compare', \App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS, 'Business Compare'); }
     public function businessReviews(Request $request) { return $this->genericBusinessView($request, 'business_reviews', \App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS, 'Business Reviews'); }
     public function businessDiscussions(Request $request) { return $this->genericBusinessView($request, 'business_discussions', \App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS, 'Business Discussions'); }
+    public function comparison(Request $request) { return $this->genericCategoryView($request, 'comparison', \App\Services\ContentTemplateService::COMPARISON_FIELDS, 'A vs B Comparisons'); }
 
     private function genericCategoryView(Request $request, $sectionGroup, $fieldDefs, $title)
     {
@@ -533,8 +534,32 @@ class ContentTemplateController extends Controller
             'is_active'     => true,
         ]);
 
+        if ($request->filled('assign_to_business_id')) {
+            $target = $request->assign_to_business_id;
+            if ($target === 'all') {
+                $bizIds = \App\Models\Business::pluck('id');
+                foreach ($bizIds as $bId) {
+                    \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                        'business',
+                        (int)$bId,
+                        $template->field_key,
+                        $template->id,
+                        $langId
+                    );
+                }
+            } elseif (is_numeric($target)) {
+                \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                    'business',
+                    (int)$target,
+                    $template->field_key,
+                    $template->id,
+                    $langId
+                );
+            }
+        }
+
         return redirect()->back()
-            ->with('success', "Template Option #{$template->option_number} created successfully.")
+            ->with('success', "Template Option #{$template->option_number} created successfully." . ($request->filled('assign_to_business_id') ? " Assigned to selected business(es)." : ""))
             ->with('open_manage_field', $request->field_key);
     }
 
@@ -559,8 +584,33 @@ class ContentTemplateController extends Controller
             'subtext'  => $request->subtext,
         ]);
 
+        if ($request->filled('assign_to_business_id')) {
+            $target = $request->assign_to_business_id;
+            $langId = $template->lang_id ?: (int) ($request->lang_id ?: 1);
+            if ($target === 'all') {
+                $bizIds = \App\Models\Business::pluck('id');
+                foreach ($bizIds as $bId) {
+                    \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                        'business',
+                        (int)$bId,
+                        $template->field_key,
+                        $template->id,
+                        $langId
+                    );
+                }
+            } elseif (is_numeric($target)) {
+                \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                    'business',
+                    (int)$target,
+                    $template->field_key,
+                    $template->id,
+                    $langId
+                );
+            }
+        }
+
         return redirect()->back()
-            ->with('success', "Template Option #{$template->option_number} updated successfully.")
+            ->with('success', "Template Option #{$template->option_number} updated successfully." . ($request->filled('assign_to_business_id') ? " Assigned to selected business(es)." : ""))
             ->with('open_manage_field', $template->field_key);
     }
 
@@ -671,7 +721,7 @@ class ContentTemplateController extends Controller
         $request->validate([
             'entity_type'   => 'required|string|in:category,feature,business',
             'entity_id'     => 'required|integer',
-            'section_group' => 'nullable|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings',
+            'section_group' => 'nullable|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings,comparison',
             'lang_id'       => 'nullable|integer',
         ]);
 
@@ -707,6 +757,8 @@ class ContentTemplateController extends Controller
             $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS));
         } elseif ($sectionGroup === 'features') {
             $query->whereIn('field_key', array_keys(ContentTemplateService::FEATURE_FIELDS));
+        } elseif ($sectionGroup === 'comparison') {
+            $query->whereIn('field_key', array_keys(ContentTemplateService::COMPARISON_FIELDS));
         }
 
         $deleted = $query->delete();

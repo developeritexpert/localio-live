@@ -202,6 +202,20 @@ class ContentTemplateService
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
+        'profile_alternatives' => [
+            'label' => 'ALTERNATIVES SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Alternatives Headline (H2)',
+            'field2_label' => 'Alternatives Subtext',
+            'description' => 'Headline and subtext for the Alternatives & Competitors section on the Business Profile page.',
+        ],
+        'profile_faqs' => [
+            'label' => 'FAQS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'FAQs Headline (H2)',
+            'field2_label' => 'FAQs Subtext',
+            'description' => 'Headline and subtext for the Frequently Asked Questions section on the Business Profile page.',
+        ],
         'profile_compare' => [
             'label' => 'COMPARE SECTION',
             'type' => 'combined',
@@ -253,6 +267,44 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
         ],
+        'faq_search_headline' => [
+            'label' => 'SEARCH HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Search Headline',
+            'description' => 'Headline above the FAQ search box on the Business FAQs page.',
+        ],
+        'faq_search_placeholder' => [
+            'label' => 'SEARCH PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text inside the FAQ search box on the Business FAQs page.',
+        ],
+        'faq_accordion_headline' => [
+            'label' => 'FAQ LIST HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'FAQ List Headline (H2)',
+            'description' => 'Headline (H2) directly above the FAQ accordion list on the Business FAQs page.',
+        ],
+        'faq_explore' => [
+            'label' => 'EXPLORE CATEGORIES',
+            'type' => 'combined',
+            'field1_label' => 'Explore Categories Headline (H2)',
+            'field2_label' => 'Explore Categories Subtext',
+            'description' => 'Headline and subtext above the explore related categories on the Business FAQs page.',
+        ],
+        'faq_page_discussions' => [
+            'label' => 'DISCUSSIONS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussions section headline and subtext on the Business FAQs page.',
+        ],
+        'faq_discussions_prompt_placeholder' => [
+            'label' => 'PROMPT PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business FAQs page.',
+        ],
     ];
 
     public const BUSINESS_COMPARE_FIELDS = [
@@ -267,6 +319,88 @@ class ContentTemplateService
             'type' => 'single',
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
+        ],
+        'compare_overview' => [
+            'label' => 'OVERVIEW / INTRO SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Overview Headline (H2)',
+            'field2_label' => 'Overview Description / Text',
+            'description' => 'Headline and description text for the comparison intro section.',
+        ],
+        'compare_interactive_tool' => [
+            'label' => 'COMPARE WITH ANY PROVIDER',
+            'type' => 'combined',
+            'field1_label' => 'Compare Tool Headline (H3)',
+            'field2_label' => 'Compare Tool Subtext',
+            'description' => 'Headline and subtext for the interactive compare tool box.',
+        ],
+        'compare_search_placeholder' => [
+            'label' => 'COMPARE SEARCH PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Search Input Placeholder',
+            'description' => 'Placeholder text inside the interactive compare search box.',
+        ],
+        'compare_popular' => [
+            'label' => 'POPULAR COMPARISONS',
+            'type' => 'combined',
+            'field1_label' => 'Popular Comparisons Headline (H2)',
+            'field2_label' => 'Popular Comparisons Subtext',
+            'description' => 'Headline and subtext for the Popular comparisons section.',
+        ],
+        'compare_recent' => [
+            'label' => 'RECENTLY VIEWED COMPARISONS',
+            'type' => 'combined',
+            'field1_label' => 'Recently Viewed Headline (H2)',
+            'field2_label' => 'Recently Viewed Subtext',
+            'description' => 'Headline and subtext for the Recently viewed comparisons section.',
+        ],
+        'compare_explore' => [
+            'label' => 'EXPLORE CATEGORIES',
+            'type' => 'combined',
+            'field1_label' => 'Explore Categories Headline (H2)',
+            'field2_label' => 'Explore Categories Subtext',
+            'description' => 'Headline and subtext for the Explore subcategories section.',
+        ],
+        'compare_page_discussions' => [
+            'label' => 'DISCUSSIONS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussions section headline and subtext on the Business Comparisons page.',
+        ],
+        'compare_discussions_prompt_placeholder' => [
+            'label' => 'DISCUSSIONS PROMPT PLACEHOLDER',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business Comparisons page.',
+        ],
+    ];
+
+    public const COMPARISON_FIELDS = [
+        'comparison_h1' => [
+            'label' => 'H1 HEADLINE & SUBTEXT',
+            'type' => 'combined',
+            'field1_label' => 'Comparison Headline (H1)',
+            'field2_label' => 'Sub-headline / Description',
+            'description' => 'Main headline and subtext displayed at the top of the A vs B comparison page.',
+        ],
+        'comparison_pros_cons' => [
+            'label' => 'PROS & CONS SECTION',
+            'type' => 'single',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'description' => 'Headline displayed directly above the pros and cons comparison grid.',
+        ],
+        'comparison_reviews' => [
+            'label' => 'REVIEWS SECTION',
+            'type' => 'single',
+            'field1_label' => 'Reviews Headline (H2)',
+            'description' => 'Headline displayed above the customer reviews section on the comparison page.',
+        ],
+        'comparison_alternatives' => [
+            'label' => 'ALTERNATIVES SECTION',
+            'type' => 'single',
+            'field1_label' => 'Alternatives Headline (H2)',
+            'description' => 'Headline displayed above the alternatives section on the comparison page.',
         ],
     ];
 
@@ -408,6 +542,9 @@ class ContentTemplateService
         }
 
         if ($entityType === 'category') {
+            if (array_key_exists($fieldKey, self::COMPARISON_FIELDS)) {
+                return 'comparison';
+            }
             if (array_key_exists($fieldKey, self::CATEGORY_DISCUSSIONS_FIELDS)) {
                 return 'category_discussions';
             }
@@ -600,11 +737,14 @@ class ContentTemplateService
             $allFieldKeys = array_keys(self::CATEGORY_FAQ_FIELDS);
         } elseif ($sectionGroup === 'category') {
             $allFieldKeys = array_keys(self::CATEGORY_FIELDS);
+        } elseif ($sectionGroup === 'comparison') {
+            $allFieldKeys = array_keys(self::COMPARISON_FIELDS);
         } else {
             $allFieldKeys = array_merge(
                 array_keys(self::CATEGORY_FIELDS),
                 array_keys(self::CATEGORY_FAQ_FIELDS),
-                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS)
+                array_keys(self::CATEGORY_DISCUSSIONS_FIELDS),
+                array_keys(self::COMPARISON_FIELDS)
             );
         }
 
@@ -1084,6 +1224,34 @@ class ContentTemplateService
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_alternatives' => [
+                1 => [
+                    'headline' => '[business] Alternatives & Competitors',
+                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
+                ],
+                2 => [
+                    'headline' => 'Best Alternatives to [business]',
+                    'subtext' => '<p>Explore top-rated competitors and alternative solutions that match your business needs.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] Competitors & Similar Software',
+                    'subtext' => '<p>Compare popular alternatives to [business] based on verified reviews and features.</p>',
+                ],
+            ],
+            'profile_faqs' => [
+                1 => [
+                    'headline' => 'Frequently asked questions',
+                    'subtext' => '<p>Everything you need to know about [business] and its services.</p>',
+                ],
+                2 => [
+                    'headline' => 'Frequently Asked Questions About [business]',
+                    'subtext' => '<p>Find quick answers to common questions about [business] features, pricing, and support.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] FAQs & Common Questions',
+                    'subtext' => '<p>Got questions about [business]? Explore answers to the most frequently asked questions.</p>',
+                ],
+            ],
             'profile_what_offers' => [
                 1 => 'What [business] offers',
                 2 => 'What does [business] offer?',
@@ -1150,6 +1318,323 @@ class ContentTemplateService
         }
     }
 
+    public static function seedDefaultBusinessFaqOptionsIfMissing(): void
+    {
+        $defaults = [
+            'faq_search_headline' => [
+                1 => 'Search [business] FAQs',
+                2 => 'Looking for specific [business] answers?',
+                3 => 'Find answers in [business] FAQs',
+                4 => 'Quick search: [business] FAQs',
+            ],
+            'faq_search_placeholder' => [
+                1 => 'Search questions...',
+                2 => 'Search FAQs for [business]...',
+                3 => 'Search questions about [business]...',
+                4 => 'Type your question here...',
+            ],
+            'faq_accordion_headline' => [
+                1 => 'Frequently asked questions about [business]',
+                2 => 'Frequently asked questions',
+                3 => '[business] FAQs & answers',
+                4 => 'Common questions about [business]',
+            ],
+            'faq_explore' => [
+                1 => [
+                    'headline' => 'Explore more [category_lc] FAQs',
+                    'subtext'  => '<p>Looking into a more specific [category_lc] type? Open the FAQ pages for related [category_lc] categories and continue directly with questions and answers for that category.</p>',
+                ],
+                2 => [
+                    'headline' => 'Browse related [category_cap] FAQs',
+                    'subtext'  => '<p>Browse specialized categories to find the exact tools and solutions for your requirements.</p>',
+                ],
+                3 => [
+                    'headline' => 'More [category_cap] categories & FAQs',
+                    'subtext'  => '<p>Discover FAQ guides across related [category_lc] niches and topics.</p>',
+                ],
+                4 => [
+                    'headline' => 'Explore other [category_cap] categories',
+                    'subtext'  => '<p>Find questions and answers for specialized [category_lc] tools and services.</p>',
+                ],
+            ],
+            'faq_page_discussions' => [
+                1 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext'  => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                2 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext'  => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext'  => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext'  => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+            'faq_discussions_prompt_placeholder' => [
+                1 => 'Ask a question or share something about [business]...',
+                2 => 'Have a question about [business]? Ask the community...',
+                3 => 'Share your thoughts or ask a question about [business]...',
+                4 => 'Start a conversation or ask about [business]...',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_faqs')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'business_faqs',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public static function seedDefaultBusinessCompareOptionsIfMissing(): void
+    {
+        $defaults = [
+            'compare_h1' => [
+                1 => 'Compare [business]',
+                2 => '[business] Comparisons & Alternatives',
+                3 => 'Compare [business] with competitors',
+                4 => 'How [business] compares to other providers',
+            ],
+            'compare_subtext' => [
+                1 => 'See how [business] compares to other [category_lc] providers.',
+                2 => 'Compare [business] with top competitors on features, ratings, and pricing.',
+                3 => 'Side-by-side analysis of [business] and alternative providers.',
+                4 => 'Discover how [business] measures up against leading competitors.',
+            ],
+            'compare_overview' => [
+                1 => [
+                    'headline' => 'Compare [business]',
+                    'subtext'  => '<p>Explore how [business] compares to other providers in [category_lc], evaluating key features, performance, pricing, and user ratings to help you find the right fit.</p>',
+                ],
+                2 => [
+                    'headline' => 'About [business] comparisons',
+                    'subtext'  => '<p>See how [business] stacks up against competing [category_lc] solutions. Review side-by-side differences to make an informed decision for your needs.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] versus the competition',
+                    'subtext'  => '<p>Find out how [business] performs when compared to alternatives in the market, highlighting strengths, weaknesses, and key differentiators.</p>',
+                ],
+                4 => [
+                    'headline' => 'Evaluating [business] against alternatives',
+                    'subtext'  => '<p>Compare [business] side-by-side with leading options in [category_lc] to choose the solution that best aligns with your goals.</p>',
+                ],
+            ],
+            'compare_interactive_tool' => [
+                1 => [
+                    'headline' => 'Compare [business] with any provider',
+                    'subtext'  => 'Select another provider from the search box below to generate an instant side-by-side comparison.',
+                ],
+                2 => [
+                    'headline' => 'Compare [business] with competitors',
+                    'subtext'  => 'Choose any alternative provider from the search box to view a detailed side-by-side comparison.',
+                ],
+                3 => [
+                    'headline' => 'Side-by-side comparison with [business]',
+                    'subtext'  => 'Search and select any provider below to see how they measure up against [business].',
+                ],
+                4 => [
+                    'headline' => 'Find the best alternative to [business]',
+                    'subtext'  => 'Select another provider using the search box to compare features, pricing, and ratings directly.',
+                ],
+            ],
+            'compare_search_placeholder' => [
+                1 => 'Search business to compare...',
+                2 => 'Search provider to compare...',
+                3 => 'Type a business name...',
+                4 => 'Find a competitor to compare...',
+            ],
+            'compare_popular' => [
+                1 => [
+                    'headline' => 'Popular [business] comparisons',
+                    'subtext'  => 'See how [business] compares to top competitors.',
+                ],
+                2 => [
+                    'headline' => 'Top comparisons for [business]',
+                    'subtext'  => 'Explore the most viewed side-by-side comparisons involving [business].',
+                ],
+                3 => [
+                    'headline' => 'Most compared against [business]',
+                    'subtext'  => 'Check out how [business] compares to the most popular alternatives.',
+                ],
+                4 => [
+                    'headline' => 'Frequently compared with [business]',
+                    'subtext'  => 'Discover the top competitors users compare against [business].',
+                ],
+            ],
+            'compare_recent' => [
+                1 => [
+                    'headline' => 'Recently viewed comparisons',
+                    'subtext'  => 'Comparisons of [business] recently viewed by users.',
+                ],
+                2 => [
+                    'headline' => 'Recent [business] comparisons',
+                    'subtext'  => 'See comparisons involving [business] that were recently checked by visitors.',
+                ],
+                3 => [
+                    'headline' => 'Latest comparisons with [business]',
+                    'subtext'  => 'Browse recently generated comparisons featuring [business].',
+                ],
+                4 => [
+                    'headline' => 'Recently compared providers',
+                    'subtext'  => 'Recent head-to-head comparisons with [business] explored by users.',
+                ],
+            ],
+            'compare_explore' => [
+                1 => [
+                    'headline' => 'Explore [category_cap] categories',
+                    'subtext'  => 'Browse specialized categories to find the exact tools and solutions for your requirements.',
+                ],
+                2 => [
+                    'headline' => 'Explore more [category_lc] categories',
+                    'subtext'  => 'Browse related categories to discover more specialized providers and alternatives.',
+                ],
+                3 => [
+                    'headline' => 'Browse related [category_cap] categories',
+                    'subtext'  => 'Discover specialized niches and tools related to [category_lc].',
+                ],
+                4 => [
+                    'headline' => 'More [category_cap] categories',
+                    'subtext'  => 'Find specific providers and tools tailored to your exact industry needs.',
+                ],
+            ],
+            'compare_page_discussions' => [
+                1 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext'  => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                2 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext'  => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext'  => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext'  => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+            'compare_discussions_prompt_placeholder' => [
+                1 => 'Ask a question or share something about [business]...',
+                2 => 'Have a question about [business]? Ask the community...',
+                3 => 'Share your thoughts or ask a question about [business]...',
+                4 => 'Ask questions or share insights about [business]...',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $data) {
+                $exists = ContentTemplate::where('section_group', 'business_compare')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'business_compare',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public static function seedDefaultComparisonOptionsIfMissing(): void
+    {
+        $defaults = [
+            'comparison_h1' => [
+                1 => [
+                    'headline' => '[business_vs]: Comparison',
+                    'subtext'  => 'Learn more from our team about [category] pricing, features, and user ratings in our side-by-side comparison guide.',
+                ],
+                2 => [
+                    'headline' => '[business1] vs [business2] Comparison: Which is Better?',
+                    'subtext'  => 'Compare [business_vs] side by side on pricing, features, user ratings, and pros & cons.',
+                ],
+                3 => [
+                    'headline' => '[business_vs]: Side-by-Side Comparison',
+                    'subtext'  => 'Find out which [category] solution is right for you in our detailed [business_vs] comparison.',
+                ],
+                4 => [
+                    'headline' => 'Comparing [business1] and [business2] ([category_cap])',
+                    'subtext'  => 'Detailed side-by-side analysis of [business_vs] covering features, pricing, and authentic customer feedback.',
+                ],
+            ],
+            'comparison_pros_cons' => [
+                1 => 'Pros and cons',
+                2 => '[business_vs] pros and cons',
+                3 => 'Advantages and disadvantages',
+                4 => 'Pros and cons comparison',
+            ],
+            'comparison_reviews' => [
+                1 => 'Reviews',
+                2 => '[business_vs] reviews',
+                3 => 'Customer reviews & ratings',
+                4 => 'User feedback & ratings',
+            ],
+            'comparison_alternatives' => [
+                1 => 'Alternatives',
+                2 => 'Top alternatives to consider',
+                3 => 'Similar [category] alternatives',
+                4 => 'Explore more alternatives',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $data) {
+                $exists = ContentTemplate::where('section_group', 'comparison')
+                    ->where('field_key', $fieldKey)
+                    ->where('option_number', $optNum)
+                    ->where('lang_id', 1)
+                    ->exists();
+
+                if (!$exists) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'comparison',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
@@ -1166,6 +1651,10 @@ class ContentTemplateService
             self::seedDefaultBusinessProfileOptionsIfMissing();
         } elseif ($sectionGroup === 'business_discussions') {
             self::seedDefaultBusinessDiscussionsOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_faqs') {
+            self::seedDefaultBusinessFaqOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_compare') {
+            self::seedDefaultBusinessCompareOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -1183,6 +1672,8 @@ class ContentTemplateService
             $fieldDefs = self::BUSINESS_FAQS_FIELDS;
         } elseif ($sectionGroup === 'business_compare') {
             $fieldDefs = self::BUSINESS_COMPARE_FIELDS;
+        } elseif ($sectionGroup === 'comparison') {
+            $fieldDefs = self::COMPARISON_FIELDS;
         } elseif ($sectionGroup === 'business_reviews') {
             $fieldDefs = self::BUSINESS_REVIEWS_FIELDS;
         } elseif ($sectionGroup === 'business_discussions') {
@@ -1196,12 +1687,13 @@ class ContentTemplateService
         }
 
         if ($langId > 1) {
-            $hasAnySectionTemplate = ContentTemplate::where('section_group', $sectionGroup)
-                ->where('lang_id', $langId)
-                ->exists();
+            foreach (array_keys($fieldDefs) as $fKey) {
+                $hasFieldTemplate = ContentTemplate::where('section_group', $sectionGroup)
+                    ->where('field_key', $fKey)
+                    ->where('lang_id', $langId)
+                    ->exists();
 
-            if (!$hasAnySectionTemplate) {
-                foreach (array_keys($fieldDefs) as $fKey) {
+                if (!$hasFieldTemplate) {
                     $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
                         ->where('field_key', $fKey)
                         ->where('lang_id', 1)
@@ -1438,6 +1930,14 @@ class ContentTemplateService
                 $text = str_replace($search, $replace, $text);
             }
         }
+
+        // Clean up remaining unreplaced comparison placeholders
+        $text = str_replace([
+            '[business1]', '[business2]', '[business3]', '[business4]',
+            '[business1_cap]', '[business2_cap]',
+            '[business_vs]', '[businesses]', '[business_list]',
+        ], '', $text);
+        $text = preg_replace('/\s+vs\s*(?::|$)/i', ': ', $text);
 
         // Clean up redundant spaces
         return trim(preg_replace('/\s+/', ' ', $text));
@@ -1828,6 +2328,145 @@ class ContentTemplateService
         }
         $category = $business->category ?? $business->subCategories->first();
 
+        // Check if there is an explicit assignment for this specific field_key
+        $hasExplicitAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+            ->where('entity_id', $business->id)
+            ->where('lang_id', $langId)
+            ->where('field_key', $fieldKey)
+            ->exists();
+
+        // Cross-section fallback: if profile_faqs has no explicit lock, check faqs_h1 from business_faqs
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_faqs') {
+            $hasFaqAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'faqs_h1')
+                ->exists();
+            if ($hasFaqAsgn) {
+                $faqH1Tpl = self::getTemplateForResolution('business', $business->id, 'faqs_h1', $langId, 'business_faqs');
+                $faqSubTpl = self::getTemplateForResolution('business', $business->id, 'faqs_subtext', $langId, 'business_faqs');
+                if ($faqH1Tpl) {
+                    $headline = self::replacePlaceholders($faqH1Tpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = $faqSubTpl ? self::replacePlaceholders($faqSubTpl->headline ?: $faqSubTpl->subtext, $category, null, $langId, $business, $extraTags) : '';
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $faqH1Tpl,
+                        'option_number' => $faqH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if faq_page_discussions has no explicit lock, check profile_discussions
+        if (!$hasExplicitAsgn && $fieldKey === 'faq_page_discussions') {
+            $hasProfDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_discussions')
+                ->exists();
+            if ($hasProfDisc) {
+                $profDiscTpl = self::getTemplateForResolution('business', $business->id, 'profile_discussions', $langId, 'business_profile');
+                if ($profDiscTpl) {
+                    $headline = self::replacePlaceholders($profDiscTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profDiscTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profDiscTpl,
+                        'option_number' => $profDiscTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if faq_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'faq_discussions_prompt_placeholder') {
+            $hasPromptDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasPromptDisc) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if compare_page_discussions has no explicit lock, check profile_discussions
+        if (!$hasExplicitAsgn && $fieldKey === 'compare_page_discussions') {
+            $hasProfDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_discussions')
+                ->exists();
+            if ($hasProfDisc) {
+                $profDiscTpl = self::getTemplateForResolution('business', $business->id, 'profile_discussions', $langId, 'business_profile');
+                if ($profDiscTpl) {
+                    $headline = self::replacePlaceholders($profDiscTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profDiscTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profDiscTpl,
+                        'option_number' => $profDiscTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if compare_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'compare_discussions_prompt_placeholder') {
+            $hasPromptDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasPromptDisc) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_alternatives has no explicit lock, check alternatives_h1 from business_alternatives
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_alternatives') {
+            $hasAltAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'alternatives_h1')
+                ->exists();
+            if ($hasAltAsgn) {
+                $altH1Tpl = self::getTemplateForResolution('business', $business->id, 'alternatives_h1', $langId, 'business_alternatives');
+                $altSubTpl = self::getTemplateForResolution('business', $business->id, 'alternatives_subtext', $langId, 'business_alternatives');
+                if ($altH1Tpl) {
+                    $headline = self::replacePlaceholders($altH1Tpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = $altSubTpl ? self::replacePlaceholders($altSubTpl->headline ?: $altSubTpl->subtext, $category, null, $langId, $business, $extraTags) : '';
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $altH1Tpl,
+                        'option_number' => $altH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
+
         $template = self::getTemplateForResolution('business', $business->id, $fieldKey, $langId);
 
         $headline = '';
@@ -1840,7 +2479,7 @@ class ContentTemplateService
             $optionNumber = $template->option_number;
         }
 
-        if (in_array($fieldKey, ['faq_search', 'discussions_prompt_placeholder', 'business_discussions_prompt_placeholder'], true)) {
+        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder'], true)) {
             return [
                 'headline' => self::cleanPlaceholder($headline),
                 'subtext' => $subtext,
@@ -1856,5 +2495,113 @@ class ContentTemplateService
             'option_number' => $optionNumber,
         ];
     }
-}
+    /**
+     * Resolves an A vs B comparison page template section with placeholders replaced.
+     */
+    public static function resolveComparisonSection(?Category $category, $businesses, string $fieldKey, int $langId = 1, array $extraTags = []): array
+    {
+        $bizCollection = is_iterable($businesses) ? collect($businesses) : collect();
 
+        $bizNames = [];
+        foreach ($bizCollection as $b) {
+            $trans = $b->translations ?? collect();
+            $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', $langId) : null;
+            if (!$t && is_iterable($trans)) {
+                $t = collect($trans)->first();
+            }
+            $name = $t->name ?? ($b->name ?? '');
+            if (!empty($name)) {
+                $bizNames[] = $name;
+            }
+        }
+
+        $b1 = $bizNames[0] ?? '';
+        $b2 = $bizNames[1] ?? '';
+        $b3 = $bizNames[2] ?? '';
+        $b4 = $bizNames[3] ?? '';
+        $bVs = !empty($bizNames) ? implode(' vs ', $bizNames) : '';
+        $bList = !empty($bizNames) ? implode(', ', $bizNames) : '';
+
+        $firstBiz = $bizCollection->first();
+        if (!$category && $firstBiz && $firstBiz->category) {
+            $category = $firstBiz->category;
+        }
+
+        $template = null;
+        $optionNumber = 1;
+        if ($category) {
+            $template = self::getTemplateForResolution('category', $category->id, $fieldKey, $langId, 'comparison');
+        } else {
+            $template = ContentTemplate::where('section_group', 'comparison')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('option_number', 1)
+                ->first();
+            if (!$template && $langId !== 1) {
+                $template = ContentTemplate::where('section_group', 'comparison')
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('option_number', 1)
+                    ->first();
+            }
+        }
+
+        if ($template) {
+            $optionNumber = $template->option_number;
+        }
+
+        $compExtraTags = array_merge([
+            '[business1]'      => $b1,
+            '[business2]'      => $b2,
+            '[business3]'      => $b3,
+            '[business4]'      => $b4,
+            '[business1_cap]'  => ucfirst($b1),
+            '[business2_cap]'  => ucfirst($b2),
+            '[business_vs]'    => $bVs,
+            '[businesses]'     => $bVs,
+            '[business_list]'  => $bList,
+        ], $extraTags);
+
+        if ($template) {
+            $headline = self::replacePlaceholders($template->headline, $category, null, $langId, $firstBiz, $compExtraTags);
+            $subtext  = self::replacePlaceholders($template->subtext, $category, null, $langId, $firstBiz, $compExtraTags);
+
+            // Clean up possible dangling "vs " if business2 is missing
+            if (empty($b2)) {
+                $headline = preg_replace('/\s+vs\s*$/i', '', $headline);
+                $subtext = preg_replace('/\s+vs\s*$/i', '', $subtext);
+            }
+
+            return [
+                'headline'      => self::cleanHeading($headline),
+                'subtext'       => $subtext,
+                'template'      => $template,
+                'option_number' => $optionNumber,
+            ];
+        }
+
+        // Hardcoded fallbacks if no template exists in DB
+        $headline = '';
+        $subtext = '';
+        if ($fieldKey === 'comparison_h1') {
+            $headline = !empty($bVs) ? "{$bVs}: Comparison" : 'Businesses Comparison';
+            $catName = $category ? ($category->translations?->firstWhere('lang_id', $langId)?->name ?? $category->name) : '';
+            $subtext = !empty($catName)
+                ? "Learn more from our team about {$catName} pricing, features, and user ratings in our side-by-side comparison guide."
+                : "Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.";
+        } elseif ($fieldKey === 'comparison_pros_cons') {
+            $headline = 'Pros and cons';
+        } elseif ($fieldKey === 'comparison_reviews') {
+            $headline = 'Reviews';
+        } elseif ($fieldKey === 'comparison_alternatives') {
+            $headline = 'Alternatives';
+        }
+
+        return [
+            'headline'      => self::cleanHeading($headline),
+            'subtext'       => $subtext,
+            'template'      => null,
+            'option_number' => 1,
+        ];
+    }
+}

@@ -29,7 +29,7 @@
 
 <!-- Review Breakdown Card -->
 <div class="boxshadow_border p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
         <div class="d-flex align-items-center gap-2">
             <div class="top-product-logo">
                 <x-business-logo :business="$business" :name="$bName" />
@@ -86,7 +86,7 @@
     </div>
     @endif
 
-    <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+    <div class="do-you-recommend mt-2" style=" display: flex; justify-content: space-between; align-items: center;">
         <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $bName }}?</span>
         <div style="display: flex; gap: 8px;">
             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">

@@ -27,9 +27,32 @@
     $catSlug = $cat?->translation?->slug ?? $cat?->translations?->first()?->slug ?? null;
 
     $hasAffiliated = $businesses->contains(fn($b) => !empty($b->is_affiliate));
+
+    $curLangId = getCurrentLanguageID();
+    $comparisonH1Data = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_h1', $curLangId);
+    $finalCompH1 = !empty($comparisonH1Data['headline']) ? $comparisonH1Data['headline'] : (
+        count($businesses) >= 2
+            ? $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') . ': Comparison'
+            : (count($businesses) == 1 ? ($businesses[0]->translations->first()?->name ?? '') . ': Comparison' : 'Businesses Comparison')
+    );
+    $finalCompSubtext = !empty($comparisonH1Data['subtext']) ? $comparisonH1Data['subtext'] : (
+        !empty($catName)
+            ? 'Learn more from our team about ' . $catName . ' pricing, features, and user ratings in our side-by-side comparison guide.'
+            : 'Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.'
+    );
+
+    $prosConsData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_pros_cons', $curLangId);
+    $finalProsConsHeadline = !empty($prosConsData['headline']) ? $prosConsData['headline'] : 'Pros and cons';
+    $finalProsConsSubtext = !empty($prosConsData['subtext']) ? $prosConsData['subtext'] : null;
+
+    $reviewsData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_reviews', $curLangId);
+    $finalReviewsHeadline = !empty($reviewsData['headline']) ? $reviewsData['headline'] : 'Reviews';
+
+    $alternativesData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_alternatives', $curLangId);
+    $finalAlternativesHeadline = !empty($alternativesData['headline']) ? $alternativesData['headline'] : 'Alternatives';
 @endphp
 @if(isset($businesses) && count($businesses) > 0)
-<!-- Sticky Comparison Top Banner (Shows on scroll below fixed header) -->
+<!-- Sticky Comparison Top Banner (Shows on scroll as sticky header) -->
 <div id="sticky-comparison-bar" class="sticky-comparison-bar items-count-{{ count($businesses) }}">
     <div class="container">
         <div class="sticky-comp-row">
@@ -38,9 +61,12 @@
                     $bTrans = $business->translations->first();
                     $bName = $bTrans?->name ?? $business->name ?? 'Business';
                     $bSlug = $bTrans?->slug ?? $business->slug;
-                    $rating = round($business->reviews->avg('rating'), 1);
-                    $ratingCount = $business->reviews->count();
+                    $rating = $business->display_rating;
+                    $ratingCount = $business->approved_reviews_count;
                 @endphp
+                @if($index > 0)
+                    <div class="sticky-comp-vs">vs</div>
+                @endif
                 <div class="sticky-comp-col">
                     <div class="sticky-comp-info">
                         <div class="sticky-comp-logo">
@@ -50,8 +76,9 @@
                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}" class="sticky-comp-name" title="{{ $bName }}">
                                 {{ $bName }}
                             </a>
+                            @if($business->should_show_rating)
                             <div class="sticky-comp-rating rating-group">
-                                <span class="">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                <span>{{ number_format($rating, 1) }}</span>
                                 <div class="d-inline-flex align-items-center">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($rating >= $i)
@@ -63,8 +90,11 @@
                                         @endif
                                     @endfor
                                 </div>
-                                <span class="">({{ $ratingCount }})</span>
+                                @if($business->should_show_review_count)
+                                    <span>({{ $ratingCount }})</span>
+                                @endif
                             </div>
+                            @endif
                         </div>
                     </div>
                     <div class="sticky-comp-actions">
@@ -87,6 +117,188 @@
         </div>
     </div>
 </div>
+
+<style>
+.sticky-comparison-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 35, 71, 0.08);
+    border-bottom: 1px solid #e2e8f0;
+    z-index: 1050 !important;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.sticky-comparison-bar.is-visible {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.sticky-comp-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    position: relative;
+}
+
+.sticky-comp-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: relative;
+    gap: 14px;
+}
+
+.sticky-comp-vs {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -13px;
+    z-index: 3;
+    flex-shrink: 0;
+    text-transform: lowercase;
+}
+
+.sticky-comp-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sticky-comp-logo {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.sticky-comp-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.sticky-comp-meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sticky-comp-name {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #002347;
+    text-decoration: none;
+    line-height: 1.25;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sticky-comp-name:hover {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.sticky-comp-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    line-height: 1;
+    color: #64748b;
+}
+
+.sticky-comp-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.sticky-comp-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #002347;
+    background: #ffffff;
+    border: 1.5px solid #002347;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sticky-comp-btn-outline:hover {
+    background: #002347;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.sticky-comp-btn-orange {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #ff5722;
+    border: 1.5px solid #ff5722;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sticky-comp-btn-orange:hover {
+    background: #e64a19;
+    border-color: #e64a19;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+@media (max-width: 767px) {
+    .sticky-comp-col {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    .sticky-comp-actions {
+        display: none;
+    }
+}
+</style>
 @endif
 <section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec all-com" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
@@ -133,22 +345,16 @@
             <div class="comparison-header-left">
                 <div class="top_head">
                     <h1 style="font-size: 28px !important; color: #002347; margin: 0;">
-                        @if (count($businesses) >= 2)
-                            {{ $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') }}: Comparison
-                        @elseif (count($businesses) == 1)
-                            {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
-                        @else
-                            Businesses Comparison
-                        @endif
+                        {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                     </h1>
                     <p class="text-meta">{{ static_text('last_updated_prefix') ?: 'Last updated' }} {{ now()->subDay()->format('F j, Y') }}</p>
-                    <p style="margin-bottom: 0; ">
-                        @if(!empty($catName))
-                            Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
+                    <div style="margin-bottom: 0;">
+                        @if(str_contains($finalCompSubtext, '<p>') || str_contains($finalCompSubtext, '<br>'))
+                            {!! $finalCompSubtext !!}
                         @else
-                            Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.
+                            <p style="margin-bottom: 0;">{!! $finalCompSubtext !!}</p>
                         @endif
-                    </p>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-12 mt-4 mt-lg-0">
@@ -505,6 +711,14 @@
 
                     @if($businessesWithProCons->isNotEmpty())
                     <div class="pros_cons_comp_sec my-4" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="crm_hd mb-4">
+                            <div class="crm_lft">
+                                <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalProsConsHeadline) !!}</h2>
+                                @if(!empty($finalProsConsSubtext))
+                                    <p class="text-muted mt-2 mb-0">{!! $finalProsConsSubtext !!}</p>
+                                @endif
+                            </div>
+                        </div>
                         <div class="row g-4">
                             @foreach ($businesses as $index => $business)
                                 @php
@@ -719,7 +933,7 @@
             <div class="crm_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="margin: 0;">Reviews</h2>
+                        <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalReviewsHeadline) !!}</h2>
                     </div>
                 </div>
 
@@ -1072,12 +1286,17 @@
                                     </div>
                                 @endforelse
 
-                                {{-- Link to see all reviews for this business --}}
+                                {{-- Link to see all reviews for this business (hidden if less than 10 reviews) --}}
+                                @php
+                                    $bizRevCount = $business->approved_reviews_count ?? $activeReviews->count();
+                                @endphp
+                                @if($bizRevCount >= 10)
                                 <div class="text-center pt-2">
                                     <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="btn-g-link">
                                         View all reviews 
                                     </a>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -1194,7 +1413,7 @@
                 {{-- Section Title --}}
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="margin: 0;">Alternatives</h2>
+                        <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalAlternativesHeadline) !!}</h2>
                     </div>
                 </div>
 
@@ -1685,19 +1904,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // Sticky Comparison Top Banner on Scroll
     const stickyCompBar = document.getElementById('sticky-comparison-bar');
     if (stickyCompBar) {
-        const headerEl = document.querySelector('header .sec_head');
-        const triggerEl = document.querySelector('.asn_tprw') || document.querySelector('.pdc_box') || document.querySelector('.your-comparison-wrapper');
+        const headerEl = document.querySelector('header .sec_head') || document.querySelector('header');
+        const triggerEl = document.querySelector('.pdc_box') || document.querySelector('.asn_tprw') || document.querySelector('.versus-row');
 
         function updateStickyCompBar() {
-            const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
-            stickyCompBar.style.top = Math.max(0, headerBottom) + 'px';
+            // Check if page header is fixed/sticky at the top of the viewport
+            let headerOffset = 0;
+            if (headerEl) {
+                const headerStyle = window.getComputedStyle(headerEl);
+                if (headerStyle.position === 'fixed' || headerStyle.position === 'sticky') {
+                    const rect = headerEl.getBoundingClientRect();
+                    if (rect.bottom > 0) {
+                        headerOffset = Math.round(rect.bottom);
+                    }
+                }
+            }
+            stickyCompBar.style.top = headerOffset + 'px';
 
+            // Show sticky comparison bar once user scrolls past the top comparison card section
             let show = false;
             if (triggerEl) {
                 const rect = triggerEl.getBoundingClientRect();
-                show = rect.bottom < headerBottom + 40;
+                // When bottom of the main comparison cards scrolls past the header or top
+                show = rect.bottom < (headerOffset + 50);
             } else {
-                show = window.scrollY > 350;
+                show = window.scrollY > 450;
             }
 
             if (show) {

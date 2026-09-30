@@ -151,6 +151,7 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height .3s ease;
+            margin-bottom:5px
         }
 
         .footer-dropdown.active .foot-col-list {

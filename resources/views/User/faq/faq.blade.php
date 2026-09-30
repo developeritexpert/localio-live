@@ -158,7 +158,7 @@
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
+                            <h1 style="margin: 0; line-height: 1.2; color: #1e3050;">
                                 Frequently Asked Questions
                             </h1>
                         </div>
@@ -267,10 +267,10 @@
                                                                 <span>Was this answer helpful?</span>
                                                                 <div class="faq-feedback-actions">
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
-                                                                        <i class="far fa-thumbs-up"></i> Yes
+                                                                        <i class="far fa-thumbs-up"></i>
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
-                                                                        <i class="far fa-thumbs-down"></i> No
+                                                                        <i class="far fa-thumbs-down"></i>
                                                                     </button>
                                                                 </div>
                                                             </div>

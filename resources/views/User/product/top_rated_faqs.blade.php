@@ -42,7 +42,7 @@
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
+                            <h1 style="margin: 0; line-height: 1.2; color: #1e3050;">
                                 {{ $topProductContents['faq_page_main_headline'] ?? 'Top rated on Localio FAQs' }}
                             </h1>
                         </div>
@@ -155,12 +155,12 @@
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
                                                                         
                                                                             <i class="far fa-thumbs-up"></i>
-                                                                        Yes
+                                                                       
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
                                                                         
                                                                             <i class="far fa-thumbs-down"></i>
-                                                                        No
+                                                                       
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -322,7 +322,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">Recent discussions</h2>
+                            <h2 class="m-0 card-h-title underline-hover">Recent discussions</h2>
                             <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link">
                                 View all
                             </a>

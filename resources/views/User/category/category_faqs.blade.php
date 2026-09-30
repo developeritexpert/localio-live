@@ -68,7 +68,7 @@
                             $faqHeader2 = $resolvedFaqHeader['subtext'] ?? null;
                         @endphp
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
+                            <h1 style=" margin: 0; line-height: 1.2; color: #1e3050;">
                                 {!! \App\Services\ContentTemplateService::cleanHeading($faqH1Title) !!}
                             </h1>
                         </div>
@@ -250,10 +250,10 @@
                                                                 <span>{{ static_text('was_this_answer_helpful') ?: 'Was this answer helpful?' }}</span>
                                                                 <div class="faq-feedback-actions">
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
-                                                                        <i class="far fa-thumbs-up"></i> {{ static_text('helpful_yes') ?: 'Yes' }}
+                                                                        <i class="far fa-thumbs-up"></i>
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
-                                                                        <i class="far fa-thumbs-down"></i> {{ static_text('helpful_no') ?: 'No' }}
+                                                                        <i class="far fa-thumbs-down"></i> 
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -417,7 +417,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
+                            <h2 class="m-0 card-h-title underline-hover">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>

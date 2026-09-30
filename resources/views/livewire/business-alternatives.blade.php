@@ -80,46 +80,16 @@
 
             $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
         }
-
-        if ($affiliatedTableBusinesses->count() < 10) {
-            $moreCatNonAff = \App\Models\Business::where('id', '!=', $business->id)
-                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
-                ->where('status', 1)
-                ->whereIn('category_id', $bCategoryIds)
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
-                    'category.ratingCriteria'
-                ])
-                ->get()
-                ->sortByDesc(function($b) {
-                    return $b->display_rating ?? 0;
-                })
-                ->take(10 - $affiliatedTableBusinesses->count());
-
-            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreCatNonAff);
-        }
-
-        if ($affiliatedTableBusinesses->count() < 10) {
-            $moreActive = \App\Models\Business::where('id', '!=', $business->id)
-                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
-                ->where('status', 1)
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
-                    'category.ratingCriteria'
-                ])
-                ->get()
-                ->sortByDesc(function($b) {
-                    return $b->display_rating ?? 0;
-                })
-                ->take(10 - $affiliatedTableBusinesses->count());
-
-            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreActive);
-        }
+        // ONLY affiliated businesses allowed
     }
 
-    $tableRowsList = collect([$business])->merge($affiliatedTableBusinesses);
+    $affiliatedTableBusinesses = $affiliatedTableBusinesses->where('is_affiliate', 1);
+
+    // In these tables show ONLY affiliated businesses
+    $tableRowsList = collect($business && $business->is_affiliate ? [$business] : [])
+        ->merge($affiliatedTableBusinesses)
+        ->filter(fn($b) => (int)($b->is_affiliate ?? 0) === 1)
+        ->unique('id');
 @endphp
 
 
@@ -488,7 +458,7 @@ foreach ($altCriteria as $criterion) {
                                     </div>
                                 </div>
                                 <!-- Widget 3: More About Business Card -->
-                                <x-more-about-business :business="$business" />
+                                <x-more-about-business :business="$business" current="alternatives" />
                             </div>
                         </div>
                     </div>
@@ -497,6 +467,7 @@ foreach ($altCriteria as $criterion) {
         </div>
     </section>
 
+    @if(isset($tableRowsList) && $tableRowsList->count() > 0)
     <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
     <section class="comparison-table-sec py-4">
         <div class="container">
@@ -538,6 +509,9 @@ foreach ($altCriteria as $criterion) {
                                     </thead>
                                     <tbody>
                                         @foreach($tableRowsList as $rowBiz)
+                                            @if(empty($rowBiz->is_affiliate))
+                                                @continue
+                                            @endif
                                             @php
                                                 $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
                                                 $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
@@ -568,7 +542,7 @@ foreach ($altCriteria as $criterion) {
                                                     }
                                                 }
                                             @endphp
-                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
+                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="top-product-small-logo" >
@@ -578,7 +552,7 @@ foreach ($altCriteria as $criterion) {
                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                                                 {{ $rName }}
                                                             </a>
-                                                            @if($loop->first)
+                                                            @if($rowBiz->id === $business->id)
                                                                 <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">{{ static_text('current_listing_badge') ?: 'Current' }}</span>
                                                             @endif
                                                         </div>
@@ -607,857 +581,866 @@ foreach ($altCriteria as $criterion) {
                             </div>
         </div>
     </div>
-</section>
+    </section>
 
-<!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
-<section class="community-feedback-sec border_bt py-4">
-    <div class="container">
-        <div class="community-feedback-table-section my-4">
-                            <div class="mb-3">
-                                @php
-                                    $commFeedbackHeadline = !empty($bTrans->community_says_headline)
-                                        ? $bTrans->community_says_headline
-                                        : 'What the Localio community says';
-                                @endphp
-                                <h2 style="margin-bottom: 4px;">
-                                    {{ $commFeedbackHeadline }}
-                                </h2>
-                                @if(!empty($bTrans->community_says_subtext))
-                                    <style>
-                                        .community-says-subtext p { margin-bottom: 0 !important; }
-                                        .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
-                                    </style>
-                                    <div class="community-says-subtext ck-content" style="font-size: 15px; color: #64748b; margin: 0;">
-                                        {!! $bTrans->community_says_subtext !!}
-                                    </div>
-                                @else
-                                    <p style="margin: 0; font-size: 15px; color: #64748b;">
-                                        {{ static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.' }}
-                                    </p>
-                                @endif
-                            </div>
-
-                            <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
-                                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                        <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($tableRowsList as $rowBiz)
-                                            @php
-                                                $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
-                                                $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
-                                                $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
-                                                $rRevs = $rowBiz->reviews->where('status', 'active');
-                                                $rCount = $rRevs->count();
-                                                $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
-
-                                                $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                    ->where('reviews.business_id', $rowBiz->id)
-                                                    ->where('reviews.status', 'active')
-                                                    ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
-                                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                                    ->orderByDesc('cnt')
-                                                    ->get();
-
-                                                $topProObj = $proCons->firstWhere('type', 'pro');
-                                                $topConObj = $proCons->firstWhere('type', 'con');
-
-                                                $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
-                                                $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
-                                            @endphp
-                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                                <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <div class="top-product-small-logo">
-                                                            <x-business-logo :business="$rowBiz" :name="$rName" />
-                                                        </div>
-                                                        <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                                                {{ $rName }}
-                                                            </a>
-                                                            @if($loop->first)
-                                                                <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">{{ static_text('current_listing_badge') ?: 'Current' }}</span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
-                                                    @if($rowBiz->should_show_rating)
-                                                    <span class="d-inline-flex align-items-center gap-1">
-                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                        <span>{{ formatRating($rowBiz->display_rating) }}</span>
-                                                    </span>
-                                                    @else
-                                                        <span style="color: #5b6b7a;">-</span>
-                                                    @endif
-                                                </td>
-                                                <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
-                                                    @if($proStr !== '-')
-                                                        <div class="d-flex align-items-start">
-                                                            <span class="me-2" style="font-size: 16px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                            <span style="color: #202124; font-size: 14px;">{{ $proStr }}</span>
-                                                        </div>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
-                                                    @if($conStr !== '-')
-                                                        <div class="d-flex align-items-start">
-                                                            <span class="me-2" style="font-size: 16px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                            <span style="color: #202124; font-size: 14px;">{{ $conStr }}</span>
-                                                        </div>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-        </div>
-    </div>
-</section>
-
-<!-- All Alternatives Listing Section -->
-<section class="top-automotive-sec top_rate_pg light py-4" id="allAlternativesSection">
-    <div class="container">
-        <div class="top-auto-choice">
-            <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
-                @php
-                    $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
-                        ? $bTrans->all_alternatives_headline
-                        : ('All ' . $businessName . ' alternatives');
-                @endphp
-                <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
-                    {{ $allAlternativesHeadline }}
-                </h2>
-                @if(!empty($bTrans->all_alternatives_subtext))
-                    <style>
-                        .all-alternatives-subtext p { margin-bottom: 0 !important; }
-                        .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
-                    </style>
-                    <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
-                        {!! $bTrans->all_alternatives_subtext !!}
-                    </div>
-                @endif
-            </div>
-
-            <div class="auto-choice-row d-flex">
-                        <!-- Mobile Filter Backdrop Overlay -->
-                        <div class="mobile-filter-backdrop d-lg-none" onclick="closeMobileFilterDrawer()"></div>
-
-                        <div class="auto-choice-lft">
-                            <!-- Mobile Filter Drawer Header -->
-                            <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
-                                <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
-                                <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="container">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+    <section class="community-feedback-sec border_bt py-4">
+        <div class="container">
+            <div class="community-feedback-table-section my-4">
+                                <div class="mb-3">
+                                    @php
+                                        $commFeedbackHeadline = !empty($bTrans->community_says_headline)
+                                            ? $bTrans->community_says_headline
+                                            : 'What the Localio community says';
+                                    @endphp
+                                    <h2 style="margin-bottom: 4px;">
+                                        {{ $commFeedbackHeadline }}
+                                    </h2>
+                                    @if(!empty($bTrans->community_says_subtext))
+                                        <style>
+                                            .community-says-subtext p { margin-bottom: 0 !important; }
+                                            .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                        </style>
+                                        <div class="community-says-subtext ck-content" style="font-size: 15px; color: #64748b; margin: 0;">
+                                            {!! $bTrans->community_says_subtext !!}
+                                        </div>
+                                    @else
+                                        <p style="margin: 0; font-size: 15px; color: #64748b;">
+                                            {{ static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.' }}
+                                        </p>
+                                    @endif
                                 </div>
-                                <div class="col-md-12">
-                                    <!-- Rating Filter Section - Styled like the image -->
-                                    <div class="filter-section">
-                                        <p class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</p>
 
-                                        <div class="form-check mb-2">
-                                            <input type="checkbox" class="form-check-input"
-                                                wire:model.live="selectedRatings" value="4"
-                                                id="rating-4">
-                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="far fa-star text-warning"></i>
-                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
-                                            </label>
-                                        </div>
+                                <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                    <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
+                                        <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                            <tr>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                                <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($tableRowsList as $rowBiz)
+                                                @if(empty($rowBiz->is_affiliate))
+                                                    @continue
+                                                @endif
+                                                @php
+                                                    $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
+                                                    $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
+                                                    $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
+                                                    $rRevs = $rowBiz->reviews->where('status', 'active');
+                                                    $rCount = $rRevs->count();
+                                                    $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
 
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input"
-                                                wire:model.live="selectedRatings" value="3"
-                                                id="rating-3">
-                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <i class="far fa-star text-warning"></i>
-                                                <i class="far fa-star text-warning"></i>
-                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
-                                            </label>
-                                        </div>
+                                                    $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                        ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                        ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                        ->where('reviews.business_id', $rowBiz->id)
+                                                        ->where('reviews.status', 'active')
+                                                        ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
+                                                        ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                        ->orderByDesc('cnt')
+                                                        ->get();
+
+                                                    $topProObj = $proCons->firstWhere('type', 'pro');
+                                                    $topConObj = $proCons->firstWhere('type', 'con');
+
+                                                    $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
+                                                    $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
+                                                @endphp
+                                                <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
+                                                    <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="top-product-small-logo">
+                                                                <x-business-logo :business="$rowBiz" :name="$rName" />
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                                    {{ $rName }}
+                                                                </a>
+                                                                @if($rowBiz->id === $business->id)
+                                                                    <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">{{ static_text('current_listing_badge') ?: 'Current' }}</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                        @if($rowBiz->should_show_rating)
+                                                        <span class="d-inline-flex align-items-center gap-1">
+                                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                            <span>{{ formatRating($rowBiz->display_rating) }}</span>
+                                                        </span>
+                                                        @else
+                                                            <span style="color: #5b6b7a;">-</span>
+                                                        @endif
+                                                    </td>
+                                                    <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
+                                                        @if($proStr !== '-')
+                                                            <div class="d-flex align-items-start">
+                                                                <span class="me-2" style="font-size: 16px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                <span style="color: #202124; font-size: 14px;">{{ $proStr }}</span>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    </td>
+                                                    <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
+                                                        @if($conStr !== '-')
+                                                            <div class="d-flex align-items-start">
+                                                                <span class="me-2" style="font-size: 16px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                <span style="color: #202124; font-size: 14px;">{{ $conStr }}</span>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- All Alternatives Listing Section -->
+    <section class="top-automotive-sec top_rate_pg light py-4" id="allAlternativesSection">
+        <div class="container">
+            <div class="top-auto-choice">
+                <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
+                    @php
+                        $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
+                            ? $bTrans->all_alternatives_headline
+                            : ('All ' . $businessName . ' alternatives');
+                    @endphp
+                    <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                        {{ $allAlternativesHeadline }}
+                    </h2>
+                    @if(!empty($bTrans->all_alternatives_subtext))
+                        <style>
+                            .all-alternatives-subtext p { margin-bottom: 0 !important; }
+                            .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                        </style>
+                        <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                            {!! $bTrans->all_alternatives_subtext !!}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="auto-choice-row d-flex">
+                            <!-- Mobile Filter Backdrop Overlay -->
+                            <div class="mobile-filter-backdrop d-lg-none" onclick="closeMobileFilterDrawer()"></div>
+
+                            <div class="auto-choice-lft">
+                                <!-- Mobile Filter Drawer Header -->
+                                <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
+                                    <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                    <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="container">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
                                     </div>
+                                    <div class="col-md-12">
+                                        <!-- Rating Filter Section - Styled like the image -->
+                                        <div class="filter-section">
+                                            <p class="fw-semibold text-dark mb-2">
+                                                {{ static_text('user_rating') }}</p>
 
-                                    <link rel="stylesheet"
-                                        href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
-
-                                    <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <p class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</p>
-
-                                        <div class="price-slider-container">
-                                            <div
-                                                class="price-inputs d-flex gap-2 align-items-center mt-3">
-                                                <div class="price-input">
-                                                    <span class="currency">$</span>
-                                                    <input type="number" id="minPriceInput2" wire:model.live="minPrice"
-                                                        min="0" max="5000"
-                                                        class="form-control form-control-sm">
-                                                </div>
-                                                <span class="price-separator">to</span>
-                                                <div class="price-input">
-                                                    <span class="currency">$</span>
-                                                    <input type="number" id="maxPriceInput2" wire:model.live="maxPrice"
-                                                        min="0" max="5000"
-                                                        class="form-control form-control-sm">
-                                                </div>
+                                            <div class="form-check mb-2">
+                                                <input type="checkbox" class="form-check-input"
+                                                    wire:model.live="selectedRatings" value="4"
+                                                    id="rating-4">
+                                                <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                                </label>
                                             </div>
 
-                                            <div id="priceRangeSlider2" data-max-price="{{ $maxPriceValue ?? $maxPrice ?? 10000 }}"
-                                                style="margin-top: 20px;" wire:ignore></div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    wire:model.live="selectedRatings" value="3"
+                                                    id="rating-3">
+                                                <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="accordion d-none" id="filterAccordion" style="border: none; width: 100%;">
-                                        @foreach ($filters as $filter)
-                                            @php
-                                                $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                                $filterName =
-                                                    $filter->translations->where('language_id', $currentLangId)->first()
-                                                        ->name ?? $filter->name;
-                                                $filterType = $filter->filterType
-                                                    ? $filter->filterType->slug
-                                                    : 'checkbox';
-                                            @endphp
 
-                                            <div class="filter-section">
-                                                <p>
-                                                    {{ $filterName }}
-                                                </p>
+                                        <link rel="stylesheet"
+                                            href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
-                                                <div class="accordion-body" style="padding: 0;">
-                                                    @if ($filterType === 'checkbox')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionName =
-                                                                    $option->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $option->name;
-                                                            @endphp
-                                                            <div class="form-check" style="margin-bottom: 5px;">
-                                                                <input type="checkbox" class="form-check-input"
-                                                                    wire:model.live="selectedOptions"
-                                                                    value="{{ $option->id }}"
-                                                                    id="option-{{ $option->id }}"
-                                                                    style="margin-right: 8px; cursor: pointer;">
-                                                                <label class="form-check-label"
-                                                                    for="option-{{ $option->id }}"
-                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
-                                                                    {{ $optionName }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'radio')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionName =
-                                                                    $option->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $option->name;
-                                                            @endphp
-                                                            <div class="form-check" style="margin-bottom: 5px;">
-                                                                <input type="radio" class="form-check-input"
-                                                                    name="filter_{{ $filter->id }}"
-                                                                    wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
-                                                                    wire:click="toggleFilterOption({{ $option->id }})"
-                                                                    {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
-                                                                    value="{{ $option->id }}"
-                                                                    id="option-{{ $option->id }}"
-                                                                    style="margin-right: 8px; cursor: pointer;">
-                                                                <label class="form-check-label"
-                                                                    for="option-{{ $option->id }}"
-                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
-                                                                    {{ $optionName }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'dropdown')
-                                                        @php
-                                                            $selected = $filter->options->firstWhere(
-                                                                'id',
-                                                                $selectedOptions[0] ?? null,
-                                                            );
-                                                            $selectedOptionName = $selected
-                                                                ? $selected->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $selected->name
-                                                                : __('Select');
-                                                        @endphp
-                                                        <div class="">
-                                                            <select
-                                                                class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
-                                                                wire:model.live="selectedOptions.{{ $filter->id }}">
-                                                                <option value="">{{ __('Select') }}</option>
-                                                                @foreach ($filter->options as $option)
-                                                                    @php
-                                                                        $optionName =
-                                                                            $option->translations
-                                                                                ->where('language_id', $lang_id)
-                                                                                ->first()->name ?? $option->name;
-                                                                    @endphp
-                                                                    <option value="{{ $option->id }}">
-                                                                        {{ $optionName }}</option>
-                                                                @endforeach
-                                                            </select>
+                                        <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
+                                            <p class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</p>
 
-                                                        </div>
-                                                    @elseif($filterType === 'toggle')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionTranslation = $option->translations
-                                                                    ->where('language_id', $lang_id)
-                                                                    ->first();
-                                                                $optionName = $optionTranslation->name ?? $option->name;
-                                                                $onLabel =
-                                                                    $optionTranslation->on_label ??
-                                                                    ($option->on_label ?? 'On');
-                                                                $offLabel =
-                                                                    $optionTranslation->off_label ??
-                                                                    ($option->off_label ?? 'Off');
-                                                                $isChecked = in_array($option->id, $selectedOptions);
-                                                            @endphp
-                                                            <div class="toggle-switch mb-2">
-                                                                <label
-                                                                    class="toggle-label flex items-center cursor-pointer">
-                                                                    <div class="relative">
-                                                                        <input type="checkbox"
-                                                                            wire:model.live="selectedOptions"
-                                                                            value="{{ $option->id }}"
-                                                                            class="sr-only peer"
-                                                                            {{ $isChecked ? 'checked' : '' }}>
+                                            <div class="price-slider-container">
+                                                <div
+                                                    class="price-inputs d-flex gap-2 align-items-center mt-3">
+                                                    <div class="price-input">
+                                                        <span class="currency">$</span>
+                                                        <input type="number" id="minPriceInput2" wire:model.live="minPrice"
+                                                            min="0" max="5000"
+                                                            class="form-control form-control-sm">
+                                                    </div>
+                                                    <span class="price-separator">to</span>
+                                                    <div class="price-input">
+                                                        <span class="currency">$</span>
+                                                        <input type="number" id="maxPriceInput2" wire:model.live="maxPrice"
+                                                            min="0" max="5000"
+                                                            class="form-control form-control-sm">
+                                                    </div>
+                                                </div>
 
-                                                                        <div
-                                                                            class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
-                                                                        </div>
-                                                                        <div
-                                                                            class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ml-3">
-                                                                        <span
-                                                                            class="font-medium">{{ $optionName }}</span><br>
-                                                                        <span class="text-xs text-gray-500">
-                                                                            {{ $isChecked ? $onLabel : $offLabel }}
-                                                                        </span>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'slider')
-                                                        <div x-data="{
-                                                            min: {{ $filter->options->min('min_value') ?? 0 }},
-                                                            max: {{ $filter->options->max('max_value') ?? 100 }},
-                                                            currentMin: {{ $minPrice }},
-                                                            currentMax: {{ $maxPrice }},
-                                                            unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+                                                <div id="priceRangeSlider2" data-max-price="{{ $maxPriceValue ?? $maxPrice ?? 10000 }}"
+                                                    style="margin-top: 20px;" wire:ignore></div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion d-none" id="filterAccordion" style="border: none; width: 100%;">
+                                            @foreach ($filters as $filter)
+                                                @php
+                                                    $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                    $filterName =
+                                                        $filter->translations->where('language_id', $currentLangId)->first()
+                                                            ->name ?? $filter->name;
+                                                    $filterType = $filter->filterType
+                                                        ? $filter->filterType->slug
+                                                        : 'checkbox';
+                                                @endphp
 
-                                                            init() {
-                                                                this.$nextTick(() => {
-                                                                    this.setupSlider();
-                                                                });
-                                                            },
+                                                <div class="filter-section">
+                                                    <p>
+                                                        {{ $filterName }}
+                                                    </p>
 
-                                                            setupSlider() {
-                                                                const slider = this.$refs.slider;
-                                                                if (typeof noUiSlider !== 'undefined' && slider) {
-                                                                    if (slider.noUiSlider) {
-                                                                        slider.noUiSlider.destroy();
-                                                                    }
-
-                                                                    noUiSlider.create(slider, {
-                                                                        start: [this.currentMin, this.currentMax],
-                                                                        connect: true,
-                                                                        range: {
-                                                                            'min': this.min,
-                                                                            'max': this.max
-                                                                        }
-                                                                    });
-
-                                                                    slider.noUiSlider.on('update', (values) => {
-                                                                        this.currentMin = Math.round(values[0]);
-                                                                        this.currentMax = Math.round(values[1]);
-                                                                    });
-
-                                                                    slider.noUiSlider.on('end', () => {
-                                                                        $wire.setPriceRange(this.currentMin, this.currentMax);
-                                                                    });
-                                                                }
-                                                            }
-                                                        }" class="range-slider py-4">
-                                                            <div class="values-display flex justify-between mb-2">
-                                                                <span x-text="currentMin + ' ' + unit"></span>
-                                                                <span x-text="currentMax + ' ' + unit"></span>
-                                                            </div>
-
-                                                            <div x-ref="slider" class="slider-element"></div>
-                                                        </div>
-                                                    @elseif($filterType === 'color')
-                                                        <div class="color-options flex flex-wrap gap-2">
+                                                    <div class="accordion-body" style="padding: 0;">
+                                                        @if ($filterType === 'checkbox')
                                                             @foreach ($filter->options as $option)
                                                                 @php
-                                                                    $isSelected = in_array(
-                                                                        $option->id,
-                                                                        $selectedOptions,
-                                                                    );
+                                                                    $optionName =
+                                                                        $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $option->name;
+                                                                @endphp
+                                                                <div class="form-check" style="margin-bottom: 5px;">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        wire:model.live="selectedOptions"
+                                                                        value="{{ $option->id }}"
+                                                                        id="option-{{ $option->id }}"
+                                                                        style="margin-right: 8px; cursor: pointer;">
+                                                                    <label class="form-check-label"
+                                                                        for="option-{{ $option->id }}"
+                                                                        style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                        {{ $optionName }}
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        @elseif($filterType === 'radio')
+                                                            @foreach ($filter->options as $option)
+                                                                @php
+                                                                    $optionName =
+                                                                        $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $option->name;
+                                                                @endphp
+                                                                <div class="form-check" style="margin-bottom: 5px;">
+                                                                    <input type="radio" class="form-check-input"
+                                                                        name="filter_{{ $filter->id }}"
+                                                                        wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
+                                                                        wire:click="toggleFilterOption({{ $option->id }})"
+                                                                        {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
+                                                                        value="{{ $option->id }}"
+                                                                        id="option-{{ $option->id }}"
+                                                                        style="margin-right: 8px; cursor: pointer;">
+                                                                    <label class="form-check-label"
+                                                                        for="option-{{ $option->id }}"
+                                                                        style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                        {{ $optionName }}
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        @elseif($filterType === 'dropdown')
+                                                            @php
+                                                                $selected = $filter->options->firstWhere(
+                                                                    'id',
+                                                                    $selectedOptions[0] ?? null,
+                                                                );
+                                                                $selectedOptionName = $selected
+                                                                    ? $selected->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $selected->name
+                                                                    : __('Select');
+                                                            @endphp
+                                                            <div class="">
+                                                                <select
+                                                                    class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
+                                                                    wire:model.live="selectedOptions.{{ $filter->id }}">
+                                                                    <option value="">{{ __('Select') }}</option>
+                                                                    @foreach ($filter->options as $option)
+                                                                        @php
+                                                                            $optionName =
+                                                                                $option->translations
+                                                                                    ->where('language_id', $lang_id)
+                                                                                    ->first()->name ?? $option->name;
+                                                                        @endphp
+                                                                        <option value="{{ $option->id }}">
+                                                                            {{ $optionName }}</option>
+                                                                    @endforeach
+                                                                </select>
+
+                                                            </div>
+                                                        @elseif($filterType === 'toggle')
+                                                            @foreach ($filter->options as $option)
+                                                                @php
                                                                     $optionTranslation = $option->translations
                                                                         ->where('language_id', $lang_id)
                                                                         ->first();
-                                                                    $colorName =
-                                                                        $optionTranslation->name ?? $option->name;
-                                                                    // Get color value from option or fallback to a default
-                                                                    $colorValue =
-                                                                        $optionTranslation->color_value ?? '#cccccc';
+                                                                    $optionName = $optionTranslation->name ?? $option->name;
+                                                                    $onLabel =
+                                                                        $optionTranslation->on_label ??
+                                                                        ($option->on_label ?? 'On');
+                                                                    $offLabel =
+                                                                        $optionTranslation->off_label ??
+                                                                        ($option->off_label ?? 'Off');
+                                                                    $isChecked = in_array($option->id, $selectedOptions);
                                                                 @endphp
+                                                                <div class="toggle-switch mb-2">
+                                                                    <label
+                                                                        class="toggle-label flex items-center cursor-pointer">
+                                                                        <div class="relative">
+                                                                            <input type="checkbox"
+                                                                                wire:model.live="selectedOptions"
+                                                                                value="{{ $option->id }}"
+                                                                                class="sr-only peer"
+                                                                                {{ $isChecked ? 'checked' : '' }}>
 
-                                                                <button
-                                                                    wire:click="toggleFilterOption({{ $option->id }})"
-                                                                    class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
-                                                                    style="background-color: {{ $colorValue }}; position: relative;"
-                                                                    title="{{ $colorName }}">
-                                                                    @if ($isSelected)
-                                                                        <span
-                                                                            class="absolute inset-0 flex items-center justify-center text-white">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="12" height="12"
-                                                                                viewBox="0 0 24 24" fill="none"
-                                                                                stroke="currentColor" stroke-width="2"
-                                                                                stroke-linecap="round"
-                                                                                stroke-linejoin="round">
-                                                                                <polyline points="20 6 9 17 4 12">
-                                                                                </polyline>
-                                                                            </svg>
-                                                                        </span>
-                                                                    @endif
-                                                                </button>
+                                                                            <div
+                                                                                class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
+                                                                            </div>
+                                                                            <div
+                                                                                class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="ml-3">
+                                                                            <span
+                                                                                class="font-medium">{{ $optionName }}</span><br>
+                                                                            <span class="text-xs text-gray-500">
+                                                                                {{ $isChecked ? $onLabel : $offLabel }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
                                                             @endforeach
-                                                        </div>
-                                                    @endif
+                                                        @elseif($filterType === 'slider')
+                                                            <div x-data="{
+                                                                min: {{ $filter->options->min('min_value') ?? 0 }},
+                                                                max: {{ $filter->options->max('max_value') ?? 100 }},
+                                                                currentMin: {{ $minPrice }},
+                                                                currentMax: {{ $maxPrice }},
+                                                                unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+
+                                                                init() {
+                                                                    this.$nextTick(() => {
+                                                                        this.setupSlider();
+                                                                    });
+                                                                },
+
+                                                                setupSlider() {
+                                                                    const slider = this.$refs.slider;
+                                                                    if (typeof noUiSlider !== 'undefined' && slider) {
+                                                                        if (slider.noUiSlider) {
+                                                                            slider.noUiSlider.destroy();
+                                                                        }
+
+                                                                        noUiSlider.create(slider, {
+                                                                            start: [this.currentMin, this.currentMax],
+                                                                            connect: true,
+                                                                            range: {
+                                                                                'min': this.min,
+                                                                                'max': this.max
+                                                                            }
+                                                                        });
+
+                                                                        slider.noUiSlider.on('update', (values) => {
+                                                                            this.currentMin = Math.round(values[0]);
+                                                                            this.currentMax = Math.round(values[1]);
+                                                                        });
+
+                                                                        slider.noUiSlider.on('end', () => {
+                                                                            $wire.setPriceRange(this.currentMin, this.currentMax);
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }" class="range-slider py-4">
+                                                                <div class="values-display flex justify-between mb-2">
+                                                                    <span x-text="currentMin + ' ' + unit"></span>
+                                                                    <span x-text="currentMax + ' ' + unit"></span>
+                                                                </div>
+
+                                                                <div x-ref="slider" class="slider-element"></div>
+                                                            </div>
+                                                        @elseif($filterType === 'color')
+                                                            <div class="color-options flex flex-wrap gap-2">
+                                                                @foreach ($filter->options as $option)
+                                                                    @php
+                                                                        $isSelected = in_array(
+                                                                            $option->id,
+                                                                            $selectedOptions,
+                                                                        );
+                                                                        $optionTranslation = $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first();
+                                                                        $colorName =
+                                                                            $optionTranslation->name ?? $option->name;
+                                                                        // Get color value from option or fallback to a default
+                                                                        $colorValue =
+                                                                            $optionTranslation->color_value ?? '#cccccc';
+                                                                    @endphp
+
+                                                                    <button
+                                                                        wire:click="toggleFilterOption({{ $option->id }})"
+                                                                        class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
+                                                                        style="background-color: {{ $colorValue }}; position: relative;"
+                                                                        title="{{ $colorName }}">
+                                                                        @if ($isSelected)
+                                                                            <span
+                                                                                class="absolute inset-0 flex items-center justify-center text-white">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="12" height="12"
+                                                                                    viewBox="0 0 24 24" fill="none"
+                                                                                    stroke="currentColor" stroke-width="2"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <polyline points="20 6 9 17 4 12">
+                                                                                    </polyline>
+                                                                                </svg>
+                                                                            </span>
+                                                                        @endif
+                                                                    </button>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
-                                </div>
-                       
-                </div>
+                        
+                    </div>
 
-                <!-- Mobile Filter Drawer Sticky Footer -->
-                <div class="mobile-filter-footer d-lg-none">
-                    <button type="button" class="btn-show-results" onclick="closeMobileFilterDrawer()">
-                        @if(isset($products) && $products->total() > 0)
-                            Show {{ $products->total() }}+ results
-                        @else
-                            Show results
-                        @endif
-                    </button>
+                    <!-- Mobile Filter Drawer Sticky Footer -->
+                    <div class="mobile-filter-footer d-lg-none">
+                        <button type="button" class="btn-show-results" onclick="closeMobileFilterDrawer()">
+                            @if(isset($products) && $products->total() > 0)
+                                Show {{ $products->total() }}+ results
+                            @else
+                                Show results
+                            @endif
+                        </button>
+                    </div>
+                    
                 </div>
-                
-             </div>
-              @if ($products->count())
-                            <div class="auto-choice-rgt ">
-                                <!-- Product Count and Sort -->
-                                @if ($products->count() > 0)
-                                    @php
-                                        $currentPage = $products->currentPage();
-                                        $perPage = $products->perPage();
-                                        $total = $products->total();
-                                        $from = ($currentPage - 1) * $perPage + 1;
-                                        $to = min($currentPage * $perPage, $total);
-                                    @endphp
-                                @endif
-                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- Mobile Filter Button (matching Image 2) -->
-                                        <button type="button" class="mobile-filter-btn d-inline-flex d-lg-none" onclick="openMobileFilterDrawer()" aria-label="Open filters">
-                                            <svg width="22" height="16" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
-                                                <path d="M2 5h10m4 0h6M12 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM2 13h4m4 0h12M6 10.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                            @php
-                                                $activeFilterCount = count($selectedRatings ?? []) + count($selectedCategories ?? []) + count($selectedFeatures ?? []) + (!empty($priceRange) ? 1 : 0);
-                                            @endphp
-                                            @if($activeFilterCount > 0)
-                                                <span class="filter-badge">{{ $activeFilterCount }}</span>
-                                            @endif
-                                        </button>
-
-                                        @if ($products->count() > 0)
-                                            <p class="m-0 showing-p d-none d-sm-block">
-                                                Showing {{$from}}-{{$to}} of {{$total}}
-                                            </p>
-                                        @elseif($products->count() > 0)
-                                            <p class="m-0 showing-p d-none d-sm-block">Showing {{ $products->count() }} results</p>
-                                        @endif
-                                    </div>
-                                    <div wire:ignore class="d-none">
-                                        <x-social-icon/>
-                                    </div>
-                                </div>
-                                @if ($products->count() > 0)
-                                    <p class="m-0 showing-p d-block d-sm-none mb-3" style="font-size: 13.5px; color: #64748b;">
-                                        Showing {{$from}}-{{$to}} of {{$total}}
-                                    </p>
-                                @endif
-                                @if (!empty($products))
-                                    @foreach ($products as $index => $item)
-                                        <div class="automotive-card auto-bg" data-aos="fade-up"
-                                            data-aos-duration="1000" wire:key="product-{{ $item->id }}">
-                                            <div class="auto-choice-card" style="position: relative; ">
+                @if ($products->count())
+                                <div class="auto-choice-rgt ">
+                                    <!-- Product Count and Sort -->
+                                    @if ($products->count() > 0)
+                                        @php
+                                            $currentPage = $products->currentPage();
+                                            $perPage = $products->perPage();
+                                            $total = $products->total();
+                                            $from = ($currentPage - 1) * $perPage + 1;
+                                            $to = min($currentPage * $perPage, $total);
+                                        @endphp
+                                    @endif
+                                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <!-- Mobile Filter Button (matching Image 2) -->
+                                            <button type="button" class="mobile-filter-btn d-inline-flex d-lg-none" onclick="openMobileFilterDrawer()" aria-label="Open filters">
+                                                <svg width="22" height="16" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                                                    <path d="M2 5h10m4 0h6M12 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM2 13h4m4 0h12M6 10.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
                                                 @php
-                                                     $isRecommended = $item->is_affiliate && $index === 0;
-                                                 @endphp
-                                                 <div class="card-compare-m">
-                                                     @if($isRecommended)
-                                                         <div style="margin-bottom: 25px;">
-                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> {{ static_text('category_badge_label') ?: 'Top rated' }}
-                                                             </span>
-                                                         </div>
-                                                     @endif
+                                                    $activeFilterCount = count($selectedRatings ?? []) + count($selectedCategories ?? []) + count($selectedFeatures ?? []) + (!empty($priceRange) ? 1 : 0);
+                                                @endphp
+                                                @if($activeFilterCount > 0)
+                                                    <span class="filter-badge">{{ $activeFilterCount }}</span>
+                                                @endif
+                                            </button>
 
-                                                    <div  style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
-                                                        <!-- Left Column -->
-                                                        <div style="flex: 1 1 0%; min-width: 320px; display: flex; flex-direction: column; justify-content: flex-start;">
-                                                            <!-- Logo & Title -->
-                                                            <div class="auto-choice-hd" style="border: none; padding: 0; margin-bottom: 0;">
-                                                                <div class="inn_sl_hed" style="width: 100%;">
-                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
-                                                                        <div class="sli_img choice_img top-product-logo">
-                                                                            <x-business-logo :business="$item" />
-                                                                        </div>
-                                                                    </a>
-                                                                    <div class="sl_h">
-                                                                        <div class="inn_h">
-                                                                            <div class="sl_main">
-                                                                                <h6 class="head">{{ $item->translations->first()?->name ?? '' }}</h6>
-                                                                                <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
-                                                                                    @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
+                                            @if ($products->count() > 0)
+                                                <p class="m-0 showing-p d-none d-sm-block">
+                                                    Showing {{$from}}-{{$to}} of {{$total}}
+                                                </p>
+                                            @elseif($products->count() > 0)
+                                                <p class="m-0 showing-p d-none d-sm-block">Showing {{ $products->count() }} results</p>
+                                            @endif
+                                        </div>
+                                        <div wire:ignore class="d-none">
+                                            <x-social-icon/>
+                                        </div>
+                                    </div>
+                                    @if ($products->count() > 0)
+                                        <p class="m-0 showing-p d-block d-sm-none mb-3" style="font-size: 13.5px; color: #64748b;">
+                                            Showing {{$from}}-{{$to}} of {{$total}}
+                                        </p>
+                                    @endif
+                                    @if (!empty($products))
+                                        @foreach ($products as $index => $item)
+                                            <div class="automotive-card auto-bg" data-aos="fade-up"
+                                                data-aos-duration="1000" wire:key="product-{{ $item->id }}">
+                                                <div class="auto-choice-card" style="position: relative; ">
+                                                    @php
+                                                        $isRecommended = $item->is_affiliate && $index === 0;
+                                                    @endphp
+                                                    <div class="card-compare-m">
+                                                        @if($isRecommended)
+                                                            <div style="margin-bottom: 25px;">
+                                                                <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ;">
+                                                                    <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> {{ static_text('category_badge_label') ?: 'Top rated' }}
+                                                                </span>
+                                                            </div>
+                                                        @endif
+
+                                                        <div  style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
+                                                            <!-- Left Column -->
+                                                            <div style="flex: 1 1 0%; min-width: 320px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                                                <!-- Logo & Title -->
+                                                                <div class="auto-choice-hd" style="border: none; padding: 0; margin-bottom: 0;">
+                                                                    <div class="inn_sl_hed" style="width: 100%;">
+                                                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
+                                                                            <div class="sli_img choice_img top-product-logo">
+                                                                                <x-business-logo :business="$item" />
+                                                                            </div>
+                                                                        </a>
+                                                                        <div class="sl_h">
+                                                                            <div class="inn_h">
+                                                                                <div class="sl_main">
+                                                                                    <h6 class="head">{{ $item->translations->first()?->name ?? '' }}</h6>
+                                                                                    <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
+                                                                                        @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                        @if($item->should_show_rating)
-                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                            <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($item->display_rating, 1) }}</span>
-                                                                            <div class="inn_ul d-inline-flex m-0">
-                                                                                <div class="rating-stars ">
-                                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                                        @if ($i <= floor($item->display_rating))
-                                                                                            <i class="fas fa-star text-warning"></i>
-                                                                                        @elseif ($i - 0.5 <= $item->display_rating)
-                                                                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                        @else
-                                                                                            <i class="far fa-star text-warning"></i>
-                                                                                        @endif
-                                                                                    @endfor
+                                                                            @if($item->should_show_rating)
+                                                                            <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                                <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($item->display_rating, 1) }}</span>
+                                                                                <div class="inn_ul d-inline-flex m-0">
+                                                                                    <div class="rating-stars ">
+                                                                                        @for ($i = 1; $i <= 5; $i++)
+                                                                                            @if ($i <= floor($item->display_rating))
+                                                                                                <i class="fas fa-star text-warning"></i>
+                                                                                            @elseif ($i - 0.5 <= $item->display_rating)
+                                                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                                                            @else
+                                                                                                <i class="far fa-star text-warning"></i>
+                                                                                            @endif
+                                                                                        @endfor
+                                                                                    </div>
                                                                                 </div>
+                                                                                @if($item->should_show_review_count)
+                                                                                <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->approved_reviews_count }})</span>
+                                                                                @endif
                                                                             </div>
-                                                                            @if($item->should_show_review_count)
-                                                                            <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->approved_reviews_count }})</span>
                                                                             @endif
                                                                         </div>
-                                                                        @endif
                                                                     </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <!-- Short Description -->
-                                                            @if(!empty($item->translations->first()?->short_description))
-                                                                <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
-                                                                    {{ $item->translations->first()?->short_description }}
-                                                                </div>
-                                                            @endif
+                                                                <!-- Short Description -->
+                                                                @if(!empty($item->translations->first()?->short_description))
+                                                                    <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                        {{ $item->translations->first()?->short_description }}
+                                                                    </div>
+                                                                @endif
 
-                                                            <!-- Features -->
-                                                            @if (!empty($item->is_affiliate))
-                                                            <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
-                                                                <div class="main_feature_lg">
-                                                                    <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
-                                                                        <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                                                            @if ($item->usps->count() > 0)
-                                                                                @foreach ($item->usps->take(4) as $usp)
+                                                                <!-- Features -->
+                                                                @if (!empty($item->is_affiliate))
+                                                                <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
+                                                                    <div class="main_feature_lg">
+                                                                        <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
+                                                                            <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                                                @if ($item->usps->count() > 0)
+                                                                                    @foreach ($item->usps->take(4) as $usp)
+                                                                                        <div class="d-flex align-items-center size18">
+                                                                                            <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                            </div>
+                                                                                            <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        </div>
+                                                                                    @endforeach
+                                                                                @else
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                     </div>
-                                                                                @endforeach
-                                                                            @else
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
-                                                                                    </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
-                                                                                </div>
-                                                                            @endif
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            @endif
-
-                                                            <!-- Compare Checkbox -->
-                                                        </div>
-
-                                                        <!-- Right Column -->
-                                                        <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
-                                                            <!-- Buttons -->
-                                                            <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
-                                                                @if(!empty($item->is_affiliate))
-                                                                <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
-                                                                    class="cta cta_orange justify-content-center"
-                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center;">
-                                                                    {{ static_text('visit_website') ?: 'Visit website' }}
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                                                </a>
                                                                 @endif
-                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
-                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
-                                                                    {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
-                                                                </a>
+
+                                                                <!-- Compare Checkbox -->
                                                             </div>
-                                                            
-                                                            @php
-                                                                $allPrices = $item->products
-                                                                    ->flatMap(function ($product) {
-                                                                        return $product->prices;
-                                                                    })
-                                                                    ->sortBy(function ($price) {
-                                                                        $now = Illuminate\Support\Carbon::now();
-                                                                        if ($price->discount_price && $price->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($price->discount_expiration_date))) {
-                                                                            return $price->discount_price;
-                                                                        } elseif ($price->renewal_price) {
-                                                                            return $price->renewal_price;
-                                                                        } else {
-                                                                            return $price->price;
-                                                                        }
-                                                                    });
 
-                                                                $startingPrice = $allPrices->first();
-                                                                $displayPrice = null;
-
-                                                                if ($startingPrice) {
-                                                                    $now = Illuminate\Support\Carbon::now();
-                                                                    if ($startingPrice->discount_price && $startingPrice->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($startingPrice->discount_expiration_date))) {
-                                                                        $displayPrice = $startingPrice->discount_price;
-                                                                    } elseif ($startingPrice->renewal_price) {
-                                                                        $displayPrice = $startingPrice->renewal_price;
-                                                                    } else {
-                                                                        $displayPrice = $startingPrice->price;
-                                                                    }
-                                                                }
-                                                            @endphp
-
-                                                            <!-- Price -->
-                                                           @if ($startingPrice && !empty($item->is_affiliate))
-                                                                <div class="text-center mt-4 w-100"
-                                                                    style="padding: 15px 25px; border-radius: 8px;">
-
-                                                                    <h6
-                                                                        style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                                        Starting price
-                                                                    </h6>
-
-                                                                    <h3
-                                                                        style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                                        {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                                    </h3>
-
-                                                                    @if (
-                                                                        !empty($startingPrice->additional_info) &&
-                                                                        !in_array(
-                                                                            strtoupper(trim((string) $startingPrice->additional_info)),
-                                                                            ['NA', 'N/A', 'NULL']
-                                                                        )
-                                                                    )
-                                                                        <p style="font-size: 11px; margin-bottom: 0;">
-                                                                            {{ $startingPrice->additional_info }}
-                                                                        </p>
-                                                                    @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
-                                                                        <p style="font-size: 11px; margin-bottom: 0;">
-                                                                            per {{ strtolower($startingPrice->time_unit) }}
-                                                                        </p>
+                                                            <!-- Right Column -->
+                                                            <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
+                                                                <!-- Buttons -->
+                                                                <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                    @if(!empty($item->is_affiliate))
+                                                                    <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
+                                                                        class="cta cta_orange justify-content-center"
+                                                                        target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center;">
+                                                                        {{ static_text('visit_website') ?: 'Visit website' }}
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                                    </a>
                                                                     @endif
-
+                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
+                                                                        class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
+                                                                        {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
+                                                                    </a>
                                                                 </div>
-                                                            @endif
+                                                                
+                                                                @php
+                                                                    $allPrices = $item->products
+                                                                        ->flatMap(function ($product) {
+                                                                            return $product->prices;
+                                                                        })
+                                                                        ->sortBy(function ($price) {
+                                                                            $now = Illuminate\Support\Carbon::now();
+                                                                            if ($price->discount_price && $price->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($price->discount_expiration_date))) {
+                                                                                return $price->discount_price;
+                                                                            } elseif ($price->renewal_price) {
+                                                                                return $price->renewal_price;
+                                                                            } else {
+                                                                                return $price->price;
+                                                                            }
+                                                                        });
+
+                                                                    $startingPrice = $allPrices->first();
+                                                                    $displayPrice = null;
+
+                                                                    if ($startingPrice) {
+                                                                        $now = Illuminate\Support\Carbon::now();
+                                                                        if ($startingPrice->discount_price && $startingPrice->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($startingPrice->discount_expiration_date))) {
+                                                                            $displayPrice = $startingPrice->discount_price;
+                                                                        } elseif ($startingPrice->renewal_price) {
+                                                                            $displayPrice = $startingPrice->renewal_price;
+                                                                        } else {
+                                                                            $displayPrice = $startingPrice->price;
+                                                                        }
+                                                                    }
+                                                                @endphp
+
+                                                                <!-- Price -->
+                                                            @if ($startingPrice && !empty($item->is_affiliate))
+                                                                    <div class="text-center mt-4 w-100"
+                                                                        style="padding: 15px 25px; border-radius: 8px;">
+
+                                                                        <h6
+                                                                            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+                                                                            Starting price
+                                                                        </h6>
+
+                                                                        <h3
+                                                                            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+                                                                            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+                                                                        </h3>
+
+                                                                        @if (
+                                                                            !empty($startingPrice->additional_info) &&
+                                                                            !in_array(
+                                                                                strtoupper(trim((string) $startingPrice->additional_info)),
+                                                                                ['NA', 'N/A', 'NULL']
+                                                                            )
+                                                                        )
+                                                                            <p style="font-size: 11px; margin-bottom: 0;">
+                                                                                {{ $startingPrice->additional_info }}
+                                                                            </p>
+                                                                        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+                                                                            <p style="font-size: 11px; margin-bottom: 0;">
+                                                                                per {{ strtolower($startingPrice->time_unit) }}
+                                                                            </p>
+                                                                        @endif
+
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div style="width: 100%;">
-                                                    <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                                    <div style="width: 100%;">
+                                                        <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                @endforeach
-                                @endif
-                                <!-- Pagination Links -->
-                                @php
-                                $currentPage = $products->currentPage();
-                                $lastPage = $products->lastPage() ?? 1;
-                                $maxVisible = 7;
-
-                                $startPage = max(1, $currentPage - floor($maxVisible / 2));
-                                $endPage = min($lastPage, $startPage + $maxVisible - 1);
-
-                                if ($endPage - $startPage + 1 < $maxVisible) {
-                                    $startPage = max(1, $endPage - $maxVisible + 1);
-                                }
-
-                                $showLeftDots = $startPage > 2;
-                                $showRightDots = $endPage < $lastPage - 1;
-                            @endphp
-
-                            @if ($lastPage > 1)
-                                <div class="btn-pages">
-                                    {{-- Previous Button (only if there's a previous page) --}}
-                                    @if ($currentPage > 1)
-                                        <a
-                                            href="{{ $this->getCleanUrl($currentPage - 1) }}"
-                                            wire:click.prevent="previousPage"
-                                            class="pagination-btn pagination-arrow">
-                                            <i class="fa-solid fa-chevron-left"></i>
-                                        </a>
+                                    @endforeach
                                     @endif
+                                    <!-- Pagination Links -->
+                                    @php
+                                    $currentPage = $products->currentPage();
+                                    $lastPage = $products->lastPage() ?? 1;
+                                    $maxVisible = 7;
 
-                                    {{-- First Page --}}
-                                    @if ($startPage > 1)
-                                        <a
-                                            href="{{ $this->getCleanUrl(1) }}"
-                                            wire:click.prevent="gotoPage(1)"
-                                            class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}"
-                                        >1</a>
+                                    $startPage = max(1, $currentPage - floor($maxVisible / 2));
+                                    $endPage = min($lastPage, $startPage + $maxVisible - 1);
 
-                                        @if ($showLeftDots)
-                                            <span class="pagination-dots">...</span>
-                                        @endif
-                                    @endif
+                                    if ($endPage - $startPage + 1 < $maxVisible) {
+                                        $startPage = max(1, $endPage - $maxVisible + 1);
+                                    }
 
-                                    {{-- Page Numbers --}}
-                                    @for ($page = $startPage; $page <= $endPage; $page++)
-                                        <a
-                                            href="{{ $this->getCleanUrl($page) }}"
-                                            wire:click.prevent="gotoPage({{ $page }})"
-                                            class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}"
-                                        >{{ $page }}</a>
-                                    @endfor
+                                    $showLeftDots = $startPage > 2;
+                                    $showRightDots = $endPage < $lastPage - 1;
+                                @endphp
 
-                                    {{-- Last Page --}}
-                                    @if ($endPage < $lastPage)
-                                        @if ($showRightDots)
-                                            <span class="pagination-dots">...</span>
+                                @if ($lastPage > 1)
+                                    <div class="btn-pages">
+                                        {{-- Previous Button (only if there's a previous page) --}}
+                                        @if ($currentPage > 1)
+                                            <a
+                                                href="{{ $this->getCleanUrl($currentPage - 1) }}"
+                                                wire:click.prevent="previousPage"
+                                                class="pagination-btn pagination-arrow">
+                                                <i class="fa-solid fa-chevron-left"></i>
+                                            </a>
                                         @endif
 
-                                        <a
-                                            href="{{ $this->getCleanUrl($lastPage) }}"
-                                            wire:click.prevent="gotoPage({{ $lastPage }})"
-                                            class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}"
-                                        >{{ $lastPage }}</a>
-                                    @endif
+                                        {{-- First Page --}}
+                                        @if ($startPage > 1)
+                                            <a
+                                                href="{{ $this->getCleanUrl(1) }}"
+                                                wire:click.prevent="gotoPage(1)"
+                                                class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}"
+                                            >1</a>
 
-                                    {{-- Next Button (only if there's a next page) --}}
-                                    @if ($currentPage < $lastPage)
-                                        <a
-                                            href="{{ $this->getCleanUrl($currentPage + 1) }}"
-                                            wire:click.prevent="nextPage"
-                                            class="pagination-btn pagination-arrow next">
-                                            <i class="fa-solid fa-chevron-right"></i>
-                                        </a>
-                                    @endif
-                                </div>
-                            @endif
+                                            @if ($showLeftDots)
+                                                <span class="pagination-dots">...</span>
+                                            @endif
+                                        @endif
 
-                        </div>
-                        @else
+                                        {{-- Page Numbers --}}
+                                        @for ($page = $startPage; $page <= $endPage; $page++)
+                                            <a
+                                                href="{{ $this->getCleanUrl($page) }}"
+                                                wire:click.prevent="gotoPage({{ $page }})"
+                                                class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}"
+                                            >{{ $page }}</a>
+                                        @endfor
 
-                            <div class="auto-choice-rgt">
-                                @if($products->count() > 0)
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
+                                        {{-- Last Page --}}
+                                        @if ($endPage < $lastPage)
+                                            @if ($showRightDots)
+                                                <span class="pagination-dots">...</span>
+                                            @endif
+
+                                            <a
+                                                href="{{ $this->getCleanUrl($lastPage) }}"
+                                                wire:click.prevent="gotoPage({{ $lastPage }})"
+                                                class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}"
+                                            >{{ $lastPage }}</a>
+                                        @endif
+
+                                        {{-- Next Button (only if there's a next page) --}}
+                                        @if ($currentPage < $lastPage)
+                                            <a
+                                                href="{{ $this->getCleanUrl($currentPage + 1) }}"
+                                                wire:click.prevent="nextPage"
+                                                class="pagination-btn pagination-arrow next">
+                                                <i class="fa-solid fa-chevron-right"></i>
+                                            </a>
+                                        @endif
                                     </div>
-                                    <x-social-icon/>
-                                </div>
                                 @endif
 
-                                <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                    @if ($this->hasActiveFilters())
-                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
-                                        <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
-                                    @else
-                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
-                                    @endif
-                                </div>
                             </div>
-                            {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
-                                <div style="position: absolute; top: 0; left: 0; z-index: 1050; margin: 1rem;">
-                                    <div class="alert alert-info text-start shadow" style="max-width: 320px;">
+                            @else
+
+                                <div class="auto-choice-rgt">
+                                    @if($products->count() > 0)
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
+                                        </div>
+                                        <x-social-icon/>
+                                    </div>
+                                    @endif
+
+                                    <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
                                         @if ($this->hasActiveFilters())
-                                        <p class="mb-3">{{ static_text('no_prod_mach_fil') }}</p>
-                                        <button wire:click="clearFilters" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-refresh me-1"></i> {{ static_text('reset_filter') }}
-                                        </button>
+                                            <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
+                                            <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
                                         @else
-                                        <p class="mb-0">
-                                            {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
-                                        </p>
+                                            <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">{{ static_text('no_matches_found') ?: 'No matches found' }}</h4>
                                         @endif
                                     </div>
                                 </div>
-                            </div> --}}
-                        @endif
+                                {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
+                                    <div style="position: absolute; top: 0; left: 0; z-index: 1050; margin: 1rem;">
+                                        <div class="alert alert-info text-start shadow" style="max-width: 320px;">
+                                            @if ($this->hasActiveFilters())
+                                            <p class="mb-3">{{ static_text('no_prod_mach_fil') }}</p>
+                                            <button wire:click="clearFilters" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-refresh me-1"></i> {{ static_text('reset_filter') }}
+                                            </button>
+                                            @else
+                                            <p class="mb-0">
+                                                {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
+                                            </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            @endif
+                </div>
             </div>
         </div>
-    </div>
-    <livewire:compare-bar />
-</section>
+        <livewire:compare-bar />
+    </section>
 
     <!-- Top 10 Businesses with Details (Exact design matching category page) -->
     @php
-        $detailedBusinesses = isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0 
+        $detailedBusinesses = (isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0 
             ? $topAffiliatedBusinesses 
-            : ($affiliatedTableBusinesses ?? collect());
+            : ($affiliatedTableBusinesses ?? collect()))
+            ->filter(fn($b) => (int)($b->is_affiliate ?? 0) === 1)
+            ->values();
     @endphp
     @if(isset($detailedBusinesses) && count($detailedBusinesses) > 0)
     <section class="revie_img_sec border_bt bg_new_grey">
         <div class="container">
             <div class="mb-4">
                 @foreach($detailedBusinesses as $index => $biz)
+                @if(empty($biz->is_affiliate))
+                    @continue
+                @endif
                 @php
                     $curLangId = getCurrentLanguageID();
                     $bizTrans = $biz->translations->firstWhere('lang_id', $curLangId) ?? ($biz->translations->firstWhere('language_id', $curLangId) ?? $biz->translations->first());
@@ -1619,7 +1602,7 @@ foreach ($altCriteria as $criterion) {
                                 @endif
 
                                 <!-- More about box -->
-                                <x-more-about-business :business="$biz" />
+                                <x-more-about-business :business="$biz" current="alternatives" />
                             </div>
                         </div>
                     </div>
