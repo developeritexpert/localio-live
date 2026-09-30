@@ -351,7 +351,7 @@
                                             @csrf
                                             <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
                                             <div class="mb-2">
-                                                <textarea name="content" class="form-control" rows="2" placeholder="What are your thoughts?" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
+                                                <textarea name="content" class="form-control" rows="2" placeholder="{{ static_text('join_conversation_placeholder') ?: 'Join the conversation...' }}" required style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 10px;"></textarea>
                                             </div>
                                             <div class="d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-sm btn-primary px-3 py-1 fw-semibold" style="border-radius: 6px; font-size: 12.5px;">
@@ -360,10 +360,12 @@
                                             </div>
                                         </form>
                                     @else
-                                        <div class="p-3 mb-3 text-center bg-light rounded-3" style="border: 1px dashed #cbd5e1;">
-                                            <span class="text-muted" style="font-size: 13.5px;">Want to join this discussion? </span>
-                                            <a href="javascript:void(0)" onclick="openLoginModal()" class="fw-semibold text-primary" style="font-size: 13.5px; text-decoration: underline;">Log in or create an account</a>
-                                        </div>
+                                        <div class="reddit-join-pill-bar mb-3">
+    <div class="reddit-join-pill d-flex align-items-center justify-content-between px-3 py-2 rounded-pill bg-light border" onclick="openLoginModal()" style="border-color: #cbd5e1 !important; color: #64748b; font-size: 13px; cursor: pointer;">
+        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_placeholder') ?: 'Join the conversation' }}</span>
+        <span class="text-primary fw-semibold" style="font-size: 12px;">Log in to reply &rarr;</span>
+    </div>
+</div>
                                     @endif
 
                                     <!-- Top-Level Comments List -->

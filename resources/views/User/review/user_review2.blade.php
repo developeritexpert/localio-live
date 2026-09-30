@@ -205,7 +205,8 @@
                             @endif
                         </div>
 
-                        <div class="row g-4">
+                        <!-- Desktop Pros & Cons (Side by Side) -->
+                        <div class="row g-4 d-none d-md-flex">
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
@@ -263,6 +264,99 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Mobile Pros & Cons Tabs (Tabination from business detail) -->
+                        <div class="mobile-pros-cons d-md-none mt-3">
+                            <ul class="nav nav-tabs nav-justified" id="prosConsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: nowrap;">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pros-tab" data-bs-toggle="tab" data-bs-target="#pros-content" type="button" role="tab" aria-controls="pros-content" aria-selected="true" style="font-weight: 600; color: #1e3050; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                        <span style="color: rgb(33, 172, 33);"><i class="fas fa-check"></i></span> {{ static_text('pros_label') ?: 'Pros' }}
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="cons-tab" data-bs-toggle="tab" data-bs-target="#cons-content" type="button" role="tab" aria-controls="cons-content" aria-selected="false" style="font-weight: 600; color: #64748b; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                        <span style="color: rgb(247, 40, 60);"><i class="fas fa-times"></i></span> {{ static_text('cons_label') ?: 'Cons' }}
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="prosConsTabContent">
+                                <!-- Pros Tab Content -->
+                                <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
+                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                        <div class="card-body p-3">
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('pros_label') ?: 'Pros' }}</p>
+                                            <ul class="list-unstyled mb-0">
+                                                @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
+                                                    @foreach($aggregatedPros as $pro)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                        <span style="color: #202124;">{{ $pro->text }}
+                                                            @if($hasUserRatings && isset($pro->review_count))
+                                                                <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @endif
+                                                        </span>
+                                                    </li>
+                                                    @endforeach
+                                                @else
+                                                    @foreach($pros as $p)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                        <span style="color: #202124; font-size: 14px;">{{ $p }}</span>
+                                                    </li>
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cons Tab Content -->
+                                <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
+                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                        <div class="card-body p-3">
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('cons_label') ?: 'Cons' }}</p>
+                                            <ul class="list-unstyled mb-0">
+                                                @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
+                                                    @foreach($aggregatedCons as $con)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                        <span style="color: #202124;">{{ $con->text }}
+                                                            @if($hasUserRatings && isset($con->review_count))
+                                                                <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @endif
+                                                        </span>
+                                                    </li>
+                                                    @endforeach
+                                                @else
+                                                    @foreach($cons as $c)
+                                                    <li class="d-flex align-items-start mb-2">
+                                                        <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                        <span style="color: #202124; font-size: 14px;">{{ $c }}</span>
+                                                    </li>
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <style>
+                            #prosConsTab .nav-link.active {
+                                color: #1e3050 !important;
+                            }
+
+                            #prosConsTab .nav-link.active::after {
+                                content: '';
+                                position: absolute;
+                                bottom: -1px;
+                                left: 0;
+                                width: 100%;
+                                height: 2px;
+                                background-color: #1e3050;
+                            }
+                        </style>
 
                         @if(!empty($reviewsProConsSummary))
                         <div class="mt-4" style="font-size: 14.5px; color: #475569; line-height: 1.7;">
@@ -843,8 +937,8 @@
                             <x-more-about-business :business="$business" current="reviews" />
                         </div>
 
-                        <!-- 4. Sticky Sidebar Navigation Card — LAST item, sticks as you scroll -->
-                        <div class="main_feature_lg sticky-sidebar-nav-wrapper" id="stickySidebarNavWrapper">
+                        <!-- 4. Sticky Sidebar Navigation Card — LAST item, sticks as you scroll (Desktop only) -->
+                        <div class="main_feature_lg sticky-sidebar-nav-wrapper d-none d-lg-block" id="stickySidebarNavWrapper">
                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav" style="max-height: 25rem;">
                                 <div class="sticky-nav-header text-center">
                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
@@ -930,6 +1024,78 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- MOBILE STICKY BOTTOM NAV (From business detail) -->
+                        <div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
+                            <!-- Left side: Dropdown for current section -->
+                            <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
+                                <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                                    <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ static_text('tab_description') ?: 'Description' }}</span>
+                                </button>
+                                <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
+                                    <li><a class="dropdown-item msbn-item active" href="#section1" data-target="section1">{{ static_text('tab_description') ?: 'Description' }}</a></li>
+                                    @if((isset($aggregatedPros) && count($aggregatedPros) > 0) || (isset($pros) && $pros->count() > 0))
+                                        <li><a class="dropdown-item msbn-item" href="#section-pros-cons" data-target="section-pros-cons">{{ static_text('pros_cons_label') ?: 'Pros & Cons' }}</a></li>
+                                    @endif
+                                    @if (isset($business->faqs) && $business->faqs->count() > 0)
+                                        <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">{{ static_text('tab_faqs') ?: 'FAQs' }}</a></li>
+                                    @endif
+                                    <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">{{ static_text('tab_reviews') ?: 'Reviews' }}</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Right side: Visit CTA or Write Review -->
+                            <div class="msbn-right" style="flex: 1; min-width: 0;">
+                                @if ($business->is_affiliate)
+                                    <a href="{{ $business->getTrackedUrl() }}"
+                                        data-track="{{ json_encode([
+                                            'type' => 'click',
+                                            'business_id' => $business->id,
+                                            'action' => 'visit_website',
+                                            'label' => 'Visit Website',
+                                        ]) }}"
+                                        target="_blank" rel="sponsored" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #fdfdfd;">
+                                        {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
+                                    </a>
+                                @else
+                                    <a href="javascript:void(0)"
+                                        onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                        class="btn btn-primary w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                                        <i class="fas fa-pencil-alt me-2" style="font-size: 12px;"></i> Write a review
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <style>
+                            .mobile-sticky-bottom-nav {
+                                position: fixed;
+                                bottom: 0;
+                                left: 0;
+                                width: 100%;
+                                background-color: #ffffff;
+                                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+                                z-index: 991;
+                                padding-bottom: calc(10px + env(safe-area-inset-bottom));
+                                padding-top: 10px;
+                            }
+
+                            .msbn-dropdown-toggle::after {
+                                margin-left: auto;
+                            }
+
+                            .msbn-item.active {
+                                background-color: #f1f5f9;
+                                color: #0f172a;
+                                font-weight: 600;
+                            }
+
+                            @media (max-width: 991px) {
+                                body {
+                                    padding-bottom: 75px !important;
+                                }
+                            }
+                        </style>
 
                     </div>
                 </div>
@@ -1057,74 +1223,157 @@ document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('reviews-list-container');
     let currentSortValue = '{{ request("sort", "recent") }}';
 
-    // Sticky Sidebar Navigation Active Link & Smooth Scroll (Exact from product_detail.blade.php)
-    const stickyNavLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
-    if (stickyNavLinks.length > 0) {
-        stickyNavLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
-                
-                if (targetId === 'section1') {
-                    e.preventDefault();
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                    stickyNavLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                    return;
-                }
+        // Unified Sticky Navigation (Desktop & Mobile): Active on Scroll & Smooth Click
+    const desktopLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
+    const mobileLinks = document.querySelectorAll('.msbn-item');
+    const mobileActiveText = document.getElementById('msbn-active-text');
 
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    e.preventDefault();
-                    const headerOffset = 90;
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    const navSectionTargets = [
+        { id: 'section1', target: 'section1' },
+        { id: 'section-pros-cons', target: 'section-pros-cons' },
+        { id: 'section15', target: 'section15' },
+        { id: 'section14', target: 'section14' }
+    ];
 
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
+    function isTargetMatch(link, targetKey) {
+        const dataTarget = link.getAttribute('data-target');
+        const href = link.getAttribute('href');
+        const hrefClean = href ? href.replace('#', '') : '';
 
-                    stickyNavLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                }
-            });
+        if (targetKey === 'section1') {
+            return dataTarget === 'section1' || dataTarget === 'top' || href === '#top' || href === '#section1' || hrefClean === 'top' || hrefClean === 'section1';
+        }
+
+        return dataTarget === targetKey || href === '#' + targetKey || hrefClean === targetKey;
+    }
+
+    function setActiveNav(targetKey) {
+        if (!targetKey) return;
+
+        desktopLinks.forEach(link => {
+            if (isTargetMatch(link, targetKey)) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
         });
 
-        // Update active link on scroll
-        const navSectionTargets = [
-            { id: 'section1', target: 'section1' },
-            { id: 'section-pros-cons', target: 'section-pros-cons' },
-            { id: 'section15', target: 'section15' },
-            { id: 'section14', target: 'section14' }
-        ];
-
-        window.addEventListener('scroll', function() {
-            const scrollPos = window.scrollY + 130;
-            let activeId = '';
-
-            for (const item of navSectionTargets) {
-                const el = document.getElementById(item.id);
-                if (el) {
-                    const top = el.offsetTop;
-                    const height = el.offsetHeight;
-                    if (scrollPos >= top && scrollPos < top + height) {
-                        activeId = item.target;
-                    }
+        mobileLinks.forEach(link => {
+            if (isTargetMatch(link, targetKey)) {
+                link.classList.add('active');
+                if (mobileActiveText) {
+                    mobileActiveText.textContent = link.textContent.trim();
                 }
+            } else {
+                link.classList.remove('active');
             }
+        });
+    }
 
-            if (activeId) {
-                stickyNavLinks.forEach(link => {
-                    if (link.getAttribute('data-target') === activeId || link.getAttribute('href') === '#' + activeId) {
-                        link.classList.add('active');
-                    } else {
-                        link.classList.remove('active');
-                    }
+    let isManualScrolling = false;
+    let manualScrollTimer = null;
+
+    function updateActiveOnScroll() {
+        if (isManualScrolling) return;
+
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+
+        const visibleSections = [];
+        navSectionTargets.forEach(item => {
+            const el = document.getElementById(item.id);
+            if (el && el.offsetParent !== null) {
+                visibleSections.push({
+                    id: item.id,
+                    target: item.target,
+                    top: el.getBoundingClientRect().top + scrollY
                 });
             }
+        });
+
+        if (visibleSections.length === 0) return;
+
+        // 1. Near the very top of page
+        if (scrollY < 200) {
+            setActiveNav(visibleSections[0].target);
+            return;
+        }
+
+        // 2. Near the bottom of page
+        if (windowHeight + scrollY >= docHeight - 80) {
+            setActiveNav(visibleSections[visibleSections.length - 1].target);
+            return;
+        }
+
+        // 3. Section based on viewport offset (130px header offset)
+        const currentPos = scrollY + 130;
+        let activeTarget = visibleSections[0].target;
+
+        for (let i = 0; i < visibleSections.length; i++) {
+            if (currentPos >= visibleSections[i].top) {
+                activeTarget = visibleSections[i].target;
+            } else {
+                break;
+            }
+        }
+
+        setActiveNav(activeTarget);
+    }
+
+    function handleNavClick(e) {
+        const dataTarget = this.getAttribute('data-target');
+        const href = this.getAttribute('href');
+        const targetAttr = dataTarget || (href ? href.replace('#', '') : '');
+
+        if (!targetAttr) return;
+
+        let targetEl = null;
+        let targetKey = targetAttr;
+
+        if (targetAttr === 'top' || targetAttr === 'section1') {
+            targetEl = document.getElementById('section1') || document.body;
+            targetKey = 'section1';
+        } else {
+            targetEl = document.getElementById(targetAttr);
+        }
+
+        if (targetEl) {
+            e.preventDefault();
+            setActiveNav(targetKey);
+
+            isManualScrolling = true;
+            clearTimeout(manualScrollTimer);
+            manualScrollTimer = setTimeout(() => {
+                isManualScrolling = false;
+            }, 800);
+
+            const headerOffset = 90;
+            let offsetPosition = 0;
+
+            if (targetAttr === 'top' && !document.getElementById('section1')) {
+                offsetPosition = 0;
+            } else {
+                offsetPosition = targetEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - headerOffset;
+            }
+
+            window.scrollTo({
+                top: Math.max(0, offsetPosition),
+                behavior: 'smooth'
+            });
+
+            if (window.history && window.history.pushState) {
+                window.history.pushState(null, null, '#' + (targetAttr === 'section1' ? 'top' : targetAttr));
+            }
+        }
+    }
+
+    desktopLinks.forEach(link => link.addEventListener('click', handleNavClick));
+    mobileLinks.forEach(link => link.addEventListener('click', handleNavClick));
+
+    window.addEventListener('scroll', updateActiveOnScroll, { passive: true });
+    window.addEventListener('resize', updateActiveOnScroll, { passive: true });
+    updateActiveOnScroll();
         });
     }
 
@@ -1141,6 +1390,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var isFixed       = false;
 
         function computeOriginals() {
+            if (window.innerWidth < 992) {
+                if (isFixed) {
+                    card.style.cssText = '';
+                    wrapper.style.height = '';
+                    isFixed = false;
+                }
+                return;
+            }
             // Always reset to natural flow before measuring
             if (isFixed) {
                 card.style.cssText = '';
@@ -1154,6 +1411,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function onScroll() {
+            if (window.innerWidth < 992) {
+                if (isFixed) {
+                    card.style.cssText = '';
+                    wrapper.style.height = '';
+                    isFixed = false;
+                }
+                return;
+            }
             if (originalTop === null) computeOriginals();
             var scrollY       = window.scrollY;
             var shouldBeFixed = (scrollY + NAVBAR_HEIGHT) > originalTop;

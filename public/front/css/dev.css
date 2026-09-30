@@ -1,0 +1,264 @@
+/* ========================================================
+   Reddit-Style Discussions & Threaded Comments (Mobile Optimized)
+   ======================================================== */
+
+/* Compact Reddit-like Text Sizes */
+.discussion-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+}
+
+.discussion-body-text {
+    font-size: 13.5px !important;
+    line-height: 1.5 !important;
+    color: #334155 !important;
+}
+
+.comment-author-name {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+}
+
+.comment-timestamp {
+    font-size: 11.5px !important;
+    color: #64748b !important;
+}
+
+.comment-dot-sep {
+    font-size: 10px !important;
+    color: #94a3b8 !important;
+}
+
+.comment-text-content {
+    font-size: 13px !important;
+    line-height: 1.48 !important;
+    color: #1e293b !important;
+    word-break: break-word !important;
+    margin-bottom: 6px !important;
+}
+
+/* Reddit Join Conversation Pill (Image 3) */
+.reddit-join-pill {
+    transition: all 0.2s ease;
+}
+.reddit-join-pill:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
+
+/* Thread Nesting & Minimal Right Indentation (Reddit Style) */
+.reddit-comment-item {
+    display: flex;
+    gap: 8px;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
+.reddit-comment-item.nested-comment-item {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.comment-thread-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.comment-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nested-comment-item .comment-thread-left {
+    width: 20px;
+}
+
+.nested-comment-item .comment-avatar {
+    width: 20px;
+    height: 20px;
+}
+
+.nested-comment-item .comment-avatar .avatar-initial {
+    font-size: 10px;
+}
+
+.comment-thread-line {
+    width: 2px;
+    height: 100%;
+    background-color: #e2e8f0;
+    border-radius: 1px;
+}
+
+.comment-thread-line-container:hover .comment-thread-line {
+    background-color: #007bff;
+}
+
+/* Reduce answers indentation shift on desktop & tablet */
+.comment-replies-container {
+    margin-left: -4px;
+}
+
+/* Action toolbar styling */
+.comment-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.toggle-reply-text {
+    font-size: 12px !important;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+}
+.toggle-reply-text:hover {
+    color: #007bff;
+}
+
+.comment-collapse-toggle-btn {
+    color: #94a3b8;
+    font-size: 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+.comment-collapse-toggle-btn:hover {
+    color: #64748b;
+}
+
+/* ========================================================
+   MOBILE VIEWPORT (< 768px) OPTIMIZATIONS
+   ======================================================== */
+@media (max-width: 767px) {
+    /* Hide vertical vote sidebar on mobile to prevent squishing (Image 1 fix) */
+    .preview-vote-sidebar {
+        display: none !important;
+    }
+
+    .vote-sidebar {
+        display: none !important;
+    }
+
+    /* Discussion card mobile padding */
+    .discussion-item-card {
+        padding: 14px 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .preview-discussion-item {
+        padding: 14px 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .discussion-title {
+        font-size: 14.5px !important;
+        line-height: 1.35 !important;
+        margin: 8px 0 6px !important;
+    }
+
+    .discussion-body-text {
+        font-size: 13px !important;
+        line-height: 1.45 !important;
+    }
+
+    /* Minimal Indentation on Mobile - Answers do NOT move far to the right */
+    .reddit-comment-item {
+        gap: 6px !important;
+        margin-top: 8px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .comment-thread-left {
+        width: 18px !important;
+    }
+
+    .comment-avatar {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .comment-avatar .avatar-initial {
+        font-size: 9px !important;
+    }
+
+    .nested-comment-item .comment-thread-left {
+        width: 16px !important;
+    }
+
+    .nested-comment-item .comment-avatar {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .nested-comment-item .comment-avatar .avatar-initial {
+        font-size: 8px !important;
+    }
+
+    /* Pull nested replies to the left so each indent is only ~10-12px total */
+    .comment-replies-container {
+        margin-left: -8px !important;
+    }
+
+    /* CRITICAL: Cap nesting shift at 2 levels on mobile so level 3, 4, 5 do not push off screen */
+    .nested-comment-item .nested-comment-item .comment-replies-container {
+        margin-left: -20px !important;
+    }
+
+    .comment-text-content {
+        font-size: 12.5px !important;
+        line-height: 1.45 !important;
+    }
+
+    .comment-author-name {
+        font-size: 12px !important;
+    }
+
+    .comment-timestamp {
+        font-size: 11px !important;
+    }
+
+    .comment-action-bar {
+        gap: 8px !important;
+    }
+
+    .comment-vote-pill {
+        padding: 2px 6px !important;
+        height: 26px !important;
+    }
+
+    .comment-vote-btn {
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 10px !important;
+    }
+
+    .comment-vote-count {
+        font-size: 11px !important;
+    }
+
+    .toggle-reply-text {
+        font-size: 11px !important;
+    }
+
+    .reddit-join-pill {
+        padding: 7px 14px !important;
+        font-size: 12.5px !important;
+    }
+}
