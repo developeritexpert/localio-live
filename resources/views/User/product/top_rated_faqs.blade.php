@@ -42,7 +42,7 @@
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
+                            <h1 style="margin: 0; line-height: 1.2; color: #1e3050;">
                                 {{ $topProductContents['faq_page_main_headline'] ?? 'Top rated on Localio FAQs' }}
                             </h1>
                         </div>

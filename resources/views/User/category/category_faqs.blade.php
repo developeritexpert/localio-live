@@ -68,7 +68,7 @@
                             $faqHeader2 = $resolvedFaqHeader['subtext'] ?? null;
                         @endphp
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
+                            <h1 style=" margin: 0; line-height: 1.2; color: #1e3050;">
                                 {!! \App\Services\ContentTemplateService::cleanHeading($faqH1Title) !!}
                             </h1>
                         </div>
