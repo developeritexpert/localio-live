@@ -533,8 +533,32 @@ class ContentTemplateController extends Controller
             'is_active'     => true,
         ]);
 
+        if ($request->filled('assign_to_business_id')) {
+            $target = $request->assign_to_business_id;
+            if ($target === 'all') {
+                $bizIds = \App\Models\Business::pluck('id');
+                foreach ($bizIds as $bId) {
+                    \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                        'business',
+                        (int)$bId,
+                        $template->field_key,
+                        $template->id,
+                        $langId
+                    );
+                }
+            } elseif (is_numeric($target)) {
+                \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                    'business',
+                    (int)$target,
+                    $template->field_key,
+                    $template->id,
+                    $langId
+                );
+            }
+        }
+
         return redirect()->back()
-            ->with('success', "Template Option #{$template->option_number} created successfully.")
+            ->with('success', "Template Option #{$template->option_number} created successfully." . ($request->filled('assign_to_business_id') ? " Assigned to selected business(es)." : ""))
             ->with('open_manage_field', $request->field_key);
     }
 
@@ -559,8 +583,33 @@ class ContentTemplateController extends Controller
             'subtext'  => $request->subtext,
         ]);
 
+        if ($request->filled('assign_to_business_id')) {
+            $target = $request->assign_to_business_id;
+            $langId = $template->lang_id ?: (int) ($request->lang_id ?: 1);
+            if ($target === 'all') {
+                $bizIds = \App\Models\Business::pluck('id');
+                foreach ($bizIds as $bId) {
+                    \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                        'business',
+                        (int)$bId,
+                        $template->field_key,
+                        $template->id,
+                        $langId
+                    );
+                }
+            } elseif (is_numeric($target)) {
+                \App\Services\ContentTemplateService::manuallyAssignTemplate(
+                    'business',
+                    (int)$target,
+                    $template->field_key,
+                    $template->id,
+                    $langId
+                );
+            }
+        }
+
         return redirect()->back()
-            ->with('success', "Template Option #{$template->option_number} updated successfully.")
+            ->with('success', "Template Option #{$template->option_number} updated successfully." . ($request->filled('assign_to_business_id') ? " Assigned to selected business(es)." : ""))
             ->with('open_manage_field', $template->field_key);
     }
 

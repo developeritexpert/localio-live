@@ -221,13 +221,13 @@
                                     @endphp
                                     <td class="text-center py-3">
                                         @if($tpl)
-                                            <span class="fw-bold text-primary cursor-pointer fs-13px"
+                                            <span class="fw-bold text-primary cursor-pointer fs-13px btn-cell-assign badge bg-light text-primary border"
                                                   data-toggle="tooltip" data-bs-toggle="tooltip"
-                                                  title="{{ $tpl->headline ? Str::limit(strip_tags(html_entity_decode($tpl->headline)), 70) : 'Option #' . $tpl->option_number }}">
-                                                {{ $tpl->option_number }}
+                                                  title="Option #{{ $tpl->option_number }}: {{ $tpl->headline ? Str::limit(strip_tags(html_entity_decode($tpl->headline)), 60) : '' }} (Click to edit)">
+                                                #{{ $tpl->option_number }}
                                             </span>
                                         @else
-                                            <span class="text-muted fs-13px">-</span>
+                                            <span class="text-muted fs-13px btn-cell-assign cursor-pointer" title="Click to assign">-</span>
                                         @endif
                                     </td>
                                 @endforeach
@@ -408,8 +408,11 @@
                     @endforeach
                 </div>
             </div>
-            <div class="modal-footer bg-light py-2">
+            <div class="modal-footer bg-light py-2 d-flex justify-content-between">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-success" id="btnSaveAllAssignments">
+                    <em class="icon ni ni-check-circle me-1"></em> Save All Locks
+                </button>
             </div>
         </div>
     </div>
@@ -440,6 +443,22 @@
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
                         <textarea name="subtext" id="inputSubtext" class="form-control rich-editor" rows="5" placeholder="Enter subtext or rich HTML template..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold small">Assign immediately to business (Optional)</label>
+                        <select name="assign_to_business_id" id="inputAssignToBusiness" class="form-select form-select-sm">
+                            <option value="">-- Do not assign now (just save template) --</option>
+                            <option value="all">Assign to All Businesses</option>
+                            @foreach($businesses as $b)
+                                @php
+                                    $bTrans = $b->translations->where('lang_id', $lang_id)->first() ?? $b->translations->first();
+                                    $bName = $bTrans?->name ?? ('Business #' . $b->id);
+                                @endphp
+                                <option value="{{ $b->id }}">Assign to {{ $bName }}</option>
+                            @endforeach
+                        </select>
+                        <div class="text-muted small mt-1">If selected, this option will be immediately locked to the chosen business so you can test it on the front-end right away!</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">
@@ -501,8 +520,11 @@
                     </table>
                 </div>
             </div>
-            <div class="modal-footer bg-light py-2">
+            <div class="modal-footer bg-light py-2 d-flex justify-content-between">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-success" id="btnSaveAllAssignments">
+                    <em class="icon ni ni-check-circle me-1"></em> Save All Locks
+                </button>
             </div>
         </div>
     </div>
@@ -537,7 +559,10 @@ $(document).ready(function() {
 
     @if(session('open_manage_field'))
         $('#modalManageTemplates').modal('show');
-        $('#tab-{{ session("open_manage_field") }}').tab('show');
+        let targetTabBtn = $('a[href="#tab-tpl-{{ session("open_manage_field") }}"]');
+        if (targetTabBtn.length) {
+            targetTabBtn.tab('show');
+        }
     @endif
 
     // AJAX Template Option Deletion
@@ -578,7 +603,7 @@ $(document).ready(function() {
                             tbody.html('<tr><td colspan="4" class="text-center py-4 text-muted">No template variations defined yet for this section. Click <strong>Add New Option</strong> above.</td></tr>');
                         }
 
-                        let tabBadge = $('#tab-' + fieldKey + ' .badge');
+                        let tabBadge = $('a[href="#tab-tpl-' + fieldKey + '"] .badge');
                         if (tabBadge.length) {
                             tabBadge.text(response.remaining_count);
                         }
@@ -892,6 +917,62 @@ $(document).ready(function() {
                 alert('Failed to save assignment. Please try again.');
             }
         });
+    });
+
+    // Save all assignments from modal at once
+    $('#btnSaveAllAssignments').on('click', function(e) {
+        e.preventDefault();
+        let btn = $(this);
+        let rows = $('#assignTableBody tr');
+        let calls = [];
+
+        rows.each(function() {
+            let field = $(this).data('field');
+            let select = $(this).find('select');
+            let templateId = select.val();
+            if (templateId) {
+                calls.push({ field: field, template_id: templateId });
+            }
+        });
+
+        if (calls.length === 0) {
+            alert('No template options selected to save.');
+            return;
+        }
+
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Saving all...');
+
+        let promises = calls.map(function(item) {
+            return $.ajax({
+                url: '{{ route("admin.content-templates.assign-single") }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    entity_type: 'business',
+                    entity_id: currentModalBizId,
+                    field_key: item.field,
+                    template_id: item.template_id,
+                    lang_id: '{{ $lang_id }}'
+                }
+            });
+        });
+
+        $.when.apply($, promises).then(function() {
+            btn.html('<em class="icon ni ni-check-circle me-1"></em> All Saved!');
+            setTimeout(function() {
+                location.reload();
+            }, 700);
+        }).fail(function() {
+            btn.prop('disabled', false).html('<em class="icon ni ni-check-circle me-1"></em> Save All Locks');
+            alert('Failed to save some assignments. Please try again.');
+        });
+    });
+
+    // Clicking an assigned option number in the table opens the assignment modal for that business
+    $(document).on('click', '.btn-cell-assign', function(e) {
+        e.preventDefault();
+        let row = $(this).closest('tr');
+        row.find('.btn-view-assign').trigger('click');
     });
 });
 </script>

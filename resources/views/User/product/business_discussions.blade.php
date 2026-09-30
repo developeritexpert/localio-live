@@ -710,7 +710,7 @@
                 
 
                 <!-- More About Business Component -->
-                <x-more-about-business :business="$business" />
+                <x-more-about-business :business="$business" current="discussions" />
             </div>
         </div>
     </div>

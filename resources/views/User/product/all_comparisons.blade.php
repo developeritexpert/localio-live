@@ -323,7 +323,7 @@
                 @endif
 
                 <!-- Widget 3: More About Business Card -->
-                <x-more-about-business :business="$business" />
+                <x-more-about-business :business="$business" current="compare" />
             </div>
         </div>
     </div>

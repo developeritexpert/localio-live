@@ -791,7 +791,7 @@
                     @endif
 
                     <!-- 6. More about Business Card -->
-                    <x-more-about-business :business="$business" />
+                    <x-more-about-business :business="$business" current="faqs" />
 
                 </div>
             </div>

@@ -202,6 +202,20 @@ class ContentTemplateService
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
+        'profile_alternatives' => [
+            'label' => 'ALTERNATIVES SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Alternatives Headline (H2)',
+            'field2_label' => 'Alternatives Subtext',
+            'description' => 'Headline and subtext for the Alternatives & Competitors section on the Business Profile page.',
+        ],
+        'profile_faqs' => [
+            'label' => 'FAQS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'FAQs Headline (H2)',
+            'field2_label' => 'FAQs Subtext',
+            'description' => 'Headline and subtext for the Frequently Asked Questions section on the Business Profile page.',
+        ],
         'profile_compare' => [
             'label' => 'COMPARE SECTION',
             'type' => 'combined',
@@ -1084,6 +1098,34 @@ class ContentTemplateService
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_alternatives' => [
+                1 => [
+                    'headline' => '[business] Alternatives & Competitors',
+                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
+                ],
+                2 => [
+                    'headline' => 'Best Alternatives to [business]',
+                    'subtext' => '<p>Explore top-rated competitors and alternative solutions that match your business needs.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] Competitors & Similar Software',
+                    'subtext' => '<p>Compare popular alternatives to [business] based on verified reviews and features.</p>',
+                ],
+            ],
+            'profile_faqs' => [
+                1 => [
+                    'headline' => 'Frequently asked questions',
+                    'subtext' => '<p>Everything you need to know about [business] and its services.</p>',
+                ],
+                2 => [
+                    'headline' => 'Frequently Asked Questions About [business]',
+                    'subtext' => '<p>Find quick answers to common questions about [business] features, pricing, and support.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] FAQs & Common Questions',
+                    'subtext' => '<p>Got questions about [business]? Explore answers to the most frequently asked questions.</p>',
+                ],
+            ],
             'profile_what_offers' => [
                 1 => 'What [business] offers',
                 2 => 'What does [business] offer?',
@@ -1196,12 +1238,13 @@ class ContentTemplateService
         }
 
         if ($langId > 1) {
-            $hasAnySectionTemplate = ContentTemplate::where('section_group', $sectionGroup)
-                ->where('lang_id', $langId)
-                ->exists();
+            foreach (array_keys($fieldDefs) as $fKey) {
+                $hasFieldTemplate = ContentTemplate::where('section_group', $sectionGroup)
+                    ->where('field_key', $fKey)
+                    ->where('lang_id', $langId)
+                    ->exists();
 
-            if (!$hasAnySectionTemplate) {
-                foreach (array_keys($fieldDefs) as $fKey) {
+                if (!$hasFieldTemplate) {
                     $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
                         ->where('field_key', $fKey)
                         ->where('lang_id', 1)
@@ -1827,6 +1870,59 @@ class ContentTemplateService
             $fieldKey = 'discussions_empty_headline';
         }
         $category = $business->category ?? $business->subCategories->first();
+
+        // Check if there is an explicit assignment for this specific field_key
+        $hasExplicitAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+            ->where('entity_id', $business->id)
+            ->where('lang_id', $langId)
+            ->where('field_key', $fieldKey)
+            ->exists();
+
+        // Cross-section fallback: if profile_faqs has no explicit lock, check faqs_h1 from business_faqs
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_faqs') {
+            $hasFaqAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'faqs_h1')
+                ->exists();
+            if ($hasFaqAsgn) {
+                $faqH1Tpl = self::getTemplateForResolution('business', $business->id, 'faqs_h1', $langId, 'business_faqs');
+                $faqSubTpl = self::getTemplateForResolution('business', $business->id, 'faqs_subtext', $langId, 'business_faqs');
+                if ($faqH1Tpl) {
+                    $headline = self::replacePlaceholders($faqH1Tpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = $faqSubTpl ? self::replacePlaceholders($faqSubTpl->headline ?: $faqSubTpl->subtext, $category, null, $langId, $business, $extraTags) : '';
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $faqH1Tpl,
+                        'option_number' => $faqH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_alternatives has no explicit lock, check alternatives_h1 from business_alternatives
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_alternatives') {
+            $hasAltAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'alternatives_h1')
+                ->exists();
+            if ($hasAltAsgn) {
+                $altH1Tpl = self::getTemplateForResolution('business', $business->id, 'alternatives_h1', $langId, 'business_alternatives');
+                $altSubTpl = self::getTemplateForResolution('business', $business->id, 'alternatives_subtext', $langId, 'business_alternatives');
+                if ($altH1Tpl) {
+                    $headline = self::replacePlaceholders($altH1Tpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = $altSubTpl ? self::replacePlaceholders($altSubTpl->headline ?: $altSubTpl->subtext, $category, null, $langId, $business, $extraTags) : '';
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $altH1Tpl,
+                        'option_number' => $altH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
 
         $template = self::getTemplateForResolution('business', $business->id, $fieldKey, $langId);
 

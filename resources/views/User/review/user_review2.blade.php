@@ -840,7 +840,7 @@
 
                         <!-- 3. More about Business Sub-pages Card -->
                         <div class="main_feature_lg">
-                            <x-more-about-business :business="$business" />
+                            <x-more-about-business :business="$business" current="reviews" />
                         </div>
 
                         <!-- 4. Sticky Sidebar Navigation Card — LAST item, sticks as you scroll -->
