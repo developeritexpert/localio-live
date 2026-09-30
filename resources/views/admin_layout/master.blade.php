@@ -283,6 +283,11 @@
                                                 <span class="nk-menu-text">Business Compare</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.comparison', 'admin.content-templates.a-vs-b-comparisons') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.comparison') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">A vs B Comparisons</span>
+                                            </a>
+                                        </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-reviews') ? 'active' : '' }}">
                                             <a href="{{ route('admin.content-templates.business-reviews') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Business Reviews</span>

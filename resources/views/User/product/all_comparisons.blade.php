@@ -139,33 +139,60 @@
             <!-- Left Side: Title 1 & Description 1 AND Interactive Compare Tool -->
             <div class="col-lg-8 col-12">
                 <!-- Section 1: Intro Text -->
-                @if($compTitle1)
+                @php
+                    $resolvedCompOverview = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'compare_overview',
+                        getCurrentLanguageID()
+                    );
+                    $finalCompOverviewTitle = !empty($resolvedCompOverview['headline']) ? $resolvedCompOverview['headline'] : $compTitle1;
+                    $finalCompOverviewDesc = !empty($resolvedCompOverview['subtext']) ? $resolvedCompOverview['subtext'] : $compDesc1;
+                @endphp
+                @if($finalCompOverviewTitle || $finalCompOverviewDesc)
                     <div class="mb-4">
-                        <h2 style="margin-bottom: 12px;">
-                            {{ $compTitle1 }}
-                        </h2>
-                        @if($compDesc1)
+                        @if($finalCompOverviewTitle)
+                            <h2 style="margin-bottom: 12px;">
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompOverviewTitle) !!}
+                            </h2>
+                        @endif
+                        @if($finalCompOverviewDesc)
                             <div class="content_box" style="font-size: 15px; color: #4a5568; line-height: 1.6;">
-                                {!! $compDesc1 !!}
+                                {!! $finalCompOverviewDesc !!}
                             </div>
                         @endif
                     </div>
                 @endif
 
                 <!-- Section 2: Interactive Compare Tool Box (Replacing 2nd text) -->
+                @php
+                    $compareSubtext = static_text('compare_with_any_provider_desc');
+                    if (empty($compareSubtext) || $compareSubtext === 'compare_with_any_provider_desc') {
+                        $compareSubtext = 'Select another provider from the search box below to generate an instant side-by-side comparison.';
+                    }
+                    $resolvedCompTool = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'compare_interactive_tool',
+                        getCurrentLanguageID()
+                    );
+                    $finalCompToolHeadline = !empty($resolvedCompTool['headline']) ? $resolvedCompTool['headline'] : ('Compare ' . $bName . ' with any provider');
+                    $finalCompToolSubtext = !empty($resolvedCompTool['subtext']) ? $resolvedCompTool['subtext'] : $compareSubtext;
+
+                    $resolvedCompPlaceholder = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'compare_search_placeholder',
+                        getCurrentLanguageID()
+                    );
+                    $finalCompSearchPlaceholder = !empty($resolvedCompPlaceholder['headline']) ? $resolvedCompPlaceholder['headline'] : (static_text('search_product_to_compare_placeholder') ?: 'Search business to compare...');
+                @endphp
                 <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1.5px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0,0,0,0.03); overflow: visible !important;">
                     <h3 style="margin-bottom: 6px;">
-                        Compare {{ $bName }} with any provider
+                        {!! \App\Services\ContentTemplateService::cleanHeading($finalCompToolHeadline) !!}
                     </h3>
-                    @php
-                        $compareSubtext = static_text('compare_with_any_provider_desc');
-                        if (empty($compareSubtext) || $compareSubtext === 'compare_with_any_provider_desc') {
-                            $compareSubtext = 'Select another provider from the search box below to generate an instant side-by-side comparison.';
-                        }
-                    @endphp
-                    <p>
-                        {{ $compareSubtext }}
-                    </p>
+                    @if(!empty($finalCompToolSubtext))
+                    <div style="margin: 0 0 12px 0; color: #475569; font-size: 15px;">
+                        {!! $finalCompToolSubtext !!}
+                    </div>
+                    @endif
 
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
@@ -183,7 +210,7 @@
                         <div id="compareSearchInputWrapper" class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
                             <div style="position: relative; display: flex; align-items: center;">
                                 <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
-                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-8" placeholder="{{ static_text('search_product_to_compare_placeholder') ?: 'Search business to compare...' }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-8" placeholder="{{ $finalCompSearchPlaceholder }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
                             </div>
                             <!-- Custom Auto-complete Container -->
                             <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
@@ -331,15 +358,26 @@
 
 <!-- Section 2: Popular {{ $bName }} comparisons (Top 6 Most Clicked/Popular) -->
 @if(isset($popularComparisons) && count($popularComparisons) > 0)
+@php
+    $resolvedCompPop = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'compare_popular',
+        getCurrentLanguageID()
+    );
+    $finalCompPopHeadline = !empty($resolvedCompPop['headline']) ? $resolvedCompPop['headline'] : ('Popular ' . $bName . ' comparisons');
+    $finalCompPopSubtext = !empty($resolvedCompPop['subtext']) ? $resolvedCompPop['subtext'] : ('See how ' . $bName . ' compares to top competitors.');
+@endphp
 <section class="compare-section py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
         <div class="hd_text mb-4">
             <h2 style="margin-bottom: 6px;">
-                Popular {{ $bName }} comparisons
+                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompPopHeadline) !!}
             </h2>
-            <p style="margin: 0;">
-                See how {{ $bName }} compares to top competitors.
-            </p>
+            @if(!empty($finalCompPopSubtext))
+            <div style="margin: 0; color: #475569; font-size: 15px;">
+                {!! $finalCompPopSubtext !!}
+            </div>
+            @endif
         </div>
 
         <div class="row g-4">
@@ -396,15 +434,26 @@
 
 <!-- Section 3: Recently viewed comparisons (3-6 items) -->
 @if(isset($recentlyViewedComparisons) && count($recentlyViewedComparisons) > 0)
+@php
+    $resolvedCompRec = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'compare_recent',
+        getCurrentLanguageID()
+    );
+    $finalCompRecHeadline = !empty($resolvedCompRec['headline']) ? $resolvedCompRec['headline'] : 'Recently viewed comparisons';
+    $finalCompRecSubtext = !empty($resolvedCompRec['subtext']) ? $resolvedCompRec['subtext'] : ('Comparisons of ' . $bName . ' recently viewed by users.');
+@endphp
 <section class="compare-section py-5" style="background-color: #ffffff !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
         <div class="hd_text mb-4">
             <h2 style="margin-bottom: 6px;">
-                Recently viewed comparisons
+                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompRecHeadline) !!}
             </h2>
-            <p>
-                Comparisons of {{ $bName }} recently viewed by users.
-            </p>
+            @if(!empty($finalCompRecSubtext))
+            <div style="margin: 0; color: #475569; font-size: 15px;">
+                {!! $finalCompRecSubtext !!}
+            </div>
+            @endif
         </div>
 
         <div class="row g-4">
@@ -461,15 +510,26 @@
 
 <!-- Explore Subcategories Section (Matching Category Page) -->
 @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+@php
+    $resolvedCompExplore = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'compare_explore',
+        getCurrentLanguageID()
+    );
+    $finalCompExploreHeadline = !empty($resolvedCompExplore['headline']) ? $resolvedCompExplore['headline'] : ($exploreSubcategories['title'] ?? 'Explore categories');
+    $finalCompExploreSubtext = !empty($resolvedCompExplore['subtext']) ? $resolvedCompExplore['subtext'] : 'Browse specialized categories to find the exact tools and solutions for your requirements.';
+@endphp
 <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 style="margin-bottom: 6px;">
-                {{ $exploreSubcategories['title'] }}
+                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompExploreHeadline) !!}
             </h2>
-            <p>
-                Browse specialized categories to find the exact tools and solutions for your requirements.
-            </p>
+            @if(!empty($finalCompExploreSubtext))
+            <div style="margin: 0; color: #475569; font-size: 15px;">
+                {!! $finalCompExploreSubtext !!}
+            </div>
+            @endif
         </div>
 
         <div class="row g-3">
@@ -514,6 +574,40 @@
     </div>
 </section>
 @endif
+
+<!-- Discussions Section (From business details page) -->
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+    @php
+        $totalDiscsCount = $business->discussions()->count();
+        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'compare_page_discussions',
+            getCurrentLanguageID(),
+            ['[count]' => number_format($totalDiscsCount)]
+        );
+        $finalBizDiscHeadline = null;
+        $finalBizDiscSubtext = null;
+        if (!empty($resolvedBizDiscussions['headline'])) {
+            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+            }
+        }
+        if (!empty($resolvedBizDiscussions['subtext'])) {
+            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+        }
+
+        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'compare_discussions_prompt_placeholder',
+            getCurrentLanguageID()
+        );
+        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
+    @endphp
+    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
+    </div>
+</section>
 
 @endsection
 

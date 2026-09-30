@@ -27,6 +27,29 @@
     $catSlug = $cat?->translation?->slug ?? $cat?->translations?->first()?->slug ?? null;
 
     $hasAffiliated = $businesses->contains(fn($b) => !empty($b->is_affiliate));
+
+    $curLangId = getCurrentLanguageID();
+    $comparisonH1Data = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_h1', $curLangId);
+    $finalCompH1 = !empty($comparisonH1Data['headline']) ? $comparisonH1Data['headline'] : (
+        count($businesses) >= 2
+            ? $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') . ': Comparison'
+            : (count($businesses) == 1 ? ($businesses[0]->translations->first()?->name ?? '') . ': Comparison' : 'Businesses Comparison')
+    );
+    $finalCompSubtext = !empty($comparisonH1Data['subtext']) ? $comparisonH1Data['subtext'] : (
+        !empty($catName)
+            ? 'Learn more from our team about ' . $catName . ' pricing, features, and user ratings in our side-by-side comparison guide.'
+            : 'Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.'
+    );
+
+    $prosConsData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_pros_cons', $curLangId);
+    $finalProsConsHeadline = !empty($prosConsData['headline']) ? $prosConsData['headline'] : 'Pros and cons';
+    $finalProsConsSubtext = !empty($prosConsData['subtext']) ? $prosConsData['subtext'] : null;
+
+    $reviewsData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_reviews', $curLangId);
+    $finalReviewsHeadline = !empty($reviewsData['headline']) ? $reviewsData['headline'] : 'Reviews';
+
+    $alternativesData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_alternatives', $curLangId);
+    $finalAlternativesHeadline = !empty($alternativesData['headline']) ? $alternativesData['headline'] : 'Alternatives';
 @endphp
 @if(isset($businesses) && count($businesses) > 0)
 <!-- Sticky Comparison Top Banner (Shows on scroll below fixed header) -->
@@ -133,22 +156,16 @@
             <div class="comparison-header-left">
                 <div class="top_head">
                     <h1 style="font-size: 28px !important; color: #002347; margin: 0;">
-                        @if (count($businesses) >= 2)
-                            {{ $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') }}: Comparison
-                        @elseif (count($businesses) == 1)
-                            {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
-                        @else
-                            Businesses Comparison
-                        @endif
+                        {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                     </h1>
                     <p class="text-meta">{{ static_text('last_updated_prefix') ?: 'Last updated' }} {{ now()->subDay()->format('F j, Y') }}</p>
-                    <p style="margin-bottom: 0; ">
-                        @if(!empty($catName))
-                            Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
+                    <div style="margin-bottom: 0;">
+                        @if(str_contains($finalCompSubtext, '<p>') || str_contains($finalCompSubtext, '<br>'))
+                            {!! $finalCompSubtext !!}
                         @else
-                            Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.
+                            <p style="margin-bottom: 0;">{!! $finalCompSubtext !!}</p>
                         @endif
-                    </p>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-12 mt-4 mt-lg-0">
@@ -505,6 +522,14 @@
 
                     @if($businessesWithProCons->isNotEmpty())
                     <div class="pros_cons_comp_sec my-4" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="crm_hd mb-4">
+                            <div class="crm_lft">
+                                <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalProsConsHeadline) !!}</h2>
+                                @if(!empty($finalProsConsSubtext))
+                                    <p class="text-muted mt-2 mb-0">{!! $finalProsConsSubtext !!}</p>
+                                @endif
+                            </div>
+                        </div>
                         <div class="row g-4">
                             @foreach ($businesses as $index => $business)
                                 @php
@@ -719,7 +744,7 @@
             <div class="crm_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="margin: 0;">Reviews</h2>
+                        <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalReviewsHeadline) !!}</h2>
                     </div>
                 </div>
 
@@ -1194,7 +1219,7 @@
                 {{-- Section Title --}}
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="margin: 0;">Alternatives</h2>
+                        <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalAlternativesHeadline) !!}</h2>
                     </div>
                 </div>
 

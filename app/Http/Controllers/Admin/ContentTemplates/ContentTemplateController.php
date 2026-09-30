@@ -219,6 +219,7 @@ class ContentTemplateController extends Controller
     public function businessCompare(Request $request) { return $this->genericBusinessView($request, 'business_compare', \App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS, 'Business Compare'); }
     public function businessReviews(Request $request) { return $this->genericBusinessView($request, 'business_reviews', \App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS, 'Business Reviews'); }
     public function businessDiscussions(Request $request) { return $this->genericBusinessView($request, 'business_discussions', \App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS, 'Business Discussions'); }
+    public function comparison(Request $request) { return $this->genericCategoryView($request, 'comparison', \App\Services\ContentTemplateService::COMPARISON_FIELDS, 'A vs B Comparisons'); }
 
     private function genericCategoryView(Request $request, $sectionGroup, $fieldDefs, $title)
     {
@@ -720,7 +721,7 @@ class ContentTemplateController extends Controller
         $request->validate([
             'entity_type'   => 'required|string|in:category,feature,business',
             'entity_id'     => 'required|integer',
-            'section_group' => 'nullable|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings',
+            'section_group' => 'nullable|string|in:category,category_faqs,category_discussions,business_profile,business_alternatives,business_faqs,business_compare,business_reviews,business_discussions,features,criteria_ratings,comparison',
             'lang_id'       => 'nullable|integer',
         ]);
 
@@ -756,6 +757,8 @@ class ContentTemplateController extends Controller
             $query->whereIn('field_key', array_keys(ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS));
         } elseif ($sectionGroup === 'features') {
             $query->whereIn('field_key', array_keys(ContentTemplateService::FEATURE_FIELDS));
+        } elseif ($sectionGroup === 'comparison') {
+            $query->whereIn('field_key', array_keys(ContentTemplateService::COMPARISON_FIELDS));
         }
 
         $deleted = $query->delete();
