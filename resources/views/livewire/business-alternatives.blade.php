@@ -80,46 +80,16 @@
 
             $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
         }
-
-        if ($affiliatedTableBusinesses->count() < 10) {
-            $moreCatNonAff = \App\Models\Business::where('id', '!=', $business->id)
-                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
-                ->where('status', 1)
-                ->whereIn('category_id', $bCategoryIds)
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
-                    'category.ratingCriteria'
-                ])
-                ->get()
-                ->sortByDesc(function($b) {
-                    return $b->display_rating ?? 0;
-                })
-                ->take(10 - $affiliatedTableBusinesses->count());
-
-            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreCatNonAff);
-        }
-
-        if ($affiliatedTableBusinesses->count() < 10) {
-            $moreActive = \App\Models\Business::where('id', '!=', $business->id)
-                ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
-                ->where('status', 1)
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
-                    'category.ratingCriteria'
-                ])
-                ->get()
-                ->sortByDesc(function($b) {
-                    return $b->display_rating ?? 0;
-                })
-                ->take(10 - $affiliatedTableBusinesses->count());
-
-            $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreActive);
-        }
+        // ONLY affiliated businesses allowed
     }
 
-    $tableRowsList = collect([$business])->merge($affiliatedTableBusinesses);
+    $affiliatedTableBusinesses = $affiliatedTableBusinesses->where('is_affiliate', 1);
+
+    // In these tables show ONLY affiliated businesses
+    $tableRowsList = collect($business && $business->is_affiliate ? [$business] : [])
+        ->merge($affiliatedTableBusinesses)
+        ->filter(fn($b) => (int)($b->is_affiliate ?? 0) === 1)
+        ->unique('id');
 @endphp
 
 
@@ -497,6 +467,7 @@ foreach ($altCriteria as $criterion) {
         </div>
     </section>
 
+    @if(isset($tableRowsList) && $tableRowsList->count() > 0)
     <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
     <section class="comparison-table-sec py-4">
         <div class="container">
@@ -538,6 +509,9 @@ foreach ($altCriteria as $criterion) {
                                     </thead>
                                     <tbody>
                                         @foreach($tableRowsList as $rowBiz)
+                                            @if(empty($rowBiz->is_affiliate))
+                                                @continue
+                                            @endif
                                             @php
                                                 $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
                                                 $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
@@ -568,7 +542,7 @@ foreach ($altCriteria as $criterion) {
                                                     }
                                                 }
                                             @endphp
-                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
+                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="top-product-small-logo" >
@@ -578,7 +552,7 @@ foreach ($altCriteria as $criterion) {
                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                                                 {{ $rName }}
                                                             </a>
-                                                            @if($loop->first)
+                                                            @if($rowBiz->id === $business->id)
                                                                 <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">{{ static_text('current_listing_badge') ?: 'Current' }}</span>
                                                             @endif
                                                         </div>
@@ -649,6 +623,9 @@ foreach ($altCriteria as $criterion) {
                                         </thead>
                                         <tbody>
                                             @foreach($tableRowsList as $rowBiz)
+                                                @if(empty($rowBiz->is_affiliate))
+                                                    @continue
+                                                @endif
                                                 @php
                                                     $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
                                                     $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
@@ -673,7 +650,7 @@ foreach ($altCriteria as $criterion) {
                                                     $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
                                                     $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
                                                 @endphp
-                                                <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
+                                                <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
                                                     <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="top-product-small-logo">
@@ -683,7 +660,7 @@ foreach ($altCriteria as $criterion) {
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                                                     {{ $rName }}
                                                                 </a>
-                                                                @if($loop->first)
+                                                                @if($rowBiz->id === $business->id)
                                                                     <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">{{ static_text('current_listing_badge') ?: 'Current' }}</span>
                                                                 @endif
                                                             </div>
@@ -727,6 +704,7 @@ foreach ($altCriteria as $criterion) {
             </div>
         </div>
     </section>
+    @endif
 
     <!-- All Alternatives Listing Section -->
     <section class="top-automotive-sec top_rate_pg light py-4" id="allAlternativesSection">
@@ -1449,15 +1427,20 @@ foreach ($altCriteria as $criterion) {
 
     <!-- Top 10 Businesses with Details (Exact design matching category page) -->
     @php
-        $detailedBusinesses = isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0 
+        $detailedBusinesses = (isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0 
             ? $topAffiliatedBusinesses 
-            : ($affiliatedTableBusinesses ?? collect());
+            : ($affiliatedTableBusinesses ?? collect()))
+            ->filter(fn($b) => (int)($b->is_affiliate ?? 0) === 1)
+            ->values();
     @endphp
     @if(isset($detailedBusinesses) && count($detailedBusinesses) > 0)
     <section class="revie_img_sec border_bt bg_new_grey">
         <div class="container">
             <div class="mb-4">
                 @foreach($detailedBusinesses as $index => $biz)
+                @if(empty($biz->is_affiliate))
+                    @continue
+                @endif
                 @php
                     $curLangId = getCurrentLanguageID();
                     $bizTrans = $biz->translations->firstWhere('lang_id', $curLangId) ?? ($biz->translations->firstWhere('language_id', $curLangId) ?? $biz->translations->first());

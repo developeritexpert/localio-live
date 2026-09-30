@@ -404,52 +404,7 @@ class BusinessAlternatives extends Component
 
             $topBusinesses = $topBusinesses->merge($moreAff);
         }
-
-        // 3. If < 10, fetch non-affiliated businesses from target categories
-        if ($topBusinesses->count() < 10) {
-            $moreCatNonAff = Business::with([
-                'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
-                'category.ratingCriteria',
-                'usps',
-                'products.prices'
-            ])
-            ->where('id', '!=', $this->businessId)
-            ->whereNotIn('id', $topBusinesses->pluck('id'))
-            ->where('status', 1)
-            ->where(function ($q) use ($allTargetCategoryIds) {
-                $q->whereIn('category_id', $allTargetCategoryIds)
-                  ->orWhereHas('subCategories', function ($subQ) use ($allTargetCategoryIds) {
-                      $subQ->whereIn('categories.id', $allTargetCategoryIds);
-                  });
-            })
-            ->get()
-            ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
-            ->take(10 - $topBusinesses->count());
-
-            $topBusinesses = $topBusinesses->merge($moreCatNonAff);
-        }
-
-        // 4. If < 10, fetch any other active businesses
-        if ($topBusinesses->count() < 10) {
-            $moreActive = Business::with([
-                'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
-                'category.ratingCriteria',
-                'usps',
-                'products.prices'
-            ])
-            ->where('id', '!=', $this->businessId)
-            ->whereNotIn('id', $topBusinesses->pluck('id'))
-            ->where('status', 1)
-            ->get()
-            ->sortByDesc(fn($b) => $b->display_rating ?? 0.0)
-            ->take(10 - $topBusinesses->count());
-
-            $topBusinesses = $topBusinesses->merge($moreActive);
-        }
-
-        return $topBusinesses;
+        return $topBusinesses->where('is_affiliate', 1);
     }
 
         public function getProductsProperty()
