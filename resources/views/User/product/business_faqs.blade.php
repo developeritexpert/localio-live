@@ -740,7 +740,7 @@
                     @if($sidebarDiscussions->isNotEmpty())
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">Recent discussions</h2>
+                            <h2 class="m-0 card-h-title underline-hover">Recent discussions</h2>
                             <a href="#sectionDiscussions" class="view-review-link">
                                 View all
                             </a>
@@ -897,7 +897,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $listingsCount }} {{ $listingsCount == 1 ? 'Listing' : 'Listings' }}
+                                {{ $listingsCount }} {{ $listingsCount == 1 ? 'listing' : 'listings' }}
                             </span>
                         </div>
                     </div>
