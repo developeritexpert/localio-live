@@ -952,7 +952,7 @@
                                         <div class="msp_intro_section">
                                             <div class="msp_intro">
                                                 <h2 class="msp_title">Get Started!</h2>
-                                                <p class="msp_subtitle">Create an Account and Secure Your Exclusive Logo Today.</p>
+                                                <p class="msp_subtitle">Write reviews, join discussions, and share your experience.</p>
 
                                                 <div class="msp_buttons">
                                                     <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
@@ -963,105 +963,6 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div class="msp_bottom_nav">
-                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('discover')">
-                                                <span>{{ $footerContents['discover'] ?? 'Discover' }}</span>
-                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('legal')">
-                                                <span>{{ $footerContents['company'] ?? 'Legal' }}</span>
-                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('localio')">
-                                                <span>Localio</span>
-                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <!-- VIEW 2: SUB-LINKS VIEW -->
-                                    <div class="msp_view msp_view_sub" id="mspViewSub">
-                                        <div class="msp_sub_top">
-                                            <button type="button" class="msp_back_btn" onclick="msp_backToMain()" aria-label="Back">
-                                                <i class="fa-solid fa-chevron-left"></i>
-                                                <span id="mspSubTitle">Discover</span>
-                                            </button>
-                                        </div>
-
-                                        <div class="msp_sub_content">
-                                            <!-- Discover Sublinks -->
-                                            <ul class="msp_sub_list" id="mspListDiscover">
-                                                <li>
-                                                    <a href="{{ route('category', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['categories'] ?? 'All categories' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('top-rated-product', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['top_ratedt'] ?? 'Top rated' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('write-review', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        Write review
-                                                    </a>
-                                                </li>
-                                            </ul>
-
-                                            <!-- Legal Sublinks -->
-                                            <ul class="msp_sub_list" id="mspListLegal" style="display: none;">
-                                                <li>
-                                                    <a href="{{ route('terms-condition', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('privacy-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['privacy_policy'] ?? 'Privacy policy' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('cookie-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['cookie_policy'] ?? 'Cookie policy' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('community-guidelines', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['community_guidelines'] ?? 'Community guidelines' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('affiliate-disclosure', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['affiliate_disclosure'] ?? 'Affiliate disclosure' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('copyright-dmca-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['copyright_dmca_policy'] ?? 'Copyright & DMCA policy' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('legal-notice', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['legal_notice'] ?? 'Legal notice' }}
-                                                    </a>
-                                                </li>
-                                            </ul>
-
-                                            <!-- Localio Sublinks -->
-                                            <ul class="msp_sub_list" id="mspListLocalio" style="display: none;">
-                                                <li>
-                                                    <a href="{{ route('who-we-are', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['about-localio'] ?? 'About Localio' }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('contact', ['locale' => session('lang_code', app()->getLocale())]) }}">
-                                                        {{ $footerContents['contact'] ?? 'Contact' }}
-                                                    </a>
-                                                </li>
-                                            </ul>
                                         </div>
                                     </div>
 
@@ -1397,7 +1298,7 @@
                                                 <ul class="flat_list">
                                                     <li>
                                                         <a href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">
-                                                            <span>{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</span>
+                                                            <span>{{ $headerContent['top_rated'] ?? ($headerContent['top_rated_product'] ?? 'Top rated') }}</span>
                                                         </a>
                                                     </li>
                                                     @foreach($sidebarCategories as $cat)
