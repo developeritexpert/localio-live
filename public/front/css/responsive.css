@@ -3432,7 +3432,6 @@
     }
 
     .mobile-cat-nav-link.active {
-        font-weight: 700;
         color: #ffffff !important;
         opacity: 1;
     }
@@ -6204,6 +6203,7 @@
         height: auto !important;
         min-height: 240px !important;
         padding: 16px !important;
+        width: 240px;
     }
 
     .ft-btm-rgt .select-menu.active .options {
@@ -6220,6 +6220,7 @@
 
     .latest_review_part_footer .reviews_block .slick-track {
         padding-bottom: 0;
+        width: calc(100% + 32px) !important;
     }
 
     .latest_review_part_footer .review-slide-column {
@@ -6903,7 +6904,6 @@
         max-width: 100%;
     }
 
-    /* 
     .banner_row,
     .footer-wrp,
     .top-auto-btm,
@@ -6923,7 +6923,7 @@
     .compare-section,
     .product_comp_sec {
         padding: 0 10px;
-    } */
+    }
 
     #pvc_section {
         padding: 120px 0px 10px !important;
@@ -6951,9 +6951,9 @@
         margin: 0;
     }
 
-    .category-description-text p:not(:first-of-type),
-    .faq-subtext-container p:not(:first-of-type) {
-        margin: 0;
+    .category-description-text p:not(:first-of-type):not(:empty),
+    .faq-subtext-container p:not(:first-of-type):not(:empty) {
+        margin-top: 4px;
     }
 
     .business-preview-images,
@@ -6982,6 +6982,11 @@
       }      */
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 0 !important;
+    }
+
+    .review-slide-column.slick-slide {
+        width: 80vw !important;
+        margin-right: 15px; 
     }
 }
 
@@ -7195,7 +7200,3 @@
 }
 
 /* ====================================END RESPONSIVE CODE======================================= */
-
-
-
-

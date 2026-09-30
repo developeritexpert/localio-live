@@ -73,7 +73,7 @@
                     <div class="top_head d-flex align-items-center gap-3">
                         <div>
                             <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
+                                <h1 style="margin: 0; color: #1e3050; line-height: 1.2;">
                                     {{ $mainHeadline }}
                                 </h1>
                             </div>
@@ -415,7 +415,7 @@
                         border: 1px solid #eef2f6;
                         text-align: left;
                      ">
-                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2" style="flex-wrap: wrap;">
                         <p style="
                             margin: 0;
                             font-weight: 700;

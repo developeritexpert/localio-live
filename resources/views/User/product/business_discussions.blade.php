@@ -669,7 +669,7 @@
                         border: 1px solid #eef2f6;
                         text-align: left;
                      ">
-                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2" style="flex-wrap: wrap;">
                         <p style="
                             margin: 0;
                             font-weight: 700;
