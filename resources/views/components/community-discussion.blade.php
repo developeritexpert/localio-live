@@ -61,7 +61,7 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
-    $finalHeadline = $headline ?? $discHeadline ?? (($bName ? $bName . ' ' : '') . 'discussions (' . number_format($totalDiscs) . ')');
+    $finalHeadline = $headline ?? $discHeadline ?? ( 'Discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
     $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
     $finalEmptyHeadline = $emptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.'));
@@ -111,9 +111,9 @@
         </div>
         <div class="col-sm-4 col-12">
             <select id="previewDiscussionSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
-                <option value="popular">{{ static_text('sort_top_popular') ?: 'Top / Popular' }}<option>
-                <option value="recent">{{ static_text('sort_most_recent_disc') ?: 'Most Recent' }}<option>
-                <option value="commented">{{ static_text('sort_most_active_disc') ?: 'Most Active' }}<option>
+                <option value="popular" label="{{ static_text('sort_top_popular') ?: 'Top / Popular' }}">{{ static_text('sort_top_popular') ?: 'Top / Popular' }}</option>
+                <option value="recent" label="{{ static_text('sort_most_recent_disc') ?: 'Most Recent' }}">{{ static_text('sort_most_recent_disc') ?: 'Most Recent' }}</option>
+                <option value="commented" label="{{ static_text('sort_most_active_disc') ?: 'Most Active' }}">{{ static_text('sort_most_active_disc') ?: 'Most Active' }}</option>
             </select>
         </div>
     </form>
@@ -522,13 +522,13 @@
 </div>
 
 <!-- New Discussion Modal -->
-<div class="modal fade" id="newDiscussionModal" tabindex="-1" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
+<div class="modal fade" id="newDiscussionModal" tabindex="-1" role="dialog" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 16px; border: 1px solid #eef2f6; overflow: hidden;">
             <div class="modal-header px-4 py-3" style="border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
-                <h5 class="modal-title fw-bold" id="newDiscussionModalLabel" style="color: #002347; font-size: 17px;">
+                <h3 class="modal-title fw-bold" id="newDiscussionModalLabel" style="color: #002347; font-size: 17px;">
                     <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 22px; height: 22px; margin-right: 8px; vertical-align: -3px;"> Start a Discussion about {{ $bName }}
-                </h5>
+                </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('business.discussion.store') }}" method="POST">

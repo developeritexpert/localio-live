@@ -4,10 +4,9 @@
         cursor: pointer !important;
         text-decoration: none !important;
         color: inherit !important;
-        transition: all 0.2s ease !important;
     }
     .top-products-grid .top-product-card:hover {
-        box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
         border-color: #cbd5e1 !important;
         text-decoration: none !important;
     }
@@ -125,7 +124,7 @@
                                 @if(!empty($bizName))
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bizSlug]) }}"
                                    class="top-product-card d-flex align-items-center gap-2 p-3 text-decoration-none"
-                                   style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; text-decoration: none !important; transition: all 0.2s ease;">
+                                   style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px;">
                                     <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                         <x-business-logo :business="$business" :name="$bizName" />
                                     </div>

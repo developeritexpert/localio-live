@@ -3678,6 +3678,14 @@
 }
 
 @media only screen and (max-width: 767px) {
+    .sticky-comp-col {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    .sticky-comp-actions {
+        display: none;
+    }
+
     .pvc_sec .policy-nav {
         margin-bottom: 30px;
     }
@@ -6986,7 +6994,7 @@
 
     .review-slide-column.slick-slide {
         width: 80vw !important;
-        margin-right: 15px; 
+        margin-right: 15px;
     }
 }
 

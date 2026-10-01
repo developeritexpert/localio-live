@@ -284,7 +284,7 @@
                                 @foreach($faqCategories as $cat)
                                     @if($cat->faqs && $cat->faqs->count() > 0)
                                     <div class="faq-category-group mb-4" data-category-group="{{ $cat->id }}">
-                                        <h3 class="category-group-headline mb-3" style="">
+                                        <h2 class="category-group-headline mb-3" style="">
                                             {{ $cat->name }}
                                         </h3>
 
@@ -301,7 +301,7 @@
                                                         {{ $trans->question }}
                                                     </button>
                                                 </h3>
-                                                <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
+                                                <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" role="region" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                     <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                         <div class="faq-answer-text mb-3">
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
@@ -342,7 +342,7 @@
                             @if(isset($uncategorizedFaqs) && $uncategorizedFaqs->count() > 0)
                                 <div class="faq-category-group mb-4" data-category-group="general">
                                     @if(isset($faqCategories) && $faqCategories->count() > 0)
-                                    <h3 class="category-group-headline mb-3" style=" ">
+                                    <h2 class="category-group-headline mb-3" style=" ">
                                         General
                                     </h3>
                                     @endif
@@ -360,7 +360,7 @@
                                                     {{ $trans->question }}
                                                 </button>
                                             </h3>
-                                            <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
+                                            <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" role="region" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                 <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                     <div class="faq-answer-text mb-3">
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
@@ -590,7 +590,7 @@
                         </div>
                         @endif
 
-                        <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                             <div style="display: flex; gap: 8px;">
                                 @auth

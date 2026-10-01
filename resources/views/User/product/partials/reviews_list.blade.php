@@ -57,7 +57,7 @@
 
 
                             <div class="asn-rating" style="display: flex; flex-direction: column; ">
-                                <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                                <div style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
@@ -71,6 +71,7 @@
         @endif
         
                                     @endif
+                                </div>
                                 @if($review->user && $review->user->job_title)
                                     <p class="asn-rating-p" style="color: #5b6b7a ; margin: 0; line-height: 1;  font-weight:500;  text-decoration: none;">{{ $review->user->job_title }}</p>
                                 @endif
@@ -86,7 +87,8 @@
                             {{ $review->translations->first()->title ?? '' }}
                             
                         </h3>
-                    <style>
+                    @push('styles')
+<style>
     .rating-stars {
         cursor: pointer !important;
     }
@@ -97,7 +99,8 @@
     .rating {
     cursor: pointer;
 }
-</style>  
+</style>
+@endpush  
                         @if(!empty($hasUserRatings))
                     <!-- Ratings below headline -->
                     <div class="rating light" style="display: flex; align-items: center; gap: 6px; ">
@@ -455,7 +458,7 @@
                                 @endif
                             </div>
                             <div class="asn-rating">
-                                <h6 style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
+                                <div style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
@@ -469,6 +472,7 @@
         @endif
         
                                     @endif
+                                </div>
                                 @if($review->user && $review->user->job_title)
                                     <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title }}</p>
                                 @endif

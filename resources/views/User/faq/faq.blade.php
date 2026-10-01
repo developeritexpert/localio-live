@@ -234,9 +234,9 @@
 
                                 <div class="faq-category-group mb-4" data-category-group="{{ $catSlug }}">
                                     @if(count($faqCategories) > 1)
-                                    <h3 class="category-group-headline mb-3" style=" color: #1e3050;">
+                                    <h2 class="category-group-headline mb-3" style=" color: #1e3050;">
                                         {{ $categoryName }}
-                                    </h3>
+                                    </h2>
                                     @endif
 
                                     <div class="accordion" id="topRatedFaqAccordion_{{ $catSlug }}">
@@ -255,7 +255,7 @@
                                                         {{ $question }}
                                                     </button>
                                                 </h3>
-                                                <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
+                                                <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse" role="region" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
                                                     <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
