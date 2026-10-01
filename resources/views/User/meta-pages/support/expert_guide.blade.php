@@ -26,7 +26,7 @@
                     </div>
                     <div class="banner_image_col">
                        <div class="banner_image">
-                          <img src="{{asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image">
+                          <img src="{{asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image" alt="Banner">
                        </div>
                     </div>
                 </div>

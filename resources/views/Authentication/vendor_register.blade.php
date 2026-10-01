@@ -75,7 +75,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Business Email</label>
-                        <input type="email" class="form-control" name="business_email" id="emailAddress">
+                        <input type="email" class="form-control" name="business_email" id="pageEmailAddress">
                         <span id="emailAddressError" class="error text-danger"></span>
 
                         @if ($errors->has('business_email'))
@@ -109,8 +109,8 @@
 
                     <div class="form-group">
                         <label for="">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                        <span id="togglePassword" class="eye-icon" >
+                        <input type="password" class="form-control" id="pagePassword" name="password" placeholder="Password">
+                        <span id="pageTogglePassword" class="eye-icon" >
                             <i class="fa fa-eye-slash"></i>
                         </span>
                     </div>

@@ -49,7 +49,7 @@
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                                             <div class="user-avatar">
                                                 @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
-                                                    <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="{{ asset($user->profile_image) }}" alt="{{ $userName }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
                                                     <span style="font-weight: 600; color: #ffffff; font-size: 18px;">{{ strtoupper(substr($userName, 0, 1)) }}</span>
                                                 @endif

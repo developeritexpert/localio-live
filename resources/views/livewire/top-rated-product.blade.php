@@ -1,5 +1,7 @@
 <div>
-    <style>
+    <div>
+@push('styles')
+<style>
     [x-cloak] {
         display: none !important;
     }
@@ -221,6 +223,7 @@
         font-weight: 600;
     }
     </style>
+@endpush
     <section class="top-rated-heading-sec">
         <div class="container">
             <div class=" bread_row row align-items-center mb-2">
@@ -258,10 +261,10 @@
                     <div class="col-md-8 text-start">
                         <h1>{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
                         <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
-                        <p style=" margin-bottom: 0;">
+                        <div style=" margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website
                             Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
-                        </p>
+                        </div>
                     </div>
                     <div class="col-md-4 mt-4 mt-md-0 text-start">
                         <div class="verified-insights-card"
@@ -302,9 +305,9 @@
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
-                                <p style="font-size: 15px; margin-bottom: 0;">
+                                <div style="font-size: 15px; margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
-                        </p>
+                        </div>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
@@ -327,7 +330,7 @@
                         <div class="auto-choice-lft">
                             <!-- Mobile Filter Drawer Header -->
                             <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
-                                <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                <h3 class="m-0 fw-bold fs-6" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h3>
                                 <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -704,7 +707,7 @@
                                     </button>
 
                                     <div class="dropdown-menu dropdown-menu-end shadow-sm"
-                                        aria-labelledby="topRatedSortDropdownBtn"
+                                        aria-labelledby="topRatedSortDropdownBtn" role="menu"
                                         style="min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 6px 0; margin-top: 6px; overflow: hidden;">
                                         @foreach($sortOptionsMap as $val => $label)
                                         <button type="button" wire:click="setSortBy('{{ $val }}')"
@@ -858,7 +861,7 @@
                                                                 <div class="d-flex align-items-center size18">
                                                                     <div class="grn_chk"
                                                                         style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                        <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
@@ -870,7 +873,7 @@
                                                                 <div class="d-flex align-items-center size18">
                                                                     <div class="grn_chk"
                                                                         style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                        <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
@@ -880,7 +883,7 @@
                                                                 <div class="d-flex align-items-center size18">
                                                                     <div class="grn_chk"
                                                                         style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                        <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
@@ -890,7 +893,7 @@
                                                                 <div class="d-flex align-items-center size18">
                                                                     <div class="grn_chk"
                                                                         style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                        <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
@@ -979,10 +982,10 @@
                                                 <div class="text-center mt-4 w-100"
                                                     style="padding: 15px 25px; border-radius: 8px;">
 
-                                                    <h6
+                                                    <div
                                                         style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
                                                         Starting price
-                                                    </h6>
+                                                    </div>
 
                                                     <h3
                                                         style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
@@ -1128,7 +1131,10 @@
             </div> --}}
             @endif
         </div>
-        <livewire:compare-bar />
+    </div>
+</div>
+</div>
+<livewire:compare-bar />
     </section>
     @if(($products->currentPage() ?? ($page ?? 1)) == 1)
     <!-- Explore Top-Rated Categories Section -->
@@ -1138,8 +1144,8 @@
             <div class="text-start mb-4">
                 <h2 style="margin-bottom: 8px;">
                     {{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style=" margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover
-                    top-rated software, services, and solutions across our most popular categories.' !!}</p>
+                <div style=" margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover
+                    top-rated software, services, and solutions across our most popular categories.' !!}</div>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1320,7 +1326,7 @@
                                 </button>
                             </h3>
                             <div id="faqCollapse{{ $fIndex }}"
-                                class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}"
+                                class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" role="region"
                                 aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
                                 <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                     {!! $faq['answer'] !!}
@@ -1446,4 +1452,5 @@
 
 
 
+</div>
 </div>

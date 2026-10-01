@@ -37,13 +37,13 @@
                 <form class="login_form" action="{{ route('login_process') }}" method="POST" autocomplete="off">
                     @csrf
                     <div class="form-group">
-                    <x-google-input type="text" name="email" id="emailAddress" label="Email"  :attributes="['autocomplete' => 'off']" />
+                    <x-google-input type="text" name="email" id="pageEmailAddress" label="Email"  :attributes="['autocomplete' => 'off']" />
                     </div>
                     <div class="form-group">
-                        {{-- <input type="password" class="form-control" id="password" name="password" placeholder="Password"> --}}
-                        <x-google-input type="password" name="password" id="password"  label="Password" :attributes="['autocomplete' => 'off']" />
+                        {{-- <input type="password" class="form-control" id="pagePassword" name="password" placeholder="Password"> --}}
+                        <x-google-input type="password" name="password" id="pagePassword"  label="Password" :attributes="['autocomplete' => 'off']" />
 
-                        <span id="togglePassword" class="eye-icon">
+                        <span id="pageTogglePassword" class="eye-icon">
                             <i class="fa fa-eye-slash"></i>
                         </span>
                     </div>
@@ -68,9 +68,9 @@
     if (!form) return;
 
     const emailInput = document.getElementById('emailAddress');
-    const passwordInput = document.getElementById('password');
+    const passwordInput = document.getElementById('pagePassword');
 
-    document.getElementById('togglePassword')?.addEventListener('click', function () {
+    document.getElementById('pageTogglePassword')?.addEventListener('click', function () {
 
         const wrapper = icon.closest('#password');
         const input = wrapper.querySelector('input');

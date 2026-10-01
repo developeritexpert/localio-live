@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            \App\Http\Middleware\W3cHtmlCompliance::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             // new after Install laravel-localization for language
             // \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,

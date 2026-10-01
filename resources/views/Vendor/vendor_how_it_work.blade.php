@@ -22,7 +22,7 @@
                 </div>
                 <div class="banner_image_col">
                     <div class="banner_image">
-                        <img src="{{ asset($work->banner_image_left) }}" class="banner_top_image">
+                        <img src="{{ asset($work->banner_image_left) }}" class="banner_top_image" alt="Banner">
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                                         <div class="inn_h">
                                             <div class="sl_main">
                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
-                                                    <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
+                                                    <p class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
                                                     <div wire:key="wishlist-container-{{ $business->id }}">
                                                         @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
                                                     </div>
