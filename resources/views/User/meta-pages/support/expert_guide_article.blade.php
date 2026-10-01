@@ -94,7 +94,7 @@
                     <div class="card-body knwlege-detail-rgt">
                         <h2>{{ $translationarticle->translationForCurrentLang->title ?? 'Untitled' }}</h2>
                         <div class="cntnt-box mt-3">
-                            <p><strong>{!! $translationarticle->translationForCurrentLang->description ?? '' !!}</strong></p>
+                            <div><strong>{!! $translationarticle->translationForCurrentLang->description ?? '' !!}</strong></div>
 
                             @foreach ($translationarticle->contents as $index => $content)
                                 @if ($content)

@@ -1,3 +1,6 @@
+@extends('user_layout.master')
+
+@push('styles')
 <style>
 .comparison-box-link {
     color: inherit;
@@ -9,11 +12,8 @@
     color: inherit;
     text-decoration: none;
 }
-
 </style>
-
-
-@extends('user_layout.master')
+@endpush
 
 @section('body_class', 'product-page-body')
 
@@ -94,9 +94,7 @@ $pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBi
 <script>
     console.log("Gallery script block rendered");
 
-    let modalImages = {
-        !!json_encode($images) !!
-    };
+    let modalImages = {!! json_encode($images) !!};
     let currentModalIndex = 0;
 
     function updateModalImage(index) {
@@ -270,9 +268,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 </script>
 
 @endif
+@push('styles')
 @include('User.partials.business_detail_styles')
+@endpush
 <div data-business-id="{{ $business->id }}">
-    <section class="product_sec">
+    <div class="product_sec">
         <div class="inner_banner_sec">
             <div class="container-fluid" style="display: flex; justify-content: space-between;">
                 <div class="inner_banr_content">
@@ -318,7 +318,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             </div>
         </div>
 
-    </section>
+    </div>
 
     <section class="asn_main_sec asn_main_sec_2" id="section1">
         <div class="asn_dv">
@@ -793,6 +793,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     </div>
                                 </div>
                             </div>
+@push('styles')
                             <style>
                                 #prosConsTab .nav-link.active {
                                     color: #1e3050 !important;
@@ -808,6 +809,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     background-color: #1e3050;
                                 }
                             </style>
+@endpush
 
                             @if(!empty($business->pro_cons_summary))
                             <div class="mt-4">
@@ -1186,13 +1188,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class=" ">
                                 <div class="">
                                     <div class="inner_table_1">
-                                        <section class="is-asana light">
+                                        
 
-                                        </section>
-
-                                        <section class="reviews-section">
-
-                                        </section>
+                                        
 
                                         @php
                                         $currentLangId = $lang_id ?? getCurrentLanguageID();
@@ -1216,11 +1214,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         $uniqueCons = $consList->unique()->take(5);
                                         @endphp
 
-                                        <div class="modal fade" id="reviewPopup" tabindex="-1" aria-labelledby="reviewPopupLabel" aria-hidden="true">
+                                        <div class="modal fade" id="reviewPopup" tabindex="-1" role="dialog" aria-labelledby="reviewPopupLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content border-0 shadow-lg">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h5>
+                                                        <h3 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h3>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
 
@@ -1242,9 +1240,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             </div>
                                         </div>
 
-                                        <section class="choice-business d-none" id="softweretopic">
-
-                                        </section>
+                                        
 
                                         @php
                                         // Decode items safely
@@ -1509,6 +1505,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 </h3>
                                                                 <div id="faqCollapse{{ $index }}"
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                    role="region"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
                                                                     <div class="accordion-body rich-text-content" style="background-color: #fff;">
@@ -1664,7 +1661,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </section>
                                         @endif
 
-                                        <section class="about_asn_2 light pt-0 p_50 d-none">
+                                        <div class="about_asn_2 light pt-0 p_50 d-none">
 
                                             <div class="about_asn_content">
                                                 <div class="hd_content asan-text-para">
@@ -1673,10 +1670,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                             </div>
 
-                                        </section>
+                                        </div>
 
                                         <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important; background-color:#fdfdfd;">
                                             <div class="container">
+@push('styles')
                                                 <style>
                                                     .review-sidebar-sticky {
                                                         position: sticky !important;
@@ -1845,6 +1843,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     }
                                                     @endif
                                                 </style>
+@endpush
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
                                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
@@ -2054,6 +2053,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             </svg>
                                                                         </button>
                                                                         <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm"
+                                                                            role="menu"
                                                                             aria-labelledby="reviewFilterDropdownBtn"
                                                                             style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
                                                                             <div class="mb-3 pb-2 border-bottom">
@@ -2073,9 +2073,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                             <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13px; color: #5b6b7a; flex-shrink: 0;">
                                                                                                 <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
                                                                                             </span>
-                                                                                            <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                                                                                <div class="progress-fill" style="width: {{ $percent }}%; height: 100%;"></div>
-                                                                                            </div>
+                                                                                            <span class="progress-box" style="display: block; flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
+                                                                                                <span class="progress-fill" style="display: block; width: {{ $percent }}%; height: 100%;"></span>
+                                                                                            </span>
                                                                                             <span style="font-size: 13px; color: #5b6b7a; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
                                                                                         </label>
                                                                                     </li>
@@ -2106,6 +2106,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </button>
 
                                                                     <div class="dropdown-menu dropdown-menu-end shadow-sm"
+                                                                        role="menu"
                                                                         aria-labelledby="reviewSortDropdownBtn"
                                                                         style="min-width: 200px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 6px 0; margin-top: 6px; overflow: hidden;">
                                                                         @foreach($reviewSortOptions as $val => $label)
@@ -2305,9 +2306,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
                         </div>
                         <div class="mt-5">
-                            <section class="subs_sec light p_50 d-none" id="section16">
+                            <div class="subs_sec light p_50 d-none" id="section16">
                                 <x-news-letter-subscription />
-                            </section>
+                            </div>
                         </div>
                     </div>
                     <!-- all new part section end here  -->
@@ -2346,25 +2347,25 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <ul class="list-unstyled">
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="feature">
                                             </div>
                                             <p class="m-0">Free domain & SSL certificate</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="feature">
                                             </div>
                                             <p class="m-0">Customizable automatic updates</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="feature">
                                             </div>
                                             <p class="m-0">Scalable performance management</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="feature">
                                             </div>
                                             <p class="m-0">DDoS & malware protection</p>
                                         </li>
@@ -2939,6 +2940,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                     </div>
 
+@push('styles')
                                     <style>
                                         .mobile-sticky-bottom-nav {
                                             position: fixed;
@@ -2971,13 +2973,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             }
                                         }
                                     </style>
+@endpush
 
                         </div>
                     </div>
 
                 </div>
             </div>
-            <!-- </div> -->
+            </div>
     </section>
 
 
@@ -3709,7 +3712,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 </button>
 
                 <div class="gallery-image-wrap">
-                    <img id="modalActiveImg" src=""
+                    <img id="modalActiveImg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'/%3E"
                         alt="Active View"
                         style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; display: block; width: auto; height: auto;">
                 </div>
@@ -3924,6 +3927,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     });
 </script>
 
+@push('styles')
 <style>
 @media (max-width: 767.98px) {
     .section14-breakdown-collapsible,
@@ -3948,6 +3952,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 }
 </style>
+@endpush
 
 <script>
     function toggleSection14ReviewBreakdown() {
@@ -3979,6 +3984,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 </script>
 
+@push('styles')
 <style>
 @media (max-width: 767.98px) {
     .bottom-breakdown-collapsible {
@@ -4000,6 +4006,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 }
 </style>
+@endpush
 
 <script>
     function toggleBottomReviewBreakdown() {
@@ -4058,12 +4065,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 </script>
 
 <!-- Report Issue Modal -->
-<div class="modal fade" id="reportReviewModal" tabindex="-1" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportReviewModal" tabindex="-1" role="dialog" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h5>
+                    <h3 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h3>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">{{ static_text('select_issue_reason_subtext') ?: 'Select the reason that best describes the issue' }}</p>
                 </div>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
@@ -4090,10 +4097,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
 
                         <div>
-                            <h6 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
+                            <div class="fw-semibold m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
                                 <i class="fas {{ $opt['icon'] }} me-1 text-muted" style="font-size: 13px;"></i>
                                 {{ $opt['value'] }}
-                            </h6>
+                            </div>
                             <p class="text-muted m-0" style="font-size: 13px; line-height: 1.4;">{{ $opt['desc'] }}</p>
                         </div>
                     </div>
@@ -4113,6 +4120,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         </div>
     </div>
 </div>
+@push('styles')
 <style>
     .report-review-option-card:hover {
         border-color: #94a3b8 !important;
@@ -4133,6 +4141,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         color: #ffffff !important;
     }
 </style>
+@endpush
 <script>
     function openReviewReportModal(reviewId) {
         @if(!auth()->check())

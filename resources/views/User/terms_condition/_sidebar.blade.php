@@ -39,6 +39,7 @@
     ];
 @endphp
 
+@push('styles')
 <style>
     .policy-nav .legal-sidebar-menu {
         list-style: none;
@@ -64,6 +65,7 @@
         color: #2563eb;
     }
 </style>
+@endpush
 
 <div class="policy-nav">
     <ul class="legal-sidebar-menu">

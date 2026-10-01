@@ -74,14 +74,17 @@
         <div class="back-image1">
            <img src="{{asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt="">
         </div>
+        <div class="back-image2">
            <img src="{{asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt="">
         </div>
      </section>
 
-@endsection
-
+@push('scripts')
 <script>
     $(window).on('load', function() {
         $('body').addClass('TrmsPricyPgCls');
     });
 </script>
+@endpush
+
+@endsection

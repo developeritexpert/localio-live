@@ -51,9 +51,9 @@
             </div>
         </div>
     </section>
-    <!-- end  -->
-    <!-- section trusted brands marquee -->
-    <section class="trusted-brands">
+    <!-- ==================== end  -->
+    <!-- ==================== section trusted brands marquee -->
+    <div class="trusted-brands">
         <div class="container">
             <div class="trst-brnd-wrp" style="display: none;">
                 {{-- <div class="brnd-wrp-lft">
@@ -84,13 +84,13 @@
                 </div>
             </div>
         </div>
-    </section>
-    <!-- section most-popular -->
+    </div>
+    <!-- ==================== section most-popular -->
     <section class="most-populr-sec light p_120">
         <div class="container">
             @if (isset($categories) && $categories->isNotEmpty())
                 <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
-                    <!-- Left Sidebar Column: Category list -->
+                    <!-- ==================== Left Sidebar Column: Category list -->
                     <div class="col-lg-3 col-12 mb-4 mb-lg-0">
                         <h2 class="popular-categories-title">{{ !empty($homeContents['most_popular']) ? $homeContents['most_popular'] : 'Most popular categories' }}</h2>
                         <div class="popular-categories-sidebar">
@@ -121,7 +121,7 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: Products/Businesses in active Category -->
+                    <!-- ==================== Right Column: Products/Businesses in active Category -->
                     <div class="col-lg-9 col-12">
                         <div class="tab-content popular-categories-content" id="v-pills-tabContent">
                             @php $activePaneSet = false; @endphp
@@ -137,14 +137,14 @@
                                         aria-labelledby="v-pills-{{ $category->id }}-tab" 
                                         tabindex="0">
                                         
-                                        <!-- Top Row: See all Category link -->
-                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center"style="display:flex;">
+                                        <!-- ==================== Top Row: See all Category link -->
+                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center" style="display:flex;">
                                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
                                                 {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
                                             </a>
                                         </div>
 
-                                        <!-- Grid of boxes (2 per row) -->
+                                        <!-- ==================== Grid of boxes (2 per row) -->
                                         <div class="row g-4 justify-content-start">
                                             @php
                                                 $businesses = $category->businesses
@@ -168,7 +168,7 @@
                                                             @if ($isBestValue)
                                                                 <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
                                                                     <div class="best-value-inline" >
-                                                                        <!-- <i class="fa-regular fa-thumbs-up"></i> -->
+                                                                        <!-- ==================== <i class="fa-regular fa-thumbs-up"></i> -->
                                                                         <i class="far fa-star text-warning"></i>
                                                                        <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                                                     </div>
@@ -212,7 +212,7 @@
                                                                 </div>
                                                             </div>
 
-                                                             <!-- Short Description -->
+                                                             <!-- ==================== Short Description -->
                                                              @if(!empty($business->translations->first()->short_description))
                                                                  <div class="mt-4 text-start" style="font-size: 13px; color: #5b6b7a; width: 100%;">
                                                                      {{ $business->translations->first()->short_description }}
@@ -295,7 +295,7 @@
             @endif
         </div>
     </section>
-    <!-- scetion exclusive deals -->
+    <!-- ==================== scetion exclusive deals -->
     {{-- <section class="xclusve-deal light p_120 ">
         <div class="section_hed xclu-m">
             <div class="container">
@@ -369,8 +369,8 @@
             </div>
         @endif
     </section> --}}
-    <!--  -------------------------------------------slider section start ------------------------------------->
-    <section class="outer_slider dark">
+    <!-- ==================== ====================slider section start ==================== -->
+    <div class="outer_slider dark">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
@@ -454,7 +454,7 @@
                                             <div class="joh_box">
                                                 <div class="joh_img">
                                                     @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
-                                                        <img src="{{ asset($review->user->profile_image) }}"
+                                                        <img src="{{ asset($review->user->profile_image) }}" alt="{{ $review->user->name ?? 'User' }}"
                                                             class="img-fluid profile-circle"
                                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
                                                             alt="User Image">
@@ -491,9 +491,9 @@
             </div>
         </div> --}}
         @livewire('latest-reviews')
-    </section>
-    <!--  -------------------------------------------slider section end ------------------------------------->
-    <!----------------------------------------- read section start --------------------------------------- -->
+    </div>
+    <!-- ==================== ====================slider section end ==================== -->
+    <!-- ==================== ==================== read section start ==================== -->
     {{-- <section class="read_sec_outer light p_120">
         <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
@@ -553,7 +553,7 @@
     </section> --}}
 
     @guest
-    <!-- section right-tool -->
+    <!-- ==================== section right-tool -->
     <section class="right_tool_sec dark ">
         <div class="container">
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
@@ -606,19 +606,21 @@
                 <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
                     alt="{{ $findToolLeftImage->meta_key }}">
             @endif
-            <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
+            <!-- ==================== <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
         </div>
         <div class="back-image2">
             @if (isset($findToolRightImage))
                 <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
                     alt="{{ $findToolRightImage->meta_key }}">
             @endif
-            <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
+            <!-- ==================== <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
         </div>
     </section>
     @endguest
 @endsection
 
+
+@push('scripts')
 <script>
     // document.addEventListener("DOMContentLoaded", function() {
     //     let element = document.querySelector(".most-populr-sec");
@@ -668,3 +670,4 @@
         });
     });
 </script>
+@endpush

@@ -50,7 +50,7 @@
             @endif
         >
             @if (!$multiple)
-                <option value="" selected disabled hidden></option>
+                <option value="" selected disabled hidden label="Select an option">Select an option</option>
             @endif
 
             @if (!empty($options))
@@ -105,8 +105,7 @@
             @if ($wireModel) wire:model.defer="{{ $wireModel }}" @endif
             onfocus="this.parentNode.classList.add('active')"
             onblur="if(!this.value) this.parentNode.classList.remove('active')"
-            autocomplete="{{ $type === 'password' ? 'new-password' : 'off' }}"
-        />
+            @if($type !== 'hidden') autocomplete="{{ $type === 'password' ? 'new-password' : 'off' }}" @endif>
     @endif
 
     @if ($helpText)

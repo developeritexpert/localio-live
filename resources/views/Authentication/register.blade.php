@@ -1,15 +1,15 @@
 @extends('user_layout.master')
 @section('content')
-    <section class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
+    <div class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
         <div class="bubble-wrp">
             <img src="{{ asset('front/img/small-bnnr-bg.png') ?? '' }}" alt="">
         </div>
-    </section>
-    <section class="contact_sec login_form p_120 pt-0 light">
+    </div>
+    <div class="contact_sec login_form p_120 pt-0 light">
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">{{ static_text('register_to_localio') }}</h2>
+                    <h1 class="text-center">{{ static_text('register_to_localio') }}</h1>
                     <p class="text-center">{{ static_text('create_an_account') }}</p>
                     {{-- <p class="text-center">as</p>
 
@@ -85,7 +85,7 @@
                     <div class="row">
                         <div class="form-group form-group_m">
                             <select name="company_size" id="companySize" class="form-control" style="border: 1px solid #ced4da; border-radius: 4px; height: 50px; padding: 10px 15px; color: #495057;">
-                                <option value="" disabled selected>Select Company Type/Size</option>
+                                <option value="" disabled selected label="Select Company Type/Size">Select Company Type/Size</option>
                                 <option value="Freelance/Solo">Freelance / Solo</option>
                                 <option value="Small Business (1-50 emp.)">Small Business (1-50 emp.)</option>
                                 <option value="Mid-Market (51-1000 emp.)">Mid-Market (51-1000 emp.)</option>
@@ -113,7 +113,7 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

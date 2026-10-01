@@ -1,0 +1,266 @@
+@php
+    if (!isset($hasUserRatings)) {
+        if (isset($business)) {
+            $hasUserRatings = $business->should_show_detailed_ratings ?? ($business->reviews->where('status', 'active')->count() >= 10);
+        } else {
+            $hasUserRatings = false;
+        }
+    }
+@endphp
+<div class="review-cntnt-btm">
+    @if ($reviews->isNotEmpty())
+        @foreach ($reviews as $review)
+            <div class="review_detl populr-alternative review-card" id="review-{{ $review->id }}" data-review-id="{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="  padding: 24px; margin-bottom: 24px; position: relative;">
+                
+                <!-- Top right actions (Date & Copy link) -->
+                <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
+                    <span class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</span>
+                </div>
+
+                <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
+                    <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
+                        <div class="asn-img" style="flex-shrink: 0;">
+                            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
+@if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                <img src="{{ asset($review->user->profile_image) }}"
+                                    class="img-fluid profile-circle"
+                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                    alt="User Image">
+                            @else
+                                <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: bold; font-size: 20px;">
+                                        @if ($review->user && $review->user->user_type === 'admin')
+                                            {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                        @else
+                                            {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                        @endif
+                                    </span>
+                                </div>
+                            @endif
+</a>
+                        </div>
+                        <div class="asn-rating" style="display: flex; flex-direction: column; ">
+                            <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                                @if ($review->user && $review->user->user_type === 'admin')
+                                    {{ $review->public_name ?? 'Public' }}
+                                @else
+                                    
+        @if($review->user)
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+                {{ method_exists($review->user, 'displayName') ? $review->user->displayName() : ($review->user->first_name ?? 'Anonymous') }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        
+                                @endif
+                            </p>
+                            @if($review->user && $review->user->job_title)
+                                <p style="font-size: 12px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
+                            @endif
+                            @if($review->user && $review->user->company_size)
+                                <p style="font-size: 12px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ function_exists('static_text') ? (static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size) : $review->user->company_size }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review_text size18" style="padding-right: 0;">
+                    @php
+                        $translation = $review->translations->firstWhere('language_id', getCurrentLanguageID());
+                        $title = $translation?->title ?? $review->translations->first()?->title ?? '';
+                        $description = $translation?->description ?? $review->description ?? 'No Review Available';
+                    @endphp
+
+                    @if(!empty($title))
+                        <h3 class="review-title" style="font-size: 18px !important; font-weight: 700 !important; margin-bottom: 12px;">
+                            {{ $title }}
+                        </h3>
+                    @endif
+                    
+                    @if(!empty($hasUserRatings))
+                    <!-- Ratings below headline -->
+                    <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <div class="inn_ul">
+                            <div class="rating-stars" style="display: flex; gap: 2px;">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= floor($review->rating))
+                                        <i class="fas fa-star text-warning"></i>
+                                    @elseif ($i - 0.5 <= $review->rating)
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-warning"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
+                        <p class="review-text">
+                            {!! nl2br(e(strip_tags($description))) !!}
+                        </p>
+                    </div>
+
+                    @php
+    $selectedPros = $review->selectedProCons->where('type', 'pro');
+    $selectedCons = $review->selectedProCons->where('type', 'con');
+@endphp
+
+@if($selectedPros->isNotEmpty())
+    <div style="margin-top: 18px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
+            {{ static_text('pros_label') ?: 'Pros' }}
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            @foreach($selectedPros as $pro)
+                <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #f0fdf4; color: #166534; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                    {{ $pro->text }}
+                </span>
+
+                
+            @endforeach
+        </div>
+    </div>
+@endif
+
+@if($selectedCons->isNotEmpty())
+    <div style="margin-top: 14px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
+            {{ static_text('cons_label') ?: 'Cons' }}
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            @foreach($selectedCons as $con)
+                <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #fef2f2; color: #991b1b; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                    {{ $con->text }}
+                </span>
+            @endforeach
+        </div>
+    </div>
+@endif
+                </div>
+
+                <div class="translaton-txt mt-2">
+                    <a href="javascript:void(0);"
+                        class="btn-toggle-translation"
+                        data-mode="translation"
+                        data-review-id="{{ $review->id }}"
+                        data-type="original"
+                        data-language-id="{{ getCurrentLanguageID() }}">
+                        {{ static_text('view_original_translation') ?: 'View Original' }}
+                    </a>
+                </div>
+
+                <!-- Bottom right actions (Report flag & Share) -->
+                <div class="review-actions-bottom-right" style="display:flex; justify-content: end; align-items: center; gap: 6px;">
+                    <button type="button" class="action-icon-btn" onclick="openReviewReportModal({{ $review->id }})" title="Report this review" style="background: transparent; border: none; padding: 0;">
+                        <i class="fas fa-flag" style="font-size: 13px; color: #94a3b8;"></i>
+                    </button>
+                    <button type="button" class="action-icon-btn" style="background: transparent; border: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: #94a3b8; cursor: pointer; outline: none; box-shadow: none; appearance: none; -webkit-appearance: none;" onclick="window.openShareModal('{{ url()->current() }}#review-{{ $review->id }}', 'Review on {{ config('app.name') }}', event)" title="Share this review" aria-label="Share this review">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        @endforeach
+    @else
+        <div class="p-4 text-center text-muted">
+            <p>{{ static_text('no_reviews_found') ?: 'No reviews found matching the selected criteria.' }}</p>
+        </div>
+    @endif
+</div>
+
+@php
+    $currentPage = $reviews->currentPage();
+    $lastPage = $reviews->lastPage();
+    $maxVisible = 7;
+
+    $startPage = max(1, $currentPage - floor($maxVisible / 2));
+    $endPage = min($lastPage, $startPage + $maxVisible - 1);
+
+    if ($endPage - $startPage + 1 < $maxVisible) {
+        $startPage = max(1, $endPage - $maxVisible + 1);
+    }
+    $showLeftDots = $startPage > 2;
+    $showRightDots = $endPage < $lastPage - 1;
+@endphp
+
+@if ($lastPage > 1)
+    <div class="btn-pages">
+        {{-- Previous Button (only if there's a previous page) --}}
+        @if ($currentPage > 1)
+            <a href="{{ $reviews->url($currentPage - 1) }}" class="pagination-btn pagination-arrow">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+        @endif
+
+        {{-- First Page --}}
+        @if ($startPage > 1)
+            <a href="{{ $reviews->url(1) }}" class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}">1</a>
+            @if ($showLeftDots)
+                <span class="pagination-dots">...</span>
+            @endif
+        @endif
+
+        {{-- Page Numbers --}}
+        @for ($page = $startPage; $page <= $endPage; $page++)
+            <a href="{{ $reviews->url($page) }}" class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}">
+                {{ $page }}
+            </a>
+        @endfor
+
+        {{-- Last Page --}}
+        @if ($endPage < $lastPage)
+            @if ($showRightDots)
+                <span class="pagination-dots">...</span>
+            @endif
+            <a href="{{ $reviews->url($lastPage) }}" class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}">
+                {{ $lastPage }}
+            </a>
+        @endif
+
+        {{-- Next Button (only if there's a next page) --}}
+        @if ($currentPage < $lastPage)
+            <a href="{{ $reviews->url($currentPage + 1) }}" class="pagination-btn pagination-arrow next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        @endif
+    </div>
+@endif
+
+<script>
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Link to review copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        } else {
+            // fallback
+            let textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('Link to review copied to clipboard!');
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+</script>

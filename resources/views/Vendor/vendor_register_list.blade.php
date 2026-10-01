@@ -1,15 +1,15 @@
 @extends('user_layout.master')
 @section('content')
-    <section class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
+    <div class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
         <div class="bubble-wrp">
             <img src="{{ asset('front/img/small-bnnr-bg.png') ?? '' }}" alt="">
         </div>
-    </section>
-    <section class="contact_sec login_form p_120 pt-0 light">
+    </div>
+    <div class="contact_sec login_form p_120 pt-0 light">
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">{{ static_text('register_to_localio') }}</h2>
+                    <h1 class="text-center">{{ static_text('register_to_localio') }}</h1>
                     <p class="text-center">{{ static_text('create_an_account') }}</p>
                     {{-- <p class="text-center">as</p>
 
@@ -96,11 +96,11 @@
                         $defaultCountry = auth()->user()?->country_id;
                     @endphp
 
-                    {{-- <div class="col-lg-6"> --}}
                         <div class="row">
-                        <div class="form-group form-group_m">
-                        <x-google-input type="select" name="business_id" id="business_id" label="Business" :options="$options" :alwaysActive="true" />
-
+                            <div class="form-group form-group_m">
+                                <x-google-input type="select" name="business_id" id="business_id" label="Business" :options="$options" :alwaysActive="true" />
+                            </div>
+                        </div>
 
                      <div class="accor-btn">
                         <button type="submit" class="cta cta_white register_btn">{{ static_text('sign_up') }}</button>
@@ -112,7 +112,7 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

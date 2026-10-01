@@ -36,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
             ini_set('max_execution_time', 120);
         }
         Blade::component('faq-section', FaqSection::class);
+        Blade::directive('csrf', function () {
+            return '<?php echo \'<input type="hidden" name="_token" value="\'.csrf_token().\'">\'; ?>';
+        });
         Schema::defaultStringLength(191);
 
         if ($this->app->runningInConsole()) {

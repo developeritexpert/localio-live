@@ -36,7 +36,7 @@
 @if ($hasLogo)
     <img src="{{ asset($logoSrc) }}" alt="{{ $bizName }}" class="{{ $imgClass }} {{ $class }}" @if($style) style="{{ $style }}" @endif>
 @else
-    <div class="business-initial-logo {{ $sizeClass }} {{ $class }}" @if($style) style="{{ $style }}" @endif aria-label="{{ $bizName }}">
+    <div role="img" class="business-initial-logo {{ $sizeClass }} {{ $class }}" @if($style) style="{{ $style }}" @endif aria-label="{{ $bizName }}">
         {{ $initial }}
     </div>
 @endif

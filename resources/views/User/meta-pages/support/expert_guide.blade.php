@@ -26,7 +26,7 @@
                     </div>
                     <div class="banner_image_col">
                        <div class="banner_image">
-                          <img src="{{asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image">
+                          <img src="{{asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image" alt="Expert Guide Banner">
                        </div>
                     </div>
                 </div>
@@ -52,14 +52,14 @@
                             <a class="in_cont_box"
                                href="{{ route('expert-guide-category', ['locale' => session('lang_code', 'en-us'), 'slug' => $translation->slug ?? '' ]) }}">
                                 <div class="read_img">
-                                    <div class="blog_thumb"><img class="r_img" src="{{ asset($category->image) }}" alt=""></div>
+                                    <div class="blog_thumb"><img class="r_img" src="{{ asset(str_replace(' ', '%20', $category->image ?? '')) }}" alt="{{ $translation->name ?? 'Category' }}"></div>
                                 </div>
                                 <div class="read_content_in">
                                     <div class="read_cont_h">
                                         <h3 class="read_text">{{ $translation->name ?? 'No Title' }}</h3>
                                     </div>
                                     <div class="read_para">
-                                        <p>{!! $translation->description ?? '<p>No Description</p>' !!}</p>
+                                        <div class="read_para_inner">{!! $translation->description ?? 'No Description' !!}</div>
                                     </div>
                                 </div>
                             </a>

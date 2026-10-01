@@ -19,9 +19,9 @@
                     <div class="banner_image_col">
                         <div class="banner_image">
                             @if ($help && $help->banner_img)
-                                <img src="{{ asset($help->banner_img ?? '') }}" class="banner_top_image">
+                                <img src="{{ asset($help->banner_img ?? '') }}" class="banner_top_image" alt="Help Center">
                             @else
-                                <img src="{{ asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image">
+                                <img src="{{ asset('front/img/hlp-cntr-bnr.png') }}" class="banner_top_image" alt="Help Center">
                             @endif
                         </div>
                     </div>
@@ -96,9 +96,9 @@
                             @if ($translation)
                                 <div class="col">
                                     <div class="border border_box rounded p-3 h-100">
-                                        <h5 class="mb-3">
+                                        <h3 class="h5 mb-3">
                                             {{ $translation->name }}
-                                        </h5>
+                                        </h3>
                                         <hr>
                                         <ul class="list-unstyled mb-0">
                                             @foreach ($category->articles->take(3)  as $article)

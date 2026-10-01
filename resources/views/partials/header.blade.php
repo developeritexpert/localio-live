@@ -9,7 +9,7 @@
     $routeName = $routeName ?? Route::currentRouteName() ?? 'none';
 ?>
     <header>
-        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
+        <div class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
@@ -193,6 +193,7 @@
                                 @endif
                             </div>
                         </div>
+@push('styles')
                         <style>
     .mobile-sidebar {
         position: fixed;
@@ -791,6 +792,7 @@
                             }
                         }
                         </style>
+@endpush
 
                         <div id="phone_screen" class="mobile_display">
                             <!-- Profile Icon -->
@@ -1025,6 +1027,7 @@
                         </script>
 
 
+@push('styles')
                         <style>
                         @media (min-width: 992px) {
                             .mobile-sidebar,
@@ -1195,6 +1198,7 @@
                             }
                         }
                         </style>
+@endpush
 
                         <!-- mobile nav -->
                         <div class="mobile-sidebar" id="mobile-sidebar">
@@ -1290,9 +1294,9 @@
                                         @else
                                             {{-- "Categories" heading is NOT a link --}}
                                             <div class="menu_section">
-                                                <h4 class="section_heading">
+                                                <h3 class="section_heading">
                                                     {{ $headerContent['Categories'] ?? 'Categories' }}
-                                                </h4>
+                                                </h3>
                                                 <hr class="section_divider">
 
                                                 <ul class="flat_list">
@@ -1475,7 +1479,7 @@
                 </div>
             </div>
 
-        </section>
+        </div>
     </header>
 
 

@@ -8,7 +8,6 @@
             </div>
             <div class="faq-accor">
                 <div class="accordion" id="accordionExample">
-                    <div class="accordion" id="accordionExample">
                         @if ($faqs->isNotEmpty() && $faqs->first()->translations->isNotEmpty())
                             <!-- Check if $faqs is not empty and at least one faq has translations -->
                             @foreach ($faqs->take(5) as $index => $faq)
@@ -31,7 +30,7 @@
                                             </button>
                                         </h3>
                                         <div id="collapseOne{{ $faq->id }}" class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
-                                            aria-labelledby="headingOne{{ $faq->id }}"
+                                            role="region" aria-labelledby="headingOne{{ $faq->id }}"
                                             data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 {!! $faqtranslation->answer ?? 'No answer available' !!}
@@ -71,7 +70,6 @@
                         @endif
 
                     </div>
-                </div>
             </div>
         </div>
     </div>

@@ -1,15 +1,15 @@
 @extends('user_layout.master')
 @section('content')
-    <section class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
+    <div class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
         <div class="bubble-wrp">
             <img src="{{ asset('front/img/small-bnnr-bg.png') ?? '' }}" alt="">
         </div>
-    </section>
-    <section class="contact_sec login_form  p_120 pt-0 light">
+    </div>
+    <div class="contact_sec login_form  p_120 pt-0 light">
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">Sign in or create an account</h2>
+                    <h1 class="text-center">Sign in or create an account</h1>
                     <p class="text-center">Continue with Google or use your email and password.</p>
                 </div>
                 <div class="scl_login">
@@ -59,7 +59,7 @@
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 
 
 <script>

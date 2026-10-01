@@ -81,8 +81,8 @@
     @hasSection('meta_robots')
     <meta name="robots" content="@yield('meta_robots')">
     @endif
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="clear-session-url" content="{{ route('clear.register.session') }}">
 
@@ -93,32 +93,32 @@
     </script>
 
 
-    <!-- Font Awesome (latest version) -->
+    <!-- ==================== Font Awesome (latest version) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Bootstrap 5.3.2 -->
+    <!-- ==================== Bootstrap 5.3.2 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Slick Carousel -->
+    <!-- ==================== Slick Carousel -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css"
         integrity="sha512-wR4oNhLBHf7smjy0K4oqzdWumd+r5/+6QO/vDda76MW5iug4PT7v86FoEkySIJft3XA0Ae6axhIvHrqwm793Nw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css"
         integrity="sha512-6lLUdeQ5uheMFbWm3CP271l14RsX1xtx+J5x2yeIDkkiBpeVTNhTqijME7GgRKKi6hCqovwCoBTlRBEC20M8Mg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- noUiSlider -->
+    <!-- ==================== noUiSlider -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
 
-    <!-- SweetAlert2 -->
+    <!-- ==================== SweetAlert2 -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-    <!--  Preview Reviews Slider -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- ====================  Preview Reviews Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     
@@ -131,7 +131,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
-    <!-- Custom Developer CSS -->
+    <!-- ==================== Custom Developer CSS -->
     <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?{{ time() }}">
     <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
     @stack('styles')
@@ -730,7 +730,6 @@
             margin: 0 !important;
             padding: 0 !important;
         }
-    }
 
     @media (max-width: 360px) {
 
@@ -1071,6 +1070,7 @@
         </div>
 
     </div>
+    @push('styles')
     <style>
     header .sec_head {
         top: 24px !important;
@@ -1080,6 +1080,7 @@
                 margin-top: 34px !important;
             } */
     </style>
+    @endpush
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const banner = document.querySelector('.transparency-banner');
@@ -1135,8 +1136,8 @@
     @yield('content')
     @livewireScripts
     @include('partials.prevent_page_expired')
-    <!-- content section end -->
-    <!-- footer  -->
+    <!-- ==================== content section end -->
+    <!-- ==================== footer  -->
     @php
     use App\Models\FooterContent;
     @endphp
@@ -1236,6 +1237,7 @@
                                     {{-- <li><a
                                             href="{{ route('exclusive-business-deals') }}">{{ $footerContents['exclusive_deal'] ?? 'Exclusive Deals' }}</a>
                                     </li> --}}
+                                </ul>
                             </div>
                             <div class="foot-col footer-dropdown">
                                 <p class="footer-title">
@@ -1321,7 +1323,7 @@
                 </div>
                 <div class="col-lg-3" style="display: none">
                     <div class="foot-row-right foot-col p_80">
-                        <h6> {{ $footerContents['follow_us'] ?? '' }}</h6>
+                        <p class="footer-title"> {{ $footerContents['follow_us'] ?? '' }}</p>
                         @php
                         $lang_id = getCurrentLanguageID(); // Ensure this function exists
                         $footerContents = FooterContent::where('lang_id', $lang_id)
@@ -1393,15 +1395,15 @@
                             <i class="fa-solid fa-chevron-down" style="color: #ffffff;"></i>
                         </div>
                         <div class="country-modal-backdrop" id="countryModalBackdrop" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();"></div>
-                        <ul class="options">
+                        <div class="options">
                             <div class="container">
                                 <div class="country-modal-header d-flex align-items-center justify-content-between">
-                                    <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">{{ static_text('choose_country_region_heading') ?: 'Choose your Country or region' }}</h3>
+                                    <h2 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">{{ static_text('choose_country_region_heading') ?: 'Choose your Country or region' }}</h2>
                                     <button type="button" class="close-country-menu" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();" aria-label="Close modal" title="Close">
                                         ✕
                                     </button>
                                 </div>
-                                <div class="footer-langs-container">
+                                <ul class="footer-langs-container" style="list-style: none; margin: 0; padding-left: 0;">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)
                                     <li>
@@ -1411,9 +1413,9 @@
                                     </li>
                                     @endif
                                     @endforeach
-                                </div>
+                                </ul>
                             </div>
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1464,7 +1466,7 @@
         </div>
     </div>
 
-    <!-- How Rankings Work Modal -->
+    <!-- ==================== How Rankings Work Modal -->
     <div class="modal-overlay" id="howRankingsWorkModal">
         <div class="circle_11">
             <button class="modal-close" onclick="closeRankingsModal()" aria-label="Close">✕</button>
@@ -1501,7 +1503,7 @@
     </div>
 
 
-    <!-- Updated Modal Structure -->
+    <!-- ==================== Updated Modal Structure -->
     <div id="login-modal"
         class=" login_modal modal-overlay fixed inset-0 bg-opacity-40 z-[9999] items-center justify-center p-4 login_modal"
         role="dialog" aria-labelledby="modal-title" aria-hidden="true" style="display: none;">
@@ -1513,16 +1515,14 @@
             </button>
 
             <div class="text-center">
-                <h2 id="modal-title" class="modal-title">
-                    <div class="hd_text">
-                        <h2 class="text-center">{{ static_text('sign_in_or_create_account_title') ?: 'Sign in or create an account' }}</h2>
-                    </div>
-                </h2>
+                <div class="hd_text">
+                    <h2 id="modal-title" class="modal-title text-center">{{ static_text('sign_in_or_create_account_title') ?: 'Sign in or create an account' }}</h2>
+                </div>
                 <p class="text-center" style="margin-bottom: 20px;">{{ static_text('continue_with_google_button') ?: 'Continue with Google' }} or use your email and password.
                 </p>
 
                 <div class="button">
-                    <section class="">
+                    <div class="login-body">
                         <div class="container">
                             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
 
@@ -1544,31 +1544,31 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Your existing form -->
+                                <!-- ==================== Your existing form -->
                                 <div class="or-separator">
                                     <span class="size16">or</span>
                                 </div>
                                 @if (session('loginerror'))
                                 <div class="text-danger">{{ session('loginerror') }}</div>
                                 @endif
-                                <!-- Continue with the rest of your form -->
+                                <!-- ==================== Continue with the rest of your form -->
                                 <form class="login_form" action="{{ route('login_process') }}" method="POST"
                                     autocomplete="off">
-                                    @csrf
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                                     <input type="hidden" name="url_intended" id="url_intended" value="">
                                     <input type="hidden" name="is_modal" value="1">
 
                                     <div class="form-group">
-                                        <x-google-input type="text" name="email" id="emailAddress" label="Email"
+                                        <x-google-input type="text" name="email" id="modalEmailAddress" label="Email"
                                             :attributes="['autocomplete' => 'off']" />
                                     </div>
                                     <div class="form-group">
                                         {{-- <input type="password" class="form-control" id="password" name="password" placeholder="Password"> --}}
-                                        <x-google-input type="password" name="password" id="password" label="Password"
+                                        <x-google-input type="password" name="password" id="modalPassword" label="Password"
                                             :attributes="['autocomplete' => 'off']" />
 
-                                        <span id="togglePassword" class="eye-icon">
+                                        <span id="modalTogglePassword" class="eye-icon">
                                             <i class="fa fa-eye-slash"></i>
                                         </span>
                                     </div>
@@ -1586,13 +1586,13 @@
                                 </form>
                             </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- register model pop up 30-07-2026 -->
+    <!-- ==================== register model pop up 30-07-2026 -->
     @if(session()->has('register_profile_needed'))
     @php
     $pendingEmail = session('register_email', '');
@@ -1647,7 +1647,7 @@
 
                 <div class="form-floating mb-3">
                     <select name="company_size" id="modalCompanySize" class="form-select" required>
-                        <option value="" selected disabled hidden></option>
+                        <option value="" selected disabled hidden label=""></option>
                         <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
                         <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)
                         </option>
@@ -1733,7 +1733,7 @@
     </script>
     @endif
 
-    <!-- register model pop end here -->
+    <!-- ==================== register model pop end here -->
     @stack('scripts')
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -1748,10 +1748,10 @@
         // ✅ All elements are now scoped within the modal with more flexible selectors
         const form = loginModal.querySelector('.login_form');
         const emailInput = loginModal.querySelector('input[name="email"]') || loginModal.querySelector(
-            '#emailAddress');
+            '#modalEmailAddress');
         const passwordInput = loginModal.querySelector('input[name="password"]') || loginModal.querySelector(
-            '#password');
-        const togglePassword = loginModal.querySelector('#togglePassword');
+            '#modalPassword');
+        const togglePassword = loginModal.querySelector('#modalTogglePassword') || loginModal.querySelector('#togglePassword');
 
 
 
@@ -1953,8 +1953,8 @@
     }
     </script>
 
-    <!----------------------------------------- read section end --------------------------------------- -->
-    <!-- AddToAny BEGIN -->
+    <!-- ==================== ==================== read section end ==================== -->
+    <!-- ==================== AddToAny BEGIN -->
     <script async src="https://static.addtoany.com/menu/page.js"></script>
     <script>
     window.addEventListener('open-modal', () => {
@@ -2025,7 +2025,7 @@
         integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script  src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
     <script src="{{ asset('front/js/script.js') }}?{{ time() }}"></script>
     <script src="{{ asset('front/js/tracking.js') }}?{{ time() }}"></script>
@@ -2059,7 +2059,7 @@
     });
 
     </script>
-    <script type="text/javascript">
+    <script >
     document.addEventListener('DOMContentLoaded', function() {
         const selectBtn = document.querySelector('.select-btn');
         const options = document.querySelectorAll('.option');
@@ -2075,11 +2075,11 @@
         });
     });
     </script>
-    <!-- header search js -->
+    <!-- ==================== header search js -->
     <script>
     $(document).ready(function() {
         function checkScroll() {
-            const $myElement = $('#myID');
+            const $myElement = $('.header-search-box');
             @if(Route::currentRouteName() === 'top-rated-product' || Route::currentRouteName() ===
                 'category.detail')
             $myElement.show();
@@ -2310,7 +2310,7 @@
 
 
 
-    <!-- Category Sidebar Drawer (Amazon Style) -->
+    <!-- ==================== Category Sidebar Drawer (Amazon Style) -->
     <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
     <div class="category-sidebar" id="categories-sidebar">
         <div class="category-sidebar-header">
@@ -2344,56 +2344,10 @@
 
         <div class="category-sidebar-viewport">
             <div class="category-sidebar-panels-container" id="sidebar-panels-container">
-                <!-- Main Panel -->
+                <!-- ==================== Main Panel -->
                 <div class="category-sidebar-panel active" id="main-panel">
-                    <!-- <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">Trending</h3>
-                        <ul class="sidebar-menu-list">
-                            <li>
-                                <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}">
-                                     Bestsellers / Top Rated
-                                </a><!-- Category Sidebar Drawer (Amazon Style) -->
-                    <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
-                    <div class="category-sidebar" id="categories-sidebar">
-                        <div class="category-sidebar-header">
-                            @if(Auth::check())
-                            <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"
-                                class="user-greeting">
-                                @if (Auth::user()->profile_image && Auth::user()->profile_image !==
-                                'front/img/default.png')
-                                <img src="{{ asset(Auth::user()->profile_image) }}" alt="Profile" class="profile-circle"
-                                    style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                                @else
-                                <div class="profile-circle"
-                                    style="width:40px; height:40px; border-radius:50%; background:#f76b1c; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                    <span style="color:#fff; font-weight:bold; font-size:18px;">
-                                        {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                                    </span>
-                                </div>
-                                @endif
-
-                                <span class="ms-2">Hello {{ Auth::user()->first_name }}</span>
-                            </a>
-                            @else
-                            <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}"
-                                class="user-greeting">
-                                <i class="fa-solid fa-circle-user avatar-icon"></i>
-                                <span>Hello, sign in</span>
-                            </a>
-                            @endif
-
-                            <button class="category-sidebar-close" id="categories-sidebar-close">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                        </li>
-                        </ul>
-                    </div>
-
-                    {{-- <div class="sidebar-menu-divider"></div> --}}
-
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title sidebar-cat">Categories</h3>
+                        <h2 class="sidebar-section-title sidebar-cat">Categories</h2>
                         <ul class="sidebar-menu-list">
                             @foreach($sidebarCategories as $cat)
                             @if($cat->translation)
@@ -2410,7 +2364,7 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Category Sub-panels -->
+                <!-- ==================== Dynamic Category Sub-panels -->
                 @foreach($sidebarCategories as $cat)
                 @if($cat->translation)
                 <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
@@ -2421,11 +2375,11 @@
                     </div>
                     <div class="sidebar-menu-divider"></div>
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">
+                        <h2 class="sidebar-section-title">
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cat->translation->slug]) }}">
                                 {{ $cat->translation->name }}
                             </a>
-                        </h3>
+                        </h2>
                         <ul class="sidebar-menu-list">
                             @foreach($cat->subCategories as $subCat)
                             @if($subCat->translation)
@@ -2446,6 +2400,7 @@
         </div>
     </div>
 
+    @push('styles')
     <style>
     /* Amazon-like Categories Sidebar styling */
     .category-sidebar-overlay {
@@ -2640,6 +2595,7 @@
     }
 
     </style>
+    @endpush
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -2809,42 +2765,43 @@
 
 
 
-<!-- Global Booking.com-style Share Popover -->
+<!-- ==================== Global Booking.com-style Share Popover -->
 <div id="bookingSharePopover" class="booking-share-popover" style="display: none;" onclick="event.stopPropagation();">
     <div class="booking-share-arrow"></div>
     <div class="booking-share-inner">
-        <h4 class="booking-share-title">{{ static_text('share_this_heading') ?: 'Share this' }}</h4>
+        <h3 class="booking-share-title">{{ static_text('share_this_heading') ?: 'Share this' }}</h3>
         <div class="booking-share-list">
             <button type="button" class="booking-share-item" id="btnShareCopyLink" onclick="triggerShareCopy(event)">
-                <div class="booking-share-icon">
+                <span class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
-                </div>
+                </span>
                 <span class="booking-share-label">{{ static_text('copy_link_button') ?: 'Copy link' }}</span>
                 <span id="shareCopiedFeedback" class="booking-share-copied-badge" style="display: none;">{{ static_text('copied_toast') ?: 'Copied!' }}</span>
             </button>
             <a href="javascript:void(0)" class="booking-share-item" id="btnShareFacebook" onclick="triggerShareFacebook(event)">
-                <div class="booking-share-icon">
+                <span class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
-                </div>
+                </span>
                 <span class="booking-share-label">Facebook</span>
             </a>
             <a href="javascript:void(0)" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
-                <div class="booking-share-icon">
+                <span class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#111827">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                </div>
+                </span>
                 <span class="booking-share-label">Post on X</span>
             </a>
         </div>
     </div>
 </div>
 
+@push('styles')
 <style>
     /* Action icon buttons (Flag, Share, etc.) */
     .action-icon-btn {
@@ -2960,6 +2917,7 @@
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
+@endpush
 
 <script>
     let currentShareUrl = window.location.href;
@@ -3105,6 +3063,7 @@
 </script>
 
 
+@push('styles')
 <style>
 /* Country / Region Selection Modal Styling */
     .country-modal-backdrop {
@@ -3286,6 +3245,7 @@
         }
     }
 </style>
+@endpush
 <script>
     function openMobileFilterDrawer() {
         const drawer = document.querySelector('.auto-choice-lft');

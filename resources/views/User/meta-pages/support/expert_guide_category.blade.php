@@ -64,20 +64,19 @@
                                         $translation = $article->articleTranslations->first();
                                     @endphp
                                     @if($translation)
-                                    <a href="{{ route('expert-guide-article', [
-                                        'locale' => session('lang_code', 'en-us'),
-                                        'cat_slug' => $articles->translationForCurrentLang->slug,
-                                        'art_slug' => $translation->slug
-                                    ]) }}">
-                                        <li class="d-flex justify-content-between align-items-start ">
+                                    <li class="mb-3">
+                                        <a href="{{ route('expert-guide-article', [
+                                            'locale' => session('lang_code', 'en-us'),
+                                            'cat_slug' => $articles->translationForCurrentLang->slug,
+                                            'art_slug' => $translation->slug
+                                        ]) }}" class="d-flex justify-content-between align-items-start text-decoration-none">
                                             <div>
                                                 <strong>{{ $translation->preview_title ?? $translation->title ?? 'no title' }}</strong><br>
                                                 <small>{!! $translation->preview_description ?? $translation->description ?? 'no description' !!}</small>
                                             </div>
-
-                                                <i class="fa-solid fa-chevron-right text-success"></i>
-                                        </li>
-                                    </a>
+                                            <i class="fa-solid fa-chevron-right text-success mt-1"></i>
+                                        </a>
+                                    </li>
                                     @endif
                                 @endforeach
                             @endif

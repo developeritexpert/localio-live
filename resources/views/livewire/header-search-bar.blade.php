@@ -1,5 +1,5 @@
-<div id="myID" class="search-box" style="position: relative;">
-    <input type="text" wire:model="query" wire:keydown="performSearch" placeholder="{{ $placeholder }}" />
+<div class="search-box header-search-box" style="position: relative;">
+    <input type="text" wire:model="query" wire:keydown="performSearch" placeholder="{{ $placeholder }}">
     <i class="fa-solid fa-magnifying-glass"></i>
     @if (!empty($results) || $query)
         <div class="search-results"
