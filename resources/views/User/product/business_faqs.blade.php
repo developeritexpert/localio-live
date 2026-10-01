@@ -590,7 +590,7 @@
                         </div>
                         @endif
 
-                        <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                             <div style="display: flex; gap: 8px;">
                                 @auth

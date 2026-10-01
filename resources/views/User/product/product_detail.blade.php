@@ -515,7 +515,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 </div>
                                                 @endif
 
-                                                <div class="do-you-recommend mt-3 pt-3 border-top" style="border-top-color: #f1f5f9 !important; display: flex; justify-content: space-between; align-items: center;">
+                                                <div class="do-you-recommend " style="display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
@@ -1674,14 +1674,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         z-index: 10;
                                                     }
 
-                                                    .rating-filter-checkbox {
-                                                        width: 18px;
-                                                        height: 18px;
-                                                        margin-right: 10px;
-                                                        cursor: pointer;
-                                                        accent-color: #0056b3;
-                                                    }
-
                                                     .review-star-box {
                                                         border: none !important;
                                                         background: none !important;
@@ -1720,52 +1712,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         padding-bottom: 8px;
                                                     }
 
-                                                    .clear-filters-btn {
-                                                        color: #007bff;
-                                                        text-decoration: none;
-                                                        font-size: 13px;
-                                                        cursor: pointer;
-                                                    }
-
-                                                    .clear-filters-btn:hover {
-                                                        text-decoration: underline;
-                                                    }
-
-                                                    .review-sort-option {
-                                                        font-size: 13px !important;
-                                                        color: #002347 !important;
-                                                        cursor: pointer;
-                                                        background-color: transparent !important;
-                                                        font-weight: 400;
-                                                        border: none;
-                                                        outline: none;
-                                                        transition: background-color 0.15s ease;
-                                                    }
-
-                                                    .review-sort-option.is-selected {
-                                                        background-color: #f8fafc !important;
-                                                        font-weight: 600 !important;
-                                                    }
-
-                                                    .review-sort-option:hover {
-                                                        background-color: #f1f5f9 !important;
-                                                        color: #1e3050 !important;
-                                                    }
-
-                                                    .review-row-prod-inr {
-                                                        display: flex !important;
-                                                        align-items: stretch !important;
-                                                    }
-
-                                                    .crm_sec,
-                                                    .crm_review_box,
-                                                    .revie_left_rgt_sec,
-                                                    .review_sec,
-                                                    div[data-business-id],
-                                                    .all_sec_wrp {
-                                                        overflow: visible !important;
-                                                    }
-
                                                     .review_sec .review_detl {
                                                         border: 1px solid rgba(0, 0, 0, 0.08) !important;
                                                         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
@@ -1776,55 +1722,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     .review_sec .review_detl:hover {
                                                         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
                                                         border-color: rgba(0, 0, 0, 0.12) !important;
-                                                    }
-
-                                                    @media (max-width: 991px) {
-                                                        .crm_sec {
-                                                            background: transparent !important;
-                                                        }
-
-                                                        .review-row-prod-inr {
-                                                            display: block !important;
-                                                        }
-
-                                                        .review-sidebar-sticky {
-                                                            position: static !important;
-                                                            margin-bottom: 30px;
-                                                        }
-                                                    }
-
-                                                    @media (max-width: 575px) {
-                                                        .review_sec .review_detl {
-                                                            padding: 20px 15px !important;
-                                                        }
-
-                                                        .review_sec .review_detl .reviw_hd {
-                                                            flex-direction: column;
-                                                            align-items: flex-start;
-                                                            gap: 10px;
-                                                        }
-
-                                                        .review_sec .review_detl .reviw_hd p {
-                                                            margin: 0;
-                                                            font-size: 13px;
-                                                        }
-
-                                                        .ans_lft {
-                                                            gap: 0px 12px;
-                                                        }
-
-                                                        .review_text.size18 {
-                                                            font-size: 15px !important;
-                                                        }
-
-                                                        .review_text.size18 .size22.big-bld {
-                                                            font-size: 18px !important;
-                                                            line-height: 1.3;
-                                                        }
-
-                                                        .review-sidebar-sticky h2 {
-                                                            font-size: 22px !important;
-                                                        }
                                                     }
 
                                                     @if(!$hasUserRatings)
@@ -2434,7 +2331,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                         @endif
 
-                                        <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="do-you-recommend" style=" display: flex; justify-content: space-between; align-items: center;">
                                             <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                             <div style="display: flex; gap: 8px;">
                                                 @auth

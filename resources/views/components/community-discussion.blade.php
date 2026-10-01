@@ -61,7 +61,7 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
-    $finalHeadline = $headline ?? $discHeadline ?? (($bName ? $bName . ' ' : '') . 'discussions (' . number_format($totalDiscs) . ')');
+    $finalHeadline = $headline ?? $discHeadline ?? ( 'Discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
     $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
     $finalEmptyHeadline = $emptyHeadline ?? ($isTopRated ? 'No discussions yet.' : ('No discussions about ' . $bName . '.'));
