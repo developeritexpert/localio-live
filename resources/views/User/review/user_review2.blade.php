@@ -342,9 +342,23 @@
                                 </div>
                             </div>
                         </div>
-                        <style>
-                           
+                        @push('styles')
+<style>
+                            #prosConsTab .nav-link.active {
+                                color: #1e3050 !important;
+                            }
+
+                            #prosConsTab .nav-link.active::after {
+                                content: '';
+                                position: absolute;
+                                bottom: -1px;
+                                left: 0;
+                                width: 100%;
+                                height: 2px;
+                                background-color: #1e3050;
+                            }
                         </style>
+@endpush
 
                         @if(!empty($reviewsProConsSummary))
                         <div class="mt-4" style="font-size: 14.5px; color: #475569; line-height: 1.7;">
@@ -390,7 +404,7 @@
                                                             </button>
                                                         </h3>
                                                         <div id="faqCollapse{{ $index }}"
-                                                            class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                            class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}" role="region"
                                                             aria-labelledby="faqHeading{{ $index }}"
                                                             data-bs-parent="#businessFaqAccordion">
                                                             <div class="accordion-body rich-text-content" style="background-color: #fff;">

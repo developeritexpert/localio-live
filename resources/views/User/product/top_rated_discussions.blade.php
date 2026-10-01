@@ -153,9 +153,9 @@
                             <li><button type="button" class="discussion-sort-option {{ request('sort') === 'commented' ? 'is-selected' : '' }}" data-sort-option="commented" role="option" aria-selected="{{ request('sort') === 'commented' ? 'true' : 'false' }}">Most Active {!! request('sort') === 'commented' ? '<i class="fas fa-check" aria-hidden="true"></i>' : '' !!}</button></li>
                         </ul>
                         <select name="sort" id="discussionLiveSortSelect" class="discussion-sort-native" aria-label="Sort discussions" tabindex="-1">
-                            <option value="popular" {{ request('sort') === 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
-                            <option value="recent" {{ request('sort') === 'recent' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="commented" {{ request('sort') === 'commented' ? 'selected' : '' }}>Most Active</option>
+                            <option value="popular" {{ request('sort') === 'popular' || !request('sort') ? 'selected' : '' }} label="Top / Popular">Top / Popular</option>
+                            <option value="recent" {{ request('sort') === 'recent' ? 'selected' : '' }} label="Most Recent">Most Recent</option>
+                            <option value="commented" {{ request('sort') === 'commented' ? 'selected' : '' }} label="Most Active">Most Active</option>
                         </select>
                     </div>
                 </div>
@@ -473,13 +473,13 @@
 </div>
 
 <!-- Start New Discussion Modal -->
-<div class="modal fade" id="newDiscussionModal" tabindex="-1" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
+<div class="modal fade" id="newDiscussionModal" tabindex="-1" role="dialog" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 16px; border: 1px solid #eef2f6; overflow: hidden;">
             <div class="modal-header px-4 py-3" style="border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
-                <h5 class="modal-title fw-bold" id="newDiscussionModalLabel" style="color: #002347; font-size: 17px;">
+                <h3 class="modal-title fw-bold" id="newDiscussionModalLabel" style="color: #002347; font-size: 17px;">
                     <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 22px; height: 22px; margin-right: 8px; vertical-align: -3px;"> Start a Discussion about {{ $bName }}
-                </h5>
+                </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('business.discussion.store') }}" method="POST">

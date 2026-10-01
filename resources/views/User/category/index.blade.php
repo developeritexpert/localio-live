@@ -264,7 +264,7 @@
                         @if ($headerImage)
                         <img src="{{ asset($headerImage->meta_value) }}" alt="">
                         @else
-                        <img src="{{ asset('front/img/ctgry-bannr.png') }}" class="banner_top_image">
+                        <img src="{{ asset('front/img/ctgry-bannr.png') }}" class="banner_top_image" alt="Banner">
                         @endif
 
                     </div>

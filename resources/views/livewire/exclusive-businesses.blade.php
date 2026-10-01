@@ -15,7 +15,7 @@
                     </div>
                     <div class="banner_image_col">
                         <div class="banner_image">
-                            <img src="{{ asset('front/img/top-rated-bnr-bg.png') }}" class="banner_top_image">
+                            <img src="{{ asset('front/img/top-rated-bnr-bg.png') }}" class="banner_top_image" alt="Banner">
                         </div>
                     </div>
                 </div>

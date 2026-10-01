@@ -8,7 +8,6 @@
             </div>
             <div class="faq-accor">
                 <div class="accordion" id="accordionExample">
-                    <div class="accordion" id="accordionExample">
                         @if ($faqs->isNotEmpty() && $faqs->first()->translations->isNotEmpty())
                             <!-- Check if $faqs is not empty and at least one faq has translations -->
                             @foreach ($faqs->take(5) as $index => $faq)
@@ -30,7 +29,7 @@
                                                 <span>{{ $faqtranslation->question ?? 'No question available' }}</span>
                                             </button>
                                         </h3>
-                                        <div id="collapseOne{{ $faq->id }}" class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
+                                        <div id="collapseOne{{ $faq->id }}" role="region" class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
                                             aria-labelledby="headingOne{{ $faq->id }}"
                                             data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
@@ -57,7 +56,7 @@
                                         <span>{{ $help->faq_section_title ?? static_text('no_faq_avaliable') }}</span>
                                     </button>
                                 </h3>
-                                <div id="collapseOne" class="accordion-collapse collapse"
+                                <div id="collapseOne" role="region" class="accordion-collapse collapse"
                                     aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         {{ $help->faq_section_title ?? static_text('no_faq_avaliable') }}
@@ -71,7 +70,6 @@
                         @endif
 
                     </div>
-                </div>
             </div>
         </div>
     </div>

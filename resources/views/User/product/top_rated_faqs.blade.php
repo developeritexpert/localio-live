@@ -121,7 +121,7 @@
                                 @php $catSlug = \Illuminate\Support\Str::slug($catName); @endphp
                                 <div class="faq-category-group mb-4" data-category-group="{{ $catSlug }}">
                                     @if(count($faqCategories) > 1)
-                                    <h3 class="category-group-headline mb-3" style=" color: #1e3050;">
+                                    <h2 class="category-group-headline mb-3" style=" color: #1e3050;">
                                         {{ $catName }}
                                     </h3>
                                     @endif
@@ -141,7 +141,7 @@
                                                         {{ $question }}
                                                     </button>
                                                 </h3>
-                                                <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse {{ $itemGlobalIndex === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
+                                                <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse {{ $itemGlobalIndex === 1 ? 'show' : '' }}" role="region" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
                                                     <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
