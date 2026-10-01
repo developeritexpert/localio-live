@@ -343,19 +343,7 @@
                             </div>
                         </div>
                         <style>
-                            #prosConsTab .nav-link.active {
-                                color: #1e3050 !important;
-                            }
-
-                            #prosConsTab .nav-link.active::after {
-                                content: '';
-                                position: absolute;
-                                bottom: -1px;
-                                left: 0;
-                                width: 100%;
-                                height: 2px;
-                                background-color: #1e3050;
-                            }
+                           
                         </style>
 
                         @if(!empty($reviewsProConsSummary))
@@ -808,7 +796,7 @@
                                     @endif
                                 @endif
 
-                                <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
                                     <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                                     <div style="display: flex; gap: 8px;">
                                         @auth
@@ -1029,7 +1017,7 @@
                         <div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
                             <!-- Left side: Dropdown for current section -->
                             <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
-                                <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                                <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
                                     <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ static_text('tab_description') ?: 'Description' }}</span>
                                 </button>
                                 <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
@@ -1068,28 +1056,6 @@
                         </div>
 
                         <style>
-                            .mobile-sticky-bottom-nav {
-                                position: fixed;
-                                bottom: 0;
-                                left: 0;
-                                width: 100%;
-                                background-color: #ffffff;
-                                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
-                                z-index: 991;
-                                padding-bottom: calc(10px + env(safe-area-inset-bottom));
-                                padding-top: 10px;
-                            }
-
-                            .msbn-dropdown-toggle::after {
-                                margin-left: auto;
-                            }
-
-                            .msbn-item.active {
-                                background-color: #f1f5f9;
-                                color: #0f172a;
-                                font-weight: 600;
-                            }
-
                             @media (max-width: 991px) {
                                 body {
                                     padding-bottom: 75px !important;
