@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Query;
+use App\Services\MailService;
 use Illuminate\Http\Request;
 
 class QueryController extends Controller
@@ -58,10 +59,11 @@ class QueryController extends Controller
 
         $query = Query::findOrFail($id);
 
-        \Mail::raw($request->message, function ($mail) use ($query, $request) {
-            $mail->to($query->email)
-                 ->subject($request->subject);
-        });
+        MailService::sendTemplate('query_reply', $query->email, [
+            'name'          => $query->name ?? 'User',
+            'subject'       => $request->subject,
+            'reply_message' => $request->message,
+        ], 1);
 
         return redirect()
             ->back()

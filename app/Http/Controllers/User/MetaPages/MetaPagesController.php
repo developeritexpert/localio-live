@@ -12,6 +12,7 @@ use App\Models\ExpertGuides;
 use App\Models\PolicyTranslation;
 use App\Models\ContactContent;
 use App\Models\Query;
+use App\Services\MailService;
 use App\Models\ExpertGuideArticle;
 use App\Models\ExpertGuideCategory;
 use App\Models\HelpCenterContent;
@@ -390,7 +391,7 @@ class MetaPagesController extends Controller
             ->store('queries', 'public');
     }
 
-    Query::create([
+    $createdQuery = Query::create([
         'user_id'    => auth()->id(),
         'query_type' => $request->query_type,
         'name'       => $request->name,
@@ -398,6 +399,25 @@ class MetaPagesController extends Controller
         'message'    => $request->message,
         'attachment' => $attachment,
     ]);
+
+    // Send confirmation to user
+    MailService::sendTemplate('contact_us_user', $request->email, [
+        'name'    => $request->name,
+        'subject' => 'Inquiry #' . $createdQuery->id,
+    ], auth()->user()?->country_id ?? 1, auth()->user());
+
+    // Send notification to admin
+    $adminEmail = config('mail.from.address');
+    if ($adminEmail) {
+        MailService::sendTemplate('contact_us_admin', $adminEmail, [
+            'name'            => $request->name,
+            'email'           => $request->email,
+            'subject'         => 'New Inquiry #' . $createdQuery->id,
+            'message'         => $request->message,
+            'admin_query_url' => url('/admin-dashboard/queries'),
+        ], 1);
+    }
+
     return back()->with('success', 'Your query has been submitted successfully.');
     // return response()->json([
     //     'status'  => true,

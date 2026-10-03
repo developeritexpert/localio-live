@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Services\MailService;
 use App\Models\Language;
 
 use App\Http\Controllers\Controller;
@@ -243,6 +244,15 @@ public function handleRegisterRequest($id, $action)
     }
 
     $vendor->save();
+
+    // Send email notification to vendor
+    $bizName = $vendor->business?->translations?->first()?->name ?? $vendor->business?->name ?? 'Business';
+    MailService::sendTemplate('vendor_status_update', $vendor->email, [
+        'vendor_name'   => trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')),
+        'business_name' => $bizName,
+        'status'        => $action === 'approve' ? 'Approved' : 'Rejected',
+        'dashboard_url' => url('/' . (app()->getLocale() ?? 'en-us') . '/vendor-overview'),
+    ], $vendor->country_id ?? 1, $vendor);
 
     return redirect()->route('allVendorRegisterRequest')
         ->with('success', "Vendor request has been {$action}d successfully.");

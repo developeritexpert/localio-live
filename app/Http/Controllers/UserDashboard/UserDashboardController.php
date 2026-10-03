@@ -91,8 +91,16 @@ class UserDashboardController extends Controller
         $user = Auth::user();
         $langId = $user->lang_id ?? 1;
 
-        // Fetch all mail templates and convert them to preference-like array
-        $mailTemplates = MailTemplate::where('is_active', true)->get();
+        // Exclude mandatory system and admin-only templates from user toggle
+        $excludedKeys = [
+            'forget_password',
+            'password_changed',
+            'contact_us_admin',
+            'review_submitted_admin',
+            'vendor_registration_admin',
+            'order_confirmation'
+        ];
+        $mailTemplates = MailTemplate::where('is_active', true)->whereNotIn('key', $excludedKeys)->get();
 
         $preferences = $mailTemplates->map(function ($template) use ($user, $langId) {
             $translation = $template->getTranslation($langId);

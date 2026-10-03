@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Language;
 use App\Models\MailTemplate;
+use App\Models\Language;
+use App\Services\MailService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class MailTemplateController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of mail templates
      */
     public function index()
     {
-        $templates = MailTemplate::with('translations')->paginate(10);
+        $templates = MailTemplate::with('translations')->paginate(15);
+
         return view('Admin.mail-templates.index', compact('templates'));
     }
 
@@ -25,7 +26,8 @@ class MailTemplateController extends Controller
      */
     public function create()
     {
-        $languages = Language::where('status', true)->get();
+        $languages = Language::all();
+
         return view('Admin.mail-templates.create', compact('languages'));
     }
 
@@ -35,14 +37,14 @@ class MailTemplateController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'key' => 'required|string|unique:mail_templates,key|regex:/^[a-z_]+$/',
+            'key' => 'required|string|unique:mail_templates,key|regex:/^[a-z0-9_]+$/',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
             'variables' => 'nullable|array',
             'variables.*' => 'string|regex:/^[a-zA-Z_][a-zA-Z0-9_]*$/',
             'status' => 'required|in:active,inactive'
         ], [
-            'key.regex' => 'Template key must contain only lowercase letters and underscores.',
+            'key.regex' => 'Template key must contain only lowercase letters, numbers, and underscores.',
             'variables.*.regex' => 'Variable names must be valid (letters, numbers, underscores only).'
         ]);
 
@@ -57,7 +59,8 @@ class MailTemplateController extends Controller
             'subject' => $request->subject,
             'body' => $this->processEditorContent($request->body),
             'variables' => array_values($variables),
-            'status' => $request->status
+            'is_active' => $request->status === 'active',
+            'status' => $request->status,
         ]);
 
         return redirect()->route('mail-templates.index')
@@ -70,22 +73,22 @@ class MailTemplateController extends Controller
     public function show(MailTemplate $mailTemplate)
     {
         $mailTemplate->load('translations');
-        $languages = Language::where('status', true)->get();
+        $languages = Language::all();
+
         return view('Admin.mail-templates.show', compact('mailTemplate', 'languages'));
     }
 
     /**
      * Show the form for editing the specified mail template
      */
-    public function edit($id,Request $request)
+    public function edit($id)
     {
         $mailTemplate = MailTemplate::findOrFail($id);
-        $langId = request()->get('lang_id', getCurrentLanguageID() ?: 1);
-        $languages = Language::where('status', true)->get();
-        $translation = $mailTemplate->getTranslation($langId);
+        $languages = Language::all();
 
-        return view('Admin.mail-templates.edit', compact('mailTemplate', 'languages', 'langId', 'translation'));
+        return view('Admin.mail-templates.edit', compact('mailTemplate', 'languages'));
     }
+
     /**
      * Update the specified mail template
      */
@@ -95,14 +98,15 @@ class MailTemplateController extends Controller
         $langId = $request->get('lang_id', 1);
 
         $request->validate([
-            'key' => ['required', 'string', 'regex:/^[a-z_]+$/', Rule::unique('mail_templates')->ignore($mailTemplate->id)],
+            'key' => $langId == 1 ? 'required|string|regex:/^[a-z0-9_]+$/|unique:mail_templates,key,' . $mailTemplate->id : 'nullable',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
             'variables' => 'nullable|array',
             'variables.*' => 'string|regex:/^[a-zA-Z_][a-zA-Z0-9_]*$/',
-            'lang_id' => 'required|integer'
+            'lang_id' => 'required|integer',
+            'status' => 'nullable|in:active,inactive'
         ], [
-            'key.regex' => 'Template key must contain only lowercase letters and underscores.',
+            'key.regex' => 'Template key must contain only lowercase letters, numbers, and underscores.',
             'variables.*.regex' => 'Variable names must be valid (letters, numbers, underscores only).'
         ]);
 
@@ -114,10 +118,17 @@ class MailTemplateController extends Controller
                 function($var) { return !empty($var); }
             );
 
-            $mailTemplate->update([
+            $updateData = [
                 'key' => $request->key,
                 'variables' => array_values($variables),
-            ]);
+            ];
+
+            if ($request->has('status')) {
+                $updateData['is_active'] = ($request->status === 'active');
+                $updateData['status'] = $request->status;
+            }
+
+            $mailTemplate->update($updateData);
         }
 
         // Update translation (including default language)
@@ -137,6 +148,7 @@ class MailTemplateController extends Controller
     public function destroy($id)
     {
         $mailTemplate = MailTemplate::findOrFail($id);
+        $mailTemplate->translations()->delete();
         $mailTemplate->delete();
 
         return redirect()->route('mail-templates.index')
@@ -147,43 +159,67 @@ class MailTemplateController extends Controller
      * Preview mail template
      */
     public function preview(Request $request, MailTemplate $mailTemplate)
-{
-    $langId = $request->get('lang_id', 1);
-    $sampleData = $request->get('sample_data', []);
+    {
+        $langId = $request->get('lang_id', 1);
+        $sampleData = $request->get('sample_data', []);
 
-    // Parse sample data if it's JSON string
-    if (is_string($sampleData)) {
-        $sampleData = json_decode($sampleData, true) ?? [];
-    }
+        // Parse sample data if it's JSON string
+        if (is_string($sampleData)) {
+            $sampleData = json_decode($sampleData, true) ?? [];
+        }
 
-    // If no sample data provided, create sample data from variables
-    if (empty($sampleData) && $mailTemplate->variables) {
-        foreach ($mailTemplate->variables as $variable) {
-            $sampleData[$variable] = $this->generateSampleValue($variable);
+        // If no sample data provided, create sample data from variables
+        if (empty($sampleData) && $mailTemplate->variables) {
+            foreach ($mailTemplate->variables as $variable) {
+                $sampleData[$variable] = $this->generateSampleValue($variable);
+            }
+        }
+
+        try {
+            $rendered = $mailTemplate->renderTemplate($langId, $sampleData);
+
+            $htmlBody = view('emails.layouts.master', [
+                'subject' => $rendered['subject'],
+                'content' => $rendered['body'],
+                'showPreferences' => false
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'subject' => $rendered['subject'],
+                'body' => $rendered['body'],
+                'html_body' => $htmlBody
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Mail template preview error', [
+                'template_id' => $mailTemplate->id,
+                'lang_id' => $langId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Error rendering template: ' . $e->getMessage()
+            ], 500);
         }
     }
-    try {
-        $rendered = $mailTemplate->renderTemplate($langId, $sampleData);
 
-        return response()->json([
-            'success' => true,
-            'subject' => $rendered['subject'],
-            'body' => $rendered['body'],
-            'html_body' => $this->wrapInEmailTemplate($rendered['body'], $rendered['subject'])
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Mail template preview error', [
-            'template_id' => $mailTemplate->id,
-            'lang_id' => $langId,
-            'error' => $e->getMessage()
+    /**
+     * Send test email
+     */
+    public function sendTestEmail(Request $request, MailTemplate $mailTemplate)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'lang_id' => 'nullable|integer',
         ]);
 
-        return response()->json([
-            'success' => false,
-            'error' => 'Error rendering template: ' . $e->getMessage()
-        ], 500);
+        $langId = $request->get('lang_id', 1);
+        $result = MailService::sendTestTemplate($mailTemplate, $request->email, $langId);
+
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
-}
+
     /**
      * Get translation for specific language
      */
@@ -265,77 +301,41 @@ class MailTemplateController extends Controller
             'name' => 'John Doe',
             'first_name' => 'John',
             'last_name' => 'Doe',
+            'user_name' => 'John Doe',
             'email' => 'john@example.com',
-            'otp' => '123456',
+            'otp' => '849201',
             'password' => 'newpassword123',
-            'token' => 'abc123xyz789',
-            'username' => 'johndoe',
-            'phone' => '+1234567890',
-            'company' => 'Example Company',
-            'url' => 'https://example.com',
-            'link' => 'https://example.com/reset',
-            'code' => 'VERIFY123',
-            'amount' => '$100.00',
-            'order_number' => 'ORD-12345',
-            'order_date' => now()->format('Y-m-d'),
-            'total_amount' => '$250.00',
-            'customer_name' => 'Jane Smith',
-            'date' => now()->format('Y-m-d'),
-            'time' => now()->format('H:i:s'),
-            'verification_code' => '654321',
-            'reset_link' => 'https://example.com/password/reset/token123'
+            'business_name' => 'Bluehost',
+            'rating' => '4.8',
+            'review_url' => url('/'),
+            'admin_review_url' => url('/admin-dashboard/reviews'),
+            'login_url' => url('/login'),
+            'dashboard_url' => url('/user-dashboard'),
+            'ticket_id' => 'TICK-90812',
+            'subject' => 'Website Inquiry',
+            'message' => 'I would like to inquire about listing my business.',
+            'reply_message' => 'Thank you for contacting us. We have reviewed your request and updated your listing.',
+            'vendor_name' => 'John Doe',
+            'admin_vendor_url' => url('/admin-dashboard/vendor-registration-requests'),
+            'status' => 'Approved',
+            'reason' => 'Submission did not meet verification criteria.',
+            'support_url' => url('/en-us/contact'),
+            'app_name' => config('app.name', 'Localio'),
+            'app_url' => url('/'),
         ];
 
         $lowerVariable = strtolower($variable);
 
-        // Check for exact match first
         if (isset($sampleValues[$lowerVariable])) {
             return $sampleValues[$lowerVariable];
         }
 
-        // Check for partial matches
         foreach ($sampleValues as $key => $value) {
             if (Str::contains($lowerVariable, $key) || Str::contains($key, $lowerVariable)) {
                 return $value;
             }
         }
 
-        // Default fallback
         return '[' . ucfirst(str_replace('_', ' ', $variable)) . ']';
-    }
-
-    /**
-     * Wrap content in email template
-     */
-    private function wrapInEmailTemplate($body, $subject = '')
-    {
-        return '<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>' . htmlspecialchars($subject) . '</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .email-container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .email-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 30px; }
-        .email-content { margin-bottom: 30px; }
-        .email-footer { border-top: 1px solid #f0f0f0; padding-top: 20px; font-size: 12px; color: #666; }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <h2>' . htmlspecialchars($subject) . '</h2>
-        </div>
-        <div class="email-content">
-            ' . $body . '
-        </div>
-        <div class="email-footer">
-            <p>This is a preview of your email template.</p>
-        </div>
-    </div>
-</body>
-</html>';
     }
 }

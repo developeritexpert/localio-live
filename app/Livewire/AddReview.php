@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Business;
 use App\Models\Review;
+use App\Services\MailService;
 use App\Models\CategoryProCon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -322,6 +323,42 @@ class AddReview extends Component
         ]);
 
         $this->reviewId = $review->id;
+
+        // Send notifications
+        $biz = \App\Models\Business::find($this->businessId);
+        $bizName = $biz?->translations?->first()?->name ?? $biz?->name ?? 'Business';
+        $currentUser = Auth::user();
+
+        if ($currentUser && $currentUser->email) {
+            MailService::sendTemplate('review_submitted_user', $currentUser->email, [
+                'user_name'     => $currentUser->first_name ?? 'User',
+                'business_name' => $bizName,
+                'rating'        => $avg_rating,
+            ], $lang_id, $currentUser);
+        }
+
+        $adminEmail = config('mail.from.address');
+        if ($adminEmail) {
+            MailService::sendTemplate('review_submitted_admin', $adminEmail, [
+                'user_name'        => trim(($currentUser?->first_name ?? '') . ' ' . ($currentUser?->last_name ?? '')),
+                'business_name'    => $bizName,
+                'rating'           => $avg_rating,
+                'admin_review_url' => url('/admin-dashboard/reviews'),
+            ], 1);
+        }
+
+        // Notify business vendor if exists
+        $vendor = \App\Models\User::where('business_id', $this->businessId)->where('user_type', 'vendor')->first();
+        if ($vendor && $vendor->email) {
+            $bizSlug = $biz?->translations?->first()?->slug ?? '';
+            $reviewUrl = $bizSlug ? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bizSlug]) : url('/');
+            MailService::sendTemplate('business_new_review', $vendor->email, [
+                'business_name' => $bizName,
+                'reviewer_name' => $currentUser?->first_name ?? 'A user',
+                'rating'        => $avg_rating,
+                'review_url'    => $reviewUrl,
+            ], $vendor->country_id ?? 1, $vendor);
+        }
 
         // Save individual criteria ratings
         foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {

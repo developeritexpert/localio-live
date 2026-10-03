@@ -14,13 +14,28 @@ class MailTemplate extends Model
         'subject',
         'body',
         'variables',
-        'is_active'
+        'is_active',
+        'status',
+    ];
+
+    protected $appends = [
+        'status',
     ];
 
     protected $casts = [
         'variables' => 'array',
         'is_active' => 'boolean'
     ];
+
+    public function getStatusAttribute(): string
+    {
+        return $this->is_active ? 'active' : 'inactive';
+    }
+
+    public function setStatusAttribute($value): void
+    {
+        $this->attributes['is_active'] = ($value === 'active' || $value === true || $value === 1 || $value === '1');
+    }
 
     public function translations()
     {
@@ -86,7 +101,8 @@ class MailTemplate extends Model
             'subject' => $translation['subject'],
             'body' => $translation['body'],
             'variables' => $template->variables,
-            'is_active' => $template->is_active
+            'is_active' => $template->is_active,
+            'status' => $template->status,
         ];
     }
 
@@ -99,24 +115,23 @@ class MailTemplate extends Model
 
         // Replace variables in subject and body
         foreach ($variables as $key => $value) {
+            if (is_array($value) || is_object($value)) {
+                continue;
+            }
+            $valStr = (string)$value;
             // Support multiple placeholder formats
             $placeholders = [
-                '{{ $' . $key . ' }}',  // {{ $otp }}
-                '{{$' . $key . '}}',    // {{$otp}}
-                '{{ ' . $key . ' }}',   // {{ otp }}
-                '{{' . $key . '}}',     // {{otp}}
+                '{{ $' . $key . ' }}',
+                '{{$' . $key . '}}',
+                '{{ ' . $key . ' }}',
+                '{{' . $key . '}}',
             ];
             foreach ($placeholders as $placeholder) {
-                $subject = str_replace($placeholder, $value, $subject);
-                $body = str_replace($placeholder, $value, $body);
+                $subject = str_replace($placeholder, $valStr, $subject);
+                $body = str_replace($placeholder, $valStr, $body);
             }
         }
-        \Log::info('Template rendered:', [
-            'original_body' => $translation['body'],
-            'rendered_body' => $body,
-            'variables' => $variables,
-            'otp_found' => strpos($body, $variables['otp'] ?? '') !== false
-        ]);
+
         return [
             'subject' => $subject,
             'body' => $body

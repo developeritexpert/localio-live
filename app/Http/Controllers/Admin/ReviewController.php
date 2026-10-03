@@ -7,6 +7,7 @@ use App\Models\Business;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Review;
+use App\Services\MailService;
 use App\Models\Language;
 use App\Models\ReviewTranslation;
 
@@ -110,6 +111,28 @@ class ReviewController extends Controller
         $reviewTranslation->language_id = $lang_id;
         $reviewTranslation->save();
 
+        $biz = \App\Models\Business::find($request->business_id);
+        $bizName = $biz?->translations?->first()?->name ?? $biz?->name ?? 'Business';
+        $currentUser = auth()->user();
+
+        if ($currentUser && $currentUser->email) {
+            MailService::sendTemplate('review_submitted_user', $currentUser->email, [
+                'user_name'     => $currentUser->first_name ?? 'User',
+                'business_name' => $bizName,
+                'rating'        => $request->rating,
+            ], $lang_id, $currentUser);
+        }
+
+        $adminEmail = config('mail.from.address');
+        if ($adminEmail) {
+            MailService::sendTemplate('review_submitted_admin', $adminEmail, [
+                'user_name'        => trim(($currentUser?->first_name ?? '') . ' ' . ($currentUser?->last_name ?? '')),
+                'business_name'    => $bizName,
+                'rating'           => $request->rating,
+                'admin_review_url' => url('/admin-dashboard/reviews'),
+            ], 1);
+        }
+
         return redirect()->route('reviews')->with('success', 'Thank you! Your review has been submitted.');
     }
 
@@ -130,7 +153,7 @@ class ReviewController extends Controller
     public function reviewStatusUpdate(Request $request)
     {
         $id = $request->id;
-        $review = Review::find($id);
+        $review = Review::with(['user', 'business.translations'])->find($id);
 
         if (!$review) {
             return redirect()->back()->with(['error' => 'Review not found']);
@@ -143,6 +166,39 @@ class ReviewController extends Controller
         $review->update([
             'status' => $newStatus
         ]);
+
+        $bizName = $review->business?->translations?->first()?->name ?? $review->business?->name ?? 'Business';
+        $bizSlug = $review->business?->translations?->first()?->slug ?? '';
+        $reviewUrl = $bizSlug ? route('user.product_detail', ['locale' => app()->getLocale() ?? 'en-us', 'id' => $bizSlug]) : url('/');
+
+        if ($newStatus === 'active') {
+            if ($review->user && $review->user->email) {
+                MailService::sendTemplate('review_approved', $review->user->email, [
+                    'user_name'     => $review->user->first_name ?? 'User',
+                    'business_name' => $bizName,
+                    'review_url'    => $reviewUrl,
+                ], $review->user->country_id ?? 1, $review->user);
+            }
+
+            // Also alert the business vendor if registered
+            $vendor = \App\Models\User::where('business_id', $review->business_id)->where('user_type', 'vendor')->first();
+            if ($vendor && $vendor->email) {
+                MailService::sendTemplate('business_new_review', $vendor->email, [
+                    'business_name' => $bizName,
+                    'reviewer_name' => $review->user?->first_name ?? 'A user',
+                    'rating'        => $review->rating ?? 5,
+                    'review_url'    => $reviewUrl,
+                ], $vendor->country_id ?? 1, $vendor);
+            }
+        } else {
+            if ($review->user && $review->user->email) {
+                MailService::sendTemplate('review_rejected', $review->user->email, [
+                    'user_name'     => $review->user->first_name ?? 'User',
+                    'business_name' => $bizName,
+                    'reason'        => 'Review is currently unpublished pending further verification.',
+                ], $review->user->country_id ?? 1, $review->user);
+            }
+        }
 
         return redirect()->back()->with(['success' => 'Review status updated successfully']);
     }

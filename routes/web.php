@@ -261,6 +261,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/mail-templates/{mailTemplate}/preview', [MailTemplateController::class, 'preview'])
         ->name('mail-templates.preview');
 
+    Route::post('/admin-dashboard/mail-templates/{mailTemplate}/send-test', [MailTemplateController::class, 'sendTestEmail'])
+        ->name('mail-templates.send-test');
+
     // DB-Refresh
     Route::get('/admin-dashboard/db-refresh', [AdminSettingsController::class, 'index'])->name('dbrefresh.index');
     Route::post('/admin-dashboard/db-refresh', [AdminSettingsController::class, 'refersh_database'])->name('dbrefresh.refresh');
