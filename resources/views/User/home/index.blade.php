@@ -138,7 +138,7 @@
                                         tabindex="0">
                                         
                                         <!-- Top Row: See all Category link -->
-                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center"style="display:flex;">
+                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center" style="display:flex;">
                                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
                                                 {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
                                             </a>
@@ -369,7 +369,7 @@
             </div>
         @endif
     </section> --}}
-    <!--  -------------------------------------------slider section start ------------------------------------->
+    <!-- slider section start -->
     <section class="outer_slider dark">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
@@ -492,8 +492,8 @@
         </div> --}}
         @livewire('latest-reviews')
     </section>
-    <!--  -------------------------------------------slider section end ------------------------------------->
-    <!----------------------------------------- read section start --------------------------------------- -->
+    <!-- slider section end -->
+    <!-- read section start -->
     {{-- <section class="read_sec_outer light p_120">
         <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
@@ -619,6 +619,7 @@
     @endguest
 @endsection
 
+@push('scripts')
 <script>
     // document.addEventListener("DOMContentLoaded", function() {
     //     let element = document.querySelector(".most-populr-sec");
@@ -668,3 +669,4 @@
         });
     });
 </script>
+@endpush

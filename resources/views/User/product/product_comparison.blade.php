@@ -118,187 +118,11 @@
     </div>
 </div>
 
+@push('styles')
 <style>
-.sticky-comparison-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    background: #ffffff !important;
-    box-shadow: 0 4px 20px rgba(0, 35, 71, 0.08);
-    border-bottom: 1px solid #e2e8f0;
-    z-index: 1050 !important;
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
-}
 
-.sticky-comparison-bar.is-visible {
-    transform: translateY(0) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-.sticky-comp-row {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin: 0;
-    position: relative;
-}
-
-.sticky-comp-col {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    position: relative;
-    gap: 14px;
-}
-
-.sticky-comp-vs {
-    font-size: 11px;
-    font-weight: 700;
-    color: #475569;
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 -13px;
-    z-index: 3;
-    flex-shrink: 0;
-    text-transform: lowercase;
-}
-
-.sticky-comp-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.sticky-comp-logo {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-}
-
-.sticky-comp-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.sticky-comp-meta {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.sticky-comp-name {
-    font-size: 14.5px;
-    font-weight: 700;
-    color: #002347;
-    text-decoration: none;
-    line-height: 1.25;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sticky-comp-name:hover {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.sticky-comp-rating {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11.5px;
-    line-height: 1;
-    color: #64748b;
-}
-
-.sticky-comp-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.sticky-comp-btn-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 14px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #002347;
-    background: #ffffff;
-    border: 1.5px solid #002347;
-    border-radius: 8px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-}
-
-.sticky-comp-btn-outline:hover {
-    background: #002347;
-    color: #ffffff;
-    text-decoration: none;
-}
-
-.sticky-comp-btn-orange {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 6px 14px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #ffffff;
-    background: #ff5722;
-    border: 1.5px solid #ff5722;
-    border-radius: 8px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-}
-
-.sticky-comp-btn-orange:hover {
-    background: #e64a19;
-    border-color: #e64a19;
-    color: #ffffff;
-    text-decoration: none;
-}
-
-@media (max-width: 767px) {
-    .sticky-comp-col {
-        padding: 8px 10px;
-        gap: 8px;
-    }
-    .sticky-comp-actions {
-        display: none;
-    }
-}
 </style>
+@endpush
 @endif
 <section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec all-com" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
@@ -620,7 +444,7 @@
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
                                     <a href="javascript:void(0);" id="addFromCompareCardBtn" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease; cursor: pointer;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
-                                            <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 44px; height: 44px;">
+                                            <img src="{{ asset('front/img/pls-add.svg') }}" alt="Add product" style="width: 44px; height: 44px;">
                                             <span style="font-size: 15px; font-weight: 600; color: #06498b;"> {{ static_text('add_to_compare_button') ?: 'Add to compare' }} </span>
                                         </div>
                                     </a>
@@ -628,8 +452,6 @@
                             @endif
                         </div>
                     </div>
-                </div>
-            </div>
                     <!-- USPs or Company Description Card for each business -->
                     <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
@@ -1015,7 +837,7 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
-                                 aria-labelledby="compReviewFilterBtn" 
+                                 aria-labelledby="compReviewFilterBtn" role="menu" 
                                  style="min-width: 250px; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <div class="mb-2 pb-2 border-bottom">
                                     <span style="font-size: 13.5px; font-weight: 700; color: #002655;">Filter by star rating</span>
@@ -1026,11 +848,11 @@
                                             <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-size: 13px; color: #334155;">
                                                 <input type="checkbox" class="comp-rating-filter-checkbox" value="{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; accent-color: #06498b;">
                                                 <span>{{ $i }} {{ $i == 1 ? 'Star' : 'Stars' }}</span>
-                                                <div class="d-inline-flex" style="gap: 1px;">
+                                                <span class="d-inline-flex" style="gap: 1px;">
                                                     @for ($s = 1; $s <= $i; $s++)
                                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
                                                     @endfor
-                                                </div>
+                                                </span>
                                             </label>
                                         </li>
                                     @endfor
@@ -1058,7 +880,7 @@
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-end shadow-sm" 
-                             aria-labelledby="compReviewSortBtn"
+                             aria-labelledby="compReviewSortBtn" role="menu"
                              style="min-width: 180px; border-radius: 12px; border: 1px solid #e2e8f0; padding: 6px 0;">
                             <button type="button" data-sort-val="recent" data-sort-txt="Most recent" class="comp-sort-opt dropdown-item px-3 py-2 fw-semibold" style="font-size: 13px;">Most recent</button>
                             <button type="button" data-sort-val="high" data-sort-txt="Highest rated" class="comp-sort-opt dropdown-item px-3 py-2" style="font-size: 13px;">Highest rated</button>
@@ -1712,12 +1534,12 @@
 
 
 <!-- Report Issue Modal -->
-<div class="modal fade" id="reportReviewModal" tabindex="-1" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportReviewModal" tabindex="-1" role="dialog" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
+                    <h3 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h3>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
                 </div>
                 <button type="button" class="model-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
@@ -1744,10 +1566,10 @@
                             </div>
                             
                             <div>
-                                <h6 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
+                                <h4 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
                                     <i class="fas {{ $opt['icon'] }} me-1 text-muted" style="font-size: 13px;"></i> 
                                     {{ $opt['value'] }}
-                                </h6>
+                                </h4>
                                 <p class="text-muted m-0" style="font-size: 13px; line-height: 1.4;">{{ $opt['desc'] }}</p>
                             </div>
                         </div>
@@ -1767,6 +1589,7 @@
         </div>
     </div>
 </div>
+@push('styles')
 <style>
     .report-review-option-card:hover {
         border-color: #94a3b8 !important;
@@ -1784,6 +1607,7 @@
         color: #ffffff !important;
     }
 </style>
+@endpush
 <script>
 function openReviewReportModal(reviewId) {
     @if(!auth()->check())

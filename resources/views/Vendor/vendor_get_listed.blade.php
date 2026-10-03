@@ -26,7 +26,7 @@
                 </div>
                 <div class="banner_image_col">
                     <div class="banner_image">
-                        <img src="{{ asset($getListed->banner_image_left) }}" class="banner_top_image">
+                        <img src="{{ asset($getListed->banner_image_left) }}" class="banner_top_image" alt="Banner">
                     </div>
                 </div>
             </div>
@@ -165,13 +165,13 @@
                         <div class="col-md-4">
                             <div class="our_busn_box">
                                 <div class="or_busn_bg">
-                                    <h4 class="big-bld m-0">{{ $index + 1 }}</h4>
+                                    <p class="big-bld m-0">{{ $index + 1 }}</h4>
                                     @if (!empty($claim['icon']))
                                         <img src="{{ asset('images/icons/' . $claim['icon']) }}" alt="icon" class="mt-2" style="width: 32px;">
                                     @endif
                                 </div>
                                 <div class="our_btm_text">
-                                    <h6 class="big-bld">{{ $claim['title'] ?? '' }}</h6>
+                                    <p class="big-bld">{{ $claim['title'] ?? '' }}</p>
                                     <p>{{ $claim['description'] ?? '' }}</p>
                                 </div>
                             </div>

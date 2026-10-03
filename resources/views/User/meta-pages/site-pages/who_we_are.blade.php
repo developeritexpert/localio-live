@@ -35,7 +35,7 @@
                         @if ($whoWeAre->top_left_section_img)
                         <img src="{{ asset($whoWeAre->top_left_section_img) }}" alt="">
                         @else
-                        <img src="{{ asset('front/img/ctgry-bannr.png') }}" class="banner_top_image">
+                        <img src="{{ asset('front/img/ctgry-bannr.png') }}" class="banner_top_image" alt="Banner">
                         @endif
 
                     </div>

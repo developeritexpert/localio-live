@@ -1,6 +1,8 @@
 <div>
-    @include('User.partials.business_detail_styles')
-    <style>
+<div>
+@push('styles')
+@include('User.partials.business_detail_styles')
+<style>
         [x-cloak] {
            display: none !important;
         }
@@ -22,10 +24,11 @@
 }
 
     </style>
+@endpush
 
     @php
         $catMetaTitle = !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page');
-        $catMetaDescription = !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? '');
+        $catMetaDescription = !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations->description)) ?? '');
     @endphp
     @if (session()->has('message'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -136,10 +139,12 @@
                                {!! \App\Services\ContentTemplateService::cleanHeading($applyDynamicVars($topRatedH2Text)) !!}
                             </h2>
                             @if(!empty($topRatedSubText))
-                                <style>
+                                @push('styles')
+<style>
                                     .top-rated-subtext-container p { margin-bottom: 0 !important; }
                                     .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
+@endpush
                                 <div class="top-rated-subtext-container ck-content">
                                     {!! $topRatedSubText !!}
                                 </div>
@@ -167,7 +172,7 @@
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
                                         <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                            {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
+                                            {{ strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations->description)) ?? 'Browse and compare the best options') }}
                                         </p>
                                     </div>
                                     <div class="col-md-4 mt-4 mt-md-0 text-start">
@@ -191,7 +196,7 @@
                             <div class="auto-choice-lft">
                                 <!-- Mobile Filter Drawer Header -->
                                 <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
-                                    <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                    <h3 class="m-0 fw-bold fs-6" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h3>
                                     <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -653,7 +658,7 @@
                                         </button>
 
                                         <div class="dropdown-menu dropdown-menu-end shadow-sm"
-                                            aria-labelledby="categorySortDropdownBtn"
+                                            aria-labelledby="categorySortDropdownBtn" role="menu"
                                             style="min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 6px 0; margin-top: 6px; overflow: hidden;">
                                             @foreach($sortOptionsMap as $val => $label)
                                             <button type="button" wire:click="setSortBy('{{ $val }}')"
@@ -810,7 +815,7 @@
                                                                     <div class="d-flex align-items-center size18">
                                                                         <div class="grn_chk"
                                                                             style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                            <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
@@ -822,7 +827,7 @@
                                                                     <div class="d-flex align-items-center size18">
                                                                         <div class="grn_chk"
                                                                             style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                            <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
@@ -832,7 +837,7 @@
                                                                     <div class="d-flex align-items-center size18">
                                                                         <div class="grn_chk"
                                                                             style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                            <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
@@ -842,7 +847,7 @@
                                                                     <div class="d-flex align-items-center size18">
                                                                         <div class="grn_chk"
                                                                             style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                            <img src="{{ asset('front/img/green-tick.svg') }}"
+                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check"
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
@@ -932,10 +937,10 @@
     <div class="text-center mt-4 w-100"
         style="padding: 15px 25px; border-radius: 8px;">
 
-        <h6
+        <div
             style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
             Starting price
-        </h6>
+        </div>
 
         <h3
             style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
@@ -1086,7 +1091,10 @@
                 </div> --}}
                 @endif
             </div>
-            <livewire:compare-bar :category-id="$category->id" />
+        </div>
+    </div>
+</div>
+<livewire:compare-bar :category-id="$category->id" />
         </section>
         <!-- Remaining sections stay the same -->
         
@@ -1251,7 +1259,7 @@
                                                     @foreach ($biz->usps->take(5) as $usp)
                                                         <li class="d-flex flex-row align-items-center size15">
                                                             <div class="grn_chk" >
-                                                                <img src="{{ asset('front/img/green-tick.svg') }}" >
+                                                                <img src="{{ asset('front/img/green-tick.svg') }}" alt="Check">
                                                             </div>
                                                             <p class="m-0">{{ $usp->text }}</p>
                                                         </li>
@@ -1623,7 +1631,7 @@
                     if (empty($vsKeyword) || $vsKeyword === 'vs_keyword') $vsKeyword = 'vs';
                     $vsKeySlug = \Illuminate\Support\Str::slug($vsKeyword);
                 @endphp
-                <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
+                <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
                     <div class="mb-3">
                         <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
                             {!! \App\Services\ContentTemplateService::cleanHeading($compToolHeadline) !!}
@@ -1966,7 +1974,7 @@
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 class="explore-cat-h2" style="text-transform: math-auto;">
+                    <h2 class="explore-cat-h2" style="text-transform: capitalize;">
                         {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
                     </h2>
                     @if(!empty($exploreSubtext))
@@ -2085,7 +2093,7 @@
                                         {{ $faq['question'] }}
                                     </button>
                                 </h3>
-                                <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
+                                <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" role="region" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
                                     <div class="accordion-body rich-text-content category-faq-answer" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
@@ -2409,4 +2417,5 @@ function switchCategoryPreview(bizId, imgSrc, thumbElement) {
 })();
 </script>
 
+</div>
 </div>
