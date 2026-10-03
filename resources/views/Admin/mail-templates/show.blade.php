@@ -5,7 +5,10 @@
             <div class="nk-block-head-content">
                 <h4 class="title nk-block-title">Mail Template: <code>{{ $mailTemplate->key }}</code></h4>
             </div>
-            <div class="nk-block-head-content">
+            <div class="nk-block-head-content d-flex gap-2">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendTestMailModal">
+                    <em class="icon ni ni-send me-1"></em> Send Test Email
+                </button>
                 <a href="{{ route('mail-templates.edit', $mailTemplate) }}" class="btn" style="
                 background-color: #F9633B;
                 color: white;"> Edit
@@ -252,6 +255,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Send Test Email Modal -->
+    <div class="modal fade" id="sendTestMailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Send Test Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="testMailAlert" class="d-none alert mb-3"></div>
+                    <form id="sendTestMailForm">
+                        @csrf
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="test_recipient_email">Recipient Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="test_recipient_email" name="email" placeholder="e.g. your-email@example.com" value="{{ auth()->user()->email ?? '' }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="test_lang_id">Language</label>
+                            <select class="form-select" id="test_lang_id" name="lang_id">
+                                @foreach($languages as $language)
+                                    <option value="{{ $language->id }}">{{ $language->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-note text-muted">
+                            <small>This will generate sample data for all template variables and send a live email.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmitTestEmail">
+                        <span id="testEmailBtnText">Send Email</span>
+                        <span id="testEmailSpinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -382,6 +425,66 @@ document.addEventListener('DOMContentLoaded', function() {
             input.placeholder = `e.g., ${sampleValues[variable.toLowerCase()]}`;
         }
     });
+
+    // Send Test Email AJAX
+    const btnSubmitTestEmail = document.getElementById('btnSubmitTestEmail');
+    if (btnSubmitTestEmail) {
+        btnSubmitTestEmail.addEventListener('click', function() {
+            const emailInput = document.getElementById('test_recipient_email');
+            const langSelect = document.getElementById('test_lang_id');
+            const alertBox = document.getElementById('testMailAlert');
+            const btnText = document.getElementById('testEmailBtnText');
+            const spinner = document.getElementById('testEmailSpinner');
+
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Please enter a valid email address.';
+                alertBox.classList.remove('d-none');
+                return;
+            }
+
+            btnSubmitTestEmail.disabled = true;
+            btnText.textContent = 'Sending...';
+            spinner.classList.remove('d-none');
+            alertBox.classList.add('d-none');
+
+            fetch('{{ route('mail-templates.send-test', $mailTemplate->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: emailInput.value,
+                    lang_id: langSelect.value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnSubmitTestEmail.disabled = false;
+                btnText.textContent = 'Send Email';
+                spinner.classList.add('d-none');
+                alertBox.classList.remove('d-none');
+
+                if (data.success) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = data.message || 'Test email sent successfully!';
+                } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = data.message || 'Failed to send test email.';
+                }
+            })
+            .catch(err => {
+                btnSubmitTestEmail.disabled = false;
+                btnText.textContent = 'Send Email';
+                spinner.classList.add('d-none');
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Network or server error: ' + err.message;
+                alertBox.classList.remove('d-none');
+            });
+        });
+    }
 });
 </script>
 @endpush

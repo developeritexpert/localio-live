@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Business;
+use App\Services\MailService;
 use Illuminate\Http\Request;
 use App\Models\HomeContent;
 use App\Models\GetListed;
@@ -473,9 +474,25 @@ class HomeController extends Controller
             'status'      => 'pending',
         ]);
 
+        $biz = Business::find($validated['business_id']);
+        $bizName = $biz?->translations?->first()?->name ?? $biz?->name ?? 'Business';
 
-        //redirect back
-        // return redirect()->route('vendor-register-list')->with('success', 'Vendor registered successfully!');
+        // Notify vendor
+        MailService::sendTemplate('vendor_registration_user', $vendor->email, [
+            'vendor_name'   => trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')),
+            'business_name' => $bizName,
+        ], 1, $vendor);
+
+        // Notify admin
+        $adminEmail = config('mail.from.address');
+        if ($adminEmail) {
+            MailService::sendTemplate('vendor_registration_admin', $adminEmail, [
+                'vendor_name'      => trim(($vendor->first_name ?? '') . ' ' . ($vendor->last_name ?? '')),
+                'business_name'    => $bizName,
+                'email'            => $vendor->email,
+                'admin_vendor_url' => url('/admin-dashboard/vendor-registration-requests'),
+            ], 1);
+        }
 
         return redirect()->route('vendor.request', ['locale' => getCurrentLocale()])->with('success', 'Vendor registered successfully!');
         }

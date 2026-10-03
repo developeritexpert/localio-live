@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\MailTemplate;
+use App\Services\MailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -195,6 +196,12 @@ class AuthenticationController extends Controller
         if ($user) {
             Auth::login($user);
 
+            MailService::sendTemplate('welcome_email', $user->email, [
+                'name' => trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')),
+                'email' => $user->email,
+                'login_url' => url('/' . (app()->getLocale() ?? 'en-us') . '/login'),
+            ], $user->country_id ?? 1, $user);
+
             $isFromModal = session('register_from_modal', false) || session()->has('pending_review_business_id');
 
             // Clear session data
@@ -340,9 +347,21 @@ class AuthenticationController extends Controller
             ]);
         }
     }
-    // Send email
-    Mail::to($request->email)->send(new ForgetPasswordMail($data));
-    return redirect('/otp-confirm')->with('success', 'OTP has been sent to your email');
+    $data['name'] = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'User';
+    $data['email'] = $user->email;
+
+    try {
+        Mail::to($request->email)->send(new ForgetPasswordMail($data, getCurrentLanguageID()));
+        return redirect('/otp-confirm')->with('success', 'OTP has been sent to your email');
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('Failed to send forget password email: ' . $e->getMessage(), [
+            'email' => $request->email,
+            'otp' => $otp,
+        ]);
+        \Illuminate\Support\Facades\Log::info("=== PASSWORD RESET OTP FOR {$request->email}: {$otp} ===");
+
+        return redirect()->back()->with('error', 'Unable to send email: ' . $e->getMessage() . '. Please verify your SMTP settings in .env.');
+    }
     }
     public function otpConfirm()
     {
@@ -394,6 +413,12 @@ class AuthenticationController extends Controller
         $remember = $request->has('remember');
         $user->password = $password;
         $user->save();
+
+        MailService::sendTemplate('password_changed', $user->email, [
+            'name' => trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')),
+            'support_url' => url('/' . (app()->getLocale() ?? 'en-us') . '/contact'),
+        ], $user->country_id ?? 1, $user);
+
         if (Auth::attempt(['email' => $email, 'password' => $request->password],$remember)) {
             // If authentication is successful, check user role
         if (Auth::user()->user_type == 'admin') {
@@ -528,6 +553,12 @@ class AuthenticationController extends Controller
 
             // Log in the newly created user
             Auth::login($newUser);
+
+            MailService::sendTemplate('welcome_email', $newUser->email, [
+                'name' => trim(($newUser->first_name ?? '') . ' ' . ($newUser->last_name ?? '')),
+                'email' => $newUser->email,
+                'login_url' => url('/' . (app()->getLocale() ?? 'en-us') . '/login'),
+            ], $newUser->country_id ?? 1, $newUser);
         }
 
         // Get the logged-in user
