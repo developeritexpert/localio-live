@@ -2510,7 +2510,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <div class="feture_box review-breakdown-box not-on-mobile">
 
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
-                                                <h2 class="size22 big-bld m-0">{{ static_text('highlighted_reviews_heading') ?: 'Highlighted reviews' }} </h2>
+                                                <h2 class="size22 big-bld m-0 underline-hover">{{ static_text('highlighted_reviews_heading') ?: 'Highlighted reviews' }} </h2>
                                                 <a href="#section14" class="view-review-link">
                                                     {{ static_text('go_to_reviews_link') ?: 'Go to reviews' }}
                                                 </a>

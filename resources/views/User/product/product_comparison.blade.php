@@ -120,6 +120,90 @@
 
 @push('styles')
 <style>
+.sticky-comparison-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 35, 71, 0.08);
+    border-bottom: 1px solid #e2e8f0;
+    z-index: 1050 !important;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.sticky-comparison-bar.is-visible {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.sticky-comp-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    position: relative;
+}
+
+.sticky-comp-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: relative;
+    gap: 14px;
+}
+
+.sticky-comp-vs {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    /* background: #f1f5f9; */
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -13px;
+    z-index: 3;
+    flex-shrink: 0;
+    text-transform: lowercase;
+}
+
+.sticky-comp-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sticky-comp-logo {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.sticky-comp-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 
 </style>
 @endpush
