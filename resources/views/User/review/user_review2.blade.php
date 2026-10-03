@@ -36,7 +36,7 @@
     // Pros & Cons extraction logic from business reviews
     $pros = collect();
     $cons = collect();
-    $activeReviews = $business->reviews->where('status', 'active');
+    $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
     $ratingCount = $business->approved_reviews_count;
     $hasUserRatings = $business->should_show_detailed_ratings;
     $hasUserReviews = $ratingCount > 0;
@@ -836,7 +836,7 @@
 
                         <!-- 2. Highlighted Reviews Card -->
                         @php
-                            $topReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+                            $topReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
                             if ($topReviews->isEmpty() && $business->reviews) {
                                 $topReviews = $business->reviews;
                             }

@@ -1,7 +1,7 @@
 @php
     if (!isset($hasUserRatings)) {
         if (isset($business)) {
-            $hasUserRatings = $business->should_show_detailed_ratings ?? ($business->reviews->where('status', 'active')->count() >= 10);
+            $hasUserRatings = $business->should_show_detailed_ratings ?? ($business->reviews->whereIn('status', ['published', 'active'])->count() >= 10);
         } else {
             $hasUserRatings = false;
         }

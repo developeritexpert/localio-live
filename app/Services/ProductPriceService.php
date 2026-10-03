@@ -36,7 +36,7 @@ class ProductPriceService
         $price = $product->prices()
             ->where('country_code', $country)
             ->where('price_type', $priceType)
-            ->where('status', 'active')
+            ->whereIn('status', ['published', 'active'])
             ->orderByDesc('updated_at')
             ->first();
 

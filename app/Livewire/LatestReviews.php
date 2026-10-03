@@ -22,7 +22,7 @@ class LatestReviews extends Component
             'translations' => fn($q) => $q->where('language_id', $lang_id),
         ])
             ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin'))
-            ->where('status','active')
+            ->whereIn('status', ['published', 'active'])
             ->latest()
             ->get();
 

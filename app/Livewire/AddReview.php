@@ -319,10 +319,17 @@ class AddReview extends Component
             'lang_id'     => $lang_id,
             'rating'      => $avg_rating,
             'recommend'   => (bool)$this->recommend,
-            'status'      => 'active',
+            'status'      => 'processing',
         ]);
 
-        $this->reviewId = $review->id;
+                $this->reviewId = $review->id;
+
+        // Dispatch automated 3-layer review moderation
+        try {
+            \App\Jobs\ProcessReviewModeration::dispatch($review->id);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error dispatching review moderation: ' . $e->getMessage());
+        }
 
         // Send notifications
         $biz = \App\Models\Business::find($this->businessId);

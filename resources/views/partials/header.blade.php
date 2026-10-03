@@ -144,6 +144,517 @@
 
 
 
+<style>
+/* ==========================================================================
+   Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
+   ========================================================================== */
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 320px;
+    max-width: 85%;
+    height: 100vh;
+    background: #002347;
+    z-index: 99999;
+    transition: left .3s ease;
+    overflow: hidden;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-sidebar.active {
+    left: 0;
+}
+
+.mobile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+    z-index: 99998;
+}
+
+.mobile-sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-sidebar-close {
+    border: none;
+    background: none;
+    color: #fff !important;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color .2s ease;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-sidebar-close:hover {
+    color: #F9633B !important;
+    background: #90909050;
+}
+
+.mobile-sidebar-logo img {
+    height: 28px;
+}
+
+.mobile-sidebar-body {
+    padding: 20px 0;
+}
+
+.mobile-sidebar-body .menu_section {
+    margin-bottom: 25px;
+}
+
+.mobile-sidebar-body .menu_section .section_heading {
+    color: #fff !important;
+    padding-left: 18px;
+    margin: 0 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+.mobile-sidebar-body .section_divider {
+    margin: 8px auto 5px !important;
+    width: 90% !important;
+    border-color: #ffffff33 !important;
+}
+
+.mobile-sidebar-body .flat_list {
+    padding: 0 25px;
+    margin: 0;
+    list-style: none;
+}
+
+.mobile-sidebar-body .flat_list li {
+    padding: 8px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-sidebar-body .flat_list li:last-child {
+    border-bottom: none;
+}
+
+.mobile-sidebar-body .flat_list li a {
+    color: #fff !important;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500 !important;
+    transition: all 0.2s ease;
+    display: block;
+}
+
+.mobile-sidebar-body .flat_list li a:hover {
+    color: #F9633B !important;
+    padding-left: 5px;
+}
+
+/* DESKTOP: ALWAYS HIDE MOBILE SIDEBAR & OVERLAY */
+@media (min-width: 992px) {
+    .mobile-sidebar,
+    .mobile-sidebar-overlay,
+    .mobile-sidebar-btn,
+    .mobile-sidebar-track,
+    .mobile-sidebar-view {
+        display: none !important;
+    }
+}
+
+/* MOBILE SIDEBAR TWO-TIER NAVIGATION */
+@media (max-width: 991px) {
+    .mobile-sidebar-track {
+        display: flex;
+        width: 200%;
+        height: 100%;
+        transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .mobile-sidebar-track.slide-subcat {
+        transform: translateX(-50%);
+    }
+
+    .mobile-sidebar-view {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mobile-subcat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+        background: #002347;
+    }
+
+    .mobile-subcat-back-btn {
+        border: none;
+        background: none;
+        color: #fff !important;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .mobile-subcat-back-btn i {
+        font-size: 14px;
+    }
+
+    .mobile-cat-nav-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100%;
+        color: #fff !important;
+        text-decoration: none !important;
+        font-size: 15px;
+        font-weight: 500 !important;
+        padding: 8px 0 !important;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .mobile-cat-nav-btn:hover {
+        color: #F9633B !important;
+    }
+
+    .mobile-cat-right-arrow {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .mobile-cat-nav-btn:hover .mobile-cat-right-arrow {
+        color: #F9633B !important;
+        transform: translateX(3px);
+    }
+
+    .mobile-subcat-body {
+        padding: 10px 0 25px;
+        flex: 1;
+    }
+
+    .mobile-subcat-parent-heading {
+        padding: 14px 20px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-subcat-parent-link {
+        color: #F9633B !important;
+        font-size: 16px;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        display: block;
+        transition: opacity 0.2s ease;
+    }
+
+    .mobile-subcat-parent-link:hover {
+        opacity: 0.85;
+    }
+
+    .mobile-subcat-items-list {
+        list-style: none;
+        margin: 0;
+        padding: 0 20px;
+    }
+
+    .mobile-subcat-items-list li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mobile-subcat-items-list li:last-child {
+        border-bottom: none;
+    }
+
+    .mobile-subcat-items-list li a {
+        display: block;
+        padding: 12px 0;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 15px;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        transition: color 0.2s ease, padding-left 0.2s ease;
+    }
+
+    .mobile-subcat-items-list li a:hover {
+        color: #F9633B !important;
+        padding-left: 4px;
+    }
+
+    .mobile-sidebar-body .left-text {
+        margin-top: 10px;
+    }
+
+    .mobile-sidebar-body .left-text ul li a.nav-link {
+        border-radius: 150px !important;
+        margin-right: 15px;
+        margin-left: 15px;
+        display: block;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .mobile-sidebar-body .left-text ul li a.nav-link.active {
+        background: #f7f9fb !important;
+        color: #012555 !important;
+    }
+
+    .mobile-sidebar-body .left-text ul li a.nav-link.active .side-links .icons-links {
+        border-color: #012555 !important;
+    }
+
+    .mobile-sidebar-body .left-text ul li a.nav-link.active img {
+        filter: unset !important;
+    }
+
+    .mobile-sidebar-body .left-text ul li a.nav-link:not(.active) img {
+        filter: brightness(0) invert(1) !important;
+    }
+}
+
+/* CUSTOM MOBILE PROFILE PANEL (MSP) */
+.msp_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.msp_backdrop.msp_active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.msp_panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 85%;
+    height: 100%;
+    background-color: #002347;
+    color: #ffffff;
+    z-index: 1050;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    text-align: left;
+}
+
+.msp_panel.msp_active {
+    transform: translateX(0);
+}
+
+.msp_panel_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.msp_brand img {
+    max-height: 32px;
+}
+
+.msp_close_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.msp_views_wrapper {
+    position: relative;
+    width: 200%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.msp_views_wrapper.msp_show_sub {
+    transform: translateX(-50%);
+}
+
+.msp_view {
+    width: 50%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 40px;
+}
+
+.msp_intro_section {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.msp_title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #ffffff;
+}
+
+.msp_subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 16px;
+    line-height: 1.4;
+}
+
+.msp_buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.msp_btn_login {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.msp_btn_signup {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    background-color: #F9633B;
+    border: 1px solid #F9633B;
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.msp_nav_list {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0;
+}
+
+.msp_nav_item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.msp_nav_link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.msp_nav_link:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #F9633B;
+}
+
+.msp_sub_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.msp_back_btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.msp_sub_title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+}
+
+.msp_sub_list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.msp_sub_list li a {
+    display: block;
+    padding: 11px 20px 11px 40px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.msp_sub_list li a:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #F9633B;
+}
+
+</style>
+
                         <!-- mobile nav -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <div class="left_menu">

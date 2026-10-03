@@ -43,7 +43,7 @@ class ProductController extends Controller
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->with('translations')
                 ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-                ->where('status', 'active'),
+                ->whereIn('status', ['published', 'active']),
             'products' => fn($q) => $q->with([
                 'prices',
                 'pricingOptions.translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -75,11 +75,11 @@ class ProductController extends Controller
         // 10-Review Threshold Rule:
         // As long as a business has < 10 approved reviews, show admin_rating (and no detailed rating).
         // As soon as review #10 is approved, show user rating and user pros & cons.
-        $approvedReviewsCount = $business->reviews->where('status', 'active')->count();
+        $approvedReviewsCount = $business->reviews->whereIn('status', ['published', 'active'])->count();
         $hasUserRatings = $approvedReviewsCount >= 10;
         $hasUserReviews = $approvedReviewsCount > 0;
         if ($hasUserRatings) {
-            $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
+            $averageRating = round($business->reviews->whereIn('status', ['published', 'active'])->avg('rating'), 1);
         } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
             $averageRating = (float)$business->admin_rating;
         } else {
@@ -91,7 +91,7 @@ class ProductController extends Controller
         if ($user) {
             $userReview = Review::where('business_id', $business->id)
                 ->where('user_id', $user->id)
-                ->where('status', 'inactive')
+                ->whereIn('status', ['pending_review', 'rejected', 'removed', 'inactive'])
                 ->first();
 
             if ($userReview) {
@@ -109,7 +109,7 @@ class ProductController extends Controller
         $sort = $request->get('sort', 'recent');
 
         $applyFiltersAndSort = function ($query) use ($selectedStars, $sort, $lang_id) {
-            $query->where('status', 'active');
+            $query->whereIn('status', ['published', 'active']);
             
             if (!empty($selectedStars)) {
                 $query->where(function($q) use ($selectedStars) {
@@ -190,7 +190,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
         $trustpilotReviews = $applyFiltersAndSort($trustpilotReviewsQuery)->take(10)->get();
 
-        $ratingCount = $business->reviews->where('status', 'active')->count();
+        $ratingCount = $business->reviews->whereIn('status', ['published', 'active'])->count();
 
         $default_image = WebSetting::where('key','user_default_image')->value('value');
 
@@ -228,14 +228,14 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $reviews = $reviewsQuery->paginate(10)->appends($request->query());
         // Calculate rating breakdown
         $ratingCounts = $business->reviews
-            ->where('status', 'active')
+            ->whereIn('status', ['published', 'active'])
             ->groupBy(function ($review) {
                 return (int) round($review->rating);
             })
             ->map(fn($group) => $group->count());
 
         // Total active reviews
-        $totalReviews = $business->reviews->where('status', 'active')->count();
+        $totalReviews = $business->reviews->whereIn('status', ['published', 'active'])->count();
 
         // Ensure all 1–5 stars are represented
 
@@ -277,7 +277,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
                 })
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                     'websites' => fn($q) => $q->where('country_id', getCurrentCountry()),
                 ])
                 ->withCount([
@@ -310,7 +310,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
                 })
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 ])
                 ->withCount([
                     'reviews as average_rating' => function ($query) {
@@ -324,7 +324,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $reviews = Review::where('business_id', $business->id)->get();
 
         $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
-        $activeReviews = $reviews->where('status', 'active');
+        $activeReviews = $reviews->whereIn('status', ['published', 'active']);
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
         foreach ($criteria as $criterion) {
@@ -370,9 +370,9 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
         }
 
-        $activeReviewsCount = $reviews->where('status', 'active')->count();
+        $activeReviewsCount = $reviews->whereIn('status', ['published', 'active'])->count();
         if ($activeReviewsCount > 0) {
-            $recommendCount = $reviews->where('status', 'active')->where('recommend', 1)->count();
+            $recommendCount = $reviews->whereIn('status', ['published', 'active'])->where('recommend', 1)->count();
             $recommendPercent = round(($recommendCount / $activeReviewsCount) * 100);
         } else {
             $recommendPercent = 0;
@@ -396,7 +396,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
             ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
             ->where('reviews.business_id', $business->id)
-            ->where('reviews.status', 'active')
+            ->whereIn('reviews.status', ['published', 'active'])
             ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
             ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
             ->orderByDesc('review_count')
@@ -552,7 +552,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             'translations' => fn($q) => $q->where('language_id', $lang_id),
             'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
         ])
-            ->where('status', 'active')
+            ->whereIn('status', ['published', 'active'])
             ->orderByDesc('created_at')
             ->take(2)
             ->get();
@@ -573,7 +573,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             ->toArray();
 
         $query = \App\Models\BusinessDiscussion::where('is_top_rated', 1)
-            ->where('status', 'active')
+            ->whereIn('status', ['published', 'active'])
             ->with([
                 'user.country',
                 'comments' => fn($q) => $q->whereNull('parent_id')
@@ -604,9 +604,9 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         $totalDiscussionsCount = (clone $query)->count();
         $discussions = $query->paginate(10);
 
-        $discIds = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->pluck('id');
+        $discIds = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->whereIn('status', ['published', 'active'])->pluck('id');
         $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
-        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->where('status', 'active')->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('is_top_rated', 1)->whereIn('status', ['published', 'active'])->where('updated_at', '>=', now()->startOfDay())->count();
         $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
         $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
 
@@ -650,7 +650,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                 $query->where('lang_id', $lang_id);
             },
             'reviews' => function ($query) {
-                $query->where('status', 'active');
+                $query->whereIn('status', ['published', 'active']);
             },
             'reviews.ratings.criteria',
             'reviews.selectedProCons',
@@ -761,7 +761,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                 $query->where('lang_id', $lang_id);
             },
             'reviews' => function ($query) {
-                $query->where('status', 'active');
+                $query->whereIn('status', ['published', 'active']);
             },
             'reviews.ratings.criteria',
             'reviews.selectedProCons',
@@ -1149,7 +1149,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
             'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->where('status', 'active'),
+            'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
         ])->first();
 
         if (!$business) {
@@ -1161,7 +1161,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                 'category.translations',
                 'category.parent.translation',
                 'category.parent.translations',
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             ])->first();
         }
 
@@ -1169,10 +1169,10 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             abort(404, 'Business not found');
         }
 
-        $totalReviews = $business->reviews->where('status', 'active')->count();
+        $totalReviews = $business->reviews->whereIn('status', ['published', 'active'])->count();
         $hasUserRatings = $totalReviews >= 10;
         if ($hasUserRatings) {
-            $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
+            $averageRating = round($business->reviews->whereIn('status', ['published', 'active'])->avg('rating'), 1);
         } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
             $averageRating = (float)$business->admin_rating;
         } else {
@@ -1180,11 +1180,11 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         }
         $businessRating = $averageRating ?? 0;
         
-        $recommendCount = $business->reviews->where('status', 'active')->where('recommend', 1)->count();
+        $recommendCount = $business->reviews->whereIn('status', ['published', 'active'])->where('recommend', 1)->count();
         $recommendPercent = ($hasUserRatings && $totalReviews > 0) ? round(($recommendCount / $totalReviews) * 100) : 0;
 
         $reviews = Review::where('business_id', $business->id)->get();
-        $activeReviews = $reviews->where('status', 'active');
+        $activeReviews = $reviews->whereIn('status', ['published', 'active']);
         $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : (\App\Models\Category::whereNull('parent_id')->orderBy('id')->first()?->getEffectiveRatingCriteria() ?? collect());
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
 
@@ -1262,7 +1262,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         $popularComparisons = (clone $basePeerQuery)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             ])
             ->limit(6)
             ->get();
@@ -1306,7 +1306,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         $peerComparisons = $filteredPeerQuery
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             ])
             ->paginate(12)
             ->appends(request()->query());
@@ -1334,7 +1334,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         if (!empty($recentIds)) {
             $recentlyViewedComparisons = Business::whereIn('id', $recentIds)
                 ->where('id', '!=', $business->id)
-                ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id), 'reviews' => fn($q) => $q->where('status', 'active')])
+                ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id), 'reviews' => fn($q) => $q->whereIn('status', ['published', 'active'])])
                 ->get();
         }
         if ($recentlyViewedComparisons->count() < 3) {

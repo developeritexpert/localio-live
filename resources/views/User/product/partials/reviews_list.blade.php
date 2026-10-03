@@ -1,5 +1,5 @@
 @php
-    $hasUserRatings = $hasUserRatings ?? (isset($business) && $business->reviews->where('status', 'active')->count() >= 10);
+    $hasUserRatings = $hasUserRatings ?? (isset($business) && $business->reviews->whereIn('status', ['published', 'active'])->count() >= 10);
 @endphp
 
 
@@ -242,7 +242,7 @@
             $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
         @endphp
         @php
-            $tabAllCount = isset($business) ? ($business->approved_reviews_count ?? $business->reviews->where('status', 'active')->count()) : $allReviews->count();
+            $tabAllCount = isset($business) ? ($business->approved_reviews_count ?? $business->reviews->whereIn('status', ['published', 'active'])->count()) : $allReviews->count();
         @endphp
         @if($tabAllCount >= 10)
         <div class="btm-bttn light" >

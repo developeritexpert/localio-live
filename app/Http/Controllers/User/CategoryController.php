@@ -368,8 +368,8 @@ class CategoryController extends Controller
         ->whereHas('translations', function ($q) use ($lang_id) {
             $q->where('lang_id', $lang_id);
         })
-        ->withCount(['reviews as active_reviews_count' => fn($q) => $q->where('status', 'active')])
-        ->withAvg(['reviews as average_rating' => fn($q) => $q->where('status', 'active')], 'rating')
+        ->withCount(['reviews as active_reviews_count' => fn($q) => $q->whereIn('status', ['published', 'active'])])
+        ->withAvg(['reviews as average_rating' => fn($q) => $q->whereIn('status', ['published', 'active'])], 'rating')
         ->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -386,7 +386,7 @@ class CategoryController extends Controller
                   $subQ->whereIn('categories.id', $catIds);
               });
         })
-        ->where('status', 'active')
+        ->whereIn('status', ['published', 'active'])
         ->with([
             'user',
             'translations' => fn($q) => $q->where('language_id', $lang_id),
@@ -397,7 +397,7 @@ class CategoryController extends Controller
         ->get();
 
         if ($recentReviews->isEmpty()) {
-            $recentReviews = Review::where('status', 'active')
+            $recentReviews = Review::whereIn('status', ['published', 'active'])
                 ->with([
                     'user',
                     'translations' => fn($q) => $q->where('language_id', $lang_id),

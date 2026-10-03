@@ -210,7 +210,7 @@ class CategoryPage extends Component
     {
         // Load filters by category with appropriate relationships
         $this->filters = Filter::where('category_id', $this->category->id)
-            ->where('status', 'active')
+            ->whereIn('status', ['published', 'active'])
             ->with([
                 'filterType',
                 'translations' => function ($query) {
@@ -285,7 +285,7 @@ class CategoryPage extends Component
 
         $businesses = $businesses->where('status', 1)
             ->withAvg(['reviews' => function ($query) {
-                $query->where('status', 'active');
+                $query->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->where(function ($query) {
                 $query->whereHas('languages', function ($lq) {
@@ -361,7 +361,7 @@ class CategoryPage extends Component
                     });
             })
             ->withAvg(['reviews as avg_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->orderByDesc('avg_rating')
             ->orderBy('id')
@@ -483,7 +483,7 @@ class CategoryPage extends Component
                 },
                 'reviews' => fn($q) => $q->with('translations')
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
-                    ->where('status', 'active')
+                    ->whereIn('status', ['published', 'active'])
             ])
             ->where(function ($query) {
                 $query->whereHas('languages', function ($lq) {
@@ -515,7 +515,7 @@ class CategoryPage extends Component
         if (!empty($this->selectedRatings)) {
             $query->whereHas('reviews', function ($q) {
                 $q->select('business_id')
-                    ->where('status', 'active')
+                    ->whereIn('status', ['published', 'active'])
                     ->groupBy('business_id')
                     ->havingRaw('AVG(rating) >= ?', [min($this->selectedRatings)]);
             });
@@ -530,7 +530,7 @@ class CategoryPage extends Component
                         $subQuery->select('reviews.business_id')
                             ->from('reviews')
                             ->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')
-                            ->where('reviews.status', 'active')
+                            ->whereIn('reviews.status', ['published', 'active'])
                             ->where('review_ratings.criteria_id', $criteriaId)
                             ->groupBy('reviews.business_id')
                             ->havingRaw('AVG(review_ratings.rating) >= ?', [$minRating]);
@@ -618,7 +618,7 @@ class CategoryPage extends Component
         };
 
         $getMetrics = function ($business) use ($getStartingPrice) {
-            $activeReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+            $activeReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
             $reviewCount = $activeReviews->count();
             $avgRating = $reviewCount > 0 ? (float)$activeReviews->avg('rating') : 0.0;
             $recCount = $activeReviews->where('recommend', 1)->count();
@@ -1148,10 +1148,10 @@ public function getFeatureDescriptionProperty()
                 $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
             })
             ->withCount(['reviews as active_reviews_count' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }])
             ->withAvg(['reviews as average_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->with(['translations' => function ($q) use ($lang_id) {
                 $q->where('lang_id', $lang_id);
@@ -1300,10 +1300,10 @@ public function getFeatureDescriptionProperty()
                 $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
             })
             ->withCount(['reviews as active_reviews_count' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }])
             ->withAvg(['reviews as average_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->with(['translations' => function ($q) use ($lang_id) {
                 $q->where('lang_id', $lang_id);
@@ -1502,7 +1502,7 @@ public function getFeatureDescriptionProperty()
     {
         $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria'])
         ->withAvg(['reviews as average_rating' => function ($q) {
-            $q->where('status', 'active');
+            $q->whereIn('status', ['published', 'active']);
         }], 'rating')
         ->where('category_id', $this->category->id)
         ->where('status', 1)

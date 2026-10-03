@@ -227,7 +227,7 @@ class TopRatedProduct extends Component
     //     // Get all businesses with their reviews
     //     $businesses = Business::with([
     //         'reviews' => function ($q) {
-    //             $q->where('status', 'active');
+    //             $q->whereIn('status', ['published', 'active']);
     //         }
     //     ])
     //         ->whereHas('languages', function ($query) {
@@ -243,7 +243,7 @@ class TopRatedProduct extends Component
     //                 });
     //         })
     //         ->withAvg(['reviews as avg_rating' => function ($q) {
-    //             $q->where('status', 'active');
+    //             $q->whereIn('status', ['published', 'active']);
     //         }], 'rating')
     //         ->orderByDesc('avg_rating')
     //         ->get();
@@ -373,7 +373,7 @@ class TopRatedProduct extends Component
                     });
             })
             ->withAvg(['reviews as avg_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->orderByDesc('avg_rating')
             ->orderBy('id')
@@ -413,10 +413,10 @@ class TopRatedProduct extends Component
                 'limitedFeatures.translations' => fn($q) => $q->where('lang_id', $this->lang_id),
                 'reviews' => fn($q) => $q->with('translations')
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
-                    ->where('status', 'active')
+                    ->whereIn('status', ['published', 'active'])
             ])
             ->withAvg(['reviews as avg_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->orderByDesc('is_affiliate')
             ->orderByDesc('avg_rating') // Order by rating high to low
@@ -434,7 +434,7 @@ class TopRatedProduct extends Component
         if (!empty($this->selectedRatings)) {
             $query->whereHas('reviews', function ($q) {
                 $q->select('business_id')
-                    ->where('status', 'active')
+                    ->whereIn('status', ['published', 'active'])
                     ->groupBy('business_id')
                     ->havingRaw('AVG(rating) >= ?', [min($this->selectedRatings)]);
             });
@@ -526,7 +526,7 @@ class TopRatedProduct extends Component
         };
 
         $getMetrics = function ($business) use ($getStartingPrice) {
-            $activeReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+            $activeReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
             $reviewCount = $activeReviews->count();
             $avgRating = $reviewCount > 0 ? (float)$activeReviews->avg('rating') : 0.0;
             $recCount = $activeReviews->where('recommend', 1)->count();
@@ -945,10 +945,10 @@ class TopRatedProduct extends Component
                 }
             ])
             ->withCount(['reviews as active_reviews_count' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }])
             ->withAvg(['reviews as average_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->get();
 

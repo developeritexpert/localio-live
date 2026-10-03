@@ -2199,7 +2199,7 @@ class ContentTemplateService
             $parentCat = $primarySubcat->parent;
         }
 
-        $reviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+        $reviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
         $averageRating = floatval($business->admin_rating > 0 ? $business->admin_rating : 4.0);
 
         foreach ($defaultCriteria as $crit) {

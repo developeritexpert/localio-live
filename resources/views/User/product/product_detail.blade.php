@@ -308,7 +308,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     <section class="asn_main_sec asn_main_sec_2" id="section1">
         <div class="asn_dv">
             @php
-            $activeReviews = $business->reviews->where('status', 'active');
+            $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
             $ratingCount = $activeReviews->count();
             $hasUserRatings = $ratingCount >= 10;
             $hasUserReviews = $ratingCount > 0;
@@ -423,7 +423,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
 
                             @php
-                            $ratingCount = $business->reviews->where('status', 'active')->count();
+                            $ratingCount = $business->reviews->whereIn('status', ['published', 'active'])->count();
                             @endphp
 
                         </div>
@@ -1003,7 +1003,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                     <div class="col-lg-12 mt-3">
                         @php
-                        $effReviewCount = $ratingCount ?? ($business->reviews->where('status', 'active')->count() ?: 0);
+                        $effReviewCount = $ratingCount ?? ($business->reviews->whereIn('status', ['published', 'active'])->count() ?: 0);
                         @endphp
 
                         @php
@@ -1319,7 +1319,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 );
 
                                                                 $altRatingAvg = $altbusiness->reviews->avg('rating');
-                                                                $count = $altbusiness->reviews->where('status', 'active')->count();
+                                                                $count = $altbusiness->reviews->whereIn('status', ['published', 'active'])->count();
                                                                 @endphp
 
                                                                 <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
@@ -2444,7 +2444,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             $cons = collect();
 
                             $reviews = $business->reviews
-                            ->where('status', 'active')
+                            ->whereIn('status', ['published', 'active'])
                             ->shuffle(); // Random reviews
 
                             foreach ($reviews as $review) {

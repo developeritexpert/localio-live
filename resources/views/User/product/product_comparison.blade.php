@@ -434,7 +434,7 @@
 
                                         <!-- Review Breakdown inside card -->
                                         @php
-                                            $activeReviews = $business->reviews->where('status', 'active');
+                                            $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
                                             $activeReviewIds = $activeReviews->pluck('id')->toArray();
                                             $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
 
@@ -596,7 +596,7 @@
                                 ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                 ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
                                 ->where('reviews.business_id', $b->id)
-                                ->where('reviews.status', 'active')
+                                ->whereIn('reviews.status', ['published', 'active'])
                                 ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
                                 ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
                                 ->orderByDesc('review_count')
@@ -977,7 +977,7 @@
                 <div class="row g-4 mb-4" id="comp-reviews-columns-container">
                     @foreach($businesses as $business)
                         @php
-                            $activeReviews = $business->reviews->where('status', 'active');
+                            $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
                             $bName = $business->translations->first()?->name ?? 'Business';
                             $curLang = getCurrentLocale();
                             $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
