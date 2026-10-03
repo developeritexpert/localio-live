@@ -164,7 +164,7 @@
     font-size: 11px;
     font-weight: 700;
     color: #475569;
-    background: #f1f5f9;
+    /* background: #f1f5f9; */
     border: 1px solid #cbd5e1;
     border-radius: 50%;
     width: 26px;

@@ -216,6 +216,22 @@ class MailTemplatesSeeder extends Seeder
 </p>',
             ],
             [
+                'key' => 'order_confirmation',
+                'subject' => 'Order Confirmation #{{ $order_number }}',
+                'variables' => ['customer_name', 'order_number', 'order_date', 'total_amount', 'app_name'],
+                'is_active' => true,
+                'body' => '<h2>Order Confirmation</h2>
+<p>Dear {{ $customer_name }},</p>
+<p>Thank you for your order! Here are your order details:</p>
+<div class="info-card">
+    <p><strong>Order Number:</strong> #{{ $order_number }}</p>
+    <p><strong>Order Date:</strong> {{ $order_date }}</p>
+    <p><strong>Total Amount:</strong> {{ $total_amount }}</p>
+</div>
+<p>We are processing your order and will keep you updated on its status.</p>
+<p>Best regards,<br>The {{ $app_name }} Team</p>',
+            ],
+            [
                 'key' => 'vendor_status_update',
                 'subject' => 'Your vendor account status for {{ $business_name }}',
                 'variables' => ['vendor_name', 'business_name', 'status', 'dashboard_url', 'app_name'],
