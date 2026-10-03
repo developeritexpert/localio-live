@@ -26,6 +26,11 @@
     .banner_image {
         right: 0px;
     }
+
+    /* vendr_dash.css */
+    .info_fiter_d_g .info_fiter_d_g1 .info_for_c_1.options-s {
+        flex: 0 0 24.3%;
+    }
 }
 
 @media only screen and (min-width: 1600px) {
@@ -791,6 +796,32 @@
     .about_asn_content .asn_dv.asv_blue h6 {
         font-size: 20px;
     }
+
+    /* vendr_dash.css */
+    .compaign_search .form {
+        flex: 0 0 75%;
+    }
+    .compaign_search .form input.search-box {
+        flex: 0 0 87%;
+    }
+    .compaign_search .form input.search-box::placeholder {
+        font-size: 16px;
+    }
+
+    /* next pasge */
+    .info_fiter_d_g2 {
+        flex: 0 0 36.6%;
+    }
+
+    .info_fiter_d_g .info_fiter_d_g2 .form input.search-box {
+        flex: 0 0 75%;
+    }
+    .info_fiter_d_g .info_fiter_d_g1 {
+        flex: 0 0 calc(64% - 15px);
+    }
+    .info_fiter_d_g .info_fiter_d_g1 .options-s::after {
+        transform: translate(70%, -50%);
+    }
 }
 
 @media only screen and (min-width: 1500px) {
@@ -1168,6 +1199,42 @@
 
     .top-automotive-sec.cat_pg .usp-grid-container {
         gap: 20px !important;
+    }
+
+    /* vendr_dash.css */
+    .crm-review-innr .box_crmlft {
+        flex-wrap: wrap;
+    }
+    .crm-review-innr .box_crmlft .crem_flex {
+        width: 40%;
+    }
+    .compaign_search .form input.search-box {
+        flex: 0 0 85%;
+    }
+    /* next page */
+    .info_fiter_d_g .info_fiter_d_g2 .form input.search-box {
+        flex: 0 0 90%;
+    }
+    .info_fiter_d_g {
+        flex-direction: column-reverse;
+    }
+    .info_fiter_d_g .info_fiter_d_g1 .info_for_c_1.options-s {
+        flex: 0 0 15.4%;
+    }
+    .review_sys .review_list .review_p1_imgs .review_p1_imgs-2 span {
+        font-size: 18px;
+        line-height: 1.4;
+    }
+    .review_sys .review_list .review_p1_imgs .review_p1_imgs-2 p {
+        line-height: 1.4;
+        margin-bottom: 0px;
+        margin-top: 5px;
+    }
+    .review_sys .review_list .review_part-1 .review_p1_imgs {
+        gap: 18px;
+    }
+    .review_sys .review_list {
+        padding: 25px;
     }
 }
 
@@ -1870,6 +1937,27 @@
 
     .remove-all {
         max-width: 676px;
+    }
+
+    /* vendr_dash.css */
+    .compaign_search .form button.btn.cta_dark.active i::before {
+        font-size: 16px;
+    }
+    .compaign_search .form button.btn.cta_dark.active {
+        padding: 6.5px 23px;
+    }
+    .compaign_search .form input.search-box::placeholder {
+        font-size: 12.5px;
+    }
+    .compaign_search .form {
+        margin-bottom: 0px;
+    }
+    /* next page */
+    .info_fiter_d_g .info_fiter_d_g1 .info_for_c_1.options-s {
+        flex: 0 0 19%;
+    }
+    .info_fiter_d_g .info_fiter_d_g1 .options-s::after {
+        transform: translate(30%, -50%);
     }
 }
 
@@ -4785,6 +4873,40 @@
     .foot-row-lft {
         gap: 15px;
     }
+
+    /* vendr_dash.css */
+    .compaign_search {
+        flex-direction: column;
+    }
+    .compaign_search .info_for_c_1.options-s {
+        height: 53px;
+    }
+
+    /* next page */
+    .review_sys
+        .review_list
+        .review_p1_imgs
+        .review_p1_imgs-1
+        .img_review
+        .img_review-1
+        img.prn_re {
+        width: 60px;
+        height: 60px;
+    }
+    .review_sys
+        .review_list
+        .review_p1_imgs
+        .review_p1_imgs-1
+        .img_review
+        .img_review-1 {
+        gap: 14px;
+    }
+    .info_fiter_d_g .info_fiter_d_g1 {
+        flex-wrap: wrap;
+    }
+    .info_fiter_d_g .info_fiter_d_g1 .info_for_c_1.options-s {
+        flex: 0 0 100%;
+    }
 }
 
 @media only screen and (max-width: 575px) {
@@ -6995,6 +7117,56 @@
     .review-slide-column.slick-slide {
         width: 80vw !important;
         margin-right: 15px;
+    }
+
+    /* vendr_dash.css */
+    .campaign_table .table_cs tbody tr td {
+        padding: 11px 8px;
+    }
+    .compaign_search .form input.search-box::placeholder {
+        font-size: 10px;
+    }
+    .compaign_search .form {
+        padding: 6px 8px 6px 6px;
+    }
+
+    .compaign_search .form button.btn.cta_dark.active i::before {
+        font-size: 13px;
+    }
+    .compaign_search .form button.btn.cta_dark.active {
+        padding: 3.5px 19px;
+    }
+    .compaign_search .form input.search-box {
+        flex: 0 0 78%;
+    }
+    /* next page */
+    .info_fiter_d_g .info_fiter_d_g2 .form input.search-box {
+        flex: 0 0 80%;
+    }
+    .review_sys .review_list .review_p1_imgs .review_p1_imgs-1 .img_review {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .review_sys .review_list .review_part-1 .review_p1_imgs {
+        gap: 10px;
+    }
+    .review_sys .review_list .review_p1_imgs .review_p1_imgs-2 span {
+        font-size: 15px;
+    }
+    .review_sys .review_list .review_part-2 .option_img {
+        max-width: 45px;
+        height: 45px;
+        width: 45px;
+    }
+    .review_sys .review_list {
+        padding: 15px;
+        position: relative;
+    }
+    .review_list .review_part-2 {
+        position: absolute;
+        top: 15px;
+
+        right: 15px;
     }
 }
 

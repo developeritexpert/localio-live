@@ -11085,8 +11085,8 @@ button.post-action-btn.toggle-reply-btn {
     content: "";
     position: absolute;
     right: 0;
-    top: 15%;
-    height: 70%;
+    top: 20%;
+    height: 20%;
     border-right: 1px dotted #94a3b8;
 }
 
@@ -11216,7 +11216,7 @@ button.post-action-btn.toggle-reply-btn {
 }
 
 .sticky-comp-btn-outline:hover {
-    background: var(--color-dark-blue-text);
+    background: var(--color-blue-hover);
     color: var(--color-white);
     text-decoration: none;
 }
@@ -15407,7 +15407,7 @@ button.action-icon-btn.share-trigger-btn:hover {
     font-size: 11px;
     font-weight: 700;
     color: #475569;
-    background: #f1f5f9;
+    /* background: #f1f5f9; */
     border: 1px solid #cbd5e1;
     border-radius: 50%;
     width: 26px;
@@ -15455,4 +15455,16 @@ button.action-icon-btn.share-trigger-btn:hover {
     background-color: #f1f5f9;
     color: #0f172a;
     font-weight: 600;
+}
+
+
+/* ====style.css updated by-Kashish(03-oct-26)===== */
+
+.sticky-comp-col:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 20%;
+    height: 20%;
+    border-right: 1px dotted #94a3b8;
 }
