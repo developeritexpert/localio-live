@@ -291,7 +291,7 @@ class BusinessAlternatives extends Component
 
         $businesses = Business::with([
             'reviews' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }
         ])
             ->whereHas('translations', function ($query) {
@@ -367,7 +367,7 @@ class BusinessAlternatives extends Component
         // 1. Fetch affiliated businesses in target categories
         $topBusinesses = Business::with([
             'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
-            'reviews' => fn($q) => $q->where('status', 'active'),
+            'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             'category.ratingCriteria',
             'usps',
             'products.prices'
@@ -389,7 +389,7 @@ class BusinessAlternatives extends Component
         if ($topBusinesses->count() < 10) {
             $moreAff = Business::with([
                 'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 'category.ratingCriteria',
                 'usps',
                 'products.prices'
@@ -455,10 +455,10 @@ class BusinessAlternatives extends Component
                 'limitedFeatures.translations' => fn($q) => $q->where('lang_id', $this->lang_id),
                 'reviews' => fn($q) => $q->with('translations')
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
-                    ->where('status', 'active')
+                    ->whereIn('status', ['published', 'active'])
             ])
             ->withAvg(['reviews as avg_rating' => function ($q) {
-                $q->where('status', 'active');
+                $q->whereIn('status', ['published', 'active']);
             }], 'rating');
 
         if (!empty($this->searchTerm)) {
@@ -475,17 +475,17 @@ class BusinessAlternatives extends Component
             $query->where(function ($q) use ($minRating) {
                 $q->where(function ($subQ) use ($minRating) {
                     $subQ->whereHas('reviews', function ($rq) {
-                        $rq->where('status', 'active');
+                        $rq->whereIn('status', ['published', 'active']);
                     }, '>=', 10)
                     ->whereHas('reviews', function ($rq) use ($minRating) {
                         $rq->select('business_id')
-                            ->where('status', 'active')
+                            ->whereIn('status', ['published', 'active'])
                             ->groupBy('business_id')
                             ->havingRaw('AVG(rating) >= ?', [$minRating]);
                     });
                 })->orWhere(function ($adminQ) use ($minRating) {
                     $adminQ->whereDoesntHave('reviews', function ($rq) {
-                        $rq->where('status', 'active');
+                        $rq->whereIn('status', ['published', 'active']);
                     }, '>=', 10)
                     ->whereNotNull('admin_rating')
                     ->where('admin_rating', '>=', $minRating);

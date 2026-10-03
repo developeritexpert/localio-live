@@ -573,14 +573,14 @@
                         ?>
     @include('partials.header')
     <section class="user_dashbord">
-        <div class="row">
+        <div class="row m-0">
             <div class="col-lg-3 p-0">
                 <div class="dashboard_lft">
                     <div class="left-text">
                         <ul class="list-unstyled dash-tab mb-0" id="menu">
                             <li class="nav-links">
                                 <a href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"
-                                    class="nav-link nav_sv">
+                                    class="nav-link nav_sv {{ request()->routeIs('user-dashboard') ? 'active' : '' }}">
                                     <div class="side-links">
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_account.svg') }}" alt="">
@@ -592,7 +592,7 @@
 
                             <li class="nav-links">
                                 <a href="{{ route('user-deal', ['locale' => app()->getLocale()]) }}"
-                                    class="nav-link">
+                                    class="nav-link {{ request()->routeIs('user-deal') ? 'active' : '' }}">
                                     <div class="side-links">
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_profile.svg') }}" alt="">
@@ -604,7 +604,7 @@
 
                             <li class="nav-links">
                                 <a href="{{ route('user-product', ['locale' => app()->getLocale()]) }}"
-                                    class="nav-link nav_sv">
+                                    class="nav-link nav_sv {{ request()->routeIs('user-product') ? 'active' : '' }}">
                                     <div class="side-links">
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/saved_product.svg') }}" alt="">
@@ -615,7 +615,7 @@
                             </li>
                             <li class="nav-links">
                                 <a href="{{ route('user-review', ['locale' => app()->getLocale()]) }}"
-                                    class="nav-link nav_sv">
+                                    class="nav-link nav_sv {{ request()->routeIs('user-review') ? 'active' : '' }}">
                                     <div class="side-links">
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_review.svg') }}" alt="">
@@ -627,7 +627,7 @@
 
                             <li class="nav-links">
                                 <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"
-                                    class="nav-link">
+                                    class="nav-link {{ request()->routeIs('user-profile') ? 'active' : '' }}">
                                     <div class="side-links">
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_profile_per.svg') }}" alt="">

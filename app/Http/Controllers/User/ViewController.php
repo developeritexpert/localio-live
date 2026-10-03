@@ -327,7 +327,7 @@ class ViewController extends Controller
 
         // Calculate average rating based on active reviews
         $allReviews = Review::where('business_id', $business->id)->get();
-        $activeReviews = $allReviews->where('status', 'active');
+        $activeReviews = $allReviews->whereIn('status', ['published', 'active']);
         $ratingCount = $activeReviews->count();
         $hasUserRatings = $ratingCount >= 10;
         if ($hasUserRatings) {
@@ -462,7 +462,7 @@ class ViewController extends Controller
             ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
             ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
             ->where('reviews.business_id', $business->id)
-            ->where('reviews.status', 'active')
+            ->whereIn('reviews.status', ['published', 'active'])
             ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
             ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
             ->orderByDesc('review_count')
@@ -526,7 +526,7 @@ class ViewController extends Controller
         $business = Business::where('id', $businessTranslation->business_id)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 'products' => fn($q) => $q->with(['prices']),
                 'faqs' => function ($query) use ($lang_id) {
                     $query->where('status', 1)
@@ -536,7 +536,7 @@ class ViewController extends Controller
                 'usps',
             ])->firstOrFail();
 
-        $activeReviews = $business->reviews->where('status', 'active');
+        $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
         $totalReviews = $activeReviews->count();
         $hasUserRatings = $totalReviews >= 10;
         if ($hasUserRatings) {
@@ -879,7 +879,7 @@ class ViewController extends Controller
             })
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             ])
             ->withCount(['reviews as active_reviews_count' => function ($query) {
                 $query->where('status', 'active');
@@ -893,7 +893,7 @@ class ViewController extends Controller
             ->get();
 
         // 2. Recently Reviewed: 8 businesses that have active reviews, ordered by review date
-        $recentBusinessIds = Review::where('status', 'active')
+        $recentBusinessIds = Review::whereIn('status', ['published', 'active'])
             ->orderByDesc('created_at')
             ->pluck('business_id')
             ->unique()
@@ -913,7 +913,7 @@ class ViewController extends Controller
             })
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active')->orderByDesc('created_at'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active'])->orderByDesc('created_at'),
             ])
             ->withCount(['reviews as active_reviews_count' => function ($query) {
                 $query->where('status', 'active');

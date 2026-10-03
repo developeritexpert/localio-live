@@ -104,7 +104,7 @@ class EditListing extends Component
                 'reviews' => fn($q) => $q
                     ->with('translations')
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
-                    ->where('status', 'active'),
+                    ->whereIn('status', ['published', 'active']),
                 'products' => fn($q) => $q->with([
                     'prices',
                     'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
@@ -217,7 +217,7 @@ class EditListing extends Component
             ->pluck('user_count', 'rounded_rating');
 
         $this->ratingBreakdown = collect(range(1, 5))->mapWithKeys(fn($i) => [$i => $userRatingCounts->get($i, 0)]);
-        $this->totalReviews = $this->business->reviews->where('status', 'active')->count();
+        $this->totalReviews = $this->business->reviews->whereIn('status', ['published', 'active'])->count();
 
         // Alternatives
         $this->alternativeBusiness = Business::where('category_id', $this->business->category_id)
@@ -230,7 +230,7 @@ class EditListing extends Component
             ->whereHas('languages', fn($q) => $q->where('language_id', $this->lang_id))
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 'websites' => fn($q) => $q->where('country_id', getCurrentCountry()),
             ])
             ->withCount([
