@@ -1,18 +1,3 @@
-<style>
-.comparison-box-link {
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.comparison-box-link:hover {
-    color: inherit;
-    text-decoration: none;
-}
-
-</style>
-
-
 @extends('user_layout.master')
 
 @section('body_class', 'product-page-body')
@@ -530,7 +515,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 </div>
                                                 @endif
 
-                                                <div class="do-you-recommend mt-3 pt-3 border-top" style="border-top-color: #f1f5f9 !important; display: flex; justify-content: space-between; align-items: center;">
+                                                <div class="do-you-recommend " style="display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
@@ -793,7 +778,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     </div>
                                 </div>
                             </div>
-                            <style>
+                            @push('styles')
+<style>
                                 #prosConsTab .nav-link.active {
                                     color: #1e3050 !important;
                                 }
@@ -808,6 +794,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     background-color: #1e3050;
                                 }
                             </style>
+@endpush
 
                             @if(!empty($business->pro_cons_summary))
                             <div class="mt-4">
@@ -1216,11 +1203,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         $uniqueCons = $consList->unique()->take(5);
                                         @endphp
 
-                                        <div class="modal fade" id="reviewPopup" tabindex="-1" aria-labelledby="reviewPopupLabel" aria-hidden="true">
+                                        <div class="modal fade" id="reviewPopup" tabindex="-1" role="dialog" aria-labelledby="reviewPopupLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content border-0 shadow-lg">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h5>
+                                                        <h3 class="modal-title" id="reviewPopupLabel">{{ static_text('submit_your_review_heading') ?: 'Submit Your Review' }}</h3>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
 
@@ -1341,11 +1328,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                     <div class="asn-rating">
                                                                         @if ($altbusiness->translations->isNotEmpty())
-                                                                        <h6 class="m-0 fw_700" style="color: #002347">
+                                                                        <div class="m-0 fw_700" style="color: #002347">
                                                                             {{ $altbusiness->translations->first()->name }}
-                                                                        </h6>
+                                                                        </div>
                                                                         @else
-                                                                        <h6 class="m-0 fw_700" style="color: #002347">Name not available</h6>
+                                                                        <div class="m-0 fw_700" style="color: #002347">Name not available</div>
                                                                         @endif
                                                                         <div class="rating-group">
                                                                             <span class="rate_box_num fw-medium" style="">{{ formatRating($altRatingAvg) }}</span>
@@ -1368,7 +1355,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 </div>
 
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">User rating</h6>
+                                                                    <div class="fw_700 mb-3" style="color: #002347; font-size:14px; font-weight: 700;">User rating</div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                                         <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
                                                                         <div class="prgs_br d-flex align-items-center">
@@ -1416,7 +1403,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @endphp
                                                                 @if ($hasAltPrice)
                                                                     <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                                        <div style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</div>
                                                                         <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
                                                                             <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
                                                                         </h3>
@@ -1508,7 +1495,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </button>
                                                                 </h3>
                                                                 <div id="faqCollapse{{ $index }}"
-                                                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}" role="region"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
                                                                     <div class="accordion-body rich-text-content" style="background-color: #fff;">
@@ -1677,21 +1664,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important; background-color:#fdfdfd;">
                                             <div class="container">
-                                                <style>
+                                                @push('styles')
+<style>
                                                     .review-sidebar-sticky {
                                                         position: sticky !important;
                                                         position: -webkit-sticky !important;
                                                         top: 100px !important;
                                                         height: fit-content !important;
                                                         z-index: 10;
-                                                    }
-
-                                                    .rating-filter-checkbox {
-                                                        width: 18px;
-                                                        height: 18px;
-                                                        margin-right: 10px;
-                                                        cursor: pointer;
-                                                        accent-color: #0056b3;
                                                     }
 
                                                     .review-star-box {
@@ -1732,52 +1712,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         padding-bottom: 8px;
                                                     }
 
-                                                    .clear-filters-btn {
-                                                        color: #007bff;
-                                                        text-decoration: none;
-                                                        font-size: 13px;
-                                                        cursor: pointer;
-                                                    }
-
-                                                    .clear-filters-btn:hover {
-                                                        text-decoration: underline;
-                                                    }
-
-                                                    .review-sort-option {
-                                                        font-size: 13px !important;
-                                                        color: #002347 !important;
-                                                        cursor: pointer;
-                                                        background-color: transparent !important;
-                                                        font-weight: 400;
-                                                        border: none;
-                                                        outline: none;
-                                                        transition: background-color 0.15s ease;
-                                                    }
-
-                                                    .review-sort-option.is-selected {
-                                                        background-color: #f8fafc !important;
-                                                        font-weight: 600 !important;
-                                                    }
-
-                                                    .review-sort-option:hover {
-                                                        background-color: #f1f5f9 !important;
-                                                        color: #1e3050 !important;
-                                                    }
-
-                                                    .review-row-prod-inr {
-                                                        display: flex !important;
-                                                        align-items: stretch !important;
-                                                    }
-
-                                                    .crm_sec,
-                                                    .crm_review_box,
-                                                    .revie_left_rgt_sec,
-                                                    .review_sec,
-                                                    div[data-business-id],
-                                                    .all_sec_wrp {
-                                                        overflow: visible !important;
-                                                    }
-
                                                     .review_sec .review_detl {
                                                         border: 1px solid rgba(0, 0, 0, 0.08) !important;
                                                         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
@@ -1790,61 +1724,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         border-color: rgba(0, 0, 0, 0.12) !important;
                                                     }
 
-                                                    @media (max-width: 991px) {
-                                                        .crm_sec {
-                                                            background: transparent !important;
-                                                        }
-
-                                                        .review-row-prod-inr {
-                                                            display: block !important;
-                                                        }
-
-                                                        .review-sidebar-sticky {
-                                                            position: static !important;
-                                                            margin-bottom: 30px;
-                                                        }
-                                                    }
-
-                                                    @media (max-width: 575px) {
-                                                        .review_sec .review_detl {
-                                                            padding: 20px 15px !important;
-                                                        }
-
-                                                        .review_sec .review_detl .reviw_hd {
-                                                            flex-direction: column;
-                                                            align-items: flex-start;
-                                                            gap: 10px;
-                                                        }
-
-                                                        .review_sec .review_detl .reviw_hd p {
-                                                            margin: 0;
-                                                            font-size: 13px;
-                                                        }
-
-                                                        .ans_lft {
-                                                            gap: 0px 12px;
-                                                        }
-
-                                                        .review_text.size18 {
-                                                            font-size: 15px !important;
-                                                        }
-
-                                                        .review_text.size18 .size22.big-bld {
-                                                            font-size: 18px !important;
-                                                            line-height: 1.3;
-                                                        }
-
-                                                        .review-sidebar-sticky h2 {
-                                                            font-size: 22px !important;
-                                                        }
-                                                    }
-
                                                     @if(!$hasUserRatings)
                                                     .review_detl.populr-alternative:first-child {
                                                         margin-top: 24px;
                                                     }
                                                     @endif
                                                 </style>
+@endpush
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
                                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
@@ -2331,7 +2217,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         @foreach ($business->usps->take(5) as $usp)
                                         <li class="d-flex flex-row align-items-center size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/green-tick.svg') }}">
+                                                <img src="{{ asset('front/img/green-tick.svg') }}" alt="Verified">
                                             </div>
                                             <p class="m-0">{{ $usp->text }}</p>
                                         </li>
@@ -2445,7 +2331,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                         @endif
 
-                                        <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="do-you-recommend" style=" display: flex; justify-content: space-between; align-items: center;">
                                             <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('do_you_recommend_question') ?: 'Do you recommend' }} {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                             <div style="display: flex; gap: 8px;">
                                                 @auth
@@ -2639,6 +2525,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                         @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                         <img src="{{ asset($review->user->profile_image) }}"
+                                                            alt="{{ $review->user->displayName() }}"
                                                             class="rounded-circle"
                                                             width="45"
                                                             height="45">
@@ -2727,12 +2614,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
                                                         @if($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
                                                         <img src="{{ asset($pDisc->user->profile_image) }}"
+                                                            alt="{{ $pDisc->author_display_name }}"
                                                             class="rounded-circle"
                                                             width="45"
                                                             height="45"
                                                             style="object-fit: cover;">
                                                         @elseif($pDisc->author_avatar)
                                                         <img src="{{ asset($pDisc->author_avatar) }}"
+                                                            alt="{{ $pDisc->author_display_name }}"
                                                             class="rounded-circle"
                                                             width="45"
                                                             height="45"
@@ -2939,7 +2828,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                     </div>
 
-                                    <style>
+                                    @push('styles')
+<style>
                                         .mobile-sticky-bottom-nav {
                                             position: fixed;
                                             bottom: 0;
@@ -2971,13 +2861,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             }
                                         }
                                     </style>
+@endpush
 
                         </div>
                     </div>
 
                 </div>
             </div>
-            <!-- </div> -->
+            </div>
     </section>
 
 
@@ -3709,7 +3600,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 </button>
 
                 <div class="gallery-image-wrap">
-                    <img id="modalActiveImg" src=""
+                    <img id="modalActiveImg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'/%3E"
                         alt="Active View"
                         style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; display: block; width: auto; height: auto;">
                 </div>
@@ -3924,6 +3815,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     });
 </script>
 
+@push('styles')
 <style>
 @media (max-width: 767.98px) {
     .section14-breakdown-collapsible,
@@ -3948,6 +3840,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 }
 </style>
+@endpush
 
 <script>
     function toggleSection14ReviewBreakdown() {
@@ -3979,6 +3872,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 </script>
 
+@push('styles')
 <style>
 @media (max-width: 767.98px) {
     .bottom-breakdown-collapsible {
@@ -4000,6 +3894,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     }
 }
 </style>
+@endpush
 
 <script>
     function toggleBottomReviewBreakdown() {
@@ -4058,12 +3953,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 </script>
 
 <!-- Report Issue Modal -->
-<div class="modal fade" id="reportReviewModal" tabindex="-1" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportReviewModal" tabindex="-1" role="dialog" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h5>
+                    <h3 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">{{ static_text('report_a_review_heading') ?: 'Report a review' }}</h3>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">{{ static_text('select_issue_reason_subtext') ?: 'Select the reason that best describes the issue' }}</p>
                 </div>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
@@ -4090,10 +3985,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
 
                         <div>
-                            <h6 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
+                            <h4 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
                                 <i class="fas {{ $opt['icon'] }} me-1 text-muted" style="font-size: 13px;"></i>
                                 {{ $opt['value'] }}
-                            </h6>
+                            </h4>
                             <p class="text-muted m-0" style="font-size: 13px; line-height: 1.4;">{{ $opt['desc'] }}</p>
                         </div>
                     </div>
@@ -4113,6 +4008,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         </div>
     </div>
 </div>
+@push('styles')
 <style>
     .report-review-option-card:hover {
         border-color: #94a3b8 !important;
@@ -4133,6 +4029,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         color: #ffffff !important;
     }
 </style>
+@endpush
 <script>
     function openReviewReportModal(reviewId) {
         @if(!auth()->check())
@@ -4215,3 +4112,19 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 </script>
 
 @endsection
+
+@push('styles')
+<style>
+.comparison-box-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.comparison-box-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+</style>
+@endpush

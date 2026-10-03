@@ -7726,6 +7726,7 @@ footer .foot-row-lft .foot-logo p {
 
 .revie_img_sec .top_review_bx {
     border-bottom: 1px solid #f0f0f0;
+    align-items: center;
 }
 
 .home_bnr_sec .search-box i {
@@ -11095,10 +11096,10 @@ button.post-action-btn.toggle-reply-btn {
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-dark-blue-text);
+    color: var(--color-primary-blue);
     background: var(--color-white);
-    border: 1.5px solid var(--color-dark-blue-text);
-    border-radius: 8px;
+    border: 1.5px solid var(--color-primary-blue);
+    border-radius: 5px;
     text-decoration: none;
     white-space: nowrap;
 }
@@ -11120,7 +11121,7 @@ button.post-action-btn.toggle-reply-btn {
     color: var(--color-white);
     background: var(--color-primary-orange);
     border: 1.5px solid var(--color-primary-orange);
-    border-radius: 8px;
+    border-radius: 5px;
     text-decoration: none;
     white-space: nowrap;
 }
@@ -11786,7 +11787,7 @@ div[data-business-id],
 }
 
 .review-sort-option {
-    font-size: 13.5px !important;
+    font-size: 13px !important;
     color: var(--color-dark-blue-text) !important;
     cursor: pointer;
     background-color: transparent !important;
@@ -15191,4 +15192,57 @@ button.action-icon-btn.share-trigger-btn:hover {
     bottom: 20%;
     height: 20%;
     border-right: 1px dotted #94a3b8;
+}
+.sticky-comp-vs {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -13px;
+    z-index: 3;
+    flex-shrink: 0;
+    text-transform: lowercase;
+}
+
+#prosConsTab .nav-link.active {
+    color: #1e3050 !important;
+}
+
+#prosConsTab .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #1e3050;
+}
+
+.mobile-sticky-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+    z-index: 91;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding-top: 10px;
+}
+
+.msbn-dropdown-toggle::after {
+    margin-left: auto;
+}
+
+.msbn-item.active {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
 }
