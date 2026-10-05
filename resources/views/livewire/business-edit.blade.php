@@ -397,6 +397,51 @@
                     </div>
                 </div>
 
+                {{-- Pros & Cons Section --}}
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <label class="form-label mb-0"><strong>Pros & Cons</strong></label>
+                                <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="title mb-3">Pros</h6>
+                                @foreach ($businessPros as $index => $pro)
+                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                        <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
+                                        <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                            <em class="icon ni ni-trash"></em>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro">
+                                    <em class="icon ni ni-plus"></em> Add Pro
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="title mb-3">Cons</h6>
+                                @foreach ($businessCons as $index => $con)
+                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                        <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
+                                        <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                            <em class="icon ni ni-trash"></em>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon">
+                                    <em class="icon ni ni-plus"></em> Add Con
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
 

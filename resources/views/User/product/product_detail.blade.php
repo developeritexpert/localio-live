@@ -796,11 +796,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </style>
 @endpush
 
-                            @if(!empty($business->pro_cons_summary))
-                            <div class="mt-4">
-                                <div>{!! $business->pro_cons_summary !!}</div>
-                            </div>
-                            @endif
                         </div>
                         @endif
 
