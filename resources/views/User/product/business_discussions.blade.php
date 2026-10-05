@@ -166,12 +166,12 @@
                                 </h1>
                             </div>
 
-                            <p class="text-meta d-none">
+                            <p class=" d-none">
                                 Last updated {{ now()->subDay()->format('F j, Y') }}
                             </p>
 
                             @if(!empty($finalDiscSub))
-                            <div style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                            <div style="margin-bottom: 0; font-size: 18px; color: #475569; margin-top: 4px;">
                                 {!! $finalDiscSub !!}
                             </div>
                             @endif

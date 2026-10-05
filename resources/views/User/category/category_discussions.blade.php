@@ -115,11 +115,11 @@
                             </div>
 
                             @if(!empty($resolvedSubtext))
-                                <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                <p style="margin-bottom: 0; font-size: 18px; color: #475569; margin-top: 4px;">
                                     {!! $resolvedSubtext !!}
                                 </p>
                             @elseif(!empty($subHeadline))
-                                <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                <p style="margin-bottom: 0; font-size: 18px; color: #475569; margin-top: 4px;">
                                     {!! $subHeadline !!}
                                 </p>
                             @endif

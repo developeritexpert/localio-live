@@ -324,9 +324,17 @@ h6 {
 }
 
 .left-text ul li:hover a.nav-link {
-  color: #012555;
+  color: #012555 !important;
   background-color: #f7f9fb;
   border-radius: 150px 0px 0px 150px;
+}
+
+.left-text ul li:hover a.nav-link .icons-links {
+  border-color: #012555 !important;
+}
+
+.mobile-sidebar-body .left-text ul li:hover a.nav-link img {
+  filter: unset !important;
 }
 
 .left-text ul li:hover a.nav-link svg path {
@@ -2601,7 +2609,7 @@ header.main_dhdr {
 }
 
 .user_dashbord .user_content {
-  padding-top: 120px !important;
+  padding-top: 140px !important;
 }
 
 .user_dashbord .dashboard_lft .left-text {
@@ -2856,3 +2864,12 @@ header.main_dhdr {
 .foot-btm.d-flex.justify-content-between .ft-btm-rgt {
   color: #fdfdfd;
 }
+
+.ds_ftr .ft-btm-lft p {
+  color: #fff;
+}
+
+.mobile-sidebar-body .left-text ul li a.nav-link:not(.active):hover img {
+  filter: unset !important;
+}
+
