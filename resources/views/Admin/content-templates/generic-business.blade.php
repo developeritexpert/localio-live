@@ -304,6 +304,11 @@
                             '[subcategory_cap]' => 'Cloud hosting',
                             '[subcategory_tc]' => 'Cloud Hosting',
                             '[subcategory_lc]' => 'cloud hosting',
+                            '[entity1_cap]' => 'Web hosting provider',
+                            '[entity1_tc]' => 'Web Hosting Provider',
+                            '[entity1_lc]' => 'web hosting provider',
+                            '[entities1_cap]' => 'Web hosting providers',
+                            '[entities1_lc]' => 'web hosting providers',
                             '[count]' => '3',
                             '[rating]' => '4.8',
                             '[reviews]' => '150',
@@ -353,9 +358,13 @@
                                     <thead class="table-light small">
                                         <tr>
                                             <th style="width: 80px;" class="text-center">Option #</th>
-                                            <th>{{ $def['field1_label'] }}</th>
-                                            @if(($def['type'] ?? '') !== 'single')
+                                            @if(($def['type'] ?? '') === 'rich')
+                                                <th>{{ $def['field1_label'] }}</th>
+                                            @elseif(($def['type'] ?? '') !== 'single')
+                                                <th>{{ $def['field1_label'] }}</th>
                                                 <th>{{ $def['field2_label'] ?? 'Subtext / Content' }}</th>
+                                            @else
+                                                <th>{{ $def['field1_label'] }}</th>
                                             @endif
                                             <th style="width: 140px;" class="text-end">Actions</th>
                                         </tr>
@@ -366,12 +375,20 @@
                                                 <td class="font-weight-bold text-center">
                                                     <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                                 </td>
-                                                <td>
-                                                    <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->headline)), 150) }}</span>
-                                                </td>
-                                                @if(($def['type'] ?? '') !== 'single')
+                                                @if(($def['type'] ?? '') === 'rich')
+                                                    <td>
+                                                        <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->subtext ?: $item->headline)), 150) }}</span>
+                                                    </td>
+                                                @elseif(($def['type'] ?? '') !== 'single')
+                                                    <td>
+                                                        <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->headline)), 150) }}</span>
+                                                    </td>
                                                     <td>
                                                         <span class="text-muted small">{{ Str::limit(strip_tags(html_entity_decode($item->subtext)), 150) }}</span>
+                                                    </td>
+                                                @else
+                                                    <td>
+                                                        <span class="text-dark small">{{ Str::limit(strip_tags(html_entity_decode($item->headline)), 150) }}</span>
                                                     </td>
                                                 @endif
                                                 <td class="text-end">
@@ -436,7 +453,7 @@
                     </button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
+                    <div class="mb-3" id="wrapHeadline">
                         <label class="form-label font-weight-bold small" id="lblField1">Headline</label>
                         <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline template...">
                     </div>
@@ -702,7 +719,11 @@ $(document).ready(function() {
 
     $('#templateEditForm').on('submit', function() {
         if (subtextEditor) {
-            $('#inputSubtext').val(subtextEditor.getData());
+            let sData = subtextEditor.getData();
+            $('#inputSubtext').val(sData);
+            if (!$('#wrapHeadline').is(':visible') || $('#tpl_field_key').val() === 'alternatives_subtext') {
+                $('#inputHeadline').val(stripHtmlTags(sData));
+            }
         }
     });
 
@@ -731,12 +752,22 @@ $(document).ready(function() {
             subtextEditor.setData('');
         }
 
-        $('#lblField1').text(f1);
-        $('#lblField2').text(f2);
         if (type === 'single') {
+            $('#wrapHeadline').show();
             $('#wrapSubtext').hide();
-        } else {
+            $('#lblField1').text(f1);
+            activeInput = $('#inputHeadline');
+        } else if (type === 'rich') {
+            $('#wrapHeadline').hide();
             $('#wrapSubtext').show();
+            $('#lblField2').text(f1 || 'Sub-headline');
+            activeInput = $('#inputSubtext');
+        } else {
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').show();
+            $('#lblField1').text(f1);
+            $('#lblField2').text(f2);
+            activeInput = $('#inputHeadline');
         }
         $('#tplModalTitle').text('Add New Option (' + f1 + ')');
 
@@ -744,7 +775,12 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                $('#inputHeadline').focus();
+                if (type === 'rich' && subtextEditor) {
+                    subtextEditor.editing.view.focus();
+                    activeInput = $('#inputSubtext');
+                } else {
+                    $('#inputHeadline').focus();
+                }
             }, 300);
         }, 350);
     });
@@ -793,12 +829,27 @@ $(document).ready(function() {
             subtextEditor.setData(subtext);
         }
 
-        $('#lblField1').text(f1);
-        $('#lblField2').text(f2);
         if (type === 'single') {
+            $('#wrapHeadline').show();
             $('#wrapSubtext').hide();
-        } else {
+            $('#lblField1').text(f1);
+            activeInput = $('#inputHeadline');
+        } else if (type === 'rich') {
+            let richVal = subtext || rawHeadline;
+            $('#inputSubtext').val(richVal);
+            if (subtextEditor) {
+                subtextEditor.setData(richVal);
+            }
+            $('#wrapHeadline').hide();
             $('#wrapSubtext').show();
+            $('#lblField2').text(f1 || 'Sub-headline');
+            activeInput = $('#inputSubtext');
+        } else {
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').show();
+            $('#lblField1').text(f1);
+            $('#lblField2').text(f2);
+            activeInput = $('#inputHeadline');
         }
         $('#tplModalTitle').text('Edit Option #' + opt + ' (' + f1 + ')');
 
@@ -806,7 +857,12 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                $('#inputHeadline').focus();
+                if (type === 'rich' && subtextEditor) {
+                    subtextEditor.editing.view.focus();
+                    activeInput = $('#inputSubtext');
+                } else {
+                    $('#inputHeadline').focus();
+                }
             }, 300);
         }, 350);
     });

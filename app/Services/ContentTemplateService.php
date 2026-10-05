@@ -262,9 +262,37 @@ class ContentTemplateService
         ],
         'alternatives_subtext' => [
             'label' => 'Sub-headline',
-            'type' => 'single',
+            'type' => 'rich',
             'field1_label' => 'Sub-headline',
-            'description' => 'Sub-headline text below the H1.',
+            'description' => 'Sub-headline text below the H1 with formatting options.',
+        ],
+        'popular_alternatives' => [
+            'label' => 'POPULAR ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'Popular Alternatives Headline (H2)',
+            'field2_label' => 'Popular Alternatives Subtext',
+            'description' => 'Headline and subtext for the Most Popular Alternatives section.',
+        ],
+        'compare_alternatives' => [
+            'label' => 'COMPARE ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'Compare Alternatives Headline (H2)',
+            'field2_label' => 'Compare Alternatives Subtext',
+            'description' => 'Headline and subtext for the Compare Alternatives section.',
+        ],
+        'community_says' => [
+            'label' => 'COMMUNITY SAYS',
+            'type' => 'combined',
+            'field1_label' => 'Community Says Headline (H2)',
+            'field2_label' => 'Community Says Subtext',
+            'description' => 'Headline and subtext for the What the Localio Community Says section.',
+        ],
+        'all_alternatives' => [
+            'label' => 'ALL ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'All Alternatives Headline (H2)',
+            'field2_label' => 'All Alternatives Subtext',
+            'description' => 'Headline and subtext for the All Alternatives section.',
         ],
     ];
 
@@ -1235,6 +1263,92 @@ class ContentTemplateService
         }
     }
 
+    
+    public static function seedDefaultBusinessAlternativesOptionsIfMissing(): void
+    {
+        $defaults = [
+            'alternatives_h1' => [
+                1 => 'Best [business] Alternatives & Competitors for the [country2] ([year])',
+                2 => 'Top alternatives for [category_lc]',
+                3 => 'Best [business] alternatives & competitors',
+                4 => 'Top 10 [business] alternatives for [year]',
+            ],
+            'alternatives_subtext' => [
+                1 => [
+                    'headline' => 'Looking for alternatives to [business]? Compare top-rated competitors and alternatives to find the [entity1_lc] that best matches your needs.',
+                    'subtext' => '<p>Looking for alternatives to [business]? Compare top-rated competitors and alternatives to find the [entity1_lc] that best matches your needs.</p>',
+                ],
+                2 => [
+                    'headline' => 'Compare the top competitors and alternatives to [business] side-by-side.',
+                    'subtext' => '<p>Compare the top competitors and alternatives to [business] side-by-side.</p>',
+                ],
+            ],
+            'popular_alternatives' => [
+                1 => [
+                    'headline' => 'Most popular [business] alternatives',
+                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
+                ],
+                2 => [
+                    'headline' => 'Popular [business] alternatives & competitors',
+                    'subtext' => '<p>Explore the most popular alternatives to [business] chosen by real users.</p>',
+                ],
+            ],
+            'compare_alternatives' => [
+                1 => [
+                    'headline' => 'Compare [business] alternatives',
+                    'subtext' => '<p>Compare top alternatives side-by-side to find the right fit for your business.</p>',
+                ],
+                2 => [
+                    'headline' => 'Compare top-rated [business] competitors',
+                    'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
+                ],
+            ],
+            'community_says' => [
+                1 => [
+                    'headline' => 'What the Localio community says',
+                    'subtext' => '<p>Most mentioned pros and cons shared by real users.</p>',
+                ],
+                2 => [
+                    'headline' => 'What users say about [business] alternatives',
+                    'subtext' => '<p>Real feedback, top pros, and common cons from verified community reviewers.</p>',
+                ],
+            ],
+            'all_alternatives' => [
+                1 => [
+                    'headline' => 'All [business] alternatives',
+                    'subtext' => '<p>Explore all available alternatives and filter by rating, price, and features.</p>',
+                ],
+                2 => [
+                    'headline' => 'Browse all [business] competitors & alternatives',
+                    'subtext' => '<p>Complete list of competitors to help you make an informed choice.</p>',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_alternatives')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'business_alternatives',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
@@ -1723,6 +1837,8 @@ class ContentTemplateService
             self::seedDefaultBusinessFaqOptionsIfMissing();
         } elseif ($sectionGroup === 'business_compare') {
             self::seedDefaultBusinessCompareOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_alternatives') {
+            self::seedDefaultBusinessAlternativesOptionsIfMissing();
         }
 
         $fieldDefs = [];

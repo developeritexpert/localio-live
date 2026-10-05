@@ -435,7 +435,7 @@
                     @endif
 
                                         <!-- 4. User Reviews Section (Exact structure from product_detail.blade.php) -->
-                    <div class="col-lg-12 mt-4" id="section14">
+                    <div class="col-lg-12" id="section14">
                         <section class="crm_sec revie_left_rgt_sec pt-0" style="overflow: visible !important; background-color: transparent;">
                             <div class="container px-0">
                                  

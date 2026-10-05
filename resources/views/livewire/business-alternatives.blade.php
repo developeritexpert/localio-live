@@ -101,34 +101,7 @@
                     <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="text-start col-lg-8">
-                                @if(empty($hasUpperHeader))
-                                    @php
-                                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
-                                        $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
-                                        $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
 
-                                        $resolvedAltH1 = \App\Services\ContentTemplateService::resolveBusinessSection(
-                                            $business,
-                                            'alternatives_h1',
-                                            getCurrentLanguageID()
-                                        );
-                                        $finalAltH1 = !empty($resolvedAltH1['headline']) ? $resolvedAltH1['headline'] : $altTitle;
-
-                                        $resolvedAltSub = \App\Services\ContentTemplateService::resolveBusinessSection(
-                                            $business,
-                                            'alternatives_subtext',
-                                            getCurrentLanguageID()
-                                        );
-                                        $finalAltDesc = !empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $altDesc;
-                                    @endphp
-                                    <h2 style="margin-bottom: 4px;">
-                                        {!! \App\Services\ContentTemplateService::cleanHeading($finalAltH1) !!}
-                                    </h2>
-                
-                                    <div style="color: #002347;">
-                                        {!! $finalAltDesc !!}
-                                    </div>
-                                @endif
 
                                 <!-- 1. Most popular alternatives (Matched design with product_detail.blade.php) -->
                                 @if($popularAltBusinesses->count() > 0)
@@ -136,23 +109,33 @@
                                         <div class="container">
                                             <div class="sftwre-like-innr">
                                                 @php
-                                                    $altPopHeadlineRaw = static_text('alternatives_page_most_popular_headline');
-                                                    if (empty($altPopHeadlineRaw) || $altPopHeadlineRaw === 'alternatives_page_most_popular_headline') {
-                                                        $altPopHeadlineRaw = 'Most popular [business] alternatives';
+                                                    if (!isset($bTrans) || !$bTrans) {
+                                                        $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
                                                     }
-                                                    $altPopHeadline = str_replace(
-                                                        ['[business]', ':business', 'XXXXX', 'XXXX'],
-                                                        $businessName,
-                                                        $altPopHeadlineRaw
+                                                    $resolvedPopAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                        $business,
+                                                        'popular_alternatives',
+                                                        $lang_id
                                                     );
-                                                    $altPopDesc = static_text('alternatives_page_most_popular_desc');
-                                                    if (empty($altPopDesc) || $altPopDesc === 'alternatives_page_most_popular_desc') {
-                                                        $altPopDesc = "Based on other buyer's searches, these are the products that could be a good fit for you.";
-                                                    }
+                                                    $altPopHeadline = !empty($resolvedPopAlt['headline'])
+                                                        ? $resolvedPopAlt['headline']
+                                                        : (!empty($bTrans->popular_alternatives_headline)
+                                                            ? $bTrans->popular_alternatives_headline
+                                                            : ('Most popular ' . $businessName . ' alternatives'));
+
+                                                    $altPopDesc = !empty($resolvedPopAlt['subtext'])
+                                                        ? $resolvedPopAlt['subtext']
+                                                        : (!empty($bTrans->popular_alternatives_subtext)
+                                                            ? $bTrans->popular_alternatives_subtext
+                                                            : "Based on other buyer's searches, these are the products that could be a good fit for you.");
                                                 @endphp
                                                 <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
                                                     <h2>{{ $altPopHeadline }}</h2>
-                                                    <p>{{ $altPopDesc }}</p>
+                                                    @if(!empty($altPopDesc))
+                                                        <div class="ck-content" style="color: #64748b; font-size: 15px;">
+                                                            {!! $altPopDesc !!}
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <div class="sft_ware_test" style="">
                                                     <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
@@ -355,20 +338,31 @@ foreach ($altCriteria as $criterion) {
                                 if (!isset($bTrans) || !$bTrans) {
                                     $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
                                 }
-                                $compAlternativesHeadline = !empty($bTrans->compare_alternatives_headline)
-                                    ? $bTrans->compare_alternatives_headline
-                                    : ('Compare ' . $businessName . ' alternatives');
+                                $resolvedCompAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'compare_alternatives',
+                                    $lang_id
+                                );
+                                $compAlternativesHeadline = !empty($resolvedCompAlt['headline'])
+                                    ? $resolvedCompAlt['headline']
+                                    : (!empty($bTrans->compare_alternatives_headline)
+                                        ? $bTrans->compare_alternatives_headline
+                                        : ('Compare ' . $businessName . ' alternatives'));
+
+                                $compAlternativesSubtext = !empty($resolvedCompAlt['subtext'])
+                                    ? $resolvedCompAlt['subtext']
+                                    : ($bTrans->compare_alternatives_subtext ?? '');
                             @endphp
-                            <h2 style="margin-bottom: {{ !empty($bTrans->compare_alternatives_subtext) ? '6px' : '16px' }};">
+                            <h2 style="margin-bottom: {{ !empty($compAlternativesSubtext) ? '6px' : '16px' }};">
                                 {{ $compAlternativesHeadline }}
                             </h2>
-                            @if(!empty($bTrans->compare_alternatives_subtext))
+                            @if(!empty($compAlternativesSubtext))
                                 <style>
                                     .compare-alternatives-subtext p { margin-bottom: 0 !important; }
                                     .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
                                 <div class="compare-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
-                                    {!! $bTrans->compare_alternatives_subtext !!}
+                                    {!! $compAlternativesSubtext !!}
                                 </div>
                             @endif
 
@@ -468,25 +462,37 @@ foreach ($altCriteria as $criterion) {
             <div class="community-feedback-table-section my-4">
                                 <div class="mb-3">
                                     @php
-                                        $commFeedbackHeadline = !empty($bTrans->community_says_headline)
-                                            ? $bTrans->community_says_headline
-                                            : 'What the Localio community says';
+                                        if (!isset($bTrans) || !$bTrans) {
+                                            $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
+                                        }
+                                        $resolvedCommunity = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'community_says',
+                                            $lang_id
+                                        );
+                                        $commFeedbackHeadline = !empty($resolvedCommunity['headline'])
+                                            ? $resolvedCommunity['headline']
+                                            : (!empty($bTrans->community_says_headline)
+                                                ? $bTrans->community_says_headline
+                                                : (static_text('what_localio_community_says_headline') ?: 'What the Localio community says'));
+
+                                        $commFeedbackSubtext = !empty($resolvedCommunity['subtext'])
+                                            ? $resolvedCommunity['subtext']
+                                            : (!empty($bTrans->community_says_subtext)
+                                                ? $bTrans->community_says_subtext
+                                                : (static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.'));
                                     @endphp
                                     <h2 style="margin-bottom: 4px;">
                                         {{ $commFeedbackHeadline }}
                                     </h2>
-                                    @if(!empty($bTrans->community_says_subtext))
+                                    @if(!empty($commFeedbackSubtext))
                                         <style>
                                             .community-says-subtext p { margin-bottom: 0 !important; }
                                             .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                                         </style>
                                         <div class="community-says-subtext ck-content" style="font-size: 15px; color: #64748b; margin: 0;">
-                                            {!! $bTrans->community_says_subtext !!}
+                                            {!! $commFeedbackSubtext !!}
                                         </div>
-                                    @else
-                                        <p style="margin: 0; font-size: 15px; color: #64748b;">
-                                            {{ static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.' }}
-                                        </p>
                                     @endif
                                 </div>
 
@@ -591,20 +597,31 @@ foreach ($altCriteria as $criterion) {
             <div class="top-auto-choice">
                 <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
                     @php
-                        $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
-                            ? $bTrans->all_alternatives_headline
-                            : ('All ' . $businessName . ' alternatives');
+                        $resolvedAllAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'all_alternatives',
+                            $lang_id
+                        );
+                        $allAlternativesHeadline = !empty($resolvedAllAlt['headline'])
+                            ? $resolvedAllAlt['headline']
+                            : (!empty($bTrans->all_alternatives_headline)
+                                ? $bTrans->all_alternatives_headline
+                                : ('All ' . $businessName . ' alternatives'));
+
+                        $allAlternativesSubtext = !empty($resolvedAllAlt['subtext'])
+                            ? $resolvedAllAlt['subtext']
+                            : ($bTrans->all_alternatives_subtext ?? '');
                     @endphp
-                    <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                    <h2 class="mt-3" style="margin-bottom: {{ !empty($allAlternativesSubtext) ? '6px' : '16px' }};">
                         {{ $allAlternativesHeadline }}
                     </h2>
-                    @if(!empty($bTrans->all_alternatives_subtext))
+                    @if(!empty($allAlternativesSubtext))
                         <style>
                             .all-alternatives-subtext p { margin-bottom: 0 !important; }
                             .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                         </style>
                         <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
-                            {!! $bTrans->all_alternatives_subtext !!}
+                            {!! $allAlternativesSubtext !!}
                         </div>
                     @endif
                 </div>
