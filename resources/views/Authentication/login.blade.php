@@ -33,6 +33,12 @@
                 @if (session('loginerror'))
                     <div class="text-danger">{{ session('loginerror') }}</div>
                 @endif
+                @if ($errors->has('g-recaptcha-response'))
+                    <div class="text-danger mb-2">{{ $errors->first('g-recaptcha-response') }}</div>
+                @endif
+                @if (session('error'))
+                    <div class="text-danger mb-2">{{ session('error') }}</div>
+                @endif
                 <!-- Continue with the rest of your form -->
                 <form class="login_form" action="{{ route('login_process') }}" method="POST" autocomplete="off">
                     @csrf

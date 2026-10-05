@@ -2806,6 +2806,12 @@ header .sec_head {
                                 @if (session('loginerror'))
                                 <div class="text-danger">{{ session('loginerror') }}</div>
                                 @endif
+                                @if ($errors->has('g-recaptcha-response'))
+                                <div class="text-danger mb-2">{{ $errors->first('g-recaptcha-response') }}</div>
+                                @endif
+                                @if (session('error'))
+                                <div class="text-danger mb-2">{{ session('error') }}</div>
+                                @endif
                                 <!-- Continue with the rest of your form -->
                                 <form class="login_form" action="{{ route('login_process') }}" method="POST"
                                     autocomplete="off">
@@ -2877,6 +2883,9 @@ header .sec_head {
             <form class="register_form" action="{{ route('register.details.store', ['locale'=> getCurrentLocale()]) }}"
                 method="post" id="modalRegisterDetailsForm">
                 @csrf
+                @if ($errors->has('g-recaptcha-response'))
+                    <div class="alert alert-danger mb-3">{{ $errors->first('g-recaptcha-response') }}</div>
+                @endif
                 <div class="row g-2 mb-3">
                     <div class="col-6">
                         <div class="form-floating">
@@ -4046,6 +4055,7 @@ header .sec_head {
         if (window.innerWidth >= 992) closeMobileFilterDrawer();
     });
 </script>
+    @include('partials.recaptcha-v3')
 </body>
 
 </html>

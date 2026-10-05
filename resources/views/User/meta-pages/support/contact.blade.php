@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             <form action="{{ route('query.submit', ['locale' => session('lang_code', 'en-us')]) }}" method="POST" class="conatct_from" enctype="multipart/form-data">
+                @if ($errors->has('g-recaptcha-response'))
+                    <div class="alert alert-danger mb-3">{{ $errors->first('g-recaptcha-response') }}</div>
+                @endif
                 @csrf
 
                 {{-- Query Dropdown (used as reason_id) --}}
@@ -221,11 +224,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {{-- SCRIPT 1: Handle form submission for non-authenticated users --}}
 <script>
-document.getElementById('contact-submit-btn')?.addEventListener('click', function() {
-    const isAuth = this.getAttribute('data-auth') === '1';
+document.getElementById('contact-submit-btn')?.addEventListener('click', function(e) {
     const form = document.querySelector('.conatct_from');
-
-    form.submit();
+    if (form) {
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    }
 });
 </script>
 

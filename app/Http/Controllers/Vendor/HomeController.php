@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Vendor;
 
+use App\Rules\Recaptcha;
+
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Services\MailService;
@@ -460,6 +462,9 @@ class HomeController extends Controller
             'email'       => 'required|email|unique:vendor_register_lists,email',
             'password'    => 'required|string|min:6',
             'business_id' => 'required|exists:businesses,id',
+            'g-recaptcha-response' => ['required', new Recaptcha('register')],
+        ], [
+            'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
         ]);
 
 

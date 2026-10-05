@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User\MetaPages;
 
+use App\Rules\Recaptcha;
+
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -261,6 +263,9 @@ class MetaPagesController extends Controller
         'subject' => 'required|string|max:255',
         'message' => 'required|string',
         'attachment' => 'nullable|file|mimes:jpg,jpeg,svg,png,pdf,docx,txt|max:2048',
+        'g-recaptcha-response' => ['required', new Recaptcha('contact')],
+    ], [
+        'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
     ]);
 
     try {
@@ -382,6 +387,9 @@ class MetaPagesController extends Controller
         'email'      => 'required|email|max:255',
         'message'    => 'required|string',
         'attachment' => 'nullable|file|max:5120',
+        'g-recaptcha-response' => ['required', new Recaptcha('contact')],
+    ], [
+        'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
     ]);
 
     $attachment = null;
