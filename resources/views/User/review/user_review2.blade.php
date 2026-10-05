@@ -804,7 +804,7 @@
                                     </div>
 
                                     @if(isset($recommendPercent) && $recommendPercent > 0)
-                                        <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="recommendation-rate my-3 py-3" style="border-bottom:1px solid #f0f0f0; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                                             <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                                         </div>

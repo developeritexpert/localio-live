@@ -1250,7 +1250,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <section class="software-like p_50 product_integra_sec " id="section9">
                                             <div class="container">
                                                 <div class="sftwre-like-innr">
-                                                    <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
+                                                    <div class="sftwre-asana-hd " data-aos="fade-up" data-aos-duration="1000">
                                                         @php
                                                             $bName = $business->translations->first()->name ?? $business->name ?? 'Business';
                                                             $bizAltFallbackH2 = $bName . ' Alternatives & Competitors';
@@ -1273,7 +1273,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         @endif
                                                     </div>
                                                     <div class="sft_ware_test"
-                                                        style="display: flex; justify-content:center; align-items: center;">
+                                                        style="display: flex;  align-items: center;">
 
                                                         <div class="sftware-alternative d-flex" data-aos="fade-up"
                                                             data-aos-duration="1000">
@@ -2370,7 +2370,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             @endforeach
                                         </div>
 
-                                        <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="recommendation-rate my-3 py-3 " style=" border-bottom:1px solid #f0f0f0; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
                                             <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
                                         </div>
@@ -2645,7 +2645,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     @endphp
                                     @if($sidebarDiscussions->isNotEmpty())
                                     <div class="main_feature_lg">
-                                        <div class="feture_box review-breakdown-box not-on-mobile">
+                                        <div class="feture_box review-breakdown-box not-on-mobile discussion_bx">
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                 <h2 class="size22 big-bld m-0">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">

@@ -644,6 +644,11 @@
 }
 
 @media only screen and (max-width: 991px) {
+
+  .user_dashbord .user_content {
+    padding-top: 110px !important;
+  }
+
   .user_dashbord .dashboard_lft {
     top: 40px;
   }

@@ -1754,12 +1754,12 @@
                             }
                             .mobile-sidebar-body .left-text ul li a.nav-link.active .side-links .icons-links {
                                 border-color: #012555 !important;
-                            }
+                            }                        
                             .mobile-sidebar-body .left-text ul li a.nav-link.active img {
                                 filter: unset !important;
                             }
                             .mobile-sidebar-body .left-text ul li a.nav-link:not(.active) img {
-                                filter: brightness(0) invert(1) !important;
+                                filter: brightness(0) invert(1) ;
                             }
                         }
 
