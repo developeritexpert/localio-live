@@ -233,9 +233,9 @@ class Business extends Model
             return (int) $this->attributes['active_reviews_count'];
         }
         if ($this->relationLoaded('reviews')) {
-            return $this->reviews->where('status', 'active')->count();
+            return $this->reviews->whereIn('status', ['published', 'active'])->count();
         }
-        return $this->reviews()->where('status', 'active')->count();
+        return $this->reviews()->whereIn('status', ['published', 'active'])->count();
     }
 
     /**
@@ -243,7 +243,9 @@ class Business extends Model
      */
     public function getApprovedUserRatingAttribute()
     {
-        $approvedReviews = $this->reviews->where('status', 'active');
+        $approvedReviews = $this->relationLoaded('reviews')
+            ? $this->reviews->whereIn('status', ['published', 'active'])
+            : $this->reviews()->whereIn('status', ['published', 'active']);
         return $approvedReviews->count() > 0 ? round($approvedReviews->avg('rating'), 1) : null;
     }
 
@@ -259,8 +261,8 @@ class Business extends Model
         $approvedCount = $this->approved_reviews_count;
         if ($approvedCount >= 10) {
             $avg = $this->relationLoaded('reviews')
-                ? $this->reviews->where('status', 'active')->avg('rating')
-                : $this->reviews()->where('status', 'active')->avg('rating');
+                ? $this->reviews->whereIn('status', ['published', 'active'])->avg('rating')
+                : $this->reviews()->whereIn('status', ['published', 'active'])->avg('rating');
             return $avg !== null ? round((float) $avg, 1) : null;
         }
         if ($this->admin_rating !== null && (float)$this->admin_rating > 0) {
@@ -362,7 +364,7 @@ class Business extends Model
      */
     public function getHasUserReviewsAttribute()
     {
-        return $this->reviews->where('status', 'active')->count() >= 10;
+        return $this->approved_reviews_count >= 10;
     }
 
 }

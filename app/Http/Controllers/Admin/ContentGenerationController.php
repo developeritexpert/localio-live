@@ -18,6 +18,7 @@ use App\Models\CategoryFeatureContent;
 use App\Models\WebSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -29,6 +30,7 @@ class ContentGenerationController extends Controller
         'long_description',
         'usps',
         'what_is',
+        'reviews_description',
         'pros_cons',
         'services',
         'faqs',
@@ -389,93 +391,359 @@ class ContentGenerationController extends Controller
      */
     public function importJson(Request $request)
     {
-        $jsonInput = $request->input('json_data');
-        if (empty($jsonInput)) {
-            return back()->with('error', 'Please provide JSON data with businesses.');
+        $rawJson = null;
+        if ($request->hasFile('json_file')) {
+            $rawJson = file_get_contents($request->file('json_file')->getRealPath());
+        } elseif ($request->filled('json_data')) {
+            $rawJson = trim($request->json_data);
         }
 
-        $decoded = json_decode($jsonInput, true);
+        if (empty($rawJson)) {
+            return back()->with('error', 'Please provide JSON data by pasting it or by uploading a .json file.');
+        }
+
+        // Clean any markdown code blocks if user pasted ```json ... ```
+        $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
+        $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
+        $cleanJson = trim($cleanJson);
+
+        $decoded = json_decode($cleanJson, true);
         if (!is_array($decoded)) {
-            return back()->with('error', 'Invalid JSON format. Please ensure you provide a valid JSON array of objects.');
+            // Attempt line-by-line JSONL parse
+            $lines = preg_split('/\r\n|\r|\n/', $cleanJson);
+            $jsonlItems = [];
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (empty($line)) continue;
+                $lineDecoded = json_decode($line, true);
+                if (is_array($lineDecoded)) {
+                    $jsonlItems[] = $lineDecoded;
+                }
+            }
+            if (!empty($jsonlItems)) {
+                $decoded = $jsonlItems;
+            } else {
+                return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+            }
         }
 
-        // If a single object was passed instead of array, wrap it
-        if (!empty($decoded) && !isset($decoded[0])) {
+        // If wrapped in {"businesses": [...]}, {"data": [...]}, {"items": [...]}, or {"results": [...]}
+        if (isset($decoded['businesses']) && is_array($decoded['businesses'])) {
+            $decoded = $decoded['businesses'];
+        } elseif (isset($decoded['data']) && is_array($decoded['data'])) {
+            $decoded = $decoded['data'];
+        } elseif (isset($decoded['items']) && is_array($decoded['items'])) {
+            $decoded = $decoded['items'];
+        } elseif (isset($decoded['results']) && is_array($decoded['results'])) {
+            $decoded = $decoded['results'];
+        } elseif (!empty($decoded) && !isset($decoded[0])) {
             $decoded = [$decoded];
         }
 
-        $imported = 0;
-        $skipped  = 0;
-        $errors   = [];
+        $updateExisting = $request->boolean('update_existing', true);
+        $createdCount   = 0;
+        $updatedCount   = 0;
+        $skippedCount   = 0;
+        $errors         = [];
 
-        foreach ($decoded as $index => $item) {
-            if (!is_array($item)) {
-                $skipped++;
-                continue;
+        DB::beginTransaction();
+        try {
+            foreach ($decoded as $index => $item) {
+                if (!is_array($item)) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Flexible name and URL resolution
+                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? '');
+                $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? '');
+
+                if (empty($name)) {
+                    $skippedCount++;
+                    $errors[] = "Item #" . ($index + 1) . " skipped: missing Business Name.";
+                    continue;
+                }
+
+                if (!empty($url) && !preg_match('/^https?:\/\//i', $url)) {
+                    $url = 'https://' . $url;
+                }
+
+                // Check for existing business by normalized URL or by Name
+                $existingBiz = null;
+                if (!empty($url)) {
+                    $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $url), '/');
+                    if (!empty($normalizedUrl)) {
+                        $existingBiz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
+                            ->first();
+                    }
+                }
+
+                if (!$existingBiz && !empty($name)) {
+                    $bizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($name)])
+                        ->where('lang_id', 1)
+                        ->value('business_id');
+                    if ($bizId) {
+                        $existingBiz = Business::find($bizId);
+                    }
+                }
+
+                $business = null;
+
+                if ($existingBiz) {
+                    if (!$updateExisting) {
+                        $skippedCount++;
+                        continue;
+                    }
+                    $business = $existingBiz;
+                    if (!empty($url) && empty($business->permanent_url)) {
+                        $business->permanent_url = $url;
+                        $business->save();
+                    }
+                    $updatedCount++;
+                } else {
+                    $baseSlug = Str::slug($name);
+                    if (empty($baseSlug)) {
+                        $baseSlug = 'business-' . time() . '-' . rand(100, 999);
+                    }
+                    $slug = $baseSlug;
+                    $counter = 1;
+                    while (BusinessTranslation::where('slug', $slug)->exists()) {
+                        $slug = $baseSlug . '-' . $counter;
+                        $counter++;
+                    }
+
+                    $business = Business::create([
+                        'permanent_url'        => $url ?: null,
+                        'status'               => 1,
+                        'created_by'           => auth()->id() ?? 1,
+                        'is_affiliate'         => 0,
+                        'active_all_countries' => 1,
+                        'category_id'          => null,
+                    ]);
+
+                    BusinessTranslation::create([
+                        'business_id' => $business->id,
+                        'lang_id'     => 1,
+                        'name'        => $name,
+                        'slug'        => $slug,
+                        'status'      => 1,
+                    ]);
+
+                    $business->languages()->syncWithoutDetaching([1]);
+                    $createdCount++;
+                }
+
+                // Ingest all other fields (category, descriptions, rating, usps, pros_cons, faqs, services)
+                $this->applyBusinessFields($business, $item);
             }
 
-            // Flexible key resolution
-            $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? '');
-            $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? '');
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to import businesses via JSON: " . $e->getMessage());
+            return back()->with('error', 'Error during JSON import: ' . $e->getMessage());
+        }
 
-            if (empty($name)) {
-                $skipped++;
-                $errors[] = "Item #" . ($index + 1) . " skipped: missing Business Name.";
-                continue;
+        $msgParts = [];
+        if ($createdCount > 0) $msgParts[] = "{$createdCount} new business(es) created";
+        if ($updatedCount > 0) $msgParts[] = "{$updatedCount} existing business(es) updated";
+        if ($skippedCount > 0) $msgParts[] = "{$skippedCount} skipped";
+
+        $finalMsg = !empty($msgParts) ? "Import complete: " . implode(', ', $msgParts) . "." : "No businesses were imported.";
+
+        return redirect()->route('content-gen.businesses')->with('success', $finalMsg);
+    }
+
+    /**
+     * Helper to ingest and apply all structured fields for a business.
+     */
+    public function applyBusinessFields(Business $business, array $item): int
+    {
+        $businessId = $business->id;
+        $appliedCount = 0;
+
+        // 1. Categories
+        $catId = $item['category_id'] ?? null;
+        $catName = $item['category_name'] ?? ($item['category'] ?? null);
+
+        if ($catId && !Category::where('id', $catId)->exists()) {
+            $catId = null;
+        }
+
+        if (!$catId && $catName) {
+            $cleanCatName = trim($catName);
+            $catId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanCatName)])
+                ->orWhere('name', 'like', '%' . $cleanCatName . '%')
+                ->value('category_id');
+        }
+
+        if ($catId && Category::where('id', $catId)->exists()) {
+            $business->category_id = $catId;
+            $business->save();
+            $appliedCount++;
+        }
+
+        $subCatIds = $item['subcategory_ids'] ?? ($item['subcategories'] ?? []);
+        if (is_array($subCatIds) && !empty($subCatIds)) {
+            $validSubs = [];
+            foreach ($subCatIds as $sub) {
+                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
+                    $validSubs[] = (int) $sub;
+                } elseif (is_string($sub)) {
+                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
+                        ->value('category_id');
+                    if ($matchedSub) {
+                        $validSubs[] = $matchedSub;
+                    }
+                }
             }
-
-            // Clean & format URL
-            if (!empty($url) && !preg_match('/^https?:\/\//i', $url)) {
-                $url = 'https://' . $url;
-            }
-
-            // Generate unique slug
-            $baseSlug = Str::slug($name);
-            if (empty($baseSlug)) {
-                $baseSlug = 'business-' . time() . '-' . rand(100, 999);
-            }
-            $slug = $baseSlug;
-            $counter = 1;
-            while (BusinessTranslation::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter;
-                $counter++;
-            }
-
-            try {
-                $business = Business::create([
-                    'permanent_url'        => $url ?: null,
-                    'status'               => 1,
-                    'created_by'           => auth()->id() ?? 1,
-                    'is_affiliate'         => 0,
-                    'active_all_countries' => 1,
-                    'category_id'          => null,
-                ]);
-
-                BusinessTranslation::create([
-                    'business_id' => $business->id,
-                    'lang_id'     => 1, // Default primary language (English)
-                    'name'        => $name,
-                    'slug'        => $slug,
-                    'status'      => 1,
-                ]);
-
-                // Automatically attach default language so business appears in listings
-                $business->languages()->syncWithoutDetaching([1]);
-
-                $imported++;
-            } catch (\Exception $e) {
-                Log::error("Failed to import business {$name}: " . $e->getMessage());
-                $skipped++;
-                $errors[] = "Error creating {$name}: " . $e->getMessage();
+            if (!empty($validSubs)) {
+                $business->subCategories()->sync($validSubs);
+                $appliedCount++;
             }
         }
 
-        $msg = "Successfully imported {$imported} " . ($imported === 1 ? 'business' : 'businesses') . "!";
-        if ($skipped > 0) {
-            $msg .= " ({$skipped} skipped/failed)";
+        // 2. Short description
+        $shortDesc = $item['short_description'] ?? null;
+        if (!empty($shortDesc)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['short_description' => $shortDesc]);
+            $appliedCount++;
         }
 
-        return redirect()->route('content-gen.businesses')->with('success', $msg);
+        // 3. Long description
+        $longDesc = $item['long_description'] ?? ($item['long_preview_description'] ?? null);
+        if (!empty($longDesc)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['long_preview_description' => $longDesc]);
+            $appliedCount++;
+        }
+
+        // 4. What is / Description
+        $whatIs = $item['what_is'] ?? ($item['description'] ?? null);
+        if (!empty($whatIs)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['description' => $whatIs]);
+            $appliedCount++;
+        }
+
+        // 5. Reviews description
+        $revDesc = $item['reviews_description'] ?? ($item['short_business_description_reviews'] ?? null);
+        if (!empty($revDesc)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['reviews_description' => $revDesc]);
+            $appliedCount++;
+        }
+
+        // 6. Rating
+        $rating = $item['rating'] ?? ($item['admin_rating'] ?? null);
+        if (is_numeric($rating)) {
+            $rVal = max(1.0, min(5.0, round((float) $rating, 2)));
+            $business->admin_rating = $rVal;
+            $business->save();
+            $appliedCount++;
+        }
+
+        // 7. USPs
+        $usps = $item['usps'] ?? ($item['features'] ?? []);
+        if (!empty($usps) && is_array($usps)) {
+            BusinessUsp::where('business_id', $businessId)->delete();
+            foreach ($usps as $idx => $u) {
+                $text = is_array($u) ? ($u['text'] ?? ($u['title'] ?? '')) : (string) $u;
+                if (empty(trim($text))) continue;
+                BusinessUsp::create([
+                    'business_id' => $businessId,
+                    'text'        => trim($text),
+                    'sort_order'  => $idx + 1,
+                ]);
+            }
+            $appliedCount++;
+        }
+
+        // 8. Pros & Cons
+        if (isset($item['pros_cons']) && is_array($item['pros_cons'])) {
+            $pros = $item['pros_cons']['pros'] ?? [];
+            $cons = $item['pros_cons']['cons'] ?? [];
+            \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
+            if (is_array($pros)) {
+                foreach ($pros as $p) {
+                    if (!empty(trim($p))) {
+                        \App\Models\BusinessProCon::create([
+                            'business_id' => $businessId,
+                            'type'        => 'pro',
+                            'text'        => trim($p),
+                        ]);
+                    }
+                }
+            }
+            if (is_array($cons)) {
+                foreach ($cons as $c) {
+                    if (!empty(trim($c))) {
+                        \App\Models\BusinessProCon::create([
+                            'business_id' => $businessId,
+                            'type'        => 'con',
+                            'text'        => trim($c),
+                        ]);
+                    }
+                }
+            }
+            $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
+            $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
+            $business->pro_cons_intro = $prosText;
+            $business->pro_cons_summary = $consText;
+            $business->save();
+            $appliedCount++;
+        }
+
+        // 9. FAQs
+        $faqs = $item['faqs'] ?? [];
+        if (!empty($faqs) && is_array($faqs)) {
+            BusinessFaq::where('business_id', $businessId)->delete();
+            foreach ($faqs as $fIndex => $faq) {
+                $q = $faq['question'] ?? ($faq['q'] ?? null);
+                $a = $faq['answer'] ?? ($faq['a'] ?? null);
+                if (!$q || !$a) continue;
+                $bizFaq = BusinessFaq::create([
+                    'business_id'              => $businessId,
+                    'business_faq_category_id' => null,
+                    'position'                 => $fIndex + 1,
+                    'status'                   => true,
+                ]);
+                BusinessFaqTranslation::create([
+                    'business_faq_id' => $bizFaq->id,
+                    'lang_id'         => 1,
+                    'question'        => $q,
+                    'answer'          => $a,
+                ]);
+            }
+            $appliedCount++;
+        }
+
+        // 10. Services / Offering
+        if (isset($item['services']) && is_array($item['services'])) {
+            $headline = $item['services']['headline'] ?? null;
+            $topText = $item['services']['top_text'] ?? null;
+            $bottomText = $item['services']['bottom_text'] ?? null;
+            $offering = \App\Models\BusinessOffering::firstOrNew(['business_id' => $businessId]);
+            if ($headline !== null) $offering->headline = $headline;
+            if ($topText !== null) $offering->top_text = $topText;
+            if ($bottomText !== null) $offering->bottom_text = $bottomText;
+            $offering->save();
+            if ($bottomText !== null) {
+                BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['after_image_description' => $bottomText]);
+            }
+            $appliedCount++;
+        }
+
+        // 11. Active countries
+        if (isset($item['active_countries']) && is_array($item['active_countries'])) {
+            $activeAll = !empty($item['active_countries']['active_all_countries']);
+            $business->active_all_countries = $activeAll ? 1 : 0;
+            $business->save();
+            if (!$activeAll && !empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
+                $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
+                $business->countries()->sync($countryIds);
+            }
+            $appliedCount++;
+        }
+
+        return $appliedCount;
     }
 
     public function businesses(Request $request)
@@ -1084,6 +1352,15 @@ class ContentGenerationController extends Controller
                 }
                 break;
 
+            case 'reviews_description':
+                $revDesc = $data['reviews_description'] ?? ($data['description'] ?? ($data['content'] ?? null));
+                if ($revDesc !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['reviews_description' => $revDesc]);
+                }
+                break;
+
             case 'pros_cons':
                 $pros = $data['pros'] ?? [];
                 $cons = $data['cons'] ?? [];
@@ -1316,6 +1593,11 @@ class ContentGenerationController extends Controller
                     return 'Expected {"description": "..."}';
                 }
                 break;
+            case 'reviews_description':
+                if (!isset($data['reviews_description']) && !isset($data['description']) && !isset($data['content'])) {
+                    return 'Expected {"reviews_description": "..."}';
+                }
+                break;
             case 'pros_cons':
                 if (!isset($data['pros']) || !isset($data['cons']) || !is_array($data['pros']) || !is_array($data['cons'])) {
                     return 'Expected {"pros": [...], "cons": [...]}';
@@ -1388,6 +1670,8 @@ class ContentGenerationController extends Controller
             'usps' => "Generate 4 to 6 Unique Selling Propositions (USPs) for {$businessName}.{$catInfo}{$urlInfo} Each USP must be concise (3-8 words) highlighting a standout benefit, guarantee, or key feature (e.g., 'Free domain & SSL certificate', '24/7 expert customer support', '99.9% uptime guarantee'). Return JSON: {\"usps\": [\"USP 1\", \"USP 2\", \"USP 3\", \"USP 4\"]}",
 
             'what_is' => "Write an authoritative, detailed overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their profile page. Provide 2-3 structured HTML paragraphs explaining what the business is, what infrastructure or services it provides, who its ideal customers are, and why users choose it. Return JSON: {\"description\": \"<p>...</p><p>...</p>\"}",
+
+            'reviews_description' => "Write a concise overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their reviews page. Provide 1-2 engaging HTML paragraphs explaining what the business is and why users choose it. Return JSON: {\"reviews_description\": \"<p>...</p>\"}", 
 
             'pros_cons' => "Evaluate {$businessName}.{$catInfo}{$urlInfo} Select the 3 to 5 most accurate Pros and 2 to 4 Cons strictly from the available category options below:
 
@@ -1726,6 +2010,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $businesses  = Business::with([
             'translations' => fn($q) => $q->where('lang_id', 1),
             'websites',
+            'category.translations' => fn($q) => $q->where('lang_id', 1),
+            'subCategories.translations' => fn($q) => $q->where('lang_id', 1),
         ])->whereIn('id', $businessIds)->get();
 
         $requestedFields = array_values(array_filter(explode(',', $job->prompt_type ?: '')));
@@ -1738,10 +2024,17 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $bList = [];
         foreach ($businesses as $b) {
             $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+            $cat = $b->category;
+            $catName = optional(optional($cat)->translations->firstWhere('lang_id', 1))->name ?? optional($cat)->name ?? '';
+            $subCats = $b->subCategories->map(fn($sc) => optional(optional($sc)->translations->firstWhere('lang_id', 1))->name ?? $sc->name ?? '')->filter()->values()->toArray();
+
             $bList[] = [
                 'business_id'      => $b->id,
                 'business_name'    => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
                 'business_url'     => $bUrl,
+                'category_id'      => $b->category_id,
+                'category_name'    => $catName ?: null,
+                'subcategories'    => !empty($subCats) ? $subCats : null,
                 'fields_requested' => $fieldsValue,
             ];
         }
@@ -2002,6 +2295,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
         $appliedBusinessesCount = 0;
         $appliedFieldsCount     = 0;
+        $newlyCreatedCount      = 0;
 
         foreach ($businessList as $bData) {
             if (!is_array($bData)) continue;
@@ -2041,13 +2335,55 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 $biz = Business::find($rawBizId);
             }
 
-            // 5. Try matching globally by business name in translations
+            // 5. Try matching globally by business name in translations (exact, case-insensitive, or cleaned)
             if (!$biz && !empty($bizName)) {
-                $matchedBizId = BusinessTranslation::where('name', $bizName)->value('business_id')
-                    ?? BusinessTranslation::where('name', 'like', "%{$bizName}%")->value('business_id');
+                $cleanName = trim(preg_replace('/\s*\([^)]*\)/', '', $bizName)); // remove trailing (Web Hosting)
+                $matchedBizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($bizName)])->value('business_id')
+                    ?? BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanName)])->value('business_id')
+                    ?? BusinessTranslation::where('name', 'like', "%{$cleanName}%")->value('business_id');
                 if ($matchedBizId) {
                     $biz = Business::find($matchedBizId);
                 }
+            }
+
+            // 6. If business still does not exist, auto-create it on the fly!
+            if (!$biz && !empty($bizName)) {
+                $cleanName = trim(preg_replace('/\s*\([^)]*\)/', '', $bizName));
+                $bizUrl = trim($bData['business_url'] ?? ($bData['url'] ?? ''));
+                if (!empty($bizUrl) && !preg_match('/^https?:\/\//i', $bizUrl)) {
+                    $bizUrl = 'https://' . $bizUrl;
+                }
+
+                $baseSlug = Str::slug($cleanName);
+                if (empty($baseSlug)) {
+                    $baseSlug = 'business-' . time() . '-' . rand(100, 999);
+                }
+                $slug = $baseSlug;
+                $counter = 1;
+                while (BusinessTranslation::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+
+                $biz = Business::create([
+                    'permanent_url'        => $bizUrl ?: null,
+                    'status'               => 1,
+                    'created_by'           => auth()->id() ?? 1,
+                    'is_affiliate'         => 0,
+                    'active_all_countries' => 1,
+                    'category_id'          => null,
+                ]);
+
+                BusinessTranslation::create([
+                    'business_id' => $biz->id,
+                    'lang_id'     => 1,
+                    'name'        => $cleanName,
+                    'slug'        => $slug,
+                    'status'      => 1,
+                ]);
+
+                $biz->languages()->syncWithoutDetaching([1]);
+                $newlyCreatedCount = ($newlyCreatedCount ?? 0) + 1;
             }
 
             if (!$biz) continue;
@@ -2067,6 +2403,9 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['long_preview_description' => $fieldVal, 'long_description' => $fieldVal];
                 } elseif ($field === 'what_is' && is_string($fieldVal)) {
                     $normalizedData = ['description' => $fieldVal, 'what_is' => $fieldVal];
+                } elseif (($field === 'reviews_description' || $field === 'short_business_description_reviews') && (is_string($fieldVal) || is_array($fieldVal))) {
+                    $val = is_array($fieldVal) ? ($fieldVal['reviews_description'] ?? ($fieldVal['description'] ?? '')) : $fieldVal;
+                    $normalizedData = ['reviews_description' => $val];
                 } elseif ($field === 'usps' && is_array($fieldVal)) {
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
@@ -2119,7 +2458,12 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             'raw_response'    => $cleanJson,
         ]);
 
-        return back()->with('success', "Batch result processed successfully! Applied content for {$appliedBusinessesCount} business(es) across {$appliedFieldsCount} field(s).");
+        $msg = "Batch result processed successfully! Applied content for {$appliedBusinessesCount} business(es)";
+        if ($newlyCreatedCount > 0) {
+            $msg .= " (including {$newlyCreatedCount} newly created in directory)";
+        }
+        $msg .= " across {$appliedFieldsCount} field(s).";
+        return back()->with('success', $msg);
     }
 
     // -------------------------------------------------------------------------
@@ -2140,6 +2484,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     "One-click WordPress and CMS installs"
                 ],
                 "what_is"           => "HostGator is an established global web hosting provider and domain registrar serving businesses and web creators worldwide.",
+                "reviews_description" => "HostGator is a trusted web hosting provider offering reliable shared, cloud, and VPS hosting solutions tailored for individuals and businesses.", 
                 "pros_cons"         => [
                     "pros" => [
                         "Affordable introductory pricing",
@@ -2189,6 +2534,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     "Dedicated regional account manager"
                 ],
                 "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
+                "reviews_description" => "A regional cloud hosting provider offering high-compliance infrastructure and localized support for enterprises.", 
                 "pros_cons"         => [
                     "pros" => [
                         "Fast regional latency",

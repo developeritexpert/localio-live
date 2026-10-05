@@ -9505,7 +9505,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .text-meta {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 10px;
     color: var(--color-primary-grey-text);
 }
@@ -15193,6 +15193,7 @@ button.action-icon-btn.share-trigger-btn:hover {
     height: 20%;
     border-right: 1px dotted #94a3b8;
 }
+
 .sticky-comp-vs {
     font-size: 11px;
     font-weight: 700;
@@ -15246,6 +15247,7 @@ button.action-icon-btn.share-trigger-btn:hover {
     color: #0f172a;
     font-weight: 600;
 }
+
 /* ==========================================================================
    Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
    ========================================================================== */
@@ -15368,6 +15370,7 @@ button.action-icon-btn.share-trigger-btn:hover {
 
 /* DESKTOP: ALWAYS HIDE MOBILE SIDEBAR & OVERLAY */
 @media (min-width: 992px) {
+
     .mobile-sidebar,
     .mobile-sidebar-overlay,
     .mobile-sidebar-btn,
@@ -15752,4 +15755,14 @@ button.action-icon-btn.share-trigger-btn:hover {
 .msp_sub_list li a:hover {
     background-color: rgba(255, 255, 255, 0.06);
     color: #F9633B;
+}
+
+/* 5-oct-2026  */
+.revie_img_sec .discussion_bx p.sidebar-review-card-p:hover {
+    text-decoration: underline;
+}
+
+.revie_img_sec #section-search-faq p {
+    font-size: 20px;
+    font-weight: 600;
 }

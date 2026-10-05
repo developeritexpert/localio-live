@@ -43,6 +43,12 @@
                     <span class="size16">or</span>
                 </div>
                 <!-- Continue with the rest of your form -->
+                @if ($errors->has('g-recaptcha-response'))
+                    <div class="text-danger mb-3">{{ $errors->first('g-recaptcha-response') }}</div>
+                @endif
+                @if (session('error'))
+                    <div class="text-danger mb-3">{{ session('error') }}</div>
+                @endif
                 <form class="register_form" action="{{ route('user-register-process', ['locale'=> getCurrentLocale()]) }}" method="post" id="registerForm">
                     @csrf
                     <div class="row">

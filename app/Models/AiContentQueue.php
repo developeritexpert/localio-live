@@ -29,6 +29,7 @@ class AiContentQueue extends Model
         'long_description'  => 'Long Description',
         'usps'              => 'USPs',
         'what_is'           => 'What is',
+        'reviews_description' => 'Reviews Description',
         'pros_cons'         => 'Pros & Cons',
         'services'          => 'Services',
         'faqs'              => 'FAQs',

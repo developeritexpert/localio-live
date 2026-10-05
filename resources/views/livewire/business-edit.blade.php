@@ -397,6 +397,98 @@
                     </div>
                 </div>
 
+                <!-- Short business description (Reviews page) Section -->
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <label class="form-label">Short business description (Reviews page)</label>
+                        </div>
+
+                        <!-- If you're using Alpine.js -->
+                        <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_description = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                            <div class="form-group">
+                                <textarea
+                                    x-ref="editor"
+                                    class="form-control r_description @error('reviews_description') is-invalid @enderror"
+                                    wire:model.live="reviews_description"
+                                    rows="5">
+                                    </textarea>
+                                @error('reviews_description')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Pros & Cons Section --}}
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <label class="form-label mb-0"><strong>Pros & Cons</strong></label>
+                                <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="title mb-3">Pros</h6>
+                                @foreach ($businessPros as $index => $pro)
+                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                        <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
+                                        <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                            <em class="icon ni ni-trash"></em>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro">
+                                    <em class="icon ni ni-plus"></em> Add Pro
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="title mb-3">Cons</h6>
+                                @foreach ($businessCons as $index => $con)
+                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                        <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
+                                        <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                            <em class="icon ni ni-trash"></em>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon">
+                                    <em class="icon ni ni-plus"></em> Add Con
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
 

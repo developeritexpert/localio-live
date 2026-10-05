@@ -91,7 +91,9 @@
                             'alternatives_subtext',
                             getCurrentLanguageID()
                         );
-                        $finalAltSub = !empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $subHeadline;
+                        $finalAltSub = !empty($resolvedAltSub['subtext'])
+                            ? $resolvedAltSub['subtext']
+                            : (!empty($resolvedAltSub['headline']) ? $resolvedAltSub['headline'] : $subHeadline);
                     @endphp
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
                         <h1 style="color: #1e3050; margin: 0; line-height: 1.2;">
@@ -102,7 +104,7 @@
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     @if(!empty($finalAltSub))
-                    <div style="font-size: 16px; margin: 0; font-weight: 400; color: #1e3050;">
+                    <div class="ck-content" style="font-size: 16px; margin: 0; font-weight: 400; color: #1e3050;">
                         {!! $finalAltSub !!}
                     </div>
                     @endif

@@ -456,6 +456,7 @@ class CategoryPage extends Component
                 'translations' => function ($q) {
                     $q->where('lang_id', $this->lang_id);
                 },'limitedFeatures.translations'=>fn($q) => $q->where('lang_id', $this->lang_id),
+                'proCons',
                 'products' => function ($pq) {
                     $pq->with(['prices' => fn($p) => $p->orderBy('price')])
                         ->where(function ($query) {

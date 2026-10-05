@@ -422,11 +422,23 @@ function insertSampleJson() {
     const sample = JSON.stringify([
         {
             "name": "HostGator",
-            "url": "https://www.hostgator.com"
+            "url": "https://www.hostgator.com",
+            "category": "Web Hosting",
+            "short_description": "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
+            "rating": 4.6,
+            "usps": [
+                "99.9% uptime guarantee",
+                "Free domain registration for the first year",
+                "24/7/365 phone, chat, and email support"
+            ],
+            "reviews_description": "HostGator provides verified reliable cloud, VPS, and shared hosting for modern businesses."
         },
         {
             "name": "Bluehost",
-            "url": "https://www.bluehost.com"
+            "url": "https://www.bluehost.com",
+            "category": "Web Hosting",
+            "short_description": "Recommended by WordPress.org, Bluehost delivers fast WordPress and cloud solutions.",
+            "rating": 4.8
         }
     ], null, 2);
     document.getElementById('jsonInputTextarea').value = sample;
@@ -445,34 +457,60 @@ function insertSampleJson() {
                     <em class="icon ni ni-cross"></em>
                 </a>
             </div>
-            <form action="{{ route('content-gen.import-json') }}" method="POST">
+            <form id="importJsonForm" action="{{ route('content-gen.import-json') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
-                        Add one or multiple businesses at once by pasting a JSON array below. For each business, specify the <strong>Business name</strong> and <strong>Business URL</strong>. These will be added to your directory and will immediately appear in this table ready for AI content generation.
+                        Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Supports single objects, arrays, or wrapped payloads (<code>{"businesses": [...]}</code>). Markdown code blocks are automatically cleaned.
                     </p>
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="form-label fw-bold small mb-0">JSON Payload</label>
-                        <button type="button" class="btn btn-xs btn-outline-light text-dark" onclick="insertSampleJson()">
-                            <em class="icon ni ni-copy me-1"></em> Insert Sample JSON
-                        </button>
+                    {{-- Option 1: File Upload --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small mb-1">
+                            <em class="icon ni ni-upload-cloud me-1 text-primary"></em> Upload .json or .jsonl File
+                        </label>
+                        <input type="file" name="json_file" id="jsonFileInput" class="form-control form-control-sm" accept=".json,.jsonl,application/json,text/plain">
+                        <span class="text-muted small">Select a file from your computer (ideal for large batches of 50+ businesses).</span>
                     </div>
 
-                    <textarea name="json_data" id="jsonInputTextarea" class="form-control font-monospace text-dark" rows="10" style="font-size: 13px; line-height: 1.5; background: #f8fafc;" placeholder='[
+                    <div class="text-center my-2 position-relative">
+                        <hr class="m-0">
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small fw-bold">OR PASTE JSON BELOW</span>
+                    </div>
+
+                    {{-- Option 2: Paste JSON Textarea --}}
+                    <div class="mb-2 mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold small mb-0">Paste JSON / JSONL Payload</label>
+                            <button type="button" class="btn btn-xs btn-outline-light text-dark" onclick="insertSampleJson()">
+                                <em class="icon ni ni-copy me-1"></em> Insert Sample JSON
+                            </button>
+                        </div>
+                        <textarea name="json_data" id="jsonInputTextarea" class="form-control font-monospace text-dark" rows="9" style="font-size: 13px; line-height: 1.5; background: #f8fafc;" placeholder='[
   {
     "name": "HostGator",
-    "url": "https://www.hostgator.com"
+    "url": "https://www.hostgator.com",
+    "category": "Web Hosting"
   },
   {
     "name": "Bluehost",
-    "url": "https://www.bluehost.com"
+    "url": "https://www.bluehost.com",
+    "category": "Web Hosting"
   }
-]' required></textarea>
+]'></textarea>
+                    </div>
+
+                    {{-- Deduplication Toggle --}}
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="update_existing" value="1" id="updateExistingCheck" checked>
+                        <label class="form-check-label small fw-semibold text-dark" for="updateExistingCheck">
+                            Update existing businesses if already in directory (matched by name or URL)
+                        </label>
+                    </div>
 
                     <div class="alert alert-light border mt-3 py-2 px-3 small text-muted">
                         <em class="icon ni ni-info-fill text-info me-1"></em>
-                        Supported keys: <code>name</code> (or <code>business_name</code>) and <code>url</code> (or <code>business_url</code>, <code>website</code>).
+                        <strong>Supported fields:</strong> <code>name</code>, <code>url</code>, <code>category</code> / <code>category_id</code>, <code>subcategories</code>, <code>short_description</code>, <code>what_is</code>, <code>rating</code>, <code>usps</code>, <code>pros_cons</code>, <code>faqs</code>, and <code>services</code>.
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">

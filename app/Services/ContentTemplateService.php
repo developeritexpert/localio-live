@@ -202,6 +202,20 @@ class ContentTemplateService
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
+        'profile_pros_cons_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Upper text of Pros & Cons section',
+            'description' => 'Headline and upper text for the Pros & Cons section when a business has less than 10 published reviews (pros & cons from public available sources).',
+        ],
+        'profile_review_prompt' => [
+            'label' => 'RECOMMEND BANNER',
+            'type' => 'combined',
+            'field1_label' => 'Headline',
+            'field2_label' => 'Subtext',
+            'description' => 'Headline and subtext for the review prompt / recommend banner.',
+        ],
         'profile_alternatives' => [
             'label' => 'ALTERNATIVES SECTION',
             'type' => 'combined',
@@ -248,9 +262,37 @@ class ContentTemplateService
         ],
         'alternatives_subtext' => [
             'label' => 'Sub-headline',
-            'type' => 'single',
+            'type' => 'rich',
             'field1_label' => 'Sub-headline',
-            'description' => 'Sub-headline text below the H1.',
+            'description' => 'Sub-headline text below the H1 with formatting options.',
+        ],
+        'popular_alternatives' => [
+            'label' => 'POPULAR ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'Popular Alternatives Headline (H2)',
+            'field2_label' => 'Popular Alternatives Subtext',
+            'description' => 'Headline and subtext for the Most Popular Alternatives section.',
+        ],
+        'compare_alternatives' => [
+            'label' => 'COMPARE ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'Compare Alternatives Headline (H2)',
+            'field2_label' => 'Compare Alternatives Subtext',
+            'description' => 'Headline and subtext for the Compare Alternatives section.',
+        ],
+        'community_says' => [
+            'label' => 'COMMUNITY SAYS',
+            'type' => 'combined',
+            'field1_label' => 'Community Says Headline (H2)',
+            'field2_label' => 'Community Says Subtext',
+            'description' => 'Headline and subtext for the What the Localio Community Says section.',
+        ],
+        'all_alternatives' => [
+            'label' => 'ALL ALTERNATIVES',
+            'type' => 'combined',
+            'field1_label' => 'All Alternatives Headline (H2)',
+            'field2_label' => 'All Alternatives Subtext',
+            'description' => 'Headline and subtext for the All Alternatives section.',
         ],
     ];
 
@@ -384,23 +426,38 @@ class ContentTemplateService
             'field2_label' => 'Sub-headline / Description',
             'description' => 'Main headline and subtext displayed at the top of the A vs B comparison page.',
         ],
+        'comparison_what_is' => [
+            'label' => 'WHAT IS [BUSINESS] SECTION',
+            'type' => 'single',
+            'field1_label' => 'What is Headline (H6)',
+            'description' => 'Headline displayed above the business description in comparison overview cards (supports [business]).',
+        ],
+        'comparison_usps' => [
+            'label' => 'USPS / CHECKS SECTION',
+            'type' => 'single',
+            'field1_label' => 'USPs / Checks Headline (H6)',
+            'description' => 'Headline displayed above the key features / USPs checklist in comparison overview cards (supports [business]).',
+        ],
         'comparison_pros_cons' => [
             'label' => 'PROS & CONS SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
-            'description' => 'Headline displayed directly above the pros and cons comparison grid.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed directly above the pros and cons comparison grid.',
         ],
         'comparison_reviews' => [
             'label' => 'REVIEWS SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Reviews Headline (H2)',
-            'description' => 'Headline displayed above the customer reviews section on the comparison page.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed above the customer reviews section on the comparison page.',
         ],
         'comparison_alternatives' => [
             'label' => 'ALTERNATIVES SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Alternatives Headline (H2)',
-            'description' => 'Headline displayed above the alternatives section on the comparison page.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed above the alternatives section on the comparison page.',
         ],
     ];
 
@@ -416,6 +473,39 @@ class ContentTemplateService
             'type' => 'single',
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
+        ],
+        'reviews_what_is' => [
+            'label' => 'What is Headline (H2)',
+            'type' => 'single',
+            'field1_label' => 'What is Headline (H2)',
+            'description' => 'H2 headline for the "What is [business]" overview section.',
+        ],
+        'reviews_pros_cons' => [
+            'label' => 'Pros & Cons',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and intro subtext for community pros & cons section.',
+        ],
+        'reviews_user_reviews' => [
+            'label' => 'User Reviews',
+            'type' => 'combined',
+            'field1_label' => 'Reviews Headline (H2)',
+            'field2_label' => 'Reviews Subtext',
+            'description' => 'H2 headline (including review count in brackets) and subtext for user reviews list.',
+        ],
+        'reviews_page_discussions' => [
+            'label' => 'Discussions Section',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussions section headline and subtext on the Business Reviews page.',
+        ],
+        'reviews_discussions_prompt_placeholder' => [
+            'label' => 'Prompt Placeholder',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business Reviews page.',
         ],
     ];
 
@@ -1221,9 +1311,149 @@ class ContentTemplateService
         }
     }
 
+    
+    public static function seedDefaultBusinessAlternativesOptionsIfMissing(): void
+    {
+        $defaults = [
+            'alternatives_h1' => [
+                1 => 'Best [business] Alternatives & Competitors for the [country2] ([year])',
+                2 => 'Top alternatives for [category_lc]',
+                3 => 'Best [business] alternatives & competitors',
+                4 => 'Top 10 [business] alternatives for [year]',
+            ],
+            'alternatives_subtext' => [
+                1 => [
+                    'headline' => 'Looking for alternatives to [business]? Compare top-rated competitors and alternatives to find the [entity1_lc] that best matches your needs.',
+                    'subtext' => '<p>Looking for alternatives to [business]? Compare top-rated competitors and alternatives to find the [entity1_lc] that best matches your needs.</p>',
+                ],
+                2 => [
+                    'headline' => 'Compare the top competitors and alternatives to [business] side-by-side.',
+                    'subtext' => '<p>Compare the top competitors and alternatives to [business] side-by-side.</p>',
+                ],
+            ],
+            'popular_alternatives' => [
+                1 => [
+                    'headline' => 'Most popular [business] alternatives',
+                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
+                ],
+                2 => [
+                    'headline' => 'Popular [business] alternatives & competitors',
+                    'subtext' => '<p>Explore the most popular alternatives to [business] chosen by real users.</p>',
+                ],
+            ],
+            'compare_alternatives' => [
+                1 => [
+                    'headline' => 'Compare [business] alternatives',
+                    'subtext' => '<p>Compare top alternatives side-by-side to find the right fit for your business.</p>',
+                ],
+                2 => [
+                    'headline' => 'Compare top-rated [business] competitors',
+                    'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
+                ],
+            ],
+            'community_says' => [
+                1 => [
+                    'headline' => 'What the Localio community says',
+                    'subtext' => '<p>Most mentioned pros and cons shared by real users.</p>',
+                ],
+                2 => [
+                    'headline' => 'What users say about [business] alternatives',
+                    'subtext' => '<p>Real feedback, top pros, and common cons from verified community reviewers.</p>',
+                ],
+            ],
+            'all_alternatives' => [
+                1 => [
+                    'headline' => 'All [business] alternatives',
+                    'subtext' => '<p>Explore all available alternatives and filter by rating, price, and features.</p>',
+                ],
+                2 => [
+                    'headline' => 'Browse all [business] competitors & alternatives',
+                    'subtext' => '<p>Complete list of competitors to help you make an informed choice.</p>',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_alternatives')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+                    ContentTemplate::create([
+                        'section_group' => 'business_alternatives',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_pros_cons' => [
+                1 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>See the strengths and drawbacks Localio users mention most often in their reviews. We group the recurring pros and cons in one place to show what users love and what could be improved.</p>',
+                ],
+                2 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>These are the strengths and drawbacks mentioned most often in Localio user reviews. We bring the recurring pros and cons together to show what stands out.</p>',
+                ],
+                3 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>The strengths and drawbacks that appear most often in Localio user reviews. We group the recurring pros and cons so you can quickly see what users mention most.</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>The strengths and drawbacks mentioned most often about [business], based on Localio user reviews. We bring the recurring pros and cons together in one place.</p>',
+                ],
+            ],
+            'profile_pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as this business currently has fewer than 10 published community reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight the recurring strengths and limitations of [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources to help you evaluate [business] while community reviews grow.</p>',
+                ],
+            ],
+            'profile_review_prompt' => [
+                1 => [
+                    'headline' => 'Would you recommend [business] to others?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                2 => [
+                    'headline' => 'Have you used [business]?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                3 => [
+                    'headline' => 'How was your experience with [business]?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                4 => [
+                    'headline' => 'Would you suggest [business] to a friend or colleague?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+            ],
             'profile_alternatives' => [
                 1 => [
                     'headline' => '[business] Alternatives & Competitors',
@@ -1545,18 +1775,125 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $exists = ContentTemplate::where('section_group', 'business_compare')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'business_compare')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
                     $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
                     $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([
                         'section_group' => 'business_compare',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public static function seedDefaultBusinessReviewsOptionsIfMissing(): void
+    {
+        $defaults = [
+            'reviews_h1' => [
+                1 => 'Verified User Reviews',
+                2 => 'What real users are saying',
+                3 => '[business] Reviews & Ratings',
+                4 => 'Real Customer Reviews for [business]',
+            ],
+            'reviews_subtext' => [
+                1 => 'Read honest feedback from the community.',
+                2 => 'Unbiased reviews to help you make the right choice.',
+                3 => 'Real reviews, user discussions & alternatives.',
+                4 => 'Verified ratings and customer experiences.',
+            ],
+            'reviews_what_is' => [
+                1 => 'What is [business]',
+                2 => 'What is [business]?',
+                3 => 'About [business]',
+                4 => 'Overview of [business]',
+            ],
+            'reviews_pros_cons' => [
+                1 => [
+                    'headline' => 'What the community says',
+                    'subtext' => '<p>See what verified users and community members highlight most about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Community sentiment & feedback',
+                    'subtext' => '<p>Explore recurring strengths and limitations shared by verified users of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Pros & cons from the community',
+                    'subtext' => '<p>A summary of the key advantages and drawbacks reported by [business] customers.</p>',
+                ],
+                4 => [
+                    'headline' => 'What users love & what could improve',
+                    'subtext' => '<p>Verified user impressions highlighting the main benefits and challenges of using [business].</p>',
+                ],
+            ],
+            'reviews_user_reviews' => [
+                1 => [
+                    'headline' => '[business] user reviews ([count])',
+                    'subtext' => '<p>Explore verified ratings, pros & cons, and detailed customer experiences for [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Customer reviews for [business] ([count])',
+                    'subtext' => '<p>Read honest feedback and performance ratings submitted by verified [business] users.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] reviews & ratings ([count])',
+                    'subtext' => '<p>See what real users have to say about [business] features, pricing, and reliability.</p>',
+                ],
+                4 => [
+                    'headline' => 'Verified [business] user reviews ([count])',
+                    'subtext' => '<p>Comprehensive evaluations and feedback shared by community members using [business].</p>',
+                ],
+            ],
+            'reviews_page_discussions' => [
+                1 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext' => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext' => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                3 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext' => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext' => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+            'reviews_discussions_prompt_placeholder' => [
+                1 => 'What would you like to know or share about [business]?',
+                2 => 'Ask a question or share advice about [business]...',
+                3 => 'Start a discussion about [business]...',
+                4 => 'Share your thoughts or ask anything about [business]...',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_reviews')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+
+                    ContentTemplate::create([
+                        'section_group' => 'business_reviews',
                         'field_key'     => $fieldKey,
                         'option_number' => $optNum,
                         'headline'      => $headlineText,
@@ -1590,35 +1927,82 @@ class ContentTemplateService
                     'subtext'  => 'Detailed side-by-side analysis of [business_vs] covering features, pricing, and authentic customer feedback.',
                 ],
             ],
+            'comparison_what_is' => [
+                1 => 'What is [business]?',
+                2 => 'About [business]',
+                3 => '[business] Overview',
+                4 => 'Introducing [business]',
+            ],
+            'comparison_usps' => [
+                1 => 'Why choose [business]?',
+                2 => 'Key highlights of [business]',
+                3 => '[business] Features & Benefits',
+                4 => 'Key reasons to choose [business]',
+            ],
             'comparison_pros_cons' => [
-                1 => 'Pros and cons',
-                2 => '[business_vs] pros and cons',
-                3 => 'Advantages and disadvantages',
-                4 => 'Pros and cons comparison',
+                1 => [
+                    'headline' => 'Pros and cons',
+                    'subtext'  => 'Compare the key advantages and disadvantages of [business_vs].',
+                ],
+                2 => [
+                    'headline' => '[business_vs] pros and cons',
+                    'subtext'  => 'Side-by-side strengths and limitations based on verified customer feedback.',
+                ],
+                3 => [
+                    'headline' => 'Advantages and disadvantages',
+                    'subtext'  => 'Explore what real users like and dislike about [business_vs].',
+                ],
+                4 => [
+                    'headline' => 'Pros and cons comparison',
+                    'subtext'  => 'Detailed breakdown of benefits and drawbacks for each [category_lc] provider.',
+                ],
             ],
             'comparison_reviews' => [
-                1 => 'Reviews',
-                2 => '[business_vs] reviews',
-                3 => 'Customer reviews & ratings',
-                4 => 'User feedback & ratings',
+                1 => [
+                    'headline' => 'Reviews',
+                    'subtext'  => 'Authentic customer reviews and ratings for [business_vs].',
+                ],
+                2 => [
+                    'headline' => '[business_vs] reviews',
+                    'subtext'  => 'Discover what verified users have experienced with each [category_lc] solution.',
+                ],
+                3 => [
+                    'headline' => 'Customer reviews & ratings',
+                    'subtext'  => 'Unbiased ratings and feedback from real customers.',
+                ],
+                4 => [
+                    'headline' => 'User feedback & ratings',
+                    'subtext'  => 'Compare overall satisfaction scores and in-depth user impressions.',
+                ],
             ],
             'comparison_alternatives' => [
-                1 => 'Alternatives',
-                2 => 'Top alternatives to consider',
-                3 => 'Similar [category] alternatives',
-                4 => 'Explore more alternatives',
+                1 => [
+                    'headline' => 'Alternatives',
+                    'subtext'  => 'Explore top-rated alternatives to [business_vs] in [category_lc].',
+                ],
+                2 => [
+                    'headline' => 'Top alternatives to consider',
+                    'subtext'  => 'Looking for other options? Check out leading [category_lc] alternatives.',
+                ],
+                3 => [
+                    'headline' => 'Similar [category] alternatives',
+                    'subtext'  => 'Browse comparable tools and services that fit your requirements and budget.',
+                ],
+                4 => [
+                    'headline' => 'Explore more alternatives',
+                    'subtext'  => 'Discover other top providers worth evaluating alongside [business_vs].',
+                ],
             ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $exists = ContentTemplate::where('section_group', 'comparison')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'comparison')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
                     $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
                     $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([
@@ -1655,6 +2039,12 @@ class ContentTemplateService
             self::seedDefaultBusinessFaqOptionsIfMissing();
         } elseif ($sectionGroup === 'business_compare') {
             self::seedDefaultBusinessCompareOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_alternatives') {
+            self::seedDefaultBusinessAlternativesOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_reviews') {
+            self::seedDefaultBusinessReviewsOptionsIfMissing();
+        } elseif ($sectionGroup === 'comparison') {
+            self::seedDefaultComparisonOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -2444,6 +2834,71 @@ class ContentTemplateService
             }
         }
 
+        // Cross-section fallback: if reviews_user_reviews has no explicit lock, check profile_reviews
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_user_reviews') {
+            $hasProfRev = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_reviews')
+                ->exists();
+            if ($hasProfRev) {
+                $profRevTpl = self::getTemplateForResolution('business', $business->id, 'profile_reviews', $langId, 'business_profile');
+                if ($profRevTpl) {
+                    $headline = self::replacePlaceholders($profRevTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profRevTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profRevTpl,
+                        'option_number' => $profRevTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if reviews_page_discussions has no explicit lock, check profile_discussions
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_page_discussions') {
+            $hasProfDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_discussions')
+                ->exists();
+            if ($hasProfDisc) {
+                $profDiscTpl = self::getTemplateForResolution('business', $business->id, 'profile_discussions', $langId, 'business_profile');
+                if ($profDiscTpl) {
+                    $headline = self::replacePlaceholders($profDiscTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profDiscTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profDiscTpl,
+                        'option_number' => $profDiscTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if reviews_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_discussions_prompt_placeholder') {
+            $hasPromptDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasPromptDisc) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
+                    ];
+                }
+            }
+        }
+
         // Cross-section fallback: if profile_alternatives has no explicit lock, check alternatives_h1 from business_alternatives
         if (!$hasExplicitAsgn && $fieldKey === 'profile_alternatives') {
             $hasAltAsgn = ContentTemplateAssignment::where('entity_type', 'business')
@@ -2479,7 +2934,7 @@ class ContentTemplateService
             $optionNumber = $template->option_number;
         }
 
-        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder'], true)) {
+        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder', 'reviews_discussions_prompt_placeholder'], true)) {
             return [
                 'headline' => self::cleanPlaceholder($headline),
                 'subtext' => $subtext,
@@ -2551,6 +3006,8 @@ class ContentTemplateService
         }
 
         $compExtraTags = array_merge([
+            '[business]'       => $b1,
+            '[business_cap]'   => ucfirst($b1),
             '[business1]'      => $b1,
             '[business2]'      => $b2,
             '[business3]'      => $b3,
@@ -2589,12 +3046,19 @@ class ContentTemplateService
             $subtext = !empty($catName)
                 ? "Learn more from our team about {$catName} pricing, features, and user ratings in our side-by-side comparison guide."
                 : "Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.";
+        } elseif ($fieldKey === 'comparison_what_is') {
+            $headline = !empty($b1) ? "What is {$b1}?" : 'What is this business?';
+        } elseif ($fieldKey === 'comparison_usps') {
+            $headline = !empty($b1) ? "Why choose {$b1}?" : 'Why choose this provider?';
         } elseif ($fieldKey === 'comparison_pros_cons') {
             $headline = 'Pros and cons';
+            $subtext = !empty($bVs) ? "Compare the key advantages and disadvantages of {$bVs}." : '';
         } elseif ($fieldKey === 'comparison_reviews') {
             $headline = 'Reviews';
+            $subtext = !empty($bVs) ? "Authentic customer reviews and ratings for {$bVs}." : '';
         } elseif ($fieldKey === 'comparison_alternatives') {
             $headline = 'Alternatives';
+            $subtext = !empty($bVs) ? "Explore top-rated alternatives to {$bVs}." : '';
         }
 
         return [

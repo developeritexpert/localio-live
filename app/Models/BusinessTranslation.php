@@ -32,6 +32,8 @@ class BusinessTranslation extends Model
         'alternatives_description',
         'alternatives_title_2',
         'alternatives_description_2',
+        'popular_alternatives_headline',
+        'popular_alternatives_subtext',
         'compare_alternatives_headline',
         'compare_alternatives_subtext',
         'community_says_headline',

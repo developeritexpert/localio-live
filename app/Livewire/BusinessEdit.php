@@ -172,16 +172,8 @@ class BusinessEdit extends Component
     ];
 
     // Pros & Cons
-    public $businessPros = [
-        ['text' => ''],
-        ['text' => ''],
-        ['text' => '']
-    ];
-    public $businessCons = [
-        ['text' => ''],
-        ['text' => ''],
-        ['text' => '']
-    ];
+    public $businessPros = [];
+    public $businessCons = [];
 
     // Offerings
     public $businessOfferings = [
@@ -1090,17 +1082,15 @@ class BusinessEdit extends Component
 
         // Load existing Pros
         $existingPros = $business->proCons->where('type', 'pro')->pluck('text')->toArray();
-        $this->businessPros = array_map(
-            fn($text) => ['text' => $text],
-            array_pad($existingPros, 3, '')
-        );
+        $this->businessPros = !empty($existingPros)
+            ? array_map(fn($text) => ['text' => $text], $existingPros)
+            : [];
 
         // Load existing Cons
         $existingCons = $business->proCons->where('type', 'con')->pluck('text')->toArray();
-        $this->businessCons = array_map(
-            fn($text) => ['text' => $text],
-            array_pad($existingCons, 3, '')
-        );
+        $this->businessCons = !empty($existingCons)
+            ? array_map(fn($text) => ['text' => $text], $existingCons)
+            : [];
 
         $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
@@ -1432,7 +1422,35 @@ class BusinessEdit extends Component
 
     public function saveProsCons($businessId)
     {
-        // Pros & Cons are now user review-based
+        \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
+        $proConsToInsert = [];
+        foreach ($this->businessPros as $pro) {
+            $text = trim($pro['text'] ?? '');
+            if (!empty($text)) {
+                $proConsToInsert[] = [
+                    'business_id' => $businessId,
+                    'type' => 'pro',
+                    'text' => $text,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        foreach ($this->businessCons as $con) {
+            $text = trim($con['text'] ?? '');
+            if (!empty($text)) {
+                $proConsToInsert[] = [
+                    'business_id' => $businessId,
+                    'type' => 'con',
+                    'text' => $text,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        if (!empty($proConsToInsert)) {
+            \App\Models\BusinessProCon::insert($proConsToInsert);
+        }
     }
 
     public function saveOfferings($businessId)

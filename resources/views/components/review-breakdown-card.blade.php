@@ -11,7 +11,9 @@
     
     $criteriaRatings = [];
     if ($hasUserRatings) {
-        $activeReviews = $business->reviews->where('status', 'active');
+        $activeReviews = ($business->relationLoaded('reviews') && $business->reviews->whereIn('status', ['published', 'active'])->isNotEmpty())
+            ? $business->reviews->whereIn('status', ['published', 'active'])
+            : $business->reviews()->whereIn('status', ['published', 'active'])->get();
         $activeReviewIds = $activeReviews->pluck('id')->toArray();
         $criteria = $business->category 
             ? $business->category->getEffectiveRatingCriteria() 
@@ -62,7 +64,7 @@
     }
     
     $recommendPercent = ($hasUserRatings && $bizTotalReviews > 0)
-        ? round(($business->reviews()->where('recommend', 1)->where('status', 'active')->count() / $bizTotalReviews) * 100) 
+        ? round(($activeReviews->where('recommend', 1)->count() / $bizTotalReviews) * 100) 
         : 0;
 @endphp
 <!-- Review Breakdown Card -->

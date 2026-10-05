@@ -289,7 +289,7 @@
                 }
                 /* Reduce gap below mobile header */
                 .user_dashbord .user_content {
-                    padding-top: 76px !important;
+                    padding-top: 110px !important;
                 }
             }
             .main_dhdr nav.navbar {

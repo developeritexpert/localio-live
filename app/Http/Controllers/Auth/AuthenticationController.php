@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Rules\Recaptcha;
+
 use App\Http\Controllers\Controller;
 use App\Models\MailTemplate;
 use App\Services\MailService;
@@ -67,6 +69,9 @@ class AuthenticationController extends Controller
     $request->validate([
         'email' => 'required|email',
         'password' => 'required|min:6',
+        'g-recaptcha-response' => ['required', new Recaptcha('login')],
+    ], [
+        'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
     ]);
 
     $credentials = $request->only('email', 'password');
@@ -173,9 +178,11 @@ class AuthenticationController extends Controller
             'company_size' => 'required|string|max:255',
             'accept_terms' => 'accepted',
             'promotional_emails' => 'nullable|boolean',
+            'g-recaptcha-response' => ['required', new Recaptcha('register')],
         ],[
-                'accept_terms.accepted' => 'You must agree to the Terms of service and Privacy policy.',
-            ]);
+            'accept_terms.accepted' => 'You must agree to the Terms of service and Privacy policy.',
+            'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
+        ]);
                 
 
         $country_code = Language::where('lang_code', session('lang_code'))->first();
@@ -249,13 +256,15 @@ class AuthenticationController extends Controller
     {
 
         $validated = $request->validate([
-            
             'first_name' => 'required',
             'last_name'  => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
             'job_title' => 'required|string|max:191',
+            'g-recaptcha-response' => ['required', new Recaptcha('register')],
             // 'country_id' => 'required',
+        ], [
+            'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
         ]);
 
         $country_code =Language::where('lang_code',session('lang_code'))->first();
