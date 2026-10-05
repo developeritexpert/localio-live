@@ -449,6 +449,20 @@
                                     @endif
 
                                 
+@php
+    $bizNameForPrompt2 = $business->translations->first()->name ?? $business->name ?? 'this product';
+    $resolvedReviewPrompt2 = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'profile_review_prompt',
+        getCurrentLanguageID()
+    );
+    $promptHeadline2 = !empty($resolvedReviewPrompt2['headline'])
+        ? $resolvedReviewPrompt2['headline']
+        : "Would you recommend {$bizNameForPrompt2} to others?";
+    $promptSubtext2 = !empty($resolvedReviewPrompt2['subtext'])
+        ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
+        : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
+@endphp
 <div class="review-prompt-banner" id="reviewPromptBanner"
     style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
 
@@ -459,11 +473,11 @@
 
         <div>
             <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
-                Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?
+                {!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline2) !!}
             </p>
 
             <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
-                Share your experience with the community
+                {{ $promptSubtext2 }}
             </p>
         </div>
     </div>

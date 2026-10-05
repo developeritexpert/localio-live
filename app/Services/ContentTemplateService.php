@@ -202,6 +202,20 @@ class ContentTemplateService
             'field2_label' => 'Upper text of Pros & Cons section',
             'description' => 'Headline and upper text for the Pros & Cons section.',
         ],
+        'profile_pros_cons_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Upper text of Pros & Cons section',
+            'description' => 'Headline and upper text for the Pros & Cons section when a business has less than 10 published reviews (pros & cons from public available sources).',
+        ],
+        'profile_review_prompt' => [
+            'label' => 'RECOMMEND BANNER',
+            'type' => 'combined',
+            'field1_label' => 'Headline',
+            'field2_label' => 'Subtext',
+            'description' => 'Headline and subtext for the review prompt / recommend banner.',
+        ],
         'profile_alternatives' => [
             'label' => 'ALTERNATIVES SECTION',
             'type' => 'combined',
@@ -1224,6 +1238,60 @@ class ContentTemplateService
     public static function seedDefaultBusinessProfileOptionsIfMissing(): void
     {
         $defaults = [
+            'profile_pros_cons' => [
+                1 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>See the strengths and drawbacks Localio users mention most often in their reviews. We group the recurring pros and cons in one place to show what users love and what could be improved.</p>',
+                ],
+                2 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>These are the strengths and drawbacks mentioned most often in Localio user reviews. We bring the recurring pros and cons together to show what stands out.</p>',
+                ],
+                3 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>The strengths and drawbacks that appear most often in Localio user reviews. We group the recurring pros and cons so you can quickly see what users mention most.</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons users mention most',
+                    'subtext' => '<p>The strengths and drawbacks mentioned most often about [business], based on Localio user reviews. We bring the recurring pros and cons together in one place.</p>',
+                ],
+            ],
+            'profile_pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as this business currently has fewer than 10 published community reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight the recurring strengths and limitations of [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources to help you evaluate [business] while community reviews grow.</p>',
+                ],
+            ],
+            'profile_review_prompt' => [
+                1 => [
+                    'headline' => 'Would you recommend [business] to others?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                2 => [
+                    'headline' => 'Have you used [business]?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                3 => [
+                    'headline' => 'How was your experience with [business]?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+                4 => [
+                    'headline' => 'Would you suggest [business] to a friend or colleague?',
+                    'subtext' => '<p>Share your experience with others.</p>',
+                ],
+            ],
             'profile_alternatives' => [
                 1 => [
                     'headline' => '[business] Alternatives & Competitors',

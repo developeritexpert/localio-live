@@ -667,11 +667,20 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="col-lg-12 mt-2 mb-4">
                             @php
                                 $bizProsConsFallbackH2 = ($business->translations->first()->name ?? $business->name ?? 'Business') . ' pros and cons';
+                                $publishedReviewCount = $ratingCount ?? ($business->reviews ? $business->reviews->whereIn('status', ['published', 'active'])->count() : 0);
+                                $prosConsFieldKey = ($publishedReviewCount < 10) ? 'profile_pros_cons_under_10' : 'profile_pros_cons';
                                 $resolvedBizProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
                                     $business,
-                                    'profile_pros_cons',
+                                    $prosConsFieldKey,
                                     getCurrentLanguageID()
                                 );
+                                if ($publishedReviewCount < 10 && empty($resolvedBizProsCons['headline'])) {
+                                    $resolvedBizProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_pros_cons',
+                                        getCurrentLanguageID()
+                                    );
+                                }
                                 $finalBizProsConsH2 = !empty($resolvedBizProsCons['headline']) ? $resolvedBizProsCons['headline'] : $bizProsConsFallbackH2;
                                 $finalBizProsConsUpper = !empty($resolvedBizProsCons['subtext']) ? $resolvedBizProsCons['subtext'] : (!empty($business->pro_cons_intro) ? $business->pro_cons_intro : null);
                             @endphp
@@ -1290,31 +1299,58 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 $altBusinessPrice['additional_info'] ?? 'NA';
                                                                 }
 
-                                                                // Get reviews for the current altbusiness
-                                                                $altReviews = \App\Models\Review::where(
-                                                                'business_id',
-                                                                $altbusiness->id,
-                                                                )->get();
+                                                                $altActiveReviews = $altbusiness->reviews ? $altbusiness->reviews->whereIn('status', ['published', 'active']) : collect();
+                                                                $count = $altActiveReviews->count();
+                                                                $altReviewIds = $altActiveReviews->pluck('id')->toArray();
 
-                                                                $altEaseOfUseAvg = round(
-                                                                $altReviews->avg('ease_of_use_rating'),
-                                                                1,
-                                                                );
-                                                                $altValueForMoneyAvg = round(
-                                                                $altReviews->avg('value_for_money_rating'),
-                                                                1,
-                                                                );
-                                                                $altCustomerServiceAvg = round(
-                                                                $altReviews->avg('customer_service_rating'),
-                                                                1,
-                                                                );
-                                                                $altExclusiveFeatureAvg = round(
-                                                                $altReviews->avg('exclusive_service_rating'),
-                                                                1,
-                                                                );
+                                                                if ($count >= 10) {
+                                                                    $altRatingAvg = round($altActiveReviews->avg('rating'), 1);
+                                                                } elseif ($altbusiness->admin_rating !== null && (float)$altbusiness->admin_rating > 0) {
+                                                                    $altRatingAvg = (float)$altbusiness->admin_rating;
+                                                                } elseif ($count > 0) {
+                                                                    $altRatingAvg = round($altActiveReviews->avg('rating'), 1);
+                                                                } else {
+                                                                    $altRatingAvg = 0;
+                                                                }
 
-                                                                $altRatingAvg = $altbusiness->reviews->avg('rating');
-                                                                $count = $altbusiness->reviews->whereIn('status', ['published', 'active'])->count();
+                                                                $calcAltCriterionRating = function($keys, $names, $legacyCol) use ($altReviewIds, $altActiveReviews, $altRatingAvg) {
+                                                                    if (empty($altReviewIds)) {
+                                                                        return 0;
+                                                                    }
+                                                                    $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where(function($q) use ($keys, $names) {
+                                                                        if (!empty($keys)) {
+                                                                            $q->whereIn('default_key', $keys);
+                                                                        }
+                                                                        if (!empty($names)) {
+                                                                            foreach ($names as $n) {
+                                                                                $q->orWhereRaw('LOWER(name) = ?', [strtolower($n)]);
+                                                                            }
+                                                                        }
+                                                                    })->pluck('id')->toArray();
+
+                                                                    if (!empty($matchingCriteriaIds)) {
+                                                                        $rrAvg = \App\Models\ReviewRating::whereIn('review_id', $altReviewIds)->whereIn('criteria_id', $matchingCriteriaIds)->avg('rating');
+                                                                        if ($rrAvg !== null && (float)$rrAvg > 0) {
+                                                                            return round((float)$rrAvg, 1);
+                                                                        }
+                                                                    }
+
+                                                                    $legacyVal = $altActiveReviews->where($legacyCol, '>', 1)->avg($legacyCol);
+                                                                    if ($legacyVal !== null && (float)$legacyVal > 0) {
+                                                                        return round((float)$legacyVal, 1);
+                                                                    }
+
+                                                                    if ($altRatingAvg > 0) {
+                                                                        return round((float)$altRatingAvg, 1);
+                                                                    }
+
+                                                                    return 0;
+                                                                };
+
+                                                                $altEaseOfUseAvg = $calcAltCriterionRating(['ease_of_use'], ['Ease of use', 'Ease of Use'], 'ease_of_use_rating');
+                                                                $altCustomerServiceAvg = $calcAltCriterionRating(['customer_service', 'support'], ['Customer service', 'Customer Service', 'Support', 'Customer support'], 'customer_service_rating');
+                                                                $altExclusiveFeatureAvg = $calcAltCriterionRating(['features', 'exclusive_features'], ['Features', 'Exclusive features'], 'exclusive_service_rating');
+                                                                $altValueForMoneyAvg = $calcAltCriterionRating(['value_for_money'], ['Value for money', 'Value for Money'], 'value_for_money_rating');
                                                                 @endphp
 
                                                                 <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
@@ -1567,65 +1603,65 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     ]);
                                                     @endphp
                                                    
-<div class="col-lg-6 col-md-6 col-12">
-    <a href="{{ $seoUrl }}" class="comparison-box-link text-decoration-none d-block h-100">
-        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
-            style="background-color: #fff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
+                                                    <div class="col-lg-6 col-md-6 col-12">
+                                                        <a href="{{ $seoUrl }}" class="comparison-box-link text-decoration-none d-block h-100">
+                                                            <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
+                                                                style="background-color: #fff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
 
-            <div class="d-flex align-items-center justify-content-between gap-2">
+                                                                <div class="d-flex align-items-center justify-content-between gap-2">
 
-                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                    <div class="top-product-medium-logo">
-                        <x-business-logo :business="$business" :name="$bName" />
-                    </div>
+                                                                    <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                                        <div class="top-product-medium-logo">
+                                                                            <x-business-logo :business="$business" :name="$bName" />
+                                                                        </div>
 
-                    <div style="min-width: 0;">
-                        <div class="fw-semibold text-truncate"
-                            style="font-size: 13px; color: #002347 !important;">
-                            {{ $bName }}
-                        </div>
+                                                                        <div style="min-width: 0;">
+                                                                            <div class="fw-semibold text-truncate"
+                                                                                style="font-size: 13px; color: #002347 !important;">
+                                                                                {{ $bName }}
+                                                                            </div>
 
-                        @if($business->should_show_rating)
-                        <div class="d-flex align-items-center gap-1"
-                            style="font-size: 12px; color: #5b6b7a;">
-                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($business->display_rating) }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
+                                                                            @if($business->should_show_rating)
+                                                                            <div class="d-flex align-items-center gap-1"
+                                                                                style="font-size: 12px; color: #5b6b7a;">
+                                                                                <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                                <span>{{ formatRating($business->display_rating) }}</span>
+                                                                            </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
 
-                <div class="px-2 vs_circle text-muted flex-shrink-0"
-                    style="font-size: 16px; font-family: sans-serif;">
-                    vs
-                </div>
+                                                                    <div class="px-2 vs_circle text-muted flex-shrink-0"
+                                                                        style="font-size: 16px; font-family: sans-serif;">
+                                                                        vs
+                                                                    </div>
 
-                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                    <div class="top-product-medium-logo">
-                        <x-business-logo :business="$peer" :name="$peerName" />
-                    </div>
+                                                                    <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                                        <div class="top-product-medium-logo">
+                                                                            <x-business-logo :business="$peer" :name="$peerName" />
+                                                                        </div>
 
-                    <div style="min-width: 0;">
-                        <div class="fw-semibold text-truncate"
-                            style="font-size: 13px; color: #1e293b !important;">
-                            {{ $peerName }}
-                        </div>
+                                                                        <div style="min-width: 0;">
+                                                                            <div class="fw-semibold text-truncate"
+                                                                                style="font-size: 13px; color: #1e293b !important;">
+                                                                                {{ $peerName }}
+                                                                            </div>
 
-                        @if($peer->should_show_rating)
-                        <div class="d-flex align-items-center gap-1"
-                            style="font-size: 12px; color: #5b6b7a;">
-                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ formatRating($peer->display_rating) }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
+                                                                            @if($peer->should_show_rating)
+                                                                            <div class="d-flex align-items-center gap-1"
+                                                                                style="font-size: 12px; color: #5b6b7a;">
+                                                                                <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                                <span>{{ formatRating($peer->display_rating) }}</span>
+                                                                            </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
 
-            </div>
+                                                                </div>
 
-        </div>
-    </a>
-</div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
 
 
                                                     @empty
@@ -1660,7 +1696,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important; background-color:#fdfdfd;">
                                             <div class="container">
                                                 @push('styles')
-<style>
+                                                <style>
                                                     .review-sidebar-sticky {
                                                         position: sticky !important;
                                                         position: -webkit-sticky !important;
@@ -1728,14 +1764,28 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 @endpush
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
+                                                    @php
+                                                        $bizNameForPrompt = $business->translations->first()->name ?? $business->name ?? 'this product';
+                                                        $resolvedReviewPrompt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                            $business,
+                                                            'profile_review_prompt',
+                                                            getCurrentLanguageID()
+                                                        );
+                                                        $promptHeadline = !empty($resolvedReviewPrompt['headline'])
+                                                            ? $resolvedReviewPrompt['headline']
+                                                            : "Would you recommend {$bizNameForPrompt} to others?";
+                                                        $promptSubtext = !empty($resolvedReviewPrompt['subtext'])
+                                                            ? trim(strip_tags($resolvedReviewPrompt['subtext']))
+                                                            : (static_text('share_experience_subheading') ?: 'Share your experience with others.');
+                                                    @endphp
                                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                         <div style="display: flex; align-items: center; gap: 16px;">
                                                             <div class="top-product-logo" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                                                 <x-business-logo :business="$business" />
                                                             </div>
                                                             <div>
-                                                                <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
-                                                                <p style="margin: 0; font-size: 13.5px; ">{{ static_text('share_experience_subheading') ?: 'Share your experience with the community' }}</p>
+                                                                <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">{!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline) !!}</p>
+                                                                <p style="margin: 0; font-size: 13.5px; ">{{ $promptSubtext }}</p>
                                                             </div>
                                                         </div>
                                                         <div style="display: flex; gap: 12px; align-items: center;">
