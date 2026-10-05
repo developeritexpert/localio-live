@@ -47,9 +47,11 @@
 
     $reviewsData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_reviews', $curLangId);
     $finalReviewsHeadline = !empty($reviewsData['headline']) ? $reviewsData['headline'] : 'Reviews';
+    $finalReviewsSubtext = !empty($reviewsData['subtext']) ? $reviewsData['subtext'] : null;
 
     $alternativesData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_alternatives', $curLangId);
     $finalAlternativesHeadline = !empty($alternativesData['headline']) ? $alternativesData['headline'] : 'Alternatives';
+    $finalAlternativesSubtext = !empty($alternativesData['subtext']) ? $alternativesData['subtext'] : null;
 @endphp
 @if(isset($businesses) && count($businesses) > 0)
 <!-- Sticky Comparison Top Banner (Shows on scroll as sticky header) -->
@@ -540,40 +542,64 @@
                     <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
                             @php
-                                $bName = $business->translations->first()?->name ?? 'Product';
-                                $bDesc = $business->translations->first()?->description ?? null;
+                                $bTrans = $business->translations->first();
+                                $bName = $bTrans?->name ?? $business->name ?? 'Product';
+                                $bDesc = $bTrans?->description ?? null;
                                 $hasUsps = !empty($business->is_affiliate) && (($business->usps && $business->usps->count() > 0) || ($business->features && $business->features->count() > 0));
+
+                                $resolvedWhatIsHeader = \App\Services\ContentTemplateService::resolveComparisonSection(
+                                    $cat,
+                                    [$business],
+                                    'comparison_what_is',
+                                    $curLangId,
+                                    ['[business]' => $bName, '[business_cap]' => ucfirst($bName)]
+                                );
+                                $finalWhatIsHeadline = !empty($bTrans?->description_title)
+                                    ? $bTrans->description_title
+                                    : (!empty($resolvedWhatIsHeader['headline']) ? $resolvedWhatIsHeader['headline'] : "About {$bName}");
+
+                                $resolvedUspHeader = \App\Services\ContentTemplateService::resolveComparisonSection(
+                                    $cat,
+                                    [$business],
+                                    'comparison_usps',
+                                    $curLangId,
+                                    ['[business]' => $bName, '[business_cap]' => ucfirst($bName)]
+                                );
+                                $finalUspHeadline = !empty($resolvedUspHeader['headline']) ? $resolvedUspHeader['headline'] : "Why choose {$bName}?";
                             @endphp
                             <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 mb-3">
                                 <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%; display: flex; flex-direction: column;">
                                     @if($hasUsps)
-                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
-                                            @if($business->usps && $business->usps->count() > 0)
-                                                @foreach($business->usps as $usp)
-                                                    @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
-                                                    @if(!empty($uText))
-                                                    <li class="d-flex align-items-center" style="gap: 12px;">
-                                                        <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                            <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                        </span>
-                                                        <span style="font-size: 15px; font-weight: 500; color: #002347; line-height: 1.3;">{{ $uText }}</span>
-                                                    </li>
-                                                    @endif
-                                                @endforeach
-                                            @elseif($business->features && $business->features->count() > 0)
-                                                @foreach($business->features as $feature)
-                                                    <li class="d-flex align-items-center" style="gap: 12px;">
-                                                        <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                            <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                        </span>
-                                                        <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
-                                                    </li>
-                                                @endforeach
-                                            @endif
-                                        </ul>
+                                        <div>
+                                            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalUspHeadline) !!}</h6>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
+                                                @if($business->usps && $business->usps->count() > 0)
+                                                    @foreach($business->usps as $usp)
+                                                        @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
+                                                        @if(!empty($uText))
+                                                        <li class="d-flex align-items-center" style="gap: 12px;">
+                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                            </span>
+                                                            <span style="font-size: 15px; font-weight: 500; color: #002347; line-height: 1.3;">{{ $uText }}</span>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                @elseif($business->features && $business->features->count() > 0)
+                                                    @foreach($business->features as $feature)
+                                                        <li class="d-flex align-items-center" style="gap: 12px;">
+                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                            </span>
+                                                            <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
+                                                        </li>
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
                                     @else
                                         <div>
-                                            <h6 style="font-size: 16px; font-weight: 700;  margin-bottom: 12px;">About {{ $bName }}</h6>
+                                            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalWhatIsHeadline) !!}</h6>
                                             <div style="font-size: 14px;">
                                                 @if(!empty($bDesc))
                                                     {!! $bDesc !!}
@@ -642,7 +668,7 @@
                                                 <x-business-logo :business="$business" :name="$bName" />
                                             </div>
                                             <h5 style="font-size: 15.5px; font-weight: 700; color: #1e3050; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }} pros and cons">
-                                                {{ $bName }} pros and cons
+                                                {{ $bName }}
                                             </h5>
                                         </div>
 
@@ -840,6 +866,9 @@
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
                         <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalReviewsHeadline) !!}</h2>
+                        @if(!empty($finalReviewsSubtext))
+                            <p class="text-muted mt-2 mb-0">{!! $finalReviewsSubtext !!}</p>
+                        @endif
                     </div>
                 </div>
 
@@ -1320,6 +1349,9 @@
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
                         <h2 style="margin: 0;">{!! \App\Services\ContentTemplateService::cleanHeading($finalAlternativesHeadline) !!}</h2>
+                        @if(!empty($finalAlternativesSubtext))
+                            <p class="text-muted mt-2 mb-0">{!! $finalAlternativesSubtext !!}</p>
+                        @endif
                     </div>
                 </div>
 

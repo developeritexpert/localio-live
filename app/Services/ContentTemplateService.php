@@ -426,23 +426,38 @@ class ContentTemplateService
             'field2_label' => 'Sub-headline / Description',
             'description' => 'Main headline and subtext displayed at the top of the A vs B comparison page.',
         ],
+        'comparison_what_is' => [
+            'label' => 'WHAT IS [BUSINESS] SECTION',
+            'type' => 'single',
+            'field1_label' => 'What is Headline (H6)',
+            'description' => 'Headline displayed above the business description in comparison overview cards (supports [business]).',
+        ],
+        'comparison_usps' => [
+            'label' => 'USPS / CHECKS SECTION',
+            'type' => 'single',
+            'field1_label' => 'USPs / Checks Headline (H6)',
+            'description' => 'Headline displayed above the key features / USPs checklist in comparison overview cards (supports [business]).',
+        ],
         'comparison_pros_cons' => [
             'label' => 'PROS & CONS SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
-            'description' => 'Headline displayed directly above the pros and cons comparison grid.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed directly above the pros and cons comparison grid.',
         ],
         'comparison_reviews' => [
             'label' => 'REVIEWS SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Reviews Headline (H2)',
-            'description' => 'Headline displayed above the customer reviews section on the comparison page.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed above the customer reviews section on the comparison page.',
         ],
         'comparison_alternatives' => [
             'label' => 'ALTERNATIVES SECTION',
-            'type' => 'single',
+            'type' => 'combined',
             'field1_label' => 'Alternatives Headline (H2)',
-            'description' => 'Headline displayed above the alternatives section on the comparison page.',
+            'field2_label' => 'Subtext / Description',
+            'description' => 'Headline and subtext displayed above the alternatives section on the comparison page.',
         ],
     ];
 
@@ -1912,23 +1927,71 @@ class ContentTemplateService
                     'subtext'  => 'Detailed side-by-side analysis of [business_vs] covering features, pricing, and authentic customer feedback.',
                 ],
             ],
+            'comparison_what_is' => [
+                1 => 'What is [business]?',
+                2 => 'About [business]',
+                3 => '[business] Overview',
+                4 => 'Introducing [business]',
+            ],
+            'comparison_usps' => [
+                1 => 'Why choose [business]?',
+                2 => 'Key highlights of [business]',
+                3 => '[business] Features & Benefits',
+                4 => 'Key reasons to choose [business]',
+            ],
             'comparison_pros_cons' => [
-                1 => 'Pros and cons',
-                2 => '[business_vs] pros and cons',
-                3 => 'Advantages and disadvantages',
-                4 => 'Pros and cons comparison',
+                1 => [
+                    'headline' => 'Pros and cons',
+                    'subtext'  => 'Compare the key advantages and disadvantages of [business_vs].',
+                ],
+                2 => [
+                    'headline' => '[business_vs] pros and cons',
+                    'subtext'  => 'Side-by-side strengths and limitations based on verified customer feedback.',
+                ],
+                3 => [
+                    'headline' => 'Advantages and disadvantages',
+                    'subtext'  => 'Explore what real users like and dislike about [business_vs].',
+                ],
+                4 => [
+                    'headline' => 'Pros and cons comparison',
+                    'subtext'  => 'Detailed breakdown of benefits and drawbacks for each [category_lc] provider.',
+                ],
             ],
             'comparison_reviews' => [
-                1 => 'Reviews',
-                2 => '[business_vs] reviews',
-                3 => 'Customer reviews & ratings',
-                4 => 'User feedback & ratings',
+                1 => [
+                    'headline' => 'Reviews',
+                    'subtext'  => 'Authentic customer reviews and ratings for [business_vs].',
+                ],
+                2 => [
+                    'headline' => '[business_vs] reviews',
+                    'subtext'  => 'Discover what verified users have experienced with each [category_lc] solution.',
+                ],
+                3 => [
+                    'headline' => 'Customer reviews & ratings',
+                    'subtext'  => 'Unbiased ratings and feedback from real customers.',
+                ],
+                4 => [
+                    'headline' => 'User feedback & ratings',
+                    'subtext'  => 'Compare overall satisfaction scores and in-depth user impressions.',
+                ],
             ],
             'comparison_alternatives' => [
-                1 => 'Alternatives',
-                2 => 'Top alternatives to consider',
-                3 => 'Similar [category] alternatives',
-                4 => 'Explore more alternatives',
+                1 => [
+                    'headline' => 'Alternatives',
+                    'subtext'  => 'Explore top-rated alternatives to [business_vs] in [category_lc].',
+                ],
+                2 => [
+                    'headline' => 'Top alternatives to consider',
+                    'subtext'  => 'Looking for other options? Check out leading [category_lc] alternatives.',
+                ],
+                3 => [
+                    'headline' => 'Similar [category] alternatives',
+                    'subtext'  => 'Browse comparable tools and services that fit your requirements and budget.',
+                ],
+                4 => [
+                    'headline' => 'Explore more alternatives',
+                    'subtext'  => 'Discover other top providers worth evaluating alongside [business_vs].',
+                ],
             ],
         ];
 
@@ -1980,6 +2043,8 @@ class ContentTemplateService
             self::seedDefaultBusinessAlternativesOptionsIfMissing();
         } elseif ($sectionGroup === 'business_reviews') {
             self::seedDefaultBusinessReviewsOptionsIfMissing();
+        } elseif ($sectionGroup === 'comparison') {
+            self::seedDefaultComparisonOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -2941,6 +3006,8 @@ class ContentTemplateService
         }
 
         $compExtraTags = array_merge([
+            '[business]'       => $b1,
+            '[business_cap]'   => ucfirst($b1),
             '[business1]'      => $b1,
             '[business2]'      => $b2,
             '[business3]'      => $b3,
@@ -2979,12 +3046,19 @@ class ContentTemplateService
             $subtext = !empty($catName)
                 ? "Learn more from our team about {$catName} pricing, features, and user ratings in our side-by-side comparison guide."
                 : "Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.";
+        } elseif ($fieldKey === 'comparison_what_is') {
+            $headline = !empty($b1) ? "What is {$b1}?" : 'What is this business?';
+        } elseif ($fieldKey === 'comparison_usps') {
+            $headline = !empty($b1) ? "Why choose {$b1}?" : 'Why choose this provider?';
         } elseif ($fieldKey === 'comparison_pros_cons') {
             $headline = 'Pros and cons';
+            $subtext = !empty($bVs) ? "Compare the key advantages and disadvantages of {$bVs}." : '';
         } elseif ($fieldKey === 'comparison_reviews') {
             $headline = 'Reviews';
+            $subtext = !empty($bVs) ? "Authentic customer reviews and ratings for {$bVs}." : '';
         } elseif ($fieldKey === 'comparison_alternatives') {
             $headline = 'Alternatives';
+            $subtext = !empty($bVs) ? "Explore top-rated alternatives to {$bVs}." : '';
         }
 
         return [
