@@ -364,7 +364,7 @@ class Business extends Model
      */
     public function getHasUserReviewsAttribute()
     {
-        return $this->reviews->where('status', 'active')->count() >= 10;
+        return $this->approved_reviews_count >= 10;
     }
 
 }

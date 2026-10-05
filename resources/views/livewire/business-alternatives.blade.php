@@ -13,7 +13,7 @@
         ->whereIn('category_id', $bCategoryIds)
         ->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->where('status', 'active'),
+            'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
             'category.ratingCriteria',
             'products.prices'
         ])
@@ -30,7 +30,7 @@
             ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 'category.ratingCriteria',
                 'products.prices'
             ])
@@ -53,7 +53,7 @@
             ->whereIn('category_id', $bCategoryIds)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                 'category.ratingCriteria'
             ])
             ->get()
@@ -69,7 +69,7 @@
                 ->where('status', 1)
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
                     'category.ratingCriteria'
                 ])
                 ->get()
@@ -174,7 +174,7 @@
                                                                 }
 
                                                             $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)
-    ->where('status', 'active')
+    ->whereIn('status', ['published', 'active'])
     ->get();
 
 $altCriteria = $altbusiness->category
@@ -222,7 +222,7 @@ foreach ($altCriteria as $criterion) {
 
 
                                                                 $altRatingAvg = $altbusiness->reviews->avg('rating');
-                                                                $count = $altbusiness->reviews->where('status', 'active')->count();
+                                                                $count = $altbusiness->approved_reviews_count;
                                                             @endphp
                                                             <div class="sftware-alternative-pck" data-aos="fade-up" data-aos-duration="1000"
                                                                 onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}'; }"
@@ -332,130 +332,9 @@ foreach ($altCriteria as $criterion) {
 
                                 
                             </div>
-                            @php
-                                $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
-                                $bReviewCount = $activeReviews->count();
-                                $bAvgRating = $bReviewCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
-
-                                // Dynamic Rating Criteria Breakdown (Identical to ProductDetails & Reviews Page)
-                                $bCriteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
-                                foreach ($bCriteria as $criterion) {
-                                    $totalScore = 0;
-                                    $count = 0;
-                                    foreach ($activeReviews as $review) {
-                                        $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
-                                            ->where('criteria_id', $criterion->id)
-                                            ->first();
-                                        if ($ratingRecord) {
-                                            $totalScore += $ratingRecord->rating;
-                                            $count++;
-                                        } else {
-                                            $legacyVal = null;
-                                            if ($criterion->name === 'Ease of Use') {
-                                                $legacyVal = $review->ease_of_use_rating;
-                                            } elseif ($criterion->name === 'Customer Service') {
-                                                $legacyVal = $review->customer_service_rating;
-                                            } elseif ($criterion->name === 'Features') {
-                                                $legacyVal = $review->exclusive_service_rating;
-                                            } elseif ($criterion->name === 'Value for Money') {
-                                                $legacyVal = $review->value_for_money_rating;
-                                            }
-                                            if (!is_null($legacyVal)) {
-                                                $totalScore += $legacyVal;
-                                                $count++;
-                                            }
-                                        }
-                                    }
-                                    $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
-                                }
-
-                                // Recommendation percentage (Identical to ProductDetails & Reviews Page)
-                                if ($bReviewCount > 0) {
-                                    $recommendCount = $activeReviews->where('recommend', 1)->count();
-                                    $bRecommendPercent = round(($recommendCount / $bReviewCount) * 100);
-                                } else {
-                                    $bRecommendPercent = 100;
-                                }
-
-                                // Reviews URL
-                                $langObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
-                                $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
-                                $bName = $business->translations->first()?->name ?? $business->name ?? 'Business';
-                                $bSlug = $business->translations->first()?->slug ?? $business->slug ?? 'business-' . $business->id;
-                                $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
-                            @endphp
                             <div class="col-lg-4 mt-4 mt-md-0 text-start">
-                                <div class="boxshadow_border p-4 bg-white rounded-3 border mb-4" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                                                <x-business-logo :business="$business" :name="$bName" />
-                                            </div>
-                                            <div>
-                                                <p style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</p>
-                                                @if($business->should_show_rating)
-                                                <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                                                    <span style="">{{ number_format($business->display_rating, 1) }}</span>
-                                                    <div class="rating-stars" style="display: flex; gap: 0px;">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= floor($business->display_rating))
-                                                                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
-                                                            @elseif ($i - 0.5 <= $business->display_rating)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
-                                                            @else
-                                                                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
-                                                            @endif
-                                                        @endfor
-                                                    </div>
-                                                    @if($business->should_show_review_count)
-                                                    <span style="   ">({{ number_format($business->approved_reviews_count) }})</span>
-                                                    @endif
-                                                </div>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        @if(!empty($business->is_affiliate))
-                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" rel="sponsored" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
-                                            {{ static_text('visit_website') ?: 'Visit website' }}
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                        </a>
-                                        @endif
-                                    </div>
-
-                                    @if($business->should_show_detailed_ratings && count($bCriteria) > 0)
-                                        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
-                                        <div class="mb-3">
-                                            @foreach ($bCriteria as $criterion)
-                                                <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
-                                                    <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                        <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-
-                                    @if($business->should_show_detailed_ratings)
-                                    <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
-                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                        <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $bRecommendPercent }}%</strong>
-                                    </div>
-                                    @endif
-
-                                    <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600; color:#002347; font-size: 14px;">Do you recommend {{ $businessName }}?</span>
-                                        <div style="display: flex; gap: 8px;">
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
-                                                <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
-                                                <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
-                                            </a>
-                                        </div>
-                                    </div>
+                                <div class="mb-4">
+                                    <x-review-breakdown-card :business="$business" />
                                 </div>
                                 <!-- Widget 3: More About Business Card -->
                                 <x-more-about-business :business="$business" current="alternatives" />
@@ -517,7 +396,7 @@ foreach ($altCriteria as $criterion) {
                                                 $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
                                                 $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
                                                 $affiliateUrl = $rowBiz->getTrackedUrl() ?? $rowBiz->affiliate_link ?? $rowBiz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]);
-                                                $rRevs = $rowBiz->reviews->where('status', 'active');
+                                                $rRevs = ($rowBiz->relationLoaded('reviews') && $rowBiz->reviews->whereIn('status', ['published', 'active'])->isNotEmpty()) ? $rowBiz->reviews->whereIn('status', ['published', 'active']) : $rowBiz->reviews()->whereIn('status', ['published', 'active'])->get();
                                                 $rCount = $rRevs->count();
                                                 $rRec = ($rowBiz->should_show_detailed_ratings && $rCount > 0)
                                                     ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100) . '%'
@@ -631,7 +510,7 @@ foreach ($altCriteria as $criterion) {
                                                     $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
                                                     $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
                                                     $affiliateUrl = $rowBiz->getTrackedUrl() ?? $rowBiz->affiliate_link ?? $rowBiz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]);
-                                                    $rRevs = $rowBiz->reviews->where('status', 'active');
+                                                    $rRevs = ($rowBiz->relationLoaded('reviews') && $rowBiz->reviews->whereIn('status', ['published', 'active'])->isNotEmpty()) ? $rowBiz->reviews->whereIn('status', ['published', 'active']) : $rowBiz->reviews()->whereIn('status', ['published', 'active'])->get();
                                                     $rCount = $rRevs->count();
                                                     $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
 
@@ -639,7 +518,7 @@ foreach ($altCriteria as $criterion) {
                                                         ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                                         ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
                                                         ->where('reviews.business_id', $rowBiz->id)
-                                                        ->where('reviews.status', 'active')
+                                                        ->whereIn('reviews.status', ['published', 'active'])
                                                         ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
                                                         ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
                                                         ->orderByDesc('cnt')
@@ -1521,7 +1400,7 @@ foreach ($altCriteria as $criterion) {
                                     ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                     ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
                                     ->where('reviews.business_id', $biz->id)
-                                    ->where('reviews.status', 'active')
+                                    ->whereIn('reviews.status', ['published', 'active'])
                                     ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
                                     ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
                                     ->orderByDesc('reviews_count')
