@@ -1760,14 +1760,13 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $exists = ContentTemplate::where('section_group', 'business_compare')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'business_compare')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
                     $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
                     $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([
@@ -1934,14 +1933,13 @@ class ContentTemplateService
         ];
 
         foreach ($defaults as $fieldKey => $options) {
-            foreach ($options as $optNum => $data) {
-                $exists = ContentTemplate::where('section_group', 'comparison')
-                    ->where('field_key', $fieldKey)
-                    ->where('option_number', $optNum)
-                    ->where('lang_id', 1)
-                    ->exists();
+            $hasAny = ContentTemplate::where('section_group', 'comparison')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
 
-                if (!$exists) {
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
                     $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
                     $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
                     ContentTemplate::create([

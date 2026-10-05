@@ -815,7 +815,7 @@ $(document).ready(function() {
         let opt = $(this).data('option');
         let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
         let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
-        let headline = stripHtmlTags(decodeHtmlEntities(rawHeadline));
+        let headline = decodeHtmlEntities(rawHeadline);
         let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
