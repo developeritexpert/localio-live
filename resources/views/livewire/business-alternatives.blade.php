@@ -1511,7 +1511,13 @@ foreach ($altCriteria as $criterion) {
                             
                             <!-- Pros and Cons Section -->
                             @php
-                                $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                $bizReviews = $biz->reviews ? $biz->reviews->whereIn('status', ['published', 'active']) : collect();
+                                $bizRevCount = $bizReviews->count();
+                                $topPros = collect();
+                                $topCons = collect();
+
+                                if ($bizRevCount >= 10) {
+                                    $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
                                     ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                     ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
                                     ->where('reviews.business_id', $biz->id)
@@ -1520,10 +1526,53 @@ foreach ($altCriteria as $criterion) {
                                     ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
                                     ->orderByDesc('reviews_count')
                                     ->get();
-                                    
+
                                 $topPros = $aggregatedProCons->where('type', 'pro')->values()->take(5);
                                 $topCons = $aggregatedProCons->where('type', 'con')->values()->take(5);
+
+                                if ($topPros->isEmpty() && $topCons->isEmpty() && $biz->proCons && $biz->proCons->isNotEmpty()) {
+                                    $topPros = $biz->proCons->where('type', 'pro')->map(function($item) {
+                                        return (object)[
+                                            'id'            => $item->id,
+                                            'type'          => 'pro',
+                                            'text'          => $item->text,
+                                            'reviews_count' => null,
+                                        ];
+                                    })->values()->take(5);
+
+                                    $topCons = $biz->proCons->where('type', 'con')->map(function($item) {
+                                        return (object)[
+                                            'id'            => $item->id,
+                                            'type'          => 'con',
+                                            'text'          => $item->text,
+                                            'reviews_count' => null,
+                                        ];
+                                    })->values()->take(5);
+                                }
+                            } else {
+                                // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
+                                if ($biz->proCons && $biz->proCons->isNotEmpty()) {
+                                    $topPros = $biz->proCons->where('type', 'pro')->map(function($item) {
+                                        return (object)[
+                                            'id'            => $item->id,
+                                            'type'          => 'pro',
+                                            'text'          => $item->text,
+                                            'reviews_count' => null,
+                                        ];
+                                    })->values()->take(5);
+
+                                    $topCons = $biz->proCons->where('type', 'con')->map(function($item) {
+                                        return (object)[
+                                            'id'            => $item->id,
+                                            'type'          => 'con',
+                                            'text'          => $item->text,
+                                            'reviews_count' => null,
+                                        ];
+                                    })->values()->take(5);
+                                }
+                            }
                             @endphp
+                            @if($topPros->isNotEmpty() && $topCons->isNotEmpty())
                             <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
                                 <div class="pros-cons-header mb-3">
                                     <h3 style="margin-bottom: 8px;">
@@ -1537,16 +1586,16 @@ foreach ($altCriteria as $criterion) {
                                             <div class="card-body">
                                                 <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
-                                                    @forelse($topPros as $pro)
+                                                    @foreach($topPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $pro->text }}
+                                                            @if(!empty($pro->reviews_count))
                                                             <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->reviews_count }} {{ $pro->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @endif
                                                         </span>
                                                     </li>
-                                                    @empty
-                                                    <li class="text-muted" style="font-size: 14px;">{{ static_text('no_pros_available') ?: 'No pros available' }}</li>
-                                                    @endforelse
+                                                    @endforeach
                                                 </ul>
                                             </div>
                                         </div>
@@ -1556,22 +1605,23 @@ foreach ($altCriteria as $criterion) {
                                             <div class="card-body">
                                                 <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
-                                                    @forelse($topCons as $con)
+                                                    @foreach($topCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $con->text }}
+                                                            @if(!empty($con->reviews_count))
                                                             <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->reviews_count }} {{ $con->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                            @endif
                                                         </span>
                                                     </li>
-                                                    @empty
-                                                    <li class="text-muted" style="font-size: 14px;">{{ static_text('no_cons_available') ?: 'No cons available' }}</li>
-                                                    @endforelse
+                                                    @endforeach
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                     
