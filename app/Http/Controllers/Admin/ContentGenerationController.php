@@ -29,6 +29,7 @@ class ContentGenerationController extends Controller
         'long_description',
         'usps',
         'what_is',
+        'reviews_description',
         'pros_cons',
         'services',
         'faqs',
@@ -451,12 +452,14 @@ class ContentGenerationController extends Controller
                     'category_id'          => null,
                 ]);
 
+                $revDesc = $item['reviews_description'] ?? ($item['short_business_description_reviews'] ?? null);
                 BusinessTranslation::create([
                     'business_id' => $business->id,
                     'lang_id'     => 1, // Default primary language (English)
                     'name'        => $name,
                     'slug'        => $slug,
                     'status'      => 1,
+                    'reviews_description' => $revDesc ?: null,
                 ]);
 
                 // Automatically attach default language so business appears in listings
@@ -1084,6 +1087,15 @@ class ContentGenerationController extends Controller
                 }
                 break;
 
+            case 'reviews_description':
+                $revDesc = $data['reviews_description'] ?? ($data['description'] ?? ($data['content'] ?? null));
+                if ($revDesc !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['reviews_description' => $revDesc]);
+                }
+                break;
+
             case 'pros_cons':
                 $pros = $data['pros'] ?? [];
                 $cons = $data['cons'] ?? [];
@@ -1316,6 +1328,11 @@ class ContentGenerationController extends Controller
                     return 'Expected {"description": "..."}';
                 }
                 break;
+            case 'reviews_description':
+                if (!isset($data['reviews_description']) && !isset($data['description']) && !isset($data['content'])) {
+                    return 'Expected {"reviews_description": "..."}';
+                }
+                break;
             case 'pros_cons':
                 if (!isset($data['pros']) || !isset($data['cons']) || !is_array($data['pros']) || !is_array($data['cons'])) {
                     return 'Expected {"pros": [...], "cons": [...]}';
@@ -1388,6 +1405,8 @@ class ContentGenerationController extends Controller
             'usps' => "Generate 4 to 6 Unique Selling Propositions (USPs) for {$businessName}.{$catInfo}{$urlInfo} Each USP must be concise (3-8 words) highlighting a standout benefit, guarantee, or key feature (e.g., 'Free domain & SSL certificate', '24/7 expert customer support', '99.9% uptime guarantee'). Return JSON: {\"usps\": [\"USP 1\", \"USP 2\", \"USP 3\", \"USP 4\"]}",
 
             'what_is' => "Write an authoritative, detailed overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their profile page. Provide 2-3 structured HTML paragraphs explaining what the business is, what infrastructure or services it provides, who its ideal customers are, and why users choose it. Return JSON: {\"description\": \"<p>...</p><p>...</p>\"}",
+
+            'reviews_description' => "Write a concise overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their reviews page. Provide 1-2 engaging HTML paragraphs explaining what the business is and why users choose it. Return JSON: {\"reviews_description\": \"<p>...</p>\"}", 
 
             'pros_cons' => "Evaluate {$businessName}.{$catInfo}{$urlInfo} Select the 3 to 5 most accurate Pros and 2 to 4 Cons strictly from the available category options below:
 
@@ -2067,6 +2086,9 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['long_preview_description' => $fieldVal, 'long_description' => $fieldVal];
                 } elseif ($field === 'what_is' && is_string($fieldVal)) {
                     $normalizedData = ['description' => $fieldVal, 'what_is' => $fieldVal];
+                } elseif (($field === 'reviews_description' || $field === 'short_business_description_reviews') && (is_string($fieldVal) || is_array($fieldVal))) {
+                    $val = is_array($fieldVal) ? ($fieldVal['reviews_description'] ?? ($fieldVal['description'] ?? '')) : $fieldVal;
+                    $normalizedData = ['reviews_description' => $val];
                 } elseif ($field === 'usps' && is_array($fieldVal)) {
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
@@ -2140,6 +2162,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     "One-click WordPress and CMS installs"
                 ],
                 "what_is"           => "HostGator is an established global web hosting provider and domain registrar serving businesses and web creators worldwide.",
+                "reviews_description" => "HostGator is a trusted web hosting provider offering reliable shared, cloud, and VPS hosting solutions tailored for individuals and businesses.", 
                 "pros_cons"         => [
                     "pros" => [
                         "Affordable introductory pricing",
@@ -2189,6 +2212,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     "Dedicated regional account manager"
                 ],
                 "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
+                "reviews_description" => "A regional cloud hosting provider offering high-compliance infrastructure and localized support for enterprises.", 
                 "pros_cons"         => [
                     "pros" => [
                         "Fast regional latency",

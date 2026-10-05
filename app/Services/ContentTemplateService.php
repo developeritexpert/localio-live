@@ -459,6 +459,39 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
         ],
+        'reviews_what_is' => [
+            'label' => 'What is Headline (H2)',
+            'type' => 'single',
+            'field1_label' => 'What is Headline (H2)',
+            'description' => 'H2 headline for the "What is [business]" overview section.',
+        ],
+        'reviews_pros_cons' => [
+            'label' => 'Pros & Cons',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and intro subtext for community pros & cons section.',
+        ],
+        'reviews_user_reviews' => [
+            'label' => 'User Reviews',
+            'type' => 'combined',
+            'field1_label' => 'Reviews Headline (H2)',
+            'field2_label' => 'Reviews Subtext',
+            'description' => 'H2 headline (including review count in brackets) and subtext for user reviews list.',
+        ],
+        'reviews_page_discussions' => [
+            'label' => 'Discussions Section',
+            'type' => 'combined',
+            'field1_label' => 'Discussions Headline (H2)',
+            'field2_label' => 'Discussions Subtext',
+            'description' => 'Discussions section headline and subtext on the Business Reviews page.',
+        ],
+        'reviews_discussions_prompt_placeholder' => [
+            'label' => 'Prompt Placeholder',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business Reviews page.',
+        ],
     ];
 
     public const BUSINESS_DISCUSSIONS_FIELDS = [
@@ -1751,6 +1784,114 @@ class ContentTemplateService
         }
     }
 
+    public static function seedDefaultBusinessReviewsOptionsIfMissing(): void
+    {
+        $defaults = [
+            'reviews_h1' => [
+                1 => 'Verified User Reviews',
+                2 => 'What real users are saying',
+                3 => '[business] Reviews & Ratings',
+                4 => 'Real Customer Reviews for [business]',
+            ],
+            'reviews_subtext' => [
+                1 => 'Read honest feedback from the community.',
+                2 => 'Unbiased reviews to help you make the right choice.',
+                3 => 'Real reviews, user discussions & alternatives.',
+                4 => 'Verified ratings and customer experiences.',
+            ],
+            'reviews_what_is' => [
+                1 => 'What is [business]',
+                2 => 'What is [business]?',
+                3 => 'About [business]',
+                4 => 'Overview of [business]',
+            ],
+            'reviews_pros_cons' => [
+                1 => [
+                    'headline' => 'What the community says',
+                    'subtext' => '<p>See what verified users and community members highlight most about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Community sentiment & feedback',
+                    'subtext' => '<p>Explore recurring strengths and limitations shared by verified users of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Pros & cons from the community',
+                    'subtext' => '<p>A summary of the key advantages and drawbacks reported by [business] customers.</p>',
+                ],
+                4 => [
+                    'headline' => 'What users love & what could improve',
+                    'subtext' => '<p>Verified user impressions highlighting the main benefits and challenges of using [business].</p>',
+                ],
+            ],
+            'reviews_user_reviews' => [
+                1 => [
+                    'headline' => '[business] user reviews ([count])',
+                    'subtext' => '<p>Explore verified ratings, pros & cons, and detailed customer experiences for [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Customer reviews for [business] ([count])',
+                    'subtext' => '<p>Read honest feedback and performance ratings submitted by verified [business] users.</p>',
+                ],
+                3 => [
+                    'headline' => '[business] reviews & ratings ([count])',
+                    'subtext' => '<p>See what real users have to say about [business] features, pricing, and reliability.</p>',
+                ],
+                4 => [
+                    'headline' => 'Verified [business] user reviews ([count])',
+                    'subtext' => '<p>Comprehensive evaluations and feedback shared by community members using [business].</p>',
+                ],
+            ],
+            'reviews_page_discussions' => [
+                1 => [
+                    'headline' => '[business] Discussions ([count])',
+                    'subtext' => '<p>Join the conversation, ask questions, and share experiences about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Community discussions on [business] ([count])',
+                    'subtext' => '<p>Connect with other users to discuss troubleshooting, features, and tips for [business].</p>',
+                ],
+                3 => [
+                    'headline' => '[business] Community questions & opinions ([count])',
+                    'subtext' => '<p>Explore questions, experiences, and opinions shared by Localio members.</p>',
+                ],
+                4 => [
+                    'headline' => 'Ask & discuss: [business] ([count])',
+                    'subtext' => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
+                ],
+            ],
+            'reviews_discussions_prompt_placeholder' => [
+                1 => 'What would you like to know or share about [business]?',
+                2 => 'Ask a question or share advice about [business]...',
+                3 => 'Start a discussion about [business]...',
+                4 => 'Share your thoughts or ask anything about [business]...',
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            $hasAny = ContentTemplate::where('section_group', 'business_reviews')
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->exists();
+
+            if (!$hasAny) {
+                foreach ($options as $optNum => $data) {
+                    $headlineText = is_array($data) ? ($data['headline'] ?? '') : $data;
+                    $subtextText = is_array($data) ? ($data['subtext'] ?? null) : null;
+
+                    ContentTemplate::create([
+                        'section_group' => 'business_reviews',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'headline'      => $headlineText,
+                        'subtext'       => $subtextText,
+                        'is_active'     => true,
+                        'lang_id'       => 1,
+                    ]);
+                }
+            }
+        }
+    }
+
     public static function seedDefaultComparisonOptionsIfMissing(): void
     {
         $defaults = [
@@ -1839,6 +1980,8 @@ class ContentTemplateService
             self::seedDefaultBusinessCompareOptionsIfMissing();
         } elseif ($sectionGroup === 'business_alternatives') {
             self::seedDefaultBusinessAlternativesOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_reviews') {
+            self::seedDefaultBusinessReviewsOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -2628,6 +2771,71 @@ class ContentTemplateService
             }
         }
 
+        // Cross-section fallback: if reviews_user_reviews has no explicit lock, check profile_reviews
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_user_reviews') {
+            $hasProfRev = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_reviews')
+                ->exists();
+            if ($hasProfRev) {
+                $profRevTpl = self::getTemplateForResolution('business', $business->id, 'profile_reviews', $langId, 'business_profile');
+                if ($profRevTpl) {
+                    $headline = self::replacePlaceholders($profRevTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profRevTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profRevTpl,
+                        'option_number' => $profRevTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if reviews_page_discussions has no explicit lock, check profile_discussions
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_page_discussions') {
+            $hasProfDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_discussions')
+                ->exists();
+            if ($hasProfDisc) {
+                $profDiscTpl = self::getTemplateForResolution('business', $business->id, 'profile_discussions', $langId, 'business_profile');
+                if ($profDiscTpl) {
+                    $headline = self::replacePlaceholders($profDiscTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profDiscTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profDiscTpl,
+                        'option_number' => $profDiscTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if reviews_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_discussions_prompt_placeholder') {
+            $hasPromptDisc = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasPromptDisc) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
+                    ];
+                }
+            }
+        }
+
         // Cross-section fallback: if profile_alternatives has no explicit lock, check alternatives_h1 from business_alternatives
         if (!$hasExplicitAsgn && $fieldKey === 'profile_alternatives') {
             $hasAltAsgn = ContentTemplateAssignment::where('entity_type', 'business')
@@ -2663,7 +2871,7 @@ class ContentTemplateService
             $optionNumber = $template->option_number;
         }
 
-        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder'], true)) {
+        if (in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder', 'reviews_discussions_prompt_placeholder'], true)) {
             return [
                 'headline' => self::cleanPlaceholder($headline),
                 'subtext' => $subtext,

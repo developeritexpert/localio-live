@@ -397,6 +397,53 @@
                     </div>
                 </div>
 
+                <!-- Short business description (Reviews page) Section -->
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="form-group d-flex justify-content-between align-items-center">
+                            <label class="form-label">Short business description (Reviews page)</label>
+                        </div>
+
+                        <!-- If you're using Alpine.js -->
+                        <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_description = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                            <div class="form-group">
+                                <textarea
+                                    x-ref="editor"
+                                    class="form-control r_description @error('reviews_description') is-invalid @enderror"
+                                    wire:model.live="reviews_description"
+                                    rows="5">
+                                    </textarea>
+                                @error('reviews_description')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Pros & Cons Section --}}
                 <div class="card card-bordered mb-3">
                     <div class="card-inner">

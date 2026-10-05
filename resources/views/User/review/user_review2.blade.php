@@ -28,7 +28,14 @@
         ? static_text('business_reviews_subheadline') 
         : 'Real reviews, user discussions & alternatives ';
 
-    $reviewsTitle1 = !empty($bTranslation->reviews_title) ? $bTranslation->reviews_title : "What is {$bName}";
+    $resolvedWhatIs = \App\Services\ContentTemplateService::resolveBusinessSection(
+        $business,
+        'reviews_what_is',
+        $lang_id
+    );
+    $reviewsTitle1 = !empty($bTranslation->reviews_title)
+        ? $bTranslation->reviews_title
+        : (!empty($resolvedWhatIs['headline']) ? $resolvedWhatIs['headline'] : "What is {$bName}");
     $reviewsDesc1 = $bTranslation->reviews_description ?? '';
     $reviewsTitle2 = !empty($bTranslation->reviews_title_2) ? $bTranslation->reviews_title_2 : "What is {$bName}";
     $reviewsDesc2 = $bTranslation->reviews_description_2 ?? '';
@@ -169,7 +176,7 @@
                     <!-- 1. Description / Overview Section -->
                     <div class="col-lg-12">
                         <div class="is-asana-lft" id="section1">
-                            <h2 style="margin-bottom: 12px;">{{ $reviewsTitle1 }}</h2>
+                            <h2 style="margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($reviewsTitle1) !!}</h2>
                             <div class="">
                                 @if(!empty($reviewsDesc1))
                                     {!! $reviewsDesc1 !!}
@@ -191,17 +198,28 @@
                     @php
                         $reviewsProConsIntro = $bTranslation->reviews_pro_cons_intro ?? '';
                         $reviewsProConsSummary = $bTranslation->reviews_pro_cons_summary ?? '';
+                        $resolvedReviewsProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                            $business,
+                            'reviews_pros_cons',
+                            $lang_id
+                        );
+                        $finalReviewsProsConsHeadline = !empty($resolvedReviewsProsCons['headline'])
+                            ? $resolvedReviewsProsCons['headline']
+                            : (static_text('community_sentiment_heading') ?: 'What the community says');
+                        $finalReviewsProsConsSubtext = !empty($reviewsProConsIntro)
+                            ? $reviewsProConsIntro
+                            : (!empty($resolvedReviewsProsCons['subtext']) ? $resolvedReviewsProsCons['subtext'] : null);
                     @endphp
                     @if((isset($aggregatedPros) && count($aggregatedPros) > 0 && isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($pros) && $pros->count() > 0 && isset($cons) && $cons->count() > 0))
                     <div class="col-lg-12 mt-4 mb-4" id="section-pros-cons">
                         <div class="pros-cons-header mb-3">
                             <h2 style="margin-bottom: 8px;">
-                                {{ static_text('community_sentiment_heading') ?: 'What the community says' }}
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalReviewsProsConsHeadline) !!}
                             </h2>
-                            @if(!empty($reviewsProConsIntro))
-                                <p style="font-size: 15px; margin-bottom: 20px; line-height: 1.6; color: #475569;">
-                                    {!! $reviewsProConsIntro !!}
-                                </p>
+                            @if(!empty($finalReviewsProsConsSubtext))
+                                <div style="font-size: 15px; margin-bottom: 20px; line-height: 1.6; color: #475569;">
+                                    {!! $finalReviewsProsConsSubtext !!}
+                                </div>
                             @endif
                         </div>
 
@@ -368,73 +386,7 @@
                     </div>
                     @endif
 
-                    <!-- 3. FAQs Section (Exact structure from product_detail.blade.php) -->
-                    @if(isset($business->faqs) && $business->faqs->count() > 0)
-                    @php
-                        $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
-                        $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
-                    @endphp
-                    <div class="col-lg-12" id="section15">
-                        <section class="faq-section product_inr_faq py-5 light" style="background: transparent;">
-                            <div class="container px-0">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="text-start mb-4">
-                                            <h2 style=" margin-bottom: 8px;">
-                                                {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
-                                            </h2>
-                                            <p style=" margin-bottom: 0;">
-                                                {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
-                                            </p>
-                                        </div>
-
-                                        <div class="accordion" id="businessFaqAccordion">
-                                            @foreach ($business->faqs->take(10) as $index => $faq)
-                                                @php $translation = $faq->translations->first(); @endphp
-                                                @if ($translation)
-                                                    <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                        <h3 class="accordion-header" id="faqHeading{{ $index }}">
-                                                            <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
-                                                                type="button" data-bs-toggle="collapse"
-                                                                data-bs-target="#faqCollapse{{ $index }}"
-                                                                aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                                aria-controls="faqCollapse{{ $index }}"
-                                                                style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
-                                                                <span>{{ $translation->question }}</span>
-                                                            </button>
-                                                        </h3>
-                                                        <div id="faqCollapse{{ $index }}"
-                                                            class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}" role="region"
-                                                            aria-labelledby="faqHeading{{ $index }}"
-                                                            data-bs-parent="#businessFaqAccordion">
-                                                            <div class="accordion-body rich-text-content" style="background-color: #fff;">
-                                                                {!! $translation->answer !!}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-
-                                        @php
-                                            $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
-                                            $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
-                                            $bizSlugVal = $business->translations->first()->slug ?? $business->slug ?? '';
-                                        @endphp
-                                        <div class="text-center mt-4">
-                                            <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
-                                               class="btn-g-link">
-                                                View all FAQs 
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    @endif
-
-                                        <!-- 4. User Reviews Section (Exact structure from product_detail.blade.php) -->
+                    <!-- 4. User Reviews Section (Exact structure from product_detail.blade.php) -->
                     <div class="col-lg-12" id="section14">
                         <section class="crm_sec revie_left_rgt_sec pt-0" style="overflow: visible !important; background-color: transparent;">
                             <div class="container px-0">
@@ -532,7 +484,7 @@
                                                     $totalReviewsCount = $ratingCount;
                                                     $resolvedBizReviews = \App\Services\ContentTemplateService::resolveBusinessSection(
                                                         $business,
-                                                        'business_page_reviews',
+                                                        'reviews_user_reviews',
                                                         getCurrentLanguageID(),
                                                         ['[count]' => number_format($totalReviewsCount)]
                                                     );
@@ -750,6 +702,41 @@
                                 </div>
                             </div>
                         </section>
+                    </div>
+
+                    <!-- 5. Discussions Section -->
+                    <div class="col-lg-12 mt-4" id="sectionDiscussions">
+                        @php
+                            $totalDiscsCount = $business->discussions()->where('status', 'active')->count();
+                            $resolvedReviewsDisc = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'reviews_page_discussions',
+                                getCurrentLanguageID(),
+                                ['[count]' => number_format($totalDiscsCount)]
+                            );
+                            $finalReviewsDiscHeadline = !empty($resolvedReviewsDisc['headline'])
+                                ? $resolvedReviewsDisc['headline']
+                                : ('Community discussions on ' . $bName . ' (' . number_format($totalDiscsCount) . ')');
+                            if (!str_contains($finalReviewsDiscHeadline, '(') && !str_contains($finalReviewsDiscHeadline, (string)$totalDiscsCount)) {
+                                $finalReviewsDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+                            }
+                            $finalReviewsDiscSubtext = !empty($resolvedReviewsDisc['subtext']) ? $resolvedReviewsDisc['subtext'] : null;
+
+                            $resolvedReviewsDiscPlaceholder = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'reviews_discussions_prompt_placeholder',
+                                getCurrentLanguageID()
+                            );
+                            $finalReviewsDiscPlaceholder = !empty($resolvedReviewsDiscPlaceholder['headline'])
+                                ? $resolvedReviewsDiscPlaceholder['headline']
+                                : null;
+                        @endphp
+                        <x-community-discussion
+                            :business="$business"
+                            :headline="$finalReviewsDiscHeadline"
+                            :subtext="$finalReviewsDiscSubtext"
+                            :promptPlaceholder="$finalReviewsDiscPlaceholder"
+                        />
                     </div>
 
                 </div>
@@ -1011,13 +998,11 @@
                                             <span>Pros & Cons</span>
                                         </a>
                                     @endif
-                                    @if (isset($business->faqs) && $business->faqs->count() > 0)
-                                        <a href="#section15" class="sticky-nav-item" data-target="section15">
-                                            <span>FAQs</span>
-                                        </a>
-                                    @endif
                                     <a href="#section14" class="sticky-nav-item" data-target="section14">
                                         <span>Reviews</span>
+                                    </a>
+                                    <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
+                                        <span>Discussions</span>
                                     </a>
                                 </div>
 
@@ -1053,10 +1038,8 @@
                                     @if((isset($aggregatedPros) && count($aggregatedPros) > 0) || (isset($pros) && $pros->count() > 0))
                                         <li><a class="dropdown-item msbn-item" href="#section-pros-cons" data-target="section-pros-cons">{{ static_text('pros_cons_label') ?: 'Pros & Cons' }}</a></li>
                                     @endif
-                                    @if (isset($business->faqs) && $business->faqs->count() > 0)
-                                        <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">{{ static_text('tab_faqs') ?: 'FAQs' }}</a></li>
-                                    @endif
                                     <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">{{ static_text('tab_reviews') ?: 'Reviews' }}</a></li>
+                                    <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">{{ static_text('tab_discussions') ?: 'Discussions' }}</a></li>
                                 </ul>
                             </div>
 
@@ -1225,8 +1208,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const navSectionTargets = [
         { id: 'section1', target: 'section1' },
         { id: 'section-pros-cons', target: 'section-pros-cons' },
-        { id: 'section15', target: 'section15' },
-        { id: 'section14', target: 'section14' }
+        { id: 'section14', target: 'section14' },
+        { id: 'sectionDiscussions', target: 'sectionDiscussions' }
     ];
 
     function isTargetMatch(link, targetKey) {
