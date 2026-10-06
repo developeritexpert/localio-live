@@ -330,7 +330,19 @@ foreach ($altCriteria as $criterion) {
     </section>
 
     @if(isset($tableRowsList) && $tableRowsList->count() > 0)
-    <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
+    @php
+        $hasUnder10Reviews = false;
+        if (isset($tableRowsList) && $tableRowsList->count() > 0) {
+            $hasUnder10Reviews = $tableRowsList->contains(function ($rBiz) {
+                $revCount = $rBiz->relationLoaded('reviews')
+                    ? $rBiz->reviews->whereIn('status', ['published', 'active'])->count()
+                    : $rBiz->reviews()->whereIn('status', ['published', 'active'])->count();
+                return $revCount < 10;
+            });
+        }
+    @endphp
+
+    <!-- Dynamic Section 2: Top 10 (Affiliated Table 1) -->
     <section class="comparison-table-sec py-4">
         <div class="container">
             <div class="comparison-table-section my-4">
@@ -338,16 +350,24 @@ foreach ($altCriteria as $criterion) {
                                 if (!isset($bTrans) || !$bTrans) {
                                     $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
                                 }
+                                $altFieldKey = $hasUnder10Reviews ? 'compare_alternatives_under_10' : 'compare_alternatives';
                                 $resolvedCompAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
                                     $business,
-                                    'compare_alternatives',
+                                    $altFieldKey,
                                     $lang_id
                                 );
+                                if ($hasUnder10Reviews && empty($resolvedCompAlt['headline']) && empty($resolvedCompAlt['subtext'])) {
+                                    $resolvedCompAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'compare_alternatives',
+                                        $lang_id
+                                    );
+                                }
                                 $compAlternativesHeadline = !empty($resolvedCompAlt['headline'])
                                     ? $resolvedCompAlt['headline']
                                     : (!empty($bTrans->compare_alternatives_headline)
                                         ? $bTrans->compare_alternatives_headline
-                                        : ('Compare ' . $businessName . ' alternatives'));
+                                        : ('Top 10 ' . $businessName . ' alternatives'));
 
                                 $compAlternativesSubtext = !empty($resolvedCompAlt['subtext'])
                                     ? $resolvedCompAlt['subtext']
@@ -370,14 +390,27 @@ foreach ($altCriteria as $criterion) {
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Features</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Ease of use</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Value for money</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Performance & reliability</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Customer support</th>
+                                            @php
+                                                $targetCat = $business->category ?? ($tableRowsList->first()?->category ?? null);
+                                                $allCriteria = collect();
+                                                if ($targetCat) {
+                                                    $allCriteria = $targetCat->ratingCriteria;
+                                                    if (!$allCriteria || $allCriteria->isEmpty()) {
+                                                        $allCriteria = $targetCat->getEffectiveRatingCriteria();
+                                                    }
+                                                }
+                                                if (!$allCriteria || $allCriteria->isEmpty()) {
+                                                    $allCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
+                                                }
+                                                $allStartingPrices = collect(getBusinessesWithStartingPrice($tableRowsList))->keyBy('business.id');
+                                            @endphp
+                                            @foreach($allCriteria as $criterion)
+                                                <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ $criterion->name }}</th>
+                                            @endforeach
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ static_text('recommend_label') ?: 'Recommend' }}</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -392,29 +425,24 @@ foreach ($altCriteria as $criterion) {
                                                 $affiliateUrl = $rowBiz->getTrackedUrl() ?? $rowBiz->affiliate_link ?? $rowBiz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]);
                                                 $rRevs = ($rowBiz->relationLoaded('reviews') && $rowBiz->reviews->whereIn('status', ['published', 'active'])->isNotEmpty()) ? $rowBiz->reviews->whereIn('status', ['published', 'active']) : $rowBiz->reviews()->whereIn('status', ['published', 'active'])->get();
                                                 $rCount = $rRevs->count();
-                                                $rRec = ($rowBiz->should_show_detailed_ratings && $rCount > 0)
-                                                    ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100) . '%'
-                                                    : '-';
+                                                $recommendPercent = ($rowBiz->should_show_detailed_ratings && $rCount > 0)
+                                                    ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100)
+                                                    : null;
 
-                                                $rCriteria = $rowBiz->category ? $rowBiz->category->getEffectiveRatingCriteria() : collect();
-                                                $critScores = [];
-                                                foreach(['Features', 'Ease of use', 'Value for money', 'Performance & reliability', 'Customer support'] as $cKey) {
-                                                    if (!$rowBiz->should_show_detailed_ratings) {
-                                                        $critScores[$cKey] = '-';
-                                                        continue;
-                                                    }
-                                                    $foundCrit = $rCriteria->first(fn($c) => strtolower($c->name) === strtolower($cKey) || (strtolower($cKey) === 'customer support' && strtolower($c->name) === 'customer service') || (strtolower($cKey) === 'performance & reliability' && strtolower($c->name) === 'service management'));
-                                                    if ($foundCrit) {
-                                                        $cScore = 0; $cCnt = 0;
-                                                        foreach($rRevs as $rev) {
-                                                            $rrRecord = \App\Models\ReviewRating::where('review_id', $rev->id)->where('criteria_id', $foundCrit->id)->first();
-                                                            if ($rrRecord && $rrRecord->rating !== null) { $cScore += $rrRecord->rating; $cCnt++; }
-                                                        }
-                                                        $critScores[$cKey] = $cCnt > 0 ? formatRating($cScore / $cCnt) : '-';
-                                                    } else {
-                                                        $critScores[$cKey] = '-';
+                                                $bizStartingPrice = $allStartingPrices->get($rowBiz->id)['starting_price'] ?? null;
+                                                if (!$bizStartingPrice && $rowBiz->products) {
+                                                    $firstPrice = $rowBiz->products->flatMap->prices->first();
+                                                    if ($firstPrice) {
+                                                        $bizStartingPrice = [
+                                                            'amount' => $firstPrice->price,
+                                                            'currency' => $firstPrice->currency ?? '$',
+                                                            'time_unit' => $firstPrice->time_unit ?? 'month'
+                                                        ];
                                                     }
                                                 }
+                                                $bizCurrency = $bizStartingPrice['currency'] ?? '$';
+                                                $bizAmount = isset($bizStartingPrice['amount']) ? number_format($bizStartingPrice['amount'], 2) : null;
+                                                $bizTimeUnit = strtolower($bizStartingPrice['time_unit'] ?? '');
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
@@ -431,7 +459,7 @@ foreach ($altCriteria as $criterion) {
                                                         </div>
                                                     </a>
                                                 </td>
-                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                                     @if($rowBiz->should_show_rating)
                                                     <span class="d-inline-flex align-items-center gap-1">
                                                         <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
@@ -441,12 +469,48 @@ foreach ($altCriteria as $criterion) {
                                                         <span style="color: #5b6b7a;">-</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Features'] }}</td>
-                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Ease of use'] }}</td>
-                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Value for money'] }}</td>
-                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Performance & reliability'] }}</td>
-                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Customer support'] }}</td>
-                                                <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">{{ $rRec }}</td>
+                                                @foreach($allCriteria as $criterion)
+                                                    @php
+                                                        $avg = null;
+                                                        if ($rowBiz->should_show_detailed_ratings) {
+                                                            $avg = $rRevs->isNotEmpty()
+                                                                ? \App\Models\ReviewRating::whereIn('review_id', $rRevs->pluck('id'))
+                                                                    ->where('criteria_id', $criterion->id)
+                                                                    ->avg('rating')
+                                                                : null;
+                                                            if ($avg === null && $rowBiz->category) {
+                                                                $bizCrit = $rowBiz->category->getEffectiveRatingCriteria()->first(fn($c) => strtolower($c->name) === strtolower($criterion->name));
+                                                                if ($bizCrit) {
+                                                                    $avg = \App\Models\ReviewRating::whereIn('review_id', $rRevs->pluck('id'))
+                                                                        ->where('criteria_id', $bizCrit->id)
+                                                                        ->avg('rating');
+                                                                }
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight: 500;">
+                                                        {{ $avg !== null ? formatRating($avg) : '-' }}
+                                                    </td>
+                                                @endforeach
+                                                <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
+                                                    @if($recommendPercent !== null)
+                                                        {{ $recommendPercent }}%
+                                                    @else
+                                                        <span style="color: #5b6b7a;">-</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
+                                                    @if($bizStartingPrice && $bizAmount !== null && !empty($rowBiz->is_affiliate))
+                                                        <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
+                                                        @if(!empty($bizStartingPrice['additional_info']) && !in_array(strtoupper(trim((string)$bizStartingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
+                                                            <span style="font-size: 12px; color: #5b6b7a;"> {{ $bizStartingPrice['additional_info'] }}</span>
+                                                        @elseif(!empty($bizTimeUnit) && !in_array($bizTimeUnit, ['one_time', 'na', 'n/a', 'null']))
+                                                            <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
+                                                        @endif
+                                                    @else
+                                                        <span style="color: #5b6b7a;">-</span>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -456,7 +520,7 @@ foreach ($altCriteria as $criterion) {
     </div>
     </section>
 
-    <!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+    <!-- Dynamic Section 3: Pros & cons (Pros/Cons Table 2) -->
     <section class="community-feedback-sec border_bt py-4">
         <div class="container">
             <div class="community-feedback-table-section my-4">
@@ -465,16 +529,24 @@ foreach ($altCriteria as $criterion) {
                                         if (!isset($bTrans) || !$bTrans) {
                                             $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
                                         }
+                                        $commFieldKey = $hasUnder10Reviews ? 'community_says_under_10' : 'community_says';
                                         $resolvedCommunity = \App\Services\ContentTemplateService::resolveBusinessSection(
                                             $business,
-                                            'community_says',
+                                            $commFieldKey,
                                             $lang_id
                                         );
+                                        if ($hasUnder10Reviews && empty($resolvedCommunity['headline']) && empty($resolvedCommunity['subtext'])) {
+                                            $resolvedCommunity = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                                $business,
+                                                'community_says',
+                                                $lang_id
+                                            );
+                                        }
                                         $commFeedbackHeadline = !empty($resolvedCommunity['headline'])
                                             ? $resolvedCommunity['headline']
                                             : (!empty($bTrans->community_says_headline)
                                                 ? $bTrans->community_says_headline
-                                                : (static_text('what_localio_community_says_headline') ?: 'What the Localio community says'));
+                                                : (static_text('what_localio_community_says_headline') ?: 'Pros & cons'));
 
                                         $commFeedbackSubtext = !empty($resolvedCommunity['subtext'])
                                             ? $resolvedCommunity['subtext']
@@ -500,10 +572,10 @@ foreach ($altCriteria as $criterion) {
                                     <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                         <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                             <tr>
-                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                                 <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
-                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
-                                                <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -520,21 +592,59 @@ foreach ($altCriteria as $criterion) {
                                                     $rCount = $rRevs->count();
                                                     $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
 
-                                                    $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                        ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                        ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                        ->where('reviews.business_id', $rowBiz->id)
-                                                        ->whereIn('reviews.status', ['published', 'active'])
-                                                        ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
-                                                        ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                                        ->orderByDesc('cnt')
-                                                        ->get();
+                                                    if ($rCount >= 10) {
+                                                        $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                            ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                            ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                            ->where('reviews.business_id', $rowBiz->id)
+                                                            ->whereIn('reviews.status', ['published', 'active'])
+                                                            ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
+                                                            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                            ->orderByDesc('cnt')
+                                                            ->get();
 
-                                                    $topProObj = $proCons->firstWhere('type', 'pro');
-                                                    $topConObj = $proCons->firstWhere('type', 'con');
+                                                        $topProObj = $proCons->firstWhere('type', 'pro');
+                                                        $topConObj = $proCons->firstWhere('type', 'con');
 
-                                                    $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
-                                                    $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
+                                                        $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
+                                                        $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
+                                                    } else {
+                                                        // When < 10 reviews: Check business_pro_cons first, or fallback to any review pro/con
+                                                        $manPro = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'pro')->first() : null;
+                                                        $manCon = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'con')->first() : null;
+
+                                                        if ($manPro) {
+                                                            $proStr = $manPro->text;
+                                                        } else {
+                                                            $revPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                                ->where('reviews.business_id', $rowBiz->id)
+                                                                ->whereIn('reviews.status', ['published', 'active'])
+                                                                ->where('category_pro_cons.type', 'pro')
+                                                                ->select('category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
+                                                                ->groupBy('category_pro_cons.id', 'category_pro_cons.text')
+                                                                ->orderByDesc('cnt')
+                                                                ->first();
+                                                            $proStr = $revPro ? $revPro->text . ' (' . $revPro->cnt . ')' : '-';
+                                                        }
+
+                                                        if ($manCon) {
+                                                            $conStr = $manCon->text;
+                                                        } else {
+                                                            $revCon = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                                ->where('reviews.business_id', $rowBiz->id)
+                                                                ->whereIn('reviews.status', ['published', 'active'])
+                                                                ->where('category_pro_cons.type', 'con')
+                                                                ->select('category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
+                                                                ->groupBy('category_pro_cons.id', 'category_pro_cons.text')
+                                                                ->orderByDesc('cnt')
+                                                                ->first();
+                                                            $conStr = $revCon ? $revCon->text . ' (' . $revCon->cnt . ')' : '-';
+                                                        }
+                                                    }
                                                 @endphp
                                                 <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">
                                                     <td style="padding: 14px 18px; font-weight: 500; color: #002347;">

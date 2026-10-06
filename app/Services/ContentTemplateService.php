@@ -286,18 +286,32 @@ class ContentTemplateService
             'description' => 'Headline and subtext for the Most Popular Alternatives section.',
         ],
         'compare_alternatives' => [
-            'label' => 'COMPARE ALTERNATIVES',
+            'label' => 'TOP 10',
             'type' => 'combined',
-            'field1_label' => 'Compare Alternatives Headline (H2)',
-            'field2_label' => 'Compare Alternatives Subtext',
-            'description' => 'Headline and subtext for the Compare Alternatives section.',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 section.',
+        ],
+        'compare_alternatives_under_10' => [
+            'label' => 'TOP 10 (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 section when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'community_says' => [
-            'label' => 'COMMUNITY SAYS',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
-            'field1_label' => 'Community Says Headline (H2)',
-            'field2_label' => 'Community Says Subtext',
-            'description' => 'Headline and subtext for the What the Localio Community Says section.',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the Pros & Cons section.',
+        ],
+        'community_says_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the Pros & Cons section when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'all_alternatives' => [
             'label' => 'ALL ALTERNATIVES',
@@ -1363,6 +1377,24 @@ class ContentTemplateService
                     'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
                 ],
             ],
+            'compare_alternatives_under_10' => [
+                1 => [
+                    'headline' => 'Compare [business] alternatives',
+                    'subtext' => '<p>Compare top alternatives side-by-side to find the right fit for your business.</p>',
+                ],
+                2 => [
+                    'headline' => 'Top 10 [business] alternatives & competitors',
+                    'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
+                ],
+                3 => [
+                    'headline' => 'Best [business] alternatives compared',
+                    'subtext' => '<p>Compare key features, pricing, and early ratings across top alternatives.</p>',
+                ],
+                4 => [
+                    'headline' => 'Top alternatives to [business]',
+                    'subtext' => '<p>Side-by-side comparison of leading options and competitors.</p>',
+                ],
+            ],
             'community_says' => [
                 1 => [
                     'headline' => 'What the Localio community says',
@@ -1371,6 +1403,24 @@ class ContentTemplateService
                 2 => [
                     'headline' => 'What users say about [business] alternatives',
                     'subtext' => '<p>Real feedback, top pros, and common cons from verified community reviewers.</p>',
+                ],
+            ],
+            'community_says_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as one or more businesses currently have fewer than 10 published Localio reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks.</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight recurring strengths and limitations.</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources while community reviews grow.</p>',
                 ],
             ],
             'all_alternatives' => [
