@@ -354,7 +354,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             </h1>
                                         </div>
                                         @if(!empty($finalBizSubtext))
-                                            <p class="text-muted size16 hide-on-sticky" style="color: #666; font-size: 18px; margin-bottom: 0;">
+                                            <p class="text-muted size18 hide-on-sticky" style="color: #666; font-size: 18px; margin-bottom: 0;">
                                                 {!! $finalBizSubtext !!}
                                             </p>
                                         @endif

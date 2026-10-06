@@ -85,7 +85,7 @@
                             </h1>
                         </div>
         <!-- Category Header Row -->
-        <div class="faq-header-sec row  justify-content-between">
+        <div class="faq-header-sec row  justify-content-between " style="align-items:center;">
             <div class="col-md-6 col-12">
                 <div class="top_head d-flex align-items-center gap-3 mt-2">
                     <div>

@@ -129,7 +129,7 @@
                                                             ? $bTrans->popular_alternatives_subtext
                                                             : "Based on other buyer's searches, these are the products that could be a good fit for you.");
                                                 @endphp
-                                                <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
+                                                <div class="sftwre-asana-hd" data-aos="fade-up" data-aos-duration="1000">
                                                     <h2>{{ $altPopHeadline }}</h2>
                                                     @if(!empty($altPopDesc))
                                                         <div class="ck-content" style="color: #64748b; font-size: 15px;">
