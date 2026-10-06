@@ -120,7 +120,7 @@
     @endif
 
     @if($hasUserRatings)
-    <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
+    <div class="d-flex justify-content-between align-items-center py-3 my-3" style="border-bottom: 1px solid #f0f0f0; border-top: 1px solid #f0f0f0;">
         <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ static_text('recommended_by_users') ?: 'Recommended by users' }}</span>
         <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
     </div>

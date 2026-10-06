@@ -188,7 +188,7 @@
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
                         @if(!empty($finalFaqsSub))
-                        <div class="text-meta" style="margin-top: 4px;">
+                        <div class="text-meta" style="margin-bottom:0; margin-top: 4px;">
                             {!! $finalFaqsSub !!}
                         </div>
                         @endif
