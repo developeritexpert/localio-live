@@ -409,18 +409,34 @@
                 </div>
 
                 <!-- Section 4: Ask Community Bottom Banner -->
+                @php
+                    $resolvedAskCommunity = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'faq_ask_community',
+                        $lang_id
+                    );
+                    $askCommunityHeadline = !empty($resolvedAskCommunity['headline'])
+                        ? $resolvedAskCommunity['headline']
+                        : "Didn't find your answer?";
+                    $askCommunitySubtext = !empty($resolvedAskCommunity['subtext'])
+                        ? $resolvedAskCommunity['subtext']
+                        : "<p>Ask other Localio users about {$bName}.</p>";
+                @endphp
                 <div class="ask-community-banner" id="section-ask-community">
                     <div>
                         <h2>
-                            Still have a question about {{ $bName }}?
+                            {!! \App\Services\ContentTemplateService::cleanHeading($askCommunityHeadline) !!}
                         </h2>
-                        <p style="margin-bottom: 0;">
-                            Ask the Localio community
-                        </p>
+                        <style>
+                            .ask-community-subtext p { margin-bottom: 0 !important; font-size: 15px; color: #4a5568; }
+                        </style>
+                        <div class="ask-community-subtext ck-content" style="margin-bottom: 0;">
+                            {!! $askCommunitySubtext !!}
+                        </div>
                     </div>
                     <div>
                         <a href="#sectionDiscussions" class="blue-btn ask-community-btn">
-                            Ask a question <i class="fa-solid fa-arrow-right"></i>
+                            {{ static_text('ask_community_button') ?: 'Ask a question' }} <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>

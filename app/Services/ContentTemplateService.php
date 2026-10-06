@@ -353,6 +353,13 @@ class ContentTemplateService
             'field1_label' => 'FAQ List Headline (H2)',
             'description' => 'Headline (H2) directly above the FAQ accordion list on the Business FAQs page.',
         ],
+        'faq_ask_community' => [
+            'label' => 'ASK COMMUNITY BANNER',
+            'type' => 'combined',
+            'field1_label' => 'Banner Headline (H2)',
+            'field2_label' => 'Banner Subtext',
+            'description' => 'Headline and subtext for the ask community question banner on the Business FAQs page.',
+        ],
         'faq_explore' => [
             'label' => 'EXPLORE CATEGORIES',
             'type' => 'combined',
@@ -1649,6 +1656,24 @@ class ContentTemplateService
                 2 => 'Frequently asked questions',
                 3 => '[business] FAQs & answers',
                 4 => 'Common questions about [business]',
+            ],
+            'faq_ask_community' => [
+                1 => [
+                    'headline' => "Didn't find your answer?",
+                    'subtext'  => '<p>Ask other Localio users about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Still have questions about [business]?',
+                    'subtext'  => '<p>Ask other Localio members and get answers from the community.</p>',
+                ],
+                3 => [
+                    'headline' => 'Have a question not answered here?',
+                    'subtext'  => '<p>Connect with other Localio users and ask about [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Need more information about [business]?',
+                    'subtext'  => '<p>Ask other users in the community to share their experience.</p>',
+                ],
             ],
             'faq_explore' => [
                 1 => [
