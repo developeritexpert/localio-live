@@ -848,7 +848,7 @@
     $exploreHeadline = !empty($resolvedFaqExplore['headline']) ? $resolvedFaqExplore['headline'] : $defaultExpHeadline;
     $exploreSubtext = !empty($resolvedFaqExplore['subtext']) ? $resolvedFaqExplore['subtext'] : $defaultExpSubtext;
 @endphp
-<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+<section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
@@ -912,7 +912,7 @@
 @endif
 
 <!-- Discussions Section (From business details page) -->
-<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
     <div class="container">
     @php
         $totalDiscsCount = $business->discussions()->count();

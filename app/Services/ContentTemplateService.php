@@ -511,7 +511,14 @@ class ContentTemplateService
             'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
             'field2_label' => 'Pros & Cons Subtext',
-            'description' => 'Headline and intro subtext for community pros & cons section.',
+            'description' => 'Headline and intro subtext for community pros & cons section (10+ reviews).',
+        ],
+        'reviews_pros_cons_under_10' => [
+            'label' => 'Pros & Cons (< 10 Reviews)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and intro subtext for public-source pros & cons section (< 10 reviews).',
         ],
         'reviews_user_reviews' => [
             'label' => 'User Reviews',
@@ -1911,6 +1918,24 @@ class ContentTemplateService
                     'subtext' => '<p>Verified user impressions highlighting the main benefits and challenges of using [business].</p>',
                 ],
             ],
+            'reviews_pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as this business currently has fewer than 10 published community reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight the recurring strengths and limitations of [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources to help you evaluate [business] while community reviews grow.</p>',
+                ],
+            ],
             'reviews_user_reviews' => [
                 1 => [
                     'headline' => '[business] user reviews ([count])',
@@ -2798,6 +2823,28 @@ class ContentTemplateService
             ->where('lang_id', $langId)
             ->where('field_key', $fieldKey)
             ->exists();
+
+        // Cross-section fallback: if reviews_pros_cons_under_10 has no explicit lock, check profile_pros_cons_under_10
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_pros_cons_under_10') {
+            $hasProfileAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_pros_cons_under_10')
+                ->exists();
+            if ($hasProfileAsgn) {
+                $profTpl = self::getTemplateForResolution('business', $business->id, 'profile_pros_cons_under_10', $langId, 'business_profile');
+                if ($profTpl) {
+                    $headline = self::replacePlaceholders($profTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profTpl,
+                        'option_number' => $profTpl->option_number,
+                    ];
+                }
+            }
+        }
 
         // Cross-section fallback: if profile_faqs has no explicit lock, check faqs_h1 from business_faqs
         if (!$hasExplicitAsgn && $fieldKey === 'profile_faqs') {

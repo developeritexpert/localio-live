@@ -1579,11 +1579,38 @@ foreach ($altCriteria as $criterion) {
                             }
                             @endphp
                             @if($topPros->isNotEmpty() && $topCons->isNotEmpty())
+                            @php
+                                $bizUnder10 = ($bizRevCount < 10);
+                                $bizProsConsKey = $bizUnder10 ? 'profile_pros_cons_under_10' : 'profile_pros_cons';
+                                $resolvedBizCardProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $biz,
+                                    $bizProsConsKey,
+                                    $curLangId
+                                );
+                                if ($bizUnder10 && empty($resolvedBizCardProsCons['headline']) && empty($resolvedBizCardProsCons['subtext'])) {
+                                    $resolvedBizCardProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $biz,
+                                        'community_says_under_10',
+                                        $curLangId
+                                    );
+                                }
+                                $bizCardProsConsHeadline = !empty($resolvedBizCardProsCons['headline'])
+                                    ? $resolvedBizCardProsCons['headline']
+                                    : ($bizName . ' pros and cons');
+                                $bizCardProsConsSubtext = !empty($resolvedBizCardProsCons['subtext'])
+                                    ? $resolvedBizCardProsCons['subtext']
+                                    : null;
+                            @endphp
                             <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
                                 <div class="pros-cons-header mb-3">
-                                    <h3 style="margin-bottom: 8px;">
-                                        {{ $bizName }} pros and cons
+                                    <h3 style="margin-bottom: {{ !empty($bizCardProsConsSubtext) ? '6px' : '8px' }}; font-weight: 600; color: #1e3050; font-size: 20px;">
+                                        {!! \App\Services\ContentTemplateService::cleanHeading($bizCardProsConsHeadline) !!}
                                     </h3>
+                                    @if(!empty($bizCardProsConsSubtext))
+                                        <div class="pros-cons-subtext ck-content" style="font-size: 14.5px; color: #64748b; margin-bottom: 16px; line-height: 1.6;">
+                                            {!! $bizCardProsConsSubtext !!}
+                                        </div>
+                                    @endif
                                 </div>
                                 
                                 <div class="row g-4 d-flex">
