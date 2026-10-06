@@ -23,6 +23,12 @@
                     <a href="{{ route('content-gen.download-countries') }}" class="btn btn-outline-primary btn-sm" title="Download all supported country codes and names as JSON">
                         <em class="icon ni ni-globe me-1"></em> Country Codes
                     </a>
+                    <a href="{{ route('content-gen.download-pros-cons') }}" class="btn btn-outline-primary btn-sm" title="Download all Pros & Cons with their IDs in each category as JSON">
+                        <em class="icon ni ni-check-circle me-1"></em> Pros & Cons & IDs
+                    </a>
+                    <a href="{{ route('content-gen.download-features') }}" class="btn btn-outline-primary btn-sm" title="Download all Features with their IDs in each category as JSON">
+                        <em class="icon ni ni-grid-add me-1"></em> Features & IDs
+                    </a>
                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openExampleModal()">
                         <em class="icon ni ni-file-code me-1"></em> Result JSON Format
                     </button>
@@ -262,6 +268,13 @@
                         <ul class="mb-0 ps-3">
                             <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
                             <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
+                        </ul>
+                    </div>
+                    <div class="alert alert-warning py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-alert-circle me-1"></em> Pros, Cons & Features Strict Selection (By ID):</div>
+                        <ul class="mb-0 ps-3">
+                            <li><strong>Pros & Cons:</strong> Select strictly from the available category pro/con IDs: <code>"pros_cons": {"pro_ids": [20, 22, 24], "con_ids": [21, 23]}</code> (or <code>"pros": [20, 22]</code>, <code>"cons": [21]</code>). Arbitrary free-form pros and cons cannot be added.</li>
+                            <li><strong>Features:</strong> Assign by existing category feature IDs: <code>"features": [1007, 1008, 1012]</code> (or <code>"feature_ids": [1007, 1008]</code>).</li>
                         </ul>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
