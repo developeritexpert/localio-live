@@ -1,5 +1,11 @@
 @php
     $recaptchaSiteKey = config('services.recaptcha.site_key');
+    // Determine whether current page should load reCAPTCHA immediately (contact or auth pages)
+    $isContactPage = request()->is('*contact*') || request()->routeIs('*contact*');
+    $isAuthPage = request()->is('*login*') || request()->routeIs('*login*') 
+               || request()->is('*register*') || request()->routeIs('*register*')
+               || request()->is('*vendor-register*');
+    $shouldLoadImmediately = $isContactPage || $isAuthPage;
 @endphp
 
 @if(!empty($recaptchaSiteKey))
@@ -35,127 +41,127 @@
     }
 </style>
 
+@if($shouldLoadImmediately)
 <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>
+@endif
+
 <script>
 (function() {
     const siteKey = "{{ $recaptchaSiteKey }}";
     if (!siteKey) return;
 
-    /**
-     * Checks if an HTML element is actually visible in the DOM.
-     */
-    function isElementVisible(el) {
-        if (!el) return false;
-        if (el.classList && el.classList.contains('hidden')) return false;
-        try {
-            const style = window.getComputedStyle(el);
-            return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-        } catch (e) {
-            return false;
-        }
-    }
+    let recaptchaScriptLoading = false;
 
     /**
-     * Updates body class to show or hide the floating reCAPTCHA badge.
-     * The badge is ONLY shown on:
-     *  1. The Contact Us page
-     *  2. Standalone auth pages (login, register, vendor-register)
-     *  3. When the Sign In modal (#login-modal) is actively open
-     *  4. When the Register modal (#register-profile-modal) is actively open
+     * Lazily load reCAPTCHA script only when needed (e.g. modal opens or submission attempted).
+     */
+    window.loadRecaptchaScript = function(callback) {
+        if (window.grecaptcha && typeof window.grecaptcha.ready === 'function') {
+            if (typeof callback === 'function') callback();
+            return;
+        }
+
+        const existingScript = document.getElementById('google-recaptcha-script');
+        if (existingScript) {
+            if (typeof callback === 'function') {
+                existingScript.addEventListener('load', () => callback(), { once: true });
+            }
+            return;
+        }
+
+        if (recaptchaScriptLoading) {
+            if (typeof callback === 'function') {
+                const checkInterval = setInterval(function() {
+                    if (window.grecaptcha && typeof window.grecaptcha.ready === 'function') {
+                        clearInterval(checkInterval);
+                        callback();
+                    }
+                }, 100);
+            }
+            return;
+        }
+
+        recaptchaScriptLoading = true;
+        const script = document.createElement('script');
+        script.id = 'google-recaptcha-script';
+        script.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(siteKey);
+        script.async = true;
+        script.onload = function() {
+            recaptchaScriptLoading = false;
+            if (typeof callback === 'function') callback();
+        };
+        script.onerror = function() {
+            recaptchaScriptLoading = false;
+            console.warn('[reCAPTCHA] Failed to load Google reCAPTCHA script.');
+            if (typeof callback === 'function') callback();
+        };
+        document.head.appendChild(script);
+    };
+
+    /**
+     * Updates badge visibility based on body classes or modal state.
      */
     window.updateRecaptchaVisibility = function() {
         if (!document.body) return;
-
-        const isContactPage = !!(
-            document.body.classList.contains('page-route-contact') ||
-            document.body.classList.contains('page-contact') ||
-            window.location.pathname.match(/(^|\/)contact(\/|$)/i) ||
-            document.querySelector('form.conatct_from, form.contact_form')
-        );
-
-        const isAuthPage = !!(
-            document.body.classList.contains('page-route-login') ||
-            document.body.classList.contains('page-route-register') ||
-            document.body.classList.contains('page-route-vendor-register') ||
-            window.location.pathname.match(/(^|\/)(login|register|vendor-register|sign-in)(\/|$)/i)
-        );
-
         const loginModal = document.getElementById('login-modal');
-        const isLoginModalOpen = isElementVisible(loginModal);
+        const regModal = document.getElementById('register-profile-modal');
 
-        const registerModal = document.getElementById('register-profile-modal');
-        const isRegisterModalOpen = isElementVisible(registerModal);
+        const isLoginVisible = loginModal && loginModal.style.display !== 'none' && !loginModal.classList.contains('hidden');
+        const isRegVisible = regModal && regModal.style.display !== 'none' && !regModal.classList.contains('hidden');
 
-        if (isContactPage || isAuthPage || isLoginModalOpen || isRegisterModalOpen) {
+        if (isLoginVisible || isRegVisible) {
             document.body.classList.add('recaptcha-badge-visible');
-        } else {
+            window.loadRecaptchaScript();
+        } else if (!document.body.classList.contains('page-route-contact') && !document.body.classList.contains('page-contact')) {
             document.body.classList.remove('recaptcha-badge-visible');
         }
     };
 
-    // Run visibility check immediately and on lifecycle events
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', window.updateRecaptchaVisibility);
-    } else {
-        window.updateRecaptchaVisibility();
-    }
-    window.addEventListener('load', window.updateRecaptchaVisibility);
+    // Preload reCAPTCHA when user interacts with login/register triggers
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        if (!target) return;
+        if (
+            target.closest('#open-login-btn') ||
+            target.closest('.open-login-modal') ||
+            target.closest('[data-bs-target="#login-modal"]') ||
+            target.closest('a[href*="login"]') ||
+            target.closest('a[href*="register"]') ||
+            target.closest('#login-modal') ||
+            target.closest('#register-profile-modal')
+        ) {
+            window.loadRecaptchaScript();
+        }
+    }, { passive: true });
 
-    // Watch for modal DOM and attribute changes
-    if (window.MutationObserver) {
-        const observer = new MutationObserver(function() {
-            window.updateRecaptchaVisibility();
+    // Preload if focus lands inside login/register modal
+    document.addEventListener('focusin', function(e) {
+        if (e.target && e.target.closest && (e.target.closest('#login-modal') || e.target.closest('#register-profile-modal'))) {
+            window.loadRecaptchaScript();
+        }
+    }, { passive: true });
+
+    // Livewire integration
+    if (window.Livewire && typeof window.Livewire.on === 'function') {
+        window.Livewire.on('show-login-modal', function() {
+            document.body.classList.add('recaptcha-badge-visible');
+            window.loadRecaptchaScript();
         });
-
-        const setupObserver = function() {
-            if (!document.body) return;
-            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-            const loginModal = document.getElementById('login-modal');
-            if (loginModal) {
-                observer.observe(loginModal, { attributes: true, attributeFilter: ['style', 'class'] });
-            }
-
-            const registerModal = document.getElementById('register-profile-modal');
-            if (registerModal) {
-                observer.observe(registerModal, { attributes: true, attributeFilter: ['style', 'class'] });
-            }
-        };
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupObserver);
-        } else {
-            setupObserver();
-        }
-    }
-
-    // Check visibility on user interactions that may toggle modals
-    document.addEventListener('click', function() {
-        setTimeout(window.updateRecaptchaVisibility, 50);
-        setTimeout(window.updateRecaptchaVisibility, 300);
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            setTimeout(window.updateRecaptchaVisibility, 50);
-        }
-    });
-
-    // Support Livewire modal events if present
-    const hookLivewire = function() {
-        if (window.Livewire && typeof window.Livewire.on === 'function') {
-            window.Livewire.on('show-login-modal', function() {
-                setTimeout(window.updateRecaptchaVisibility, 50);
-            });
-            window.Livewire.on('close-login-modal', function() {
-                setTimeout(window.updateRecaptchaVisibility, 50);
-            });
-        }
-    };
-    if (window.Livewire) {
-        hookLivewire();
+        window.Livewire.on('close-login-modal', function() {
+            document.body.classList.remove('recaptcha-badge-visible');
+        });
     } else {
-        document.addEventListener('livewire:load', hookLivewire);
+        document.addEventListener('livewire:load', function() {
+            if (window.Livewire && typeof window.Livewire.on === 'function') {
+                window.Livewire.on('show-login-modal', function() {
+                    document.body.classList.add('recaptcha-badge-visible');
+                    window.loadRecaptchaScript();
+                });
+                window.Livewire.on('close-login-modal', function() {
+                    document.body.classList.remove('recaptcha-badge-visible');
+                });
+            }
+        });
     }
 
     /**
@@ -164,57 +170,64 @@
     window.executeRecaptchaForForm = function(form, actionName, onComplete) {
         const callback = typeof onComplete === 'function' ? onComplete : function() {};
 
-        if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
-            console.warn('[reCAPTCHA] grecaptcha is not available or blocked.');
-            callback(null);
-            return;
-        }
-
-        // Safety timeout so submission doesn't hang if Google API is unreachable
-        let executed = false;
-        const timeoutId = setTimeout(function() {
-            if (!executed) {
-                executed = true;
-                console.warn('[reCAPTCHA] execution timed out.');
+        const execute = function() {
+            if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
+                console.warn('[reCAPTCHA] grecaptcha is not available or blocked.');
                 callback(null);
+                return;
             }
-        }, 3000);
 
-        try {
-            grecaptcha.ready(function() {
-                grecaptcha.execute(siteKey, { action: actionName || 'submit' })
-                    .then(function(token) {
-                        if (executed) return;
-                        executed = true;
-                        clearTimeout(timeoutId);
+            let executed = false;
+            const timeoutId = setTimeout(function() {
+                if (!executed) {
+                    executed = true;
+                    console.warn('[reCAPTCHA] execution timed out.');
+                    callback(null);
+                }
+            }, 3000);
 
-                        if (form) {
-                            let tokenInput = form.querySelector('input[name="g-recaptcha-response"]');
-                            if (!tokenInput) {
-                                tokenInput = document.createElement('input');
-                                tokenInput.type = 'hidden';
-                                tokenInput.name = 'g-recaptcha-response';
-                                form.appendChild(tokenInput);
+            try {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(siteKey, { action: actionName || 'submit' })
+                        .then(function(token) {
+                            if (executed) return;
+                            executed = true;
+                            clearTimeout(timeoutId);
+
+                            if (form) {
+                                let tokenInput = form.querySelector('input[name="g-recaptcha-response"]');
+                                if (!tokenInput) {
+                                    tokenInput = document.createElement('input');
+                                    tokenInput.type = 'hidden';
+                                    tokenInput.name = 'g-recaptcha-response';
+                                    form.appendChild(tokenInput);
+                                }
+                                tokenInput.value = token;
                             }
-                            tokenInput.value = token;
-                        }
-                        callback(token);
-                    })
-                    .catch(function(err) {
-                        if (executed) return;
-                        executed = true;
-                        clearTimeout(timeoutId);
-                        console.error('[reCAPTCHA] execution error:', err);
-                        callback(null);
-                    });
-            });
-        } catch (e) {
-            if (!executed) {
-                executed = true;
-                clearTimeout(timeoutId);
-                console.error('[reCAPTCHA] unexpected error:', e);
-                callback(null);
+                            callback(token);
+                        })
+                        .catch(function(err) {
+                            if (executed) return;
+                            executed = true;
+                            clearTimeout(timeoutId);
+                            console.error('[reCAPTCHA] execution error:', err);
+                            callback(null);
+                        });
+                });
+            } catch (e) {
+                if (!executed) {
+                    executed = true;
+                    clearTimeout(timeoutId);
+                    console.error('[reCAPTCHA] unexpected error:', e);
+                    callback(null);
+                }
             }
+        };
+
+        if (!window.grecaptcha) {
+            window.loadRecaptchaScript(execute);
+        } else {
+            execute();
         }
     };
 
@@ -259,7 +272,7 @@
     }
 
     /**
-     * Intercept standard form submit events.
+     * Intercept standard form submit events cleanly.
      */
     document.addEventListener('submit', function(e) {
         if (e.defaultPrevented) return;
@@ -293,32 +306,6 @@
             form.submit();
         });
     }, false);
-
-    /**
-     * Intercept direct programmatic form.submit() calls (e.g. from jQuery validate).
-     */
-    const originalFormSubmit = HTMLFormElement.prototype.submit;
-    HTMLFormElement.prototype.submit = function() {
-        const form = this;
-        const actionName = getRecaptchaActionForForm(form);
-
-        if (!actionName || form.dataset.recaptchaSubmitting === 'true') {
-            return originalFormSubmit.call(form);
-        }
-
-        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-        }
-
-        window.executeRecaptchaForForm(form, actionName, function(token) {
-            form.dataset.recaptchaSubmitting = 'true';
-            if (submitBtn) {
-                submitBtn.disabled = false;
-            }
-            originalFormSubmit.call(form);
-        });
-    };
 })();
 </script>
 @endif
