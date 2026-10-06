@@ -123,12 +123,11 @@
             <!-- Join the Conversation Header Block -->
             <div class="mb-3 pt-2 d-none">
                 <h2 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px; line-height: 1.3;">
-                    Join the conversation
+                    {{ static_text('join_conversation_title') ?: 'Join the conversation' }}
                 </h2>
                 <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">
-                    Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips.
+                    {{ static_text('join_conversation_desc') ?: 'Connect with other users to ask questions, share experiences, and exchange useful tips.' }}
                 </p>
-               
             </div>
 
             <!-- Discussions List Container -->
@@ -166,7 +165,7 @@
                     <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions yet.</h3>
                     <p class="text-muted mb-3 d-none" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
                     <button type="button" class="blue-btn btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
-                        <i class="fas fa-plus me-1"></i> Start a discussion 
+                        <i class="fas fa-plus me-1"></i> {{ static_text('start_discussion_button') ?: 'Start a discussion' }} 
                     </button>
                 </div>
             @else
@@ -424,7 +423,7 @@
                             color:#002347;
                             font-size: 17px;
                         ">
-                            Join the conversation 
+                            {{ static_text('join_conversation_title') ?: 'Join the conversation' }}
                         </p>
 
                         <img src="{{ asset('front/img/top_rated_img.png') }}"
@@ -437,7 +436,7 @@
                     </div>
 
                     <p style="margin-bottom: 14px; font-size: 13.5px; color: #64748b; line-height: 1.55;">
-                        Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips. 
+                        {{ static_text('join_conversation_desc') ?: 'Connect with other users to ask questions, share experiences, and exchange useful tips.' }}
                     </p>
 
                     <a class="learn_mre_btn"
@@ -450,7 +449,7 @@
                        @endif>
                         <i class="fas fa-plus" style="font-size: 12px;"></i>
                          <span>
-                          Start a discussion
+                          {{ static_text('start_discussion_button') ?: 'Start a discussion' }}
                         </span>
                     </a>
                 </div>

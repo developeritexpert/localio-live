@@ -310,7 +310,7 @@
                                 <!-- Reddit Style: Join the conversation pill (Image 3) -->
                                 <div class="reddit-join-pill-bar my-2">
                                     <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="reddit-join-pill text-decoration-none d-flex align-items-center justify-content-between px-3 py-2 rounded-pill bg-light border" style="border-color: #cbd5e1 !important; color: #64748b; font-size: 13px; transition: all 0.2s ease;">
-                                        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_placeholder') ?: 'Join the conversation' }}</span>
+                                        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_title') ?: (static_text('join_conversation_placeholder') ?: 'Join the conversation') }}</span>
                                         <span class="text-primary fw-semibold" style="font-size: 12px;">Reply &rarr;</span>
                                     </a>
                                 </div>

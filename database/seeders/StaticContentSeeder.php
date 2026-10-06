@@ -23,6 +23,9 @@ class StaticContentSeeder extends Seeder
 
 
         $texts = [
+            ['key' => 'join_conversation_title', 'lang_id' => 1, 'value' => 'Join the conversation'],
+            ['key' => 'join_conversation_desc', 'lang_id' => 1, 'value' => 'Connect with other users to ask questions, share experiences, and exchange useful tips.'],
+            ['key' => 'start_discussion_button', 'lang_id' => 1, 'value' => 'Start a discussion'],
             ['key' => 'compare_with_alternative', 'lang_id' => 1, 'value' => 'Compare With A Popular Alternative'],
             ['key' => 'top_reviews', 'lang_id' => 1, 'value' => 'Top Reviews'],
             ['key' => 'latest_reviews', 'lang_id' => 1, 'value' => 'Latest Reviews'],
