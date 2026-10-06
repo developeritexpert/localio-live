@@ -58,6 +58,9 @@
                     <div class="accor-btn mt-4">
                         <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
                     </div>
+                    <p class="recaptcha-branding-text text-center text-muted mt-3 mb-0" style="font-size: 11px; line-height: 1.4; color: #8c98a4;">
+                        Protected by reCAPTCHA (<a href="https://policies.google.com/privacy" target="_blank" style="color: #06498b; text-decoration: underline;">Privacy</a> &middot; <a href="https://policies.google.com/terms" target="_blank" style="color: #06498b; text-decoration: underline;">Terms</a>)
+                    </p>
                 </form>
             </div>
         </div>

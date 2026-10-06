@@ -2844,6 +2844,9 @@ header .sec_head {
                                     <div class="accor-btn">
                                         <button type="submit" class="blue-btn cta cta_white">Continue</button>
                                     </div>
+                                    <p class="recaptcha-branding-text text-center text-muted mt-3 mb-0" style="font-size: 11px; line-height: 1.4; color: #8c98a4;">
+                                        Protected by reCAPTCHA (<a href="https://policies.google.com/privacy" target="_blank" style="color: #06498b; text-decoration: underline;">Privacy</a> &middot; <a href="https://policies.google.com/terms" target="_blank" style="color: #06498b; text-decoration: underline;">Terms</a>)
+                                    </p>
                                 </form>
                             </div>
                         </div>
@@ -2960,6 +2963,9 @@ header .sec_head {
                         style="text-transform:unset !important; background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign
                         up</button>
                 </div>
+                <p class="recaptcha-branding-text text-center text-muted mt-3 mb-0" style="font-size: 11px; line-height: 1.4; color: #8c98a4;">
+                    Protected by reCAPTCHA (<a href="https://policies.google.com/privacy" target="_blank" style="color: #06498b; text-decoration: underline;">Privacy</a> &middot; <a href="https://policies.google.com/terms" target="_blank" style="color: #06498b; text-decoration: underline;">Terms</a>)
+                </p>
             </form>
         </div>
     </div>
@@ -2972,6 +2978,11 @@ header .sec_head {
                 const modal = document.getElementById('register-profile-modal');
                 if (modal) {
                     modal.style.display = 'none';
+                }
+                if (typeof window.updateRecaptchaVisibility === 'function') {
+                    window.updateRecaptchaVisibility();
+                } else if (document.body) {
+                    document.body.classList.remove('recaptcha-badge-visible');
                 }
 
                 const url = document.querySelector('meta[name="clear-session-url"]').content;
@@ -3155,6 +3166,8 @@ header .sec_head {
                 modal.classList.remove('hidden'); // for good measure
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.classList.add('modal-open');
+                document.body.classList.add('recaptcha-badge-visible');
+                if (typeof window.updateRecaptchaVisibility === 'function') window.updateRecaptchaVisibility();
 
                 setTimeout(() => {
                     closeBtn?.focus();
@@ -3171,6 +3184,11 @@ header .sec_head {
                 modal.classList.add('hidden'); // for safety
                 modal.setAttribute('aria-hidden', 'true');
                 document.body.classList.remove('modal-open');
+                if (typeof window.updateRecaptchaVisibility === 'function') {
+                    window.updateRecaptchaVisibility();
+                } else {
+                    document.body.classList.remove('recaptcha-badge-visible');
+                }
             }
         });
 
@@ -3208,6 +3226,8 @@ header .sec_head {
             modal.classList.remove('hidden');
             modal.setAttribute('aria-hidden', 'false');
             document.body.classList.add('modal-open');
+            document.body.classList.add('recaptcha-badge-visible');
+            if (typeof window.updateRecaptchaVisibility === 'function') window.updateRecaptchaVisibility();
 
             const closeBtn = document.getElementById('close-login-btn');
             setTimeout(() => {
