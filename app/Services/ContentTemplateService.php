@@ -251,6 +251,18 @@ class ContentTemplateService
             'field2_label' => 'Discussions Subtext',
             'description' => 'Headline and subtext for the Discussions section on the Business Profile page.',
         ],
+        'profile_discussions_prompt_placeholder' => [
+            'label' => 'Prompt Placeholder',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business Profile page.',
+        ],
+        'profile_discussions_empty_headline' => [
+            'label' => 'Empty Headline',
+            'type' => 'single',
+            'field1_label' => 'Empty State Headline',
+            'description' => 'Headline displayed when no discussions have been started yet on the Business Profile page.',
+        ],
     ];
 
     public const BUSINESS_ALTERNATIVES_FIELDS = [
@@ -1522,6 +1534,18 @@ class ContentTemplateService
                     'subtext' => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
                 ],
             ],
+            'profile_discussions_prompt_placeholder' => [
+                1 => 'Ask a question or share something about [business]...',
+                2 => 'Have a question about [business]? Ask the community...',
+                3 => 'Share your thoughts or ask a question about [business]...',
+                4 => 'Start a conversation or ask about [business]...',
+            ],
+            'profile_discussions_empty_headline' => [
+                1 => 'No discussions about [business] yet.',
+                2 => 'No discussions about [business].',
+                3 => 'There are no discussions about [business] yet.',
+                4 => 'Be the first to discuss [business].',
+            ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
@@ -2743,6 +2767,48 @@ class ContentTemplateService
                         'subtext' => $subtext,
                         'template' => $faqH1Tpl,
                         'option_number' => $faqH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_discussions_empty_headline has no explicit lock, check discussions_empty_headline
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_discussions_empty_headline') {
+            $hasDiscEmpty = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_empty_headline')
+                ->exists();
+            if ($hasDiscEmpty) {
+                $emptyTpl = self::getTemplateForResolution('business', $business->id, 'discussions_empty_headline', $langId, 'business_discussions');
+                if ($emptyTpl) {
+                    $headline = self::replacePlaceholders($emptyTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => '',
+                        'template' => $emptyTpl,
+                        'option_number' => $emptyTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_discussions_prompt_placeholder') {
+            $hasDiscPrompt = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasDiscPrompt) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
                     ];
                 }
             }

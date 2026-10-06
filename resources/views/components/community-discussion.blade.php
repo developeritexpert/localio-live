@@ -61,6 +61,37 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
+    if (empty($emptyHeadline) && $business) {
+        $resEmpty = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_discussions_empty_headline', getCurrentLanguageID());
+        if (empty($resEmpty['headline'])) {
+            $resEmpty = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'discussions_empty_headline', getCurrentLanguageID());
+        }
+        if (!empty($resEmpty['headline'])) {
+            $emptyHeadline = $resEmpty['headline'];
+        }
+    }
+    if (empty($promptPlaceholder) && $business) {
+        $resPrompt = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_discussions_prompt_placeholder', getCurrentLanguageID());
+        if (empty($resPrompt['headline'])) {
+            $resPrompt = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'discussions_prompt_placeholder', getCurrentLanguageID());
+        }
+        if (!empty($resPrompt['headline'])) {
+            $promptPlaceholder = $resPrompt['headline'];
+        }
+    }
+    if (empty($emptyHeadline) && $category) {
+        $resCatEmpty = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_empty_headline', getCurrentLanguageID());
+        if (!empty($resCatEmpty['headline'])) {
+            $emptyHeadline = $resCatEmpty['headline'];
+        }
+    }
+    if (empty($promptPlaceholder) && $category) {
+        $resCatPrompt = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_prompt_placeholder', getCurrentLanguageID());
+        if (!empty($resCatPrompt['headline'])) {
+            $promptPlaceholder = $resCatPrompt['headline'];
+        }
+    }
+
     $finalHeadline = $headline ?? $discHeadline ?? ( 'Discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
     $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
