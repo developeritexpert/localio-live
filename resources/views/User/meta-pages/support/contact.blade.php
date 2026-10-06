@@ -148,6 +148,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     >
                         {{ static_text('send_message') }}
                     </button>
+                    <p class="recaptcha-branding-text text-center text-muted mt-3 mb-0" style="font-size: 11px; line-height: 1.4; color: #8c98a4;">
+                        Protected by reCAPTCHA (<a href="https://policies.google.com/privacy" target="_blank" style="color: #06498b; text-decoration: underline;">Privacy</a> &middot; <a href="https://policies.google.com/terms" target="_blank" style="color: #06498b; text-decoration: underline;">Terms</a>)
+                    </p>
                 </div>
             </form>
         </div>

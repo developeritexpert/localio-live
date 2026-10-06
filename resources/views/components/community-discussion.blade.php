@@ -61,6 +61,37 @@
             $discSubtext = 'Explore questions, experiences, and opinions shared by Localio users.';
         }
     }
+    if (empty($emptyHeadline) && $business) {
+        $resEmpty = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_discussions_empty_headline', getCurrentLanguageID());
+        if (empty($resEmpty['headline'])) {
+            $resEmpty = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'discussions_empty_headline', getCurrentLanguageID());
+        }
+        if (!empty($resEmpty['headline'])) {
+            $emptyHeadline = $resEmpty['headline'];
+        }
+    }
+    if (empty($promptPlaceholder) && $business) {
+        $resPrompt = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_discussions_prompt_placeholder', getCurrentLanguageID());
+        if (empty($resPrompt['headline'])) {
+            $resPrompt = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'discussions_prompt_placeholder', getCurrentLanguageID());
+        }
+        if (!empty($resPrompt['headline'])) {
+            $promptPlaceholder = $resPrompt['headline'];
+        }
+    }
+    if (empty($emptyHeadline) && $category) {
+        $resCatEmpty = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_empty_headline', getCurrentLanguageID());
+        if (!empty($resCatEmpty['headline'])) {
+            $emptyHeadline = $resCatEmpty['headline'];
+        }
+    }
+    if (empty($promptPlaceholder) && $category) {
+        $resCatPrompt = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_discussions_prompt_placeholder', getCurrentLanguageID());
+        if (!empty($resCatPrompt['headline'])) {
+            $promptPlaceholder = $resCatPrompt['headline'];
+        }
+    }
+
     $finalHeadline = $headline ?? $discHeadline ?? ( 'Discussions (' . number_format($totalDiscs) . ')');
     $finalSubtext = $subtext ?? $discSubtext ?? null;
     $finalPromptPlaceholder = $promptPlaceholder ?? ($isTopRated ? 'Ask questions or share something with other Localio users…' : ('Ask a question or share something about ' . $bName . '...'));
@@ -72,7 +103,7 @@
        {!! \App\Services\ContentTemplateService::cleanHeading($finalHeadline) !!}
     </h2>
     @if(!empty($finalSubtext))
-        <div class="community-discussion-subtext" style="color: #475569; margin: 0; font-size: 15px;">
+        <div class="community-discussion-subtext" style="color: #475569; margin: 0; font-size: 16px;">
             {!! $finalSubtext !!}
         </div>
     @endif
@@ -279,7 +310,7 @@
                                 <!-- Reddit Style: Join the conversation pill (Image 3) -->
                                 <div class="reddit-join-pill-bar my-2">
                                     <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="reddit-join-pill text-decoration-none d-flex align-items-center justify-content-between px-3 py-2 rounded-pill bg-light border" style="border-color: #cbd5e1 !important; color: #64748b; font-size: 13px; transition: all 0.2s ease;">
-                                        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_placeholder') ?: 'Join the conversation' }}</span>
+                                        <span><i class="far fa-comment-dots me-2 text-muted"></i>{{ static_text('join_conversation_title') ?: (static_text('join_conversation_placeholder') ?: 'Join the conversation') }}</span>
                                         <span class="text-primary fw-semibold" style="font-size: 12px;">Reply &rarr;</span>
                                     </a>
                                 </div>

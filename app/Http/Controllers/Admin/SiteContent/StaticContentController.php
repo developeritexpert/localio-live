@@ -376,6 +376,9 @@ class StaticContentController extends Controller
                     'discussion_details_field_label',
                     'discussion_details_placeholder',
                     'no_discussions_match',
+                    'join_conversation_title',
+                    'join_conversation_desc',
+                    'start_discussion_button',
                 ],
             ],
             'review_form_modal' => [

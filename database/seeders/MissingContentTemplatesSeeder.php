@@ -70,6 +70,20 @@ class MissingContentTemplatesSeeder extends Seeder
             ['headline' => 'Top Competitors', 'subtext' => '<p>Discover the best alternatives in [category_lc].</p>']
         ]);
 
+        $insertOptions('business_profile', 'profile_discussions_prompt_placeholder', [
+            ['headline' => 'Ask a question or share something about [business]...'],
+            ['headline' => 'Have a question about [business]? Ask the community...'],
+            ['headline' => 'Share your thoughts or ask a question about [business]...'],
+            ['headline' => 'Start a conversation or ask about [business]...']
+        ]);
+
+        $insertOptions('business_profile', 'profile_discussions_empty_headline', [
+            ['headline' => 'No discussions about [business] yet.'],
+            ['headline' => 'No discussions about [business].'],
+            ['headline' => 'There are no discussions about [business] yet.'],
+            ['headline' => 'Be the first to discuss [business].']
+        ]);
+
         // --- 2. Category Discussions ---
         $insertOptions('category_discussions', 'discussions_h1', [
             ['headline' => '[category_cap] Community Discussions'],

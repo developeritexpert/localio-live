@@ -198,14 +198,32 @@
                     @php
                         $reviewsProConsIntro = $bTranslation->reviews_pro_cons_intro ?? '';
                         $reviewsProConsSummary = $bTranslation->reviews_pro_cons_summary ?? '';
+                        $publishedReviewCount = $ratingCount ?? ($business->reviews ? $business->reviews->whereIn('status', ['published', 'active'])->count() : 0);
+                        $hasUnder10 = ($publishedReviewCount < 10) || !$hasUserRatings;
+                        $reviewsFieldKey = $hasUnder10 ? 'reviews_pros_cons_under_10' : 'reviews_pros_cons';
+
                         $resolvedReviewsProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
                             $business,
-                            'reviews_pros_cons',
+                            $reviewsFieldKey,
                             $lang_id
                         );
+                        if ($hasUnder10 && empty($resolvedReviewsProsCons['headline']) && empty($resolvedReviewsProsCons['subtext'])) {
+                            $resolvedReviewsProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                $business,
+                                'profile_pros_cons_under_10',
+                                $lang_id
+                            );
+                            if (empty($resolvedReviewsProsCons['headline']) && empty($resolvedReviewsProsCons['subtext'])) {
+                                $resolvedReviewsProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'reviews_pros_cons',
+                                    $lang_id
+                                );
+                            }
+                        }
                         $finalReviewsProsConsHeadline = !empty($resolvedReviewsProsCons['headline'])
                             ? $resolvedReviewsProsCons['headline']
-                            : (static_text('community_sentiment_heading') ?: 'What the community says');
+                            : ($hasUnder10 ? 'Pros & cons from public sources' : (static_text('community_sentiment_heading') ?: 'What the community says'));
                         $finalReviewsProsConsSubtext = !empty($reviewsProConsIntro)
                             ? $reviewsProConsIntro
                             : (!empty($resolvedReviewsProsCons['subtext']) ? $resolvedReviewsProsCons['subtext'] : null);
@@ -415,7 +433,7 @@
         ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
         : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
 @endphp
-<div class="review-prompt-banner" id="reviewPromptBanner"
+<div class="review-prompt-banner d-none" id="reviewPromptBanner"
     style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
 
     <div style="display: flex; align-items: center; gap: 16px;">
@@ -781,7 +799,7 @@
 
                                     @if ($hasUserRatings)
                                         <a href="#section14" class="view-review-link">
-                                            Go to reviews 
+                                            {{ static_text('go_to_reviews_link') ?: 'Go to reviews' }}
                                         </a>
                                     @endif
                                 </div>
@@ -848,7 +866,7 @@
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                                     <h2 class="size22 big-bld m-0">Highlighted reviews</h2>
                                     <a href="#section14" class="view-review-link">
-                                        Go to reviews 
+                                        {{ static_text('go_to_reviews_link') ?: 'Go to reviews' }}
                                     </a>
                                 </div>
 

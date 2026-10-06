@@ -251,6 +251,18 @@ class ContentTemplateService
             'field2_label' => 'Discussions Subtext',
             'description' => 'Headline and subtext for the Discussions section on the Business Profile page.',
         ],
+        'profile_discussions_prompt_placeholder' => [
+            'label' => 'Prompt Placeholder',
+            'type' => 'single',
+            'field1_label' => 'Prompt Placeholder',
+            'description' => 'Placeholder text for the ask question / prompt input box on the Business Profile page.',
+        ],
+        'profile_discussions_empty_headline' => [
+            'label' => 'Empty Headline',
+            'type' => 'single',
+            'field1_label' => 'Empty State Headline',
+            'description' => 'Headline displayed when no discussions have been started yet on the Business Profile page.',
+        ],
     ];
 
     public const BUSINESS_ALTERNATIVES_FIELDS = [
@@ -274,18 +286,32 @@ class ContentTemplateService
             'description' => 'Headline and subtext for the Most Popular Alternatives section.',
         ],
         'compare_alternatives' => [
-            'label' => 'COMPARE ALTERNATIVES',
+            'label' => 'TOP 10',
             'type' => 'combined',
-            'field1_label' => 'Compare Alternatives Headline (H2)',
-            'field2_label' => 'Compare Alternatives Subtext',
-            'description' => 'Headline and subtext for the Compare Alternatives section.',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 section.',
+        ],
+        'compare_alternatives_under_10' => [
+            'label' => 'TOP 10 (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 section when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'community_says' => [
-            'label' => 'COMMUNITY SAYS',
+            'label' => 'PROS & CONS',
             'type' => 'combined',
-            'field1_label' => 'Community Says Headline (H2)',
-            'field2_label' => 'Community Says Subtext',
-            'description' => 'Headline and subtext for the What the Localio Community Says section.',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the Pros & Cons section.',
+        ],
+        'community_says_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the Pros & Cons section when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'all_alternatives' => [
             'label' => 'ALL ALTERNATIVES',
@@ -326,6 +352,13 @@ class ContentTemplateService
             'type' => 'single',
             'field1_label' => 'FAQ List Headline (H2)',
             'description' => 'Headline (H2) directly above the FAQ accordion list on the Business FAQs page.',
+        ],
+        'faq_ask_community' => [
+            'label' => 'ASK COMMUNITY BANNER',
+            'type' => 'combined',
+            'field1_label' => 'Banner Headline (H2)',
+            'field2_label' => 'Banner Subtext',
+            'description' => 'Headline and subtext for the ask community question banner on the Business FAQs page.',
         ],
         'faq_explore' => [
             'label' => 'EXPLORE CATEGORIES',
@@ -485,7 +518,14 @@ class ContentTemplateService
             'type' => 'combined',
             'field1_label' => 'Pros & Cons Headline (H2)',
             'field2_label' => 'Pros & Cons Subtext',
-            'description' => 'Headline and intro subtext for community pros & cons section.',
+            'description' => 'Headline and intro subtext for community pros & cons section (10+ reviews).',
+        ],
+        'reviews_pros_cons_under_10' => [
+            'label' => 'Pros & Cons (< 10 Reviews)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and intro subtext for public-source pros & cons section (< 10 reviews).',
         ],
         'reviews_user_reviews' => [
             'label' => 'User Reviews',
@@ -1351,6 +1391,24 @@ class ContentTemplateService
                     'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
                 ],
             ],
+            'compare_alternatives_under_10' => [
+                1 => [
+                    'headline' => 'Compare [business] alternatives',
+                    'subtext' => '<p>Compare top alternatives side-by-side to find the right fit for your business.</p>',
+                ],
+                2 => [
+                    'headline' => 'Top 10 [business] alternatives & competitors',
+                    'subtext' => '<p>Detailed side-by-side comparison of features, pricing, and ratings.</p>',
+                ],
+                3 => [
+                    'headline' => 'Best [business] alternatives compared',
+                    'subtext' => '<p>Compare key features, pricing, and early ratings across top alternatives.</p>',
+                ],
+                4 => [
+                    'headline' => 'Top alternatives to [business]',
+                    'subtext' => '<p>Side-by-side comparison of leading options and competitors.</p>',
+                ],
+            ],
             'community_says' => [
                 1 => [
                     'headline' => 'What the Localio community says',
@@ -1359,6 +1417,24 @@ class ContentTemplateService
                 2 => [
                     'headline' => 'What users say about [business] alternatives',
                     'subtext' => '<p>Real feedback, top pros, and common cons from verified community reviewers.</p>',
+                ],
+            ],
+            'community_says_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as one or more businesses currently have fewer than 10 published Localio reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks.</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight recurring strengths and limitations.</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources while community reviews grow.</p>',
                 ],
             ],
             'all_alternatives' => [
@@ -1522,6 +1598,18 @@ class ContentTemplateService
                     'subtext' => '<p>Have a question about [business]? Ask the community or share your advice.</p>',
                 ],
             ],
+            'profile_discussions_prompt_placeholder' => [
+                1 => 'Ask a question or share something about [business]...',
+                2 => 'Have a question about [business]? Ask the community...',
+                3 => 'Share your thoughts or ask a question about [business]...',
+                4 => 'Start a conversation or ask about [business]...',
+            ],
+            'profile_discussions_empty_headline' => [
+                1 => 'No discussions about [business] yet.',
+                2 => 'No discussions about [business].',
+                3 => 'There are no discussions about [business] yet.',
+                4 => 'Be the first to discuss [business].',
+            ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
@@ -1568,6 +1656,24 @@ class ContentTemplateService
                 2 => 'Frequently asked questions',
                 3 => '[business] FAQs & answers',
                 4 => 'Common questions about [business]',
+            ],
+            'faq_ask_community' => [
+                1 => [
+                    'headline' => "Didn't find your answer?",
+                    'subtext'  => '<p>Ask other Localio users about [business].</p>',
+                ],
+                2 => [
+                    'headline' => 'Still have questions about [business]?',
+                    'subtext'  => '<p>Ask other Localio members and get answers from the community.</p>',
+                ],
+                3 => [
+                    'headline' => 'Have a question not answered here?',
+                    'subtext'  => '<p>Connect with other Localio users and ask about [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Need more information about [business]?',
+                    'subtext'  => '<p>Ask other users in the community to share their experience.</p>',
+                ],
             ],
             'faq_explore' => [
                 1 => [
@@ -1835,6 +1941,24 @@ class ContentTemplateService
                 4 => [
                     'headline' => 'What users love & what could improve',
                     'subtext' => '<p>Verified user impressions highlighting the main benefits and challenges of using [business].</p>',
+                ],
+            ],
+            'reviews_pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as this business currently has fewer than 10 published community reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks of [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight the recurring strengths and limitations of [business].</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources to help you evaluate [business] while community reviews grow.</p>',
                 ],
             ],
             'reviews_user_reviews' => [
@@ -2725,6 +2849,28 @@ class ContentTemplateService
             ->where('field_key', $fieldKey)
             ->exists();
 
+        // Cross-section fallback: if reviews_pros_cons_under_10 has no explicit lock, check profile_pros_cons_under_10
+        if (!$hasExplicitAsgn && $fieldKey === 'reviews_pros_cons_under_10') {
+            $hasProfileAsgn = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'profile_pros_cons_under_10')
+                ->exists();
+            if ($hasProfileAsgn) {
+                $profTpl = self::getTemplateForResolution('business', $business->id, 'profile_pros_cons_under_10', $langId, 'business_profile');
+                if ($profTpl) {
+                    $headline = self::replacePlaceholders($profTpl->headline, $category, null, $langId, $business, $extraTags);
+                    $subtext = self::replacePlaceholders($profTpl->subtext, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => $subtext,
+                        'template' => $profTpl,
+                        'option_number' => $profTpl->option_number,
+                    ];
+                }
+            }
+        }
+
         // Cross-section fallback: if profile_faqs has no explicit lock, check faqs_h1 from business_faqs
         if (!$hasExplicitAsgn && $fieldKey === 'profile_faqs') {
             $hasFaqAsgn = ContentTemplateAssignment::where('entity_type', 'business')
@@ -2743,6 +2889,48 @@ class ContentTemplateService
                         'subtext' => $subtext,
                         'template' => $faqH1Tpl,
                         'option_number' => $faqH1Tpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_discussions_empty_headline has no explicit lock, check discussions_empty_headline
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_discussions_empty_headline') {
+            $hasDiscEmpty = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_empty_headline')
+                ->exists();
+            if ($hasDiscEmpty) {
+                $emptyTpl = self::getTemplateForResolution('business', $business->id, 'discussions_empty_headline', $langId, 'business_discussions');
+                if ($emptyTpl) {
+                    $headline = self::replacePlaceholders($emptyTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanHeading($headline),
+                        'subtext' => '',
+                        'template' => $emptyTpl,
+                        'option_number' => $emptyTpl->option_number,
+                    ];
+                }
+            }
+        }
+
+        // Cross-section fallback: if profile_discussions_prompt_placeholder has no explicit lock, check discussions_prompt_placeholder
+        if (!$hasExplicitAsgn && $fieldKey === 'profile_discussions_prompt_placeholder') {
+            $hasDiscPrompt = ContentTemplateAssignment::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('lang_id', $langId)
+                ->where('field_key', 'discussions_prompt_placeholder')
+                ->exists();
+            if ($hasDiscPrompt) {
+                $promptTpl = self::getTemplateForResolution('business', $business->id, 'discussions_prompt_placeholder', $langId, 'business_discussions');
+                if ($promptTpl) {
+                    $headline = self::replacePlaceholders($promptTpl->headline, $category, null, $langId, $business, $extraTags);
+                    return [
+                        'headline' => self::cleanPlaceholder($headline),
+                        'subtext' => '',
+                        'template' => $promptTpl,
+                        'option_number' => $promptTpl->option_number,
                     ];
                 }
             }

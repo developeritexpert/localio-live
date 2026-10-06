@@ -405,19 +405,38 @@ function getBusinessesWithStartingPrice($businesses)
                     });
             }])
         ]);
-    } elseif ($businesses instanceof \Illuminate\Support\Collection) {
-        $businesses->loadMissing(['products' => function ($query) use ($countryId) {
-            $query->with('prices')
-                ->where(function ($q) use ($countryId) {
-                    $q->where('active_all_countries', 1)
-                        ->orWhere(function ($subQuery) use ($countryId) {
-                            $subQuery->where('active_all_countries', 0)
-                                ->whereHas('countries', function ($countryQuery) use ($countryId) {
-                                    $countryQuery->where('country_id', $countryId);
-                                });
-                        });
-                });
-        }]);
+    } elseif ($businesses instanceof \Illuminate\Support\Collection || $businesses instanceof \Illuminate\Database\Eloquent\Collection) {
+        if (method_exists($businesses, 'loadMissing')) {
+            $businesses->loadMissing(['products' => function ($query) use ($countryId) {
+                $query->with('prices')
+                    ->where(function ($q) use ($countryId) {
+                        $q->where('active_all_countries', 1)
+                            ->orWhere(function ($subQuery) use ($countryId) {
+                                $subQuery->where('active_all_countries', 0)
+                                    ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                        $countryQuery->where('country_id', $countryId);
+                                    });
+                            });
+                    });
+            }]);
+        } else {
+            $businesses->each(function($b) use ($countryId) {
+                if ($b instanceof \App\Models\Business) {
+                    $b->loadMissing(['products' => function ($query) use ($countryId) {
+                        $query->with('prices')
+                            ->where(function ($q) use ($countryId) {
+                                $q->where('active_all_countries', 1)
+                                    ->orWhere(function ($subQuery) use ($countryId) {
+                                        $subQuery->where('active_all_countries', 0)
+                                            ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                                $countryQuery->where('country_id', $countryId);
+                                            });
+                                    });
+                            });
+                    }]);
+                }
+            });
+        }
     } else {
         return [];
     }

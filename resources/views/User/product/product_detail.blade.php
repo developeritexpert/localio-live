@@ -354,7 +354,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             </h1>
                                         </div>
                                         @if(!empty($finalBizSubtext))
-                                            <p class="text-muted size16 hide-on-sticky" style="color: #666; font-size: 18px; margin-bottom: 0;">
+                                            <p class="text-muted size18 hide-on-sticky" style="color: #666; font-size: 18px; margin-bottom: 0;">
                                                 {!! $finalBizSubtext !!}
                                             </p>
                                         @endif
@@ -2232,8 +2232,28 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 if (!empty($resolvedBizDiscussions['subtext'])) {
                                     $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
                                 }
+
+                                $resolvedBizDiscPrompt = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'profile_discussions_prompt_placeholder',
+                                    getCurrentLanguageID()
+                                );
+                                $finalBizDiscPrompt = !empty($resolvedBizDiscPrompt['headline']) ? $resolvedBizDiscPrompt['headline'] : null;
+
+                                $resolvedBizDiscEmpty = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                    $business,
+                                    'profile_discussions_empty_headline',
+                                    getCurrentLanguageID()
+                                );
+                                $finalBizDiscEmpty = !empty($resolvedBizDiscEmpty['headline']) ? $resolvedBizDiscEmpty['headline'] : null;
                             @endphp
-                            <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" />
+                            <x-community-discussion 
+                                :business="$business" 
+                                :headline="$finalBizDiscHeadline" 
+                                :subtext="$finalBizDiscSubtext" 
+                                :promptPlaceholder="$finalBizDiscPrompt" 
+                                :emptyHeadline="$finalBizDiscEmpty" 
+                            />
                         </div>
                         <div class="mt-5">
                             <section class="subs_sec light p_50 d-none" id="section16">

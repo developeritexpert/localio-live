@@ -188,7 +188,7 @@
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
                         @if(!empty($finalFaqsSub))
-                        <div class="text-meta" style="margin-top: 4px;">
+                        <div class="text-meta" style="margin-bottom:0; margin-top: 4px;">
                             {!! $finalFaqsSub !!}
                         </div>
                         @endif
@@ -409,18 +409,34 @@
                 </div>
 
                 <!-- Section 4: Ask Community Bottom Banner -->
+                @php
+                    $resolvedAskCommunity = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'faq_ask_community',
+                        $lang_id
+                    );
+                    $askCommunityHeadline = !empty($resolvedAskCommunity['headline'])
+                        ? $resolvedAskCommunity['headline']
+                        : "Didn't find your answer?";
+                    $askCommunitySubtext = !empty($resolvedAskCommunity['subtext'])
+                        ? $resolvedAskCommunity['subtext']
+                        : "<p>Ask other Localio users about {$bName}.</p>";
+                @endphp
                 <div class="ask-community-banner" id="section-ask-community">
                     <div>
                         <h2>
-                            Still have a question about {{ $bName }}?
+                            {!! \App\Services\ContentTemplateService::cleanHeading($askCommunityHeadline) !!}
                         </h2>
-                        <p style="margin-bottom: 0;">
-                            Ask the Localio community
-                        </p>
+                        <style>
+                            .ask-community-subtext p { margin-bottom: 0 !important; font-size: 15px; color: #4a5568; }
+                        </style>
+                        <div class="ask-community-subtext ck-content" style="margin-bottom: 0;">
+                            {!! $askCommunitySubtext !!}
+                        </div>
                     </div>
                     <div>
                         <a href="#sectionDiscussions" class="blue-btn ask-community-btn">
-                            Ask a question <i class="fa-solid fa-arrow-right"></i>
+                            {{ static_text('ask_community_button') ?: 'Ask a question' }} <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -848,7 +864,7 @@
     $exploreHeadline = !empty($resolvedFaqExplore['headline']) ? $resolvedFaqExplore['headline'] : $defaultExpHeadline;
     $exploreSubtext = !empty($resolvedFaqExplore['subtext']) ? $resolvedFaqExplore['subtext'] : $defaultExpSubtext;
 @endphp
-<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+<section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
@@ -912,7 +928,7 @@
 @endif
 
 <!-- Discussions Section (From business details page) -->
-<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
     <div class="container">
     @php
         $totalDiscsCount = $business->discussions()->count();

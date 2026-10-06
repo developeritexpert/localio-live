@@ -410,6 +410,28 @@ class CategoryController extends Controller
 
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $faqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+        $discSlug = !empty($languageObj->discussions_slug) ? $languageObj->discussions_slug : 'discussions';
+
+        $recentDiscussions = \App\Models\BusinessDiscussion::where(function ($q) use ($category, $catIds) {
+            $q->where('category_id', $category->id)
+              ->orWhereIn('category_id', $catIds)
+              ->orWhereHas('business', function ($bQ) use ($catIds) {
+                  $bQ->whereIn('category_id', $catIds);
+              });
+        })
+        ->where('status', 'active')
+        ->with(['user'])
+        ->orderByDesc('created_at')
+        ->take(2)
+        ->get();
+
+        if ($recentDiscussions->isEmpty()) {
+            $recentDiscussions = \App\Models\BusinessDiscussion::where('status', 'active')
+                ->with(['user'])
+                ->orderByDesc('created_at')
+                ->take(2)
+                ->get();
+        }
 
         $exploreSubcategories = ['title' => '', 'items' => collect()];
         if ($category->parent_id === null) {
@@ -465,7 +487,7 @@ class CategoryController extends Controller
         return view('User.category.category_faqs', compact(
             'category', 'categoryTranslation', 'parentCategory', 'parentTrans', 
             'catName', 'faqs', 'recentReviews', 'topBusinesses', 'lang_id',
-            'exploreSubcategories', 'faqSlug', 'locale',
+            'exploreSubcategories', 'faqSlug', 'discSlug', 'recentDiscussions', 'locale',
             'faqMetaTitle', 'faqMetaDesc'
         ));
     }

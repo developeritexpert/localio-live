@@ -112,6 +112,9 @@
                     <div class="accor-btn">
                         <button type="submit" class="cta cta_white register_btn">{{ static_text('sign_up') }}</button>
                     </div>
+                    <p class="recaptcha-branding-text text-center text-muted mt-3 mb-0" style="font-size: 11px; line-height: 1.4; color: #8c98a4;">
+                        Protected by reCAPTCHA (<a href="https://policies.google.com/privacy" target="_blank" style="color: #06498b; text-decoration: underline;">Privacy</a> &middot; <a href="https://policies.google.com/terms" target="_blank" style="color: #06498b; text-decoration: underline;">Terms</a>)
+                    </p>
                     <p class="new-accnt text-center" style="margin-top: 10px; margin-bottom: 2px; ">
                         {{ static_text('already_to_localio') }} <a href="{{ route('login') }}" class="sk_blu big-bld"  onmouseover="this.style.color='#f9633b'"
                         onmouseout="this.style.color='#06498b'">{{ static_text('login') }}</a>

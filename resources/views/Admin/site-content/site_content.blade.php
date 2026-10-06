@@ -262,6 +262,9 @@
                                                     'discussion_details_field_label' => 'Discussion Details Field Label',
                                                     'discussion_details_placeholder' => 'Discussion Details Input Placeholder',
                                                     'no_discussions_match' => 'No Discussions Match Notice',
+                                                    'join_conversation_title' => 'Join the Conversation Box Title',
+                                                    'join_conversation_desc' => 'Join the Conversation Box Description',
+                                                    'start_discussion_button' => 'Start a Discussion Button Text',
                                                     'recommend_yes_option' => 'Recommend Option: Yes',
                                                     'recommend_no_option' => 'Recommend Option: No',
                                                     'rating_required_error' => 'Rating Required Validation Error Text',
@@ -373,6 +376,9 @@
                                                     'compare_search_placeholder' => 'Placeholder text for the category page comparison tool search inputs (e.g., "Search by name...")',
                                                     'already_to_localio' => 'Displays on the registration pages next to the login link.',
                                                     'reviews_word' => 'Used in review count labels and comparison headers.',
+                                                    'join_conversation_title' => 'Heading for the "Join the conversation" box on discussion pages.',
+                                                    'join_conversation_desc' => 'Description text for the "Join the conversation" box on discussion pages.',
+                                                    'start_discussion_button' => 'Button text for starting a new discussion on discussion pages.',
                                                 ];
                                                 $displayHint = $keyHints[$key] ?? null;
                                             @endphp

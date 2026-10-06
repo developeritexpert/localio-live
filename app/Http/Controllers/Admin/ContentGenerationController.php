@@ -32,6 +32,7 @@ class ContentGenerationController extends Controller
         'what_is',
         'reviews_description',
         'pros_cons',
+        'features',
         'services',
         'faqs',
         'categories',
@@ -641,7 +642,7 @@ class ContentGenerationController extends Controller
         }
 
         // 7. USPs
-        $usps = $item['usps'] ?? ($item['features'] ?? []);
+        $usps = $item['usps'] ?? [];
         if (!empty($usps) && is_array($usps)) {
             BusinessUsp::where('business_id', $businessId)->delete();
             foreach ($usps as $idx => $u) {
@@ -656,39 +657,17 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
-        // 8. Pros & Cons
+        // 7b. Features (strictly selected from features table via business_feature)
+        $featData = $item['feature_ids'] ?? ($item['features'] ?? null);
+        if (!empty($featData)) {
+            $featCount = self::applyFeaturesToBusiness($business, $featData);
+            if ($featCount > 0) $appliedCount++;
+        }
+
+        // 8. Pros & Cons (strictly selected from category_pro_cons)
         if (isset($item['pros_cons']) && is_array($item['pros_cons'])) {
-            $pros = $item['pros_cons']['pros'] ?? [];
-            $cons = $item['pros_cons']['cons'] ?? [];
-            \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
-            if (is_array($pros)) {
-                foreach ($pros as $p) {
-                    if (!empty(trim($p))) {
-                        \App\Models\BusinessProCon::create([
-                            'business_id' => $businessId,
-                            'type'        => 'pro',
-                            'text'        => trim($p),
-                        ]);
-                    }
-                }
-            }
-            if (is_array($cons)) {
-                foreach ($cons as $c) {
-                    if (!empty(trim($c))) {
-                        \App\Models\BusinessProCon::create([
-                            'business_id' => $businessId,
-                            'type'        => 'con',
-                            'text'        => trim($c),
-                        ]);
-                    }
-                }
-            }
-            $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
-            $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
-            $business->pro_cons_intro = $prosText;
-            $business->pro_cons_summary = $consText;
-            $business->save();
-            $appliedCount++;
+            $proConCount = self::applyProsConsToBusiness($business, $item['pros_cons']);
+            if ($proConCount > 0) $appliedCount++;
         }
 
         // 9. FAQs
@@ -1362,41 +1341,15 @@ class ContentGenerationController extends Controller
                 break;
 
             case 'pros_cons':
-                $pros = $data['pros'] ?? [];
-                $cons = $data['cons'] ?? [];
-
-                // 1. Delete and populate business_pro_cons
-                \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
-                if (is_array($pros)) {
-                    foreach ($pros as $p) {
-                        if (!empty(trim($p))) {
-                            \App\Models\BusinessProCon::create([
-                                'business_id' => $businessId,
-                                'type'        => 'pro',
-                                'text'        => trim($p),
-                            ]);
-                        }
-                    }
+                if ($bizRecord) {
+                    self::applyProsConsToBusiness($bizRecord, $data);
                 }
-                if (is_array($cons)) {
-                    foreach ($cons as $c) {
-                        if (!empty(trim($c))) {
-                            \App\Models\BusinessProCon::create([
-                                'business_id' => $businessId,
-                                'type'        => 'con',
-                                'text'        => trim($c),
-                            ]);
-                        }
-                    }
-                }
+                break;
 
-                // 2. Also populate pro_cons_intro / pro_cons_summary on Business
-                $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
-                $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
-                Business::where('id', $businessId)->update([
-                    'pro_cons_intro'   => $prosText,
-                    'pro_cons_summary' => $consText,
-                ]);
+            case 'features':
+                if ($bizRecord) {
+                    self::applyFeaturesToBusiness($bizRecord, $data['feature_ids'] ?? ($data['features'] ?? $data));
+                }
                 break;
 
             case 'services':
@@ -2028,14 +1981,38 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $catName = optional(optional($cat)->translations->firstWhere('lang_id', 1))->name ?? optional($cat)->name ?? '';
             $subCats = $b->subCategories->map(fn($sc) => optional(optional($sc)->translations->firstWhere('lang_id', 1))->name ?? $sc->name ?? '')->filter()->values()->toArray();
 
+            $bProCons = null;
+            $bFeatures = null;
+            if ($b->category_id) {
+                $catProCons = \App\Models\CategoryProCon::where('category_id', $b->category_id)->where('status', 1)->orderBy('id')->get();
+                if ($catProCons->isNotEmpty()) {
+                    $bProCons = [
+                        'pros' => $catProCons->where('type', 'pro')->values()->map(fn($p) => ['id' => $p->id, 'text' => $p->text])->toArray(),
+                        'cons' => $catProCons->where('type', 'con')->values()->map(fn($c) => ['id' => $c->id, 'text' => $c->text])->toArray(),
+                    ];
+                }
+
+                $catFeats = Feature::where('category_id', $b->category_id)->where('status', 'active')
+                    ->with(['translations' => fn($t) => $t->where('lang_id', 1)])
+                    ->get();
+                if ($catFeats->isNotEmpty()) {
+                    $bFeatures = $catFeats->map(fn($f) => [
+                        'id'   => $f->id,
+                        'name' => optional($f->translations->first())->name ?? ('Feature #' . $f->id),
+                    ])->values()->toArray();
+                }
+            }
+
             $bList[] = [
-                'business_id'      => $b->id,
-                'business_name'    => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
-                'business_url'     => $bUrl,
-                'category_id'      => $b->category_id,
-                'category_name'    => $catName ?: null,
-                'subcategories'    => !empty($subCats) ? $subCats : null,
-                'fields_requested' => $fieldsValue,
+                'business_id'         => $b->id,
+                'business_name'       => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                'business_url'        => $bUrl,
+                'category_id'         => $b->category_id,
+                'category_name'       => $catName ?: null,
+                'subcategories'       => !empty($subCats) ? $subCats : null,
+                'fields_requested'    => $fieldsValue,
+                'available_pros_cons' => $bProCons,
+                'available_features'  => $bFeatures,
             ];
         }
 
@@ -2112,6 +2089,85 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         return response($json, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="localio_country_codes.json"',
+        ]);
+    }
+
+    public function downloadProsCons()
+    {
+        $categories = Category::with([
+            'translation' => fn($q) => $q->where('lang_id', 1),
+            'proCons' => fn($q) => $q->where('status', 1)->orderBy('type')->orderBy('id'),
+        ])
+        ->whereHas('proCons', fn($q) => $q->where('status', 1))
+        ->orderBy('id')
+        ->get()
+        ->map(function ($cat) {
+            $catName = optional($cat->translation)->name ?? ($cat->name ?? ('Category #' . $cat->id));
+            $pros = $cat->proCons->where('type', 'pro')->values()->map(fn($item) => [
+                'id'      => $item->id,
+                'text'    => $item->text,
+                'aliases' => $item->aliases ?: [],
+            ]);
+            $cons = $cat->proCons->where('type', 'con')->values()->map(fn($item) => [
+                'id'      => $item->id,
+                'text'    => $item->text,
+                'aliases' => $item->aliases ?: [],
+            ]);
+
+            return [
+                'category_id'   => $cat->id,
+                'category_name' => $catName,
+                'total_pros'    => $pros->count(),
+                'total_cons'    => $cons->count(),
+                'pros'          => $pros,
+                'cons'          => $cons,
+            ];
+        })
+        ->values();
+
+        $json = json_encode($categories, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_pros_and_cons_and_ids.json"',
+        ]);
+    }
+
+    public function downloadFeatures()
+    {
+        $categories = Category::with([
+            'translation' => fn($q) => $q->where('lang_id', 1),
+            'features' => fn($q) => $q->where('status', 'active')
+                ->with(['translations' => fn($t) => $t->where('lang_id', 1)])
+                ->orderBy('id'),
+        ])
+        ->whereHas('features', fn($q) => $q->where('status', 'active'))
+        ->orderBy('id')
+        ->get()
+        ->map(function ($cat) {
+            $catName = optional($cat->translation)->name ?? ($cat->name ?? ('Category #' . $cat->id));
+            $features = $cat->features->map(function ($f) {
+                $fName = optional($f->translations->first())->name ?? ('Feature #' . $f->id);
+                return [
+                    'feature_id'   => $f->id,
+                    'feature_name' => $fName,
+                ];
+            })->values();
+
+            return [
+                'category_id'    => $cat->id,
+                'category_name'  => $catName,
+                'total_features' => $features->count(),
+                'features'       => $features,
+            ];
+        })
+        ->values();
+
+        $json = json_encode($categories, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return response($json, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="localio_features_and_ids.json"',
         ]);
     }
 
@@ -2410,6 +2466,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $normalizedData = ['usps' => $fieldVal];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
                     $normalizedData = ['faqs' => $fieldVal];
+                } elseif (($field === 'features' || $field === 'feature_ids') && is_array($fieldVal)) {
+                    $normalizedData = ['features' => $fieldVal];
                 } elseif ($field === 'active_countries' && is_array($fieldVal)) {
                     $activeAll = !empty($fieldVal['active_all_countries']);
                     if ($activeAll) {
@@ -2486,18 +2544,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 "what_is"           => "HostGator is an established global web hosting provider and domain registrar serving businesses and web creators worldwide.",
                 "reviews_description" => "HostGator is a trusted web hosting provider offering reliable shared, cloud, and VPS hosting solutions tailored for individuals and businesses.", 
                 "pros_cons"         => [
-                    "pros" => [
-                        "Affordable introductory pricing",
-                        "Unmetered bandwidth on all shared plans",
-                        "Responsive 24/7 technical customer support",
-                        "Generous 45-day money-back guarantee"
-                    ],
-                    "cons" => [
-                        "Higher renewal pricing upon term expiration",
-                        "Aggressive upsells during the checkout process",
-                        "Advanced speed optimization limited to higher tiers"
-                    ]
+                    "pro_ids" => [20, 22, 24],
+                    "con_ids" => [21, 23]
                 ],
+                "features"          => [1007, 1008, 1012],
                 "services"          => [
                     "headline"    => "Full-Service Web Hosting & Domain Management",
                     "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
@@ -2595,4 +2645,184 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         return json_encode($example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
+
+    /**
+     * Apply Pros and Cons to a Business strictly from existing CategoryProCon records.
+     */
+    public static function applyProsConsToBusiness(Business $business, array $data): int
+    {
+        $businessId = $business->id;
+        $categoryId = $business->category_id;
+
+        $rawPros = $data['pro_ids'] ?? ($data['pros'] ?? []);
+        $rawCons = $data['con_ids'] ?? ($data['cons'] ?? []);
+
+        $extractValues = function($items) {
+            if (!is_array($items)) {
+                $items = array_filter(array_map('trim', explode("\n", (string)$items)));
+            }
+            $result = [];
+            foreach ($items as $item) {
+                if (is_array($item)) {
+                    $result[] = $item['id'] ?? ($item['text'] ?? null);
+                } else {
+                    $result[] = $item;
+                }
+            }
+            return array_filter($result);
+        };
+
+        $prosList = $extractValues($rawPros);
+        $consList = $extractValues($rawCons);
+
+        $matchedPros = collect();
+        $matchedCons = collect();
+
+        foreach ($prosList as $val) {
+            $found = null;
+            if (is_numeric($val)) {
+                $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'pro')->where('status', 1);
+                if ($categoryId) {
+                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                }
+                if (!$found) {
+                    $found = $query->first();
+                }
+            } elseif (is_string($val) && trim($val) !== '') {
+                $cleanText = trim($val);
+                $query = \App\Models\CategoryProCon::where('type', 'pro')->where('status', 1);
+                if ($categoryId) {
+                    $found = (clone $query)->where('category_id', $categoryId)
+                        ->where(function($q) use ($cleanText) {
+                            $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                              ->orWhereJsonContains('aliases', $cleanText);
+                        })->first();
+                }
+                if (!$found) {
+                    $found = $query->where(function($q) use ($cleanText) {
+                        $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                          ->orWhereJsonContains('aliases', $cleanText);
+                    })->first();
+                }
+            }
+
+            if ($found && !$matchedPros->contains('id', $found->id)) {
+                $matchedPros->push($found);
+            }
+        }
+
+        foreach ($consList as $val) {
+            $found = null;
+            if (is_numeric($val)) {
+                $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'con')->where('status', 1);
+                if ($categoryId) {
+                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                }
+                if (!$found) {
+                    $found = $query->first();
+                }
+            } elseif (is_string($val) && trim($val) !== '') {
+                $cleanText = trim($val);
+                $query = \App\Models\CategoryProCon::where('type', 'con')->where('status', 1);
+                if ($categoryId) {
+                    $found = (clone $query)->where('category_id', $categoryId)
+                        ->where(function($q) use ($cleanText) {
+                            $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                              ->orWhereJsonContains('aliases', $cleanText);
+                        })->first();
+                }
+                if (!$found) {
+                    $found = $query->where(function($q) use ($cleanText) {
+                        $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                          ->orWhereJsonContains('aliases', $cleanText);
+                    })->first();
+                }
+            }
+
+            if ($found && !$matchedCons->contains('id', $found->id)) {
+                $matchedCons->push($found);
+            }
+        }
+
+        \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
+
+        foreach ($matchedPros as $pro) {
+            \App\Models\BusinessProCon::create([
+                'business_id'         => $businessId,
+                'category_pro_con_id' => $pro->id,
+                'type'                => 'pro',
+                'text'                => $pro->text,
+            ]);
+        }
+
+        foreach ($matchedCons as $con) {
+            \App\Models\BusinessProCon::create([
+                'business_id'         => $businessId,
+                'category_pro_con_id' => $con->id,
+                'type'                => 'con',
+                'text'                => $con->text,
+            ]);
+        }
+
+        $business->pro_cons_intro = $matchedPros->pluck('text')->implode("\n");
+        $business->pro_cons_summary = $matchedCons->pluck('text')->implode("\n");
+        $business->save();
+
+        return $matchedPros->count() + $matchedCons->count();
+    }
+
+    /**
+     * Apply Features to a Business strictly from existing Feature records.
+     */
+    public static function applyFeaturesToBusiness(Business $business, $featuresInput): int
+    {
+        if (empty($featuresInput)) return 0;
+
+        if (!is_array($featuresInput)) {
+            $featuresInput = array_filter(array_map('trim', explode("\n", (string)$featuresInput)));
+        }
+
+        $categoryId = $business->category_id;
+        $validFeatureIds = [];
+
+        foreach ($featuresInput as $item) {
+            $val = is_array($item) ? ($item['feature_id'] ?? ($item['id'] ?? ($item['name'] ?? null))) : $item;
+            if (!$val) continue;
+
+            if (is_numeric($val)) {
+                $featId = (int)$val;
+                $featQuery = Feature::where('id', $featId)->where('status', 'active');
+                if ($categoryId && (clone $featQuery)->where('category_id', $categoryId)->exists()) {
+                    $validFeatureIds[] = $featId;
+                } elseif ($featQuery->exists()) {
+                    $validFeatureIds[] = $featId;
+                }
+            } elseif (is_string($val) && trim($val) !== '') {
+                $cleanName = trim($val);
+                $featQuery = Feature::where('status', 'active')
+                    ->whereHas('translations', function($t) use ($cleanName) {
+                        $t->where('lang_id', 1)->where('name', 'like', $cleanName);
+                    });
+                if ($categoryId) {
+                    $matched = (clone $featQuery)->where('category_id', $categoryId)->value('id');
+                } else {
+                    $matched = null;
+                }
+                if (!$matched) {
+                    $matched = $featQuery->value('id');
+                }
+                if ($matched) {
+                    $validFeatureIds[] = $matched;
+                }
+            }
+        }
+
+        $validFeatureIds = array_values(array_unique($validFeatureIds));
+        if (!empty($validFeatureIds)) {
+            $business->features()->sync($validFeatureIds);
+            return count($validFeatureIds);
+        }
+
+        return 0;
+    }
 }

@@ -7,6 +7,18 @@
         background-color: #f7f9fb;
         border-bottom: 1px solid #e2e8f0;
         }
+      .recent-discussion-title-link {
+        color: #002347 !important;
+        text-decoration: none !important;
+        cursor: pointer;
+        display: inline-block;
+        transition: color 0.15s ease, text-decoration 0.15s ease;
+      }
+      .recent-discussion-title-link:hover,
+      .recent-discussion-title-link:focus {
+        text-decoration: underline !important;
+        color: #002347 !important;
+      }
     </style>
 @endpush
 
@@ -73,7 +85,7 @@
                             </h1>
                         </div>
         <!-- Category Header Row -->
-        <div class="faq-header-sec row  justify-content-between">
+        <div class="faq-header-sec row  justify-content-between " style="align-items:center;">
             <div class="col-md-6 col-12">
                 <div class="top_head d-flex align-items-center gap-3 mt-2">
                     <div>
@@ -418,52 +430,127 @@
                     <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h2 class="m-0 card-h-title underline-hover">{{ static_text('recent_discussions_heading') ?: 'Recent discussions' }}</h2>
-                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
+                            <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions')) }}" class="view-review-link">
                                 View all
                             </a>
                         </div>
 
-                        <div class="sidebar-review-card mb-3 pb-3 border-bottom">
-                            <div class="review-header d-flex justify-content-between align-items-start">
-                                <div class="review-user d-flex align-items-center gap-2">
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
+                        @if(isset($recentDiscussions) && $recentDiscussions->isNotEmpty())
+                            @foreach($recentDiscussions as $pDisc)
+                            <div class="sidebar-review-card {{ !$loop->last ? 'mb-3 pb-3 border-bottom' : '' }}">
+                                <div class="review-header d-flex justify-content-between align-items-start">
+                                    <div class="review-user d-flex align-items-center gap-2">
+                                        @if($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
+                                        <img src="{{ asset($pDisc->user->profile_image) }}"
+                                            class="rounded-circle"
+                                            width="38"
+                                            height="38"
+                                            style="object-fit: cover;">
+                                        @elseif($pDisc->author_avatar)
+                                        <img src="{{ asset($pDisc->author_avatar) }}"
+                                            class="rounded-circle"
+                                            width="38"
+                                            height="38"
+                                            style="object-fit: cover;">
+                                        @else
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <span style="color: white; font-weight: bold; font-size: 16px;">{{ $pDisc->author_initial ?: 'A' }}</span>
+                                        </div>
+                                        @endif
+                                        <div>
+                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">
+                                                @if($pDisc->user)
+                                                <a href="{{ $pDisc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
+                                                    {{ $pDisc->author_display_name }}
+                                                </a>
+                                                @else
+                                                {{ $pDisc->author_display_name }}
+                                                @endif
+                                            </p>
+                                            <div style="font-size: 11px; color: #777;">
+                                                @php
+                                                    $metaParts = [];
+                                                    if ($pDisc->user && $pDisc->user->job_title) {
+                                                        $metaParts[] = $pDisc->user->job_title;
+                                                    } elseif ($pDisc->author_title) {
+                                                        $metaParts[] = $pDisc->author_title;
+                                                    }
+                                                    if ($pDisc->user && $pDisc->user->company_size) {
+                                                        $cSizeMap = [
+                                                            '2' => 'Small Business (1-50 emp.)',
+                                                            '3' => 'Mid-Market (51-1000 emp.)',
+                                                            '4' => 'Enterprise (>1000 emp.)',
+                                                        ];
+                                                        $cSize = $pDisc->user->company_size;
+                                                        $metaParts[] = $cSizeMap[$cSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $cSize) ?: $cSize) : $cSize);
+                                                    }
+                                                @endphp
+                                                {{ !empty($metaParts) ? implode(' • ', $metaParts) : ($pDisc->author_title ?: 'Community Member') }}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Marc L.</p>
-                                        <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
-                                    </div>
+                                    <small class="text-muted" style="font-size: 11px;">{{ $pDisc->created_at ? $pDisc->created_at->diffForHumans() : '' }}</small>
                                 </div>
-                                <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
+                                <p style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #002347;">
+                                    <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions') . '#discussion-' . $pDisc->id) }}"
+                                       class="recent-discussion-title-link">
+                                        {{ $pDisc->title }}
+                                    </a>
+                                </p>
+                                <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
+                                    {{ Str::limit(strip_tags($pDisc->content), 120) }}
+                                </p>
                             </div>
-                            <p style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #002347;">
-                                Is there a free tier for API access or is it trial only?
-                            </p>
-                            <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
-                                We are looking to integrate this into our workflow and want to test latency...
-                            </p>
-                        </div>
+                            @endforeach
+                        @else
+                            <div class="sidebar-review-card mb-3 pb-3 border-bottom">
+                                <div class="review-header d-flex justify-content-between align-items-start">
+                                    <div class="review-user d-flex align-items-center gap-2">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
+                                        </div>
+                                        <div>
+                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Marc L.</p>
+                                            <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
+                                </div>
+                                <p style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #002347;">
+                                    <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions')) }}"
+                                       class="recent-discussion-title-link">
+                                        Is there a free tier for API access or is it trial only?
+                                    </a>
+                                </p>
+                                <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
+                                    We are looking to integrate this into our workflow and want to test latency...
+                                </p>
+                            </div>
 
-                        <div class="sidebar-review-card">
-                            <div class="review-header d-flex justify-content-between align-items-start">
-                                <div class="review-user d-flex align-items-center gap-2">
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
+                            <div class="sidebar-review-card">
+                                <div class="review-header d-flex justify-content-between align-items-start">
+                                    <div class="review-user d-flex align-items-center gap-2">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
+                                        </div>
+                                        <div>
+                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Sarah J.</p>
+                                            <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Sarah J.</p>
-                                        <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
-                                    </div>
+                                    <small class="text-muted" style="font-size: 11px;">1 day ago</small>
                                 </div>
-                                <small class="text-muted" style="font-size: 11px;">1 day ago</small>
+                                <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #002347;">
+                                    <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions')) }}"
+                                       class="recent-discussion-title-link">
+                                        How does the performance compare to alternatives in large datasets?
+                                    </a>
+                                </p>
+                                <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
+                                    We noticed some latency spikes during queries with more than 10k items...
+                                </p>
                             </div>
-                            <p style="margin-top: 8px; margin-bottom: 0; font-size: 13.5px; font-weight: 600;">
-                                How does the performance compare to alternatives in large datasets?
-                            </p>
-                            <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
-                                We noticed some latency spikes during queries with more than 10k items...
-                            </p>
-                        </div>
+                        @endif
                     </div>
 
                     <!-- 3. Top 3 Box -->

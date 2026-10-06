@@ -739,6 +739,8 @@ class BusinessAlternatives extends Component
     public function render()
     {
         return view('livewire.business-alternatives', [
+            'business' => $this->business,
+            'businessName' => $this->businessName,
             'products' => $this->products,
             'filters' => $this->filters,
             'lang_id' => $this->lang_id,

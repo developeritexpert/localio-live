@@ -250,6 +250,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/json', [ContentGenerationController::class, 'getBatchJson'])->name('content-gen.batch-jobs.json');
     Route::get('/admin-dashboard/content-generation/download-categories', [ContentGenerationController::class, 'downloadCategories'])->name('content-gen.download-categories');
     Route::get('/admin-dashboard/content-generation/download-countries', [ContentGenerationController::class, 'downloadCountries'])->name('content-gen.download-countries');
+    Route::get('/admin-dashboard/content-generation/download-pros-cons', [ContentGenerationController::class, 'downloadProsCons'])->name('content-gen.download-pros-cons');
+    Route::get('/admin-dashboard/content-generation/download-features', [ContentGenerationController::class, 'downloadFeatures'])->name('content-gen.download-features');
     Route::post('/admin-dashboard/content-generation/batch-jobs/{job}/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-result');
 
 
