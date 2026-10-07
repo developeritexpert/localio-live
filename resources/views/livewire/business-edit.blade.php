@@ -456,32 +456,62 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <h6 class="title mb-3">Pros</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="title mb-0">Pros (Pre-defined Category Options)</h6>
+                                    @if(empty($availableCategoryPros))
+                                        <a href="{{ route('admin.category-pro-cons') }}" target="_blank" class="small text-primary"><em class="icon ni ni-external me-1"></em>Add in Manager</a>
+                                    @endif
+                                </div>
+                                @if(empty($availableCategoryPros))
+                                    <div class="alert alert-warning py-1 px-2 small mb-2">
+                                        No active pros found for this category. Please add them in <a href="{{ route('admin.category-pro-cons') }}" target="_blank" class="alert-link">Category Pros &amp; Cons</a> first.
+                                    </div>
+                                @endif
                                 @foreach ($businessPros as $index => $pro)
                                     <div class="d-flex align-items-center mb-2 gap-2">
                                         <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
-                                        <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
+                                        <select class="form-select" wire:model.live="businessPros.{{ $index }}.category_pro_con_id" wire:change="onProSelected({{ $index }})">
+                                            <option value="">-- Select an Existing Pro --</option>
+                                            @foreach($availableCategoryPros as $opt)
+                                                <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
+                                            @endforeach
+                                        </select>
                                         <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
                                             <em class="icon ni ni-trash"></em>
                                         </button>
                                     </div>
                                 @endforeach
-                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro">
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro" @if(empty($availableCategoryPros)) disabled @endif>
                                     <em class="icon ni ni-plus"></em> Add Pro
                                 </button>
                             </div>
                             <div class="col-md-6">
-                                <h6 class="title mb-3">Cons</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="title mb-0">Cons (Pre-defined Category Options)</h6>
+                                    @if(empty($availableCategoryCons))
+                                        <a href="{{ route('admin.category-pro-cons') }}" target="_blank" class="small text-primary"><em class="icon ni ni-external me-1"></em>Add in Manager</a>
+                                    @endif
+                                </div>
+                                @if(empty($availableCategoryCons))
+                                    <div class="alert alert-warning py-1 px-2 small mb-2">
+                                        No active cons found for this category. Please add them in <a href="{{ route('admin.category-pro-cons') }}" target="_blank" class="alert-link">Category Pros &amp; Cons</a> first.
+                                    </div>
+                                @endif
                                 @foreach ($businessCons as $index => $con)
                                     <div class="d-flex align-items-center mb-2 gap-2">
                                         <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
-                                        <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
+                                        <select class="form-select" wire:model.live="businessCons.{{ $index }}.category_pro_con_id" wire:change="onConSelected({{ $index }})">
+                                            <option value="">-- Select an Existing Con --</option>
+                                            @foreach($availableCategoryCons as $opt)
+                                                <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
+                                            @endforeach
+                                        </select>
                                         <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
                                             <em class="icon ni ni-trash"></em>
                                         </button>
                                     </div>
                                 @endforeach
-                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon">
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon" @if(empty($availableCategoryCons)) disabled @endif>
                                     <em class="icon ni ni-plus"></em> Add Con
                                 </button>
                             </div>

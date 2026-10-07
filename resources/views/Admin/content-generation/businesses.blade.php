@@ -432,6 +432,10 @@ function insertSampleJson() {
                 "24/7/365 phone, chat, and email support"
             ],
             "reviews_description": "HostGator provides verified reliable cloud, VPS, and shared hosting for modern businesses.",
+            "pros_cons": {
+                "pro_ids": [20, 22, 24],
+                "con_ids": [21, 23]
+            },
             "faqs": [
                 {
                     "category": "Domains & Plans",

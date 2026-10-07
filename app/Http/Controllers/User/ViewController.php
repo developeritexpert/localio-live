@@ -471,6 +471,26 @@ class ViewController extends Controller
         $aggregatedPros = $aggregatedProCons->where('type', 'pro')->values();
         $aggregatedCons = $aggregatedProCons->where('type', 'con')->values();
 
+        // 10-Review Threshold Rule:
+        // As long as business has < 10 reviews, show ONLY uploaded/selected pros & cons from business_pro_cons
+        if ($totalReviews < 10) {
+            $aggregatedPros = $business->proCons->where('type', 'pro')->map(function($item) {
+                return (object)[
+                    'id'   => $item->id,
+                    'type' => 'pro',
+                    'text' => $item->text,
+                ];
+            })->values();
+
+            $aggregatedCons = $business->proCons->where('type', 'con')->map(function($item) {
+                return (object)[
+                    'id'   => $item->id,
+                    'type' => 'con',
+                    'text' => $item->text,
+                ];
+            })->values();
+        }
+
         if ($request->ajax()) {
             return view('User.review.partials.reviews_list', compact('reviews', 'business'))->render();
         }

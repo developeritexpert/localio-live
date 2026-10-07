@@ -178,6 +178,8 @@ class BusinessEdit extends Component
     // Pros & Cons
     public $businessPros = [];
     public $businessCons = [];
+    public $availableCategoryPros = [];
+    public $availableCategoryCons = [];
 
     // Offerings
     public $businessOfferings = [
@@ -665,12 +667,30 @@ class BusinessEdit extends Component
         // Load features for the new category
         $this->loadCategoryFeatures($value);
 
-
         $this->loadCategoryTopics($value);
+
+        $this->loadCategoryProCons($value);
 
 
         // Notify JS to reinitialize
         $this->dispatch('categoryChanged', $this->categoryFeatures);
+    }
+
+    public function loadCategoryProCons($categoryId)
+    {
+        if (!$categoryId) {
+            $this->availableCategoryPros = [];
+            $this->availableCategoryCons = [];
+            return;
+        }
+
+        $items = \App\Models\CategoryProCon::where('category_id', $categoryId)
+            ->where('status', 1)
+            ->orderBy('text')
+            ->get();
+
+        $this->availableCategoryPros = $items->where('type', 'pro')->values()->toArray();
+        $this->availableCategoryCons = $items->where('type', 'con')->values()->toArray();
     }
 
     public function loadCategoryTopics($categoryId)
@@ -1084,17 +1104,44 @@ class BusinessEdit extends Component
             array_pad($existingUsps, 5, '')
         );
 
-        // Load existing Pros
-        $existingPros = $business->proCons->where('type', 'pro')->pluck('text')->toArray();
-        $this->businessPros = !empty($existingPros)
-            ? array_map(fn($text) => ['text' => $text], $existingPros)
-            : [];
+        // Load Category Pros & Cons for this business's category
+        if ($this->selected_category) {
+            $this->loadCategoryProCons($this->selected_category);
+        }
 
-        // Load existing Cons
-        $existingCons = $business->proCons->where('type', 'con')->pluck('text')->toArray();
-        $this->businessCons = !empty($existingCons)
-            ? array_map(fn($text) => ['text' => $text], $existingCons)
-            : [];
+        // Load existing Pros (linking to category_pro_con_id)
+        $this->businessPros = $business->proCons->where('type', 'pro')->map(function($pc) {
+            $catId = $pc->category_pro_con_id;
+            if (!$catId && !empty($pc->text)) {
+                $matched = collect($this->availableCategoryPros)->first(function($item) use ($pc) {
+                    return strcasecmp($item['text'], $pc->text) === 0;
+                });
+                if ($matched) {
+                    $catId = $matched['id'];
+                }
+            }
+            return [
+                'category_pro_con_id' => $catId,
+                'text'                => $pc->text,
+            ];
+        })->values()->toArray();
+
+        // Load existing Cons (linking to category_pro_con_id)
+        $this->businessCons = $business->proCons->where('type', 'con')->map(function($pc) {
+            $catId = $pc->category_pro_con_id;
+            if (!$catId && !empty($pc->text)) {
+                $matched = collect($this->availableCategoryCons)->first(function($item) use ($pc) {
+                    return strcasecmp($item['text'], $pc->text) === 0;
+                });
+                if ($matched) {
+                    $catId = $matched['id'];
+                }
+            }
+            return [
+                'category_pro_con_id' => $catId,
+                'text'                => $pc->text,
+            ];
+        })->values()->toArray();
 
         $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
@@ -1433,26 +1480,38 @@ class BusinessEdit extends Component
         \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
         $proConsToInsert = [];
         foreach ($this->businessPros as $pro) {
+            $catProConId = !empty($pro['category_pro_con_id']) ? (int)$pro['category_pro_con_id'] : null;
             $text = trim($pro['text'] ?? '');
+            if (!$text && $catProConId) {
+                $found = collect($this->availableCategoryPros)->firstWhere('id', $catProConId);
+                $text = $found['text'] ?? '';
+            }
             if (!empty($text)) {
                 $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'pro',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'business_id'         => $businessId,
+                    'category_pro_con_id' => $catProConId,
+                    'type'                => 'pro',
+                    'text'                => $text,
+                    'created_at'          => now(),
+                    'updated_at'          => now(),
                 ];
             }
         }
         foreach ($this->businessCons as $con) {
+            $catProConId = !empty($con['category_pro_con_id']) ? (int)$con['category_pro_con_id'] : null;
             $text = trim($con['text'] ?? '');
+            if (!$text && $catProConId) {
+                $found = collect($this->availableCategoryCons)->firstWhere('id', $catProConId);
+                $text = $found['text'] ?? '';
+            }
             if (!empty($text)) {
                 $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'con',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'business_id'         => $businessId,
+                    'category_pro_con_id' => $catProConId,
+                    'type'                => 'con',
+                    'text'                => $text,
+                    'created_at'          => now(),
+                    'updated_at'          => now(),
                 ];
             }
         }
@@ -1530,7 +1589,7 @@ class BusinessEdit extends Component
 
     public function addPro()
     {
-        $this->businessPros[] = ['text' => ''];
+        $this->businessPros[] = ['category_pro_con_id' => '', 'text' => ''];
     }
 
     public function removePro($index)
@@ -1541,7 +1600,29 @@ class BusinessEdit extends Component
 
     public function addCon()
     {
-        $this->businessCons[] = ['text' => ''];
+        $this->businessCons[] = ['category_pro_con_id' => '', 'text' => ''];
+    }
+
+    public function onProSelected($index)
+    {
+        $catProId = $this->businessPros[$index]['category_pro_con_id'] ?? null;
+        if ($catProId) {
+            $found = collect($this->availableCategoryPros)->firstWhere('id', (int)$catProId);
+            $this->businessPros[$index]['text'] = $found['text'] ?? '';
+        } else {
+            $this->businessPros[$index]['text'] = '';
+        }
+    }
+
+    public function onConSelected($index)
+    {
+        $catConId = $this->businessCons[$index]['category_pro_con_id'] ?? null;
+        if ($catConId) {
+            $found = collect($this->availableCategoryCons)->firstWhere('id', (int)$catConId);
+            $this->businessCons[$index]['text'] = $found['text'] ?? '';
+        } else {
+            $this->businessCons[$index]['text'] = '';
+        }
     }
 
     public function removeCon($index)

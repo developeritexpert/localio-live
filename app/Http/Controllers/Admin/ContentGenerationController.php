@@ -666,8 +666,15 @@ class ContentGenerationController extends Controller
         }
 
         // 8. Pros & Cons (strictly selected from category_pro_cons)
-        if (isset($item['pros_cons']) && is_array($item['pros_cons'])) {
-            $proConCount = self::applyProsConsToBusiness($business, $item['pros_cons']);
+        $proConData = $item['pros_cons'] ?? null;
+        if (!$proConData && (isset($item['pro_ids']) || isset($item['con_ids']))) {
+            $proConData = [
+                'pro_ids' => $item['pro_ids'] ?? [],
+                'con_ids' => $item['con_ids'] ?? [],
+            ];
+        }
+        if (isset($proConData) && is_array($proConData)) {
+            $proConCount = self::applyProsConsToBusiness($business, $proConData);
             if ($proConCount > 0) $appliedCount++;
         }
 
@@ -921,16 +928,16 @@ class ContentGenerationController extends Controller
             $categoryName    = optional(optional($business->category)->translations->firstWhere('lang_id', 1))->name ?? optional($business->category)->name ?? '';
             $subcategoryName = $business->subCategories->pluck('name')->filter()->implode(', ');
 
-            // Contextual pros/cons list for pros_cons field
-            $availableProsStr = "- High reliability\n- Good value for money\n- Affordable pricing\n- Easy to use interface\n- 24/7 expert customer support\n- Fast performance\n- Comprehensive features";
-            $availableConsStr = "- Steep learning curve\n- Limited advanced features\n- Hidden additional fees\n- Unclear pricing\n- Occasional support delays";
+            // Contextual pros/cons list for pros_cons field (includes IDs for strict selection)
+            $availableProsStr = "- [ID: 1] High reliability\n- [ID: 2] Good value for money\n- [ID: 3] Affordable pricing\n- [ID: 4] Easy to use interface\n- [ID: 5] 24/7 expert customer support\n- [ID: 6] Fast performance\n- [ID: 7] Comprehensive features";
+            $availableConsStr = "- [ID: 8] Steep learning curve\n- [ID: 9] Limited advanced features\n- [ID: 10] Hidden additional fees\n- [ID: 11] Unclear pricing\n- [ID: 12] Occasional support delays";
             if ($business->category_id) {
-                $catProCons = \App\Models\CategoryProCon::where('category_id', $business->category_id)->get();
+                $catProCons = \App\Models\CategoryProCon::where('category_id', $business->category_id)->where('status', 1)->get();
                 if ($catProCons->isEmpty()) {
-                    $catProCons = \App\Models\CategoryProCon::take(30)->get();
+                    $catProCons = \App\Models\CategoryProCon::where('status', 1)->take(30)->get();
                 }
-                $prosList = $catProCons->where('type', 'pro')->pluck('text')->filter()->values()->toArray();
-                $consList = $catProCons->where('type', 'con')->pluck('text')->filter()->values()->toArray();
+                $prosList = $catProCons->where('type', 'pro')->map(fn($p) => "[ID: {$p->id}] {$p->text}")->filter()->values()->toArray();
+                $consList = $catProCons->where('type', 'con')->map(fn($c) => "[ID: {$c->id}] {$c->text}")->filter()->values()->toArray();
                 if (!empty($prosList)) $availableProsStr = "- " . implode("\n- ", $prosList);
                 if (!empty($consList)) $availableConsStr = "- " . implode("\n- ", $consList);
             }
@@ -1590,8 +1597,10 @@ class ContentGenerationController extends Controller
                 }
                 break;
             case 'pros_cons':
-                if (!isset($data['pros']) || !isset($data['cons']) || !is_array($data['pros']) || !is_array($data['cons'])) {
-                    return 'Expected {"pros": [...], "cons": [...]}';
+                $hasPros = (isset($data['pros']) && is_array($data['pros'])) || (isset($data['pro_ids']) && is_array($data['pro_ids']));
+                $hasCons = (isset($data['cons']) && is_array($data['cons'])) || (isset($data['con_ids']) && is_array($data['con_ids']));
+                if (!$hasPros || !$hasCons) {
+                    return 'Expected {"pro_ids": [...], "con_ids": [...]} or {"pros": [...], "cons": [...]}';
                 }
                 break;
             case 'services':
@@ -1664,22 +1673,22 @@ class ContentGenerationController extends Controller
 
             'reviews_description' => "Write a concise overview for {$businessName}.{$catInfo}{$urlInfo} for the 'What is {$businessName}' section on their reviews page. Provide 1-2 engaging HTML paragraphs explaining what the business is and why users choose it. Return JSON: {\"reviews_description\": \"<p>...</p>\"}", 
 
-            'pros_cons' => "Evaluate {$businessName}.{$catInfo}{$urlInfo} Select the 3 to 5 most accurate Pros and 2 to 4 Cons strictly from the available category options below:
+            'pros_cons' => "Evaluate {$businessName}.{$catInfo}{$urlInfo} Select the 3 to 5 most accurate Pro IDs and 2 to 4 Con IDs strictly from the available category options below:
 
 Available Pros:
-" . ($extra['available_pros'] ?? "- High reliability
-- Good value for money
-- Affordable pricing
-- Easy to use
-- 24/7 customer support") . "
+" . ($extra['available_pros'] ?? "- [ID: 1] High reliability
+- [ID: 2] Good value for money
+- [ID: 3] Affordable pricing
+- [ID: 4] Easy to use
+- [ID: 5] 24/7 customer support") . "
 
 Available Cons:
-" . ($extra['available_cons'] ?? "- Steep learning curve
-- Limited advanced features
-- Hidden additional fees
-- Unclear pricing") . "
+" . ($extra['available_cons'] ?? "- [ID: 6] Steep learning curve
+- [ID: 7] Limited advanced features
+- [ID: 8] Hidden additional fees
+- [ID: 9] Unclear pricing") . "
 
-Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\", \"Con 2\"]}",
+Return JSON strictly using the selected IDs: {\"pro_ids\": [1, 2, 3], \"con_ids\": [6, 7]}",
 
             'services' => "Write the Services section for {$businessName}.{$catInfo}{$urlInfo} which accompanies product screenshots. Provide: 1. A catchy section headline. 2. Top text: 1-2 paragraphs introducing the core platform and user experience before the screenshot tour. 3. Bottom text: 1-2 paragraphs elaborating on extended services, add-ons, or integrations after the screenshots. Return JSON: {\"headline\": \"...\", \"top_text\": \"<p>...</p>\", \"bottom_text\": \"<p>...</p>\"}",
 
@@ -2626,13 +2635,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
                 "reviews_description" => "A regional cloud hosting provider offering high-compliance infrastructure and localized support for enterprises.", 
                 "pros_cons"         => [
-                    "pros" => [
-                        "Fast regional latency",
-                        "Strict local data privacy compliance"
-                    ],
-                    "cons" => [
-                        "Restricted to specific operating countries"
-                    ]
+                    "pro_ids" => [25, 26],
+                    "con_ids" => [27]
                 ],
                 "services"          => [
                     "headline"    => "Regional Cloud & Dedicated Servers",
