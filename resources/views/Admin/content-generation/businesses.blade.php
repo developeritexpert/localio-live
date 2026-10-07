@@ -431,7 +431,23 @@ function insertSampleJson() {
                 "Free domain registration for the first year",
                 "24/7/365 phone, chat, and email support"
             ],
-            "reviews_description": "HostGator provides verified reliable cloud, VPS, and shared hosting for modern businesses."
+            "reviews_description": "HostGator provides verified reliable cloud, VPS, and shared hosting for modern businesses.",
+            "pros_cons": {
+                "pro_ids": [20, 22, 24],
+                "con_ids": [21, 23]
+            },
+            "faqs": [
+                {
+                    "category": "Domains & Plans",
+                    "question": "Does HostGator provide a free domain name?",
+                    "answer": "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
+                },
+                {
+                    "category": "Migration & Setup",
+                    "question": "Can I easily migrate an existing site to HostGator?",
+                    "answer": "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
+                }
+            ]
         },
         {
             "name": "Bluehost",

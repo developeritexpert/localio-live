@@ -53,8 +53,9 @@ class BusinessAlternatives extends Component
         $this->business = Business::with([
             'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
             'category.children',
-            'category.parent',
-            'subCategories',
+            'category.parent.ratingCriteria',
+            'category.ratingCriteria',
+            'subCategories.ratingCriteria',
             'products.categories'
         ])->findOrFail($businessId);
 

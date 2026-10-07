@@ -393,17 +393,51 @@ foreach ($altCriteria as $criterion) {
                                             <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
                                             @php
-                                                $targetCat = $business->category ?? ($tableRowsList->first()?->category ?? null);
+                                                $targetCat = $business->category;
                                                 $allCriteria = collect();
+
                                                 if ($targetCat) {
-                                                    $allCriteria = $targetCat->ratingCriteria;
-                                                    if (!$allCriteria || $allCriteria->isEmpty()) {
-                                                        $allCriteria = $targetCat->getEffectiveRatingCriteria();
+                                                    // If subcategory with parent, rating criteria are defined on the parent (main category)
+                                                    if ($targetCat->parent_id && $targetCat->parent && $targetCat->parent->ratingCriteria->isNotEmpty()) {
+                                                        $allCriteria = $targetCat->parent->ratingCriteria;
+                                                        // If subcategory also defined custom criteria, append them
+                                                        if ($targetCat->ratingCriteria->isNotEmpty()) {
+                                                            $subCustom = $targetCat->ratingCriteria->where('is_default', 0)->whereNotIn('name', $allCriteria->pluck('name'));
+                                                            if ($subCustom->isNotEmpty()) {
+                                                                $allCriteria = $allCriteria->concat($subCustom);
+                                                            }
+                                                        }
+                                                    } elseif ($targetCat->ratingCriteria->isNotEmpty()) {
+                                                        $allCriteria = $targetCat->ratingCriteria;
                                                     }
                                                 }
-                                                if (!$allCriteria || $allCriteria->isEmpty()) {
+
+                                                // Fallback 1: Check table businesses' categories
+                                                if ($allCriteria->isEmpty()) {
+                                                    foreach ($tableRowsList as $tblBiz) {
+                                                        $bCat = $tblBiz->category;
+                                                        if ($bCat) {
+                                                            if ($bCat->parent_id && $bCat->parent && $bCat->parent->ratingCriteria->isNotEmpty()) {
+                                                                $allCriteria = $bCat->parent->ratingCriteria;
+                                                                break;
+                                                            } elseif ($bCat->ratingCriteria->isNotEmpty()) {
+                                                                $allCriteria = $bCat->ratingCriteria;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                // Fallback 2: getEffectiveRatingCriteria()
+                                                if ($allCriteria->isEmpty() && $targetCat) {
+                                                    $allCriteria = $targetCat->getEffectiveRatingCriteria();
+                                                }
+
+                                                // Fallback 3: DefaultRatingCriteria
+                                                if ($allCriteria->isEmpty()) {
                                                     $allCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
                                                 }
+
                                                 $allStartingPrices = collect(getBusinessesWithStartingPrice($tableRowsList))->keyBy('business.id');
                                             @endphp
                                             @foreach($allCriteria as $criterion)
@@ -479,7 +513,9 @@ foreach ($altCriteria as $criterion) {
                                                                     ->avg('rating')
                                                                 : null;
                                                             if ($avg === null && $rowBiz->category) {
-                                                                $bizCrit = $rowBiz->category->getEffectiveRatingCriteria()->first(fn($c) => strtolower($c->name) === strtolower($criterion->name));
+                                                                $bizCrit = $rowBiz->category->ratingCriteria->first(fn($c) => strtolower(trim($c->name)) === strtolower(trim($criterion->name)))
+                                                                    ?? ($rowBiz->category->parent ? $rowBiz->category->parent->ratingCriteria->first(fn($c) => strtolower(trim($c->name)) === strtolower(trim($criterion->name))) : null)
+                                                                    ?? (method_exists($rowBiz->category, 'getEffectiveRatingCriteria') ? $rowBiz->category->getEffectiveRatingCriteria()->first(fn($c) => strtolower(trim($c->name)) === strtolower(trim($criterion->name))) : null);
                                                                 if ($bizCrit) {
                                                                     $avg = \App\Models\ReviewRating::whereIn('review_id', $rRevs->pluck('id'))
                                                                         ->where('criteria_id', $bizCrit->id)
@@ -1457,8 +1493,11 @@ foreach ($altCriteria as $criterion) {
                     $affiliateUrl = $hasBizTrackedUrl ? $biz->getTrackedUrl() : route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bizSlug]);
                     
                     // Fetch criteria ratings
+                    $bizCatForCrit = ($biz->category && $biz->category->parent_id && $biz->category->parent && $biz->category->parent->ratingCriteria->isNotEmpty())
+                        ? $biz->category->parent
+                        : $biz->category;
                     $criteriaRatings = [];
-                    foreach($biz->category->ratingCriteria ?? [] as $criterion) {
+                    foreach($bizCatForCrit->ratingCriteria ?? [] as $criterion) {
                         $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
                         if ($avg !== null) {
                             $criteriaRatings[$criterion->name] = round($avg, 1);

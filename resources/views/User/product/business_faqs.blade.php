@@ -842,6 +842,40 @@
 </section>
 
 
+<!-- Discussions Section (From business details page) -->
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+    @php
+        $totalDiscsCount = $business->discussions()->count();
+        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'faq_page_discussions',
+            getCurrentLanguageID(),
+            ['[count]' => number_format($totalDiscsCount)]
+        );
+        $finalBizDiscHeadline = null;
+        $finalBizDiscSubtext = null;
+        if (!empty($resolvedBizDiscussions['headline'])) {
+            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+            }
+        }
+        if (!empty($resolvedBizDiscussions['subtext'])) {
+            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+        }
+
+        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'faq_discussions_prompt_placeholder',
+            getCurrentLanguageID()
+        );
+        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
+    @endphp
+    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
+    </div>
+</section>
+
 <!-- Explore Subcategories Section -->
 @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
 @php
@@ -927,39 +961,7 @@
 </section>
 @endif
 
-<!-- Discussions Section (From business details page) -->
-<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
-    <div class="container">
-    @php
-        $totalDiscsCount = $business->discussions()->count();
-        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
-            $business,
-            'faq_page_discussions',
-            getCurrentLanguageID(),
-            ['[count]' => number_format($totalDiscsCount)]
-        );
-        $finalBizDiscHeadline = null;
-        $finalBizDiscSubtext = null;
-        if (!empty($resolvedBizDiscussions['headline'])) {
-            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
-            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
-                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
-            }
-        }
-        if (!empty($resolvedBizDiscussions['subtext'])) {
-            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
-        }
 
-        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
-            $business,
-            'faq_discussions_prompt_placeholder',
-            getCurrentLanguageID()
-        );
-        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
-    @endphp
-    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
-    </div>
-</section>
 
 <!-- Report Issue Modal -->
 <div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
