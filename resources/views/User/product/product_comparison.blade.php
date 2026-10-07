@@ -618,24 +618,76 @@
                     @php
                         $businessesWithProCons = collect();
                         foreach ($businesses as $b) {
-                            $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                ->where('reviews.business_id', $b->id)
-                                ->whereIn('reviews.status', ['published', 'active'])
-                                ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
-                                ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                ->orderByDesc('review_count')
-                                ->get();
+                            $bRevCount = $b->relationLoaded('reviews')
+                                ? $b->reviews->whereIn('status', ['published', 'active'])->count()
+                                : ($b->approved_reviews_count ?? 0);
 
-                            $pros = $proCons->where('type', 'pro')->values();
-                            $cons = $proCons->where('type', 'con')->values();
+                            if ($bRevCount < 10) {
+                                // Less than 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
+                                $manualProsCons = $b->relationLoaded('proCons') ? $b->proCons : ($b->proCons ?? collect());
+                                $pros = $manualProsCons->where('type', 'pro')->map(function($item) {
+                                    return (object)[
+                                        'id'           => $item->id,
+                                        'type'         => 'pro',
+                                        'text'         => $item->text,
+                                        'review_count' => null,
+                                    ];
+                                })->values();
+
+                                $cons = $manualProsCons->where('type', 'con')->map(function($item) {
+                                    return (object)[
+                                        'id'           => $item->id,
+                                        'type'         => 'con',
+                                        'text'         => $item->text,
+                                        'review_count' => null,
+                                    ];
+                                })->values();
+                            } else {
+                                // 10 or more reviews: show aggregated pros & cons from user reviews
+                                $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                    ->where('reviews.business_id', $b->id)
+                                    ->whereIn('reviews.status', ['published', 'active'])
+                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                    ->orderByDesc('review_count')
+                                    ->get();
+
+                                $pros = $proCons->where('type', 'pro')->values();
+                                $cons = $proCons->where('type', 'con')->values();
+
+                                // Fallback: If business has >= 10 reviews but no user-submitted pro/cons exist yet
+                                if ($pros->isEmpty() && $cons->isEmpty()) {
+                                    $manualProsCons = $b->relationLoaded('proCons') ? $b->proCons : ($b->proCons ?? collect());
+                                    if ($manualProsCons->isNotEmpty()) {
+                                        $pros = $manualProsCons->where('type', 'pro')->map(function($item) {
+                                            return (object)[
+                                                'id'           => $item->id,
+                                                'type'         => 'pro',
+                                                'text'         => $item->text,
+                                                'review_count' => null,
+                                            ];
+                                        })->values();
+
+                                        $cons = $manualProsCons->where('type', 'con')->map(function($item) {
+                                            return (object)[
+                                                'id'           => $item->id,
+                                                'type'         => 'con',
+                                                'text'         => $item->text,
+                                                'review_count' => null,
+                                            ];
+                                        })->values();
+                                    }
+                                }
+                            }
 
                             if ($pros->count() > 0 || $cons->count() > 0) {
                                 $businessesWithProCons->put($b->id, [
                                     'business' => $b,
-                                    'pros' => $pros,
-                                    'cons' => $cons,
+                                    'pros'     => $pros,
+                                    'cons'     => $cons,
+                                    'revCount' => $bRevCount,
                                 ]);
                             }
                         }
@@ -658,6 +710,7 @@
                                     $bName = $business->translations->first()?->name ?? 'Business';
                                     $bPros = $bProCons ? $bProCons['pros'] : collect();
                                     $bCons = $bProCons ? $bProCons['cons'] : collect();
+                                    $bRevCount = $bProCons['revCount'] ?? ($business->relationLoaded('reviews') ? $business->reviews->whereIn('status', ['published', 'active'])->count() : ($business->approved_reviews_count ?? 0));
                                 @endphp
                                 <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                                     <div class="bg-white p-4 h-100" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column;">
@@ -690,9 +743,11 @@
                                                                 </span>
                                                                 <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
                                                                     {{ $pro->text }}
+                                                                    @if(!empty($pro->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
                                                                         from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}
                                                                     </small>
+                                                                    @endif
                                                                 </span>
                                                             </li>
                                                         @endforeach
@@ -721,9 +776,11 @@
                                                                 </span>
                                                                 <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
                                                                     {{ $con->text }}
+                                                                    @if(!empty($con->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
                                                                         from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}
                                                                     </small>
+                                                                    @endif
                                                                 </span>
                                                             </li>
                                                         @endforeach
@@ -734,7 +791,7 @@
                                             </div>
                                         @else
                                             <div class="d-flex align-items-center justify-content-center text-muted small flex-grow-1" style="min-height: 120px;">
-                                                No user-submitted pros or cons yet.
+                                                {{ $bRevCount < 10 ? 'No pros or cons added yet.' : 'No user-submitted pros or cons yet.' }}
                                             </div>
                                         @endif
                                     </div>
@@ -1007,6 +1064,9 @@
                     @foreach($businesses as $business)
                         @php
                             $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
+                            $bizRevCount = $business->relationLoaded('reviews') 
+                                ? $activeReviews->count() 
+                                : ($business->approved_reviews_count ?? 0);
                             $bName = $business->translations->first()?->name ?? 'Business';
                             $curLang = getCurrentLocale();
                             $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
@@ -1083,7 +1143,8 @@
                                                 </h5>
                                             @endif
 
-                                            <!-- Stars below headline + Arrow + Detailed User Ratings Breakdown Popup -->
+                                            <!-- Stars below headline + Arrow + Detailed User Ratings Breakdown Popup (only when >= 10 approved reviews) -->
+                                            @if($bizRevCount >= 10)
                                             <div class="rating light mb-2" style="display: flex; align-items: center; gap: 6px;">
                                                 <div class="user-rating-breakdown-wrapper position-relative d-inline-block">
                                                     <div class="user-rating-trigger d-inline-flex align-items-center" style="cursor: pointer; gap: 4px;" title="{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}">
@@ -1105,7 +1166,7 @@
                                                         </span>
                                                     </div>
 
-                                                    @if($business->approved_reviews_count >= 10 && isset($bizCriteria) && count($bizCriteria) > 0)
+                                                    @if(isset($bizCriteria) && count($bizCriteria) > 0)
                                                     <div class="dropdown-menu shadow-sm user-rating-breakdown-menu" style="display: none;">
                                                         <div class="user-rating-header">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }}</div>
                                                         <div class="user-rating-body">
@@ -1155,6 +1216,7 @@
                                                     @endif
                                                 </div>
                                             </div>
+                                            @endif
 
                                             @if(!empty($revDesc))
                                                 <div style="color: #444; line-height: 1.6; font-size: 13.5px; margin-bottom: 12px;">

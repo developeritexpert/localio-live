@@ -646,6 +646,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'category.ratingCriteria',
             'products.prices',
             'usps',
+            'proCons',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
@@ -757,6 +758,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             },
             'products.prices',
             'usps',
+            'proCons',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
