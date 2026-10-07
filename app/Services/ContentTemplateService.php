@@ -391,16 +391,9 @@ class ContentTemplateService
         ],
         'compare_subtext' => [
             'label' => 'Sub-headline',
-            'type' => 'single',
+            'type' => 'rich',
             'field1_label' => 'Sub-headline',
-            'description' => 'Sub-headline text below the H1.',
-        ],
-        'compare_overview' => [
-            'label' => 'OVERVIEW / INTRO SECTION',
-            'type' => 'combined',
-            'field1_label' => 'Overview Headline (H2)',
-            'field2_label' => 'Overview Description / Text',
-            'description' => 'Headline and description text for the comparison intro section.',
+            'description' => 'Sub-headline text below the H1 with formatting options.',
         ],
         'compare_interactive_tool' => [
             'label' => 'COMPARE WITH ANY PROVIDER',
@@ -1753,27 +1746,85 @@ class ContentTemplateService
                 4 => 'How [business] compares to other providers',
             ],
             'compare_subtext' => [
-                1 => 'See how [business] compares to other [category_lc] providers.',
-                2 => 'Compare [business] with top competitors on features, ratings, and pricing.',
-                3 => 'Side-by-side analysis of [business] and alternative providers.',
-                4 => 'Discover how [business] measures up against leading competitors.',
-            ],
-            'compare_overview' => [
                 1 => [
-                    'headline' => 'Compare [business]',
-                    'subtext'  => '<p>Explore how [business] compares to other providers in [category_lc], evaluating key features, performance, pricing, and user ratings to help you find the right fit.</p>',
+                    'headline' => 'Comparing [business] with other options? Explore popular comparisons across ratings, features, pros & cons, user reviews, and other important details. See where the leading [entities1_lc] differ and what stands out about each option. Create your own comparison to explore the differences that matter most to you.',
+                    'subtext'  => '<p>Comparing [business] with other options? Explore popular comparisons across ratings, features, pros & cons, user reviews, and other important details. See where the leading [entities1_lc] differ and what stands out about each option. Create your own comparison to explore the differences that matter most to you.</p>',
                 ],
                 2 => [
-                    'headline' => 'About [business] comparisons',
-                    'subtext'  => '<p>See how [business] stacks up against competing [category_lc] solutions. Review side-by-side differences to make an informed decision for your needs.</p>',
+                    'headline' => 'Want to see how [business] compares with other [entities1_lc]? Explore ratings, features, pros & cons, user reviews, and key details across popular comparisons. Discover where the options differ and which strengths stand out. Build your own comparison and take a closer look at the options you are considering.',
+                    'subtext'  => '<p>Want to see how [business] compares with other [entities1_lc]? Explore ratings, features, pros & cons, user reviews, and key details across popular comparisons. Discover where the options differ and which strengths stand out. Build your own comparison and take a closer look at the options you are considering.</p>',
                 ],
                 3 => [
-                    'headline' => '[business] versus the competition',
-                    'subtext'  => '<p>Find out how [business] performs when compared to alternatives in the market, highlighting strengths, weaknesses, and key differentiators.</p>',
+                    'headline' => 'Looking to compare [business] with another [entity1_lc]? Browse popular comparisons and explore differences across ratings, features, pros & cons, and user reviews. See what sets each option apart before exploring the details further. Create a comparison and focus on what matters most for your search.',
+                    'subtext'  => '<p>Looking to compare [business] with another [entity1_lc]? Browse popular comparisons and explore differences across ratings, features, pros & cons, and user reviews. See what sets each option apart before exploring the details further. Create a comparison and focus on what matters most for your search.</p>',
                 ],
                 4 => [
-                    'headline' => 'Evaluating [business] against alternatives',
-                    'subtext'  => '<p>Compare [business] side-by-side with leading options in [category_lc] to choose the solution that best aligns with your goals.</p>',
+                    'headline' => 'Explore how [business] compares with other leading [entities1_lc]. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other useful details. See the differences between the options and discover what stands out about each one. Create your own comparison to explore the choices that interest you most.',
+                    'subtext'  => '<p>Explore how [business] compares with other leading [entities1_lc]. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other useful details. See the differences between the options and discover what stands out about each one. Create your own comparison to explore the choices that interest you most.</p>',
+                ],
+                5 => [
+                    'headline' => 'Considering [business] alongside other options? Compare leading [entities1_lc] across ratings, features, pros & cons, user reviews, and key details. Explore where they differ and which strengths stand out most. Build your own comparison and discover how the options match your priorities.',
+                    'subtext'  => '<p>Considering [business] alongside other options? Compare leading [entities1_lc] across ratings, features, pros & cons, user reviews, and key details. Explore where they differ and which strengths stand out most. Build your own comparison and discover how the options match your priorities.</p>',
+                ],
+                6 => [
+                    'headline' => 'See how [business] compares with other options in [category_lc]. Explore popular comparisons covering ratings, features, pros & cons, user reviews, and other important details. Discover the differences that set each option apart. Create your own comparison for a more detailed look at the choices that matter to you.',
+                    'subtext'  => '<p>See how [business] compares with other options in [category_lc]. Explore popular comparisons covering ratings, features, pros & cons, user reviews, and other important details. Discover the differences that set each option apart. Create your own comparison for a more detailed look at the choices that matter to you.</p>',
+                ],
+                7 => [
+                    'headline' => 'Want a closer look at [business] and its alternatives? Explore popular comparisons across ratings, features, pros & cons, user reviews, and more. See where the leading options differ and what each one has to offer. Create your own comparison and explore the differences most relevant to your needs.',
+                    'subtext'  => '<p>Want a closer look at [business] and its alternatives? Explore popular comparisons across ratings, features, pros & cons, user reviews, and more. See where the leading options differ and what each one has to offer. Create your own comparison and explore the differences most relevant to your needs.</p>',
+                ],
+                8 => [
+                    'headline' => 'Compare [business] with other [entities1_lc] and see what separates the leading options. Explore ratings, features, pros & cons, user reviews, and other key details in popular comparisons. Discover where each option stands out. Create your own comparison to examine the options you want to know more about.',
+                    'subtext'  => '<p>Compare [business] with other [entities1_lc] and see what separates the leading options. Explore ratings, features, pros & cons, user reviews, and other key details in popular comparisons. Discover where each option stands out. Create your own comparison to examine the options you want to know more about.</p>',
+                ],
+                9 => [
+                    'headline' => 'Thinking about [business] and other options? Explore popular comparisons and see how the options differ across ratings, features, pros & cons, user reviews, and more. Take a closer look at the strengths that stand out across the leading choices. Create your own comparison and explore the details most important to you.',
+                    'subtext'  => '<p>Thinking about [business] and other options? Explore popular comparisons and see how the options differ across ratings, features, pros & cons, user reviews, and more. Take a closer look at the strengths that stand out across the leading choices. Create your own comparison and explore the details most important to you.</p>',
+                ],
+                10 => [
+                    'headline' => 'Discover how [business] compares with other leading options. Browse popular comparisons featuring ratings, features, pros & cons, user reviews, and other useful information. See what distinguishes one option from another. Create your own comparison to explore the differences you want to examine further.',
+                    'subtext'  => '<p>Discover how [business] compares with other leading options. Browse popular comparisons featuring ratings, features, pros & cons, user reviews, and other useful information. See what distinguishes one option from another. Create your own comparison to explore the differences you want to examine further.</p>',
+                ],
+                11 => [
+                    'headline' => 'Looking at [business] alongside other [entities1_lc]? Explore popular comparisons and see how the options differ across ratings, features, pros & cons, and user reviews. Compare the details that stand out and explore each option more closely. Create your own comparison around the choices you are most interested in.',
+                    'subtext'  => '<p>Looking at [business] alongside other [entities1_lc]? Explore popular comparisons and see how the options differ across ratings, features, pros & cons, and user reviews. Compare the details that stand out and explore each option more closely. Create your own comparison around the choices you are most interested in.</p>',
+                ],
+                12 => [
+                    'headline' => 'Explore [business] comparisons and discover how it differs from other leading [entities1_lc]. Ratings, features, pros & cons, user reviews, and key details make the differences easier to explore. Browse popular comparisons or create your own to examine the options that best match what you are looking for.',
+                    'subtext'  => '<p>Explore [business] comparisons and discover how it differs from other leading [entities1_lc]. Ratings, features, pros & cons, user reviews, and key details make the differences easier to explore. Browse popular comparisons or create your own to examine the options that best match what you are looking for.</p>',
+                ],
+                13 => [
+                    'headline' => 'See how [business] stacks up against other options in [category_lc]. Explore popular comparisons across ratings, features, pros & cons, user reviews, and important details. Discover the strengths and differences that stand out. Create your own comparison for a closer look at the options that interest you most.',
+                    'subtext'  => '<p>See how [business] stacks up against other options in [category_lc]. Explore popular comparisons across ratings, features, pros & cons, user reviews, and important details. Discover the strengths and differences that stand out. Create your own comparison for a closer look at the options that interest you most.</p>',
+                ],
+                14 => [
+                    'headline' => 'Interested in comparing [business] with other [entities1_lc]? Explore popular comparisons and discover differences across ratings, features, pros & cons, user reviews, and more. See what stands out about the leading choices. Create your own comparison to explore the options that matter most to your decision.',
+                    'subtext'  => '<p>Interested in comparing [business] with other [entities1_lc]? Explore popular comparisons and discover differences across ratings, features, pros & cons, user reviews, and more. See what stands out about the leading choices. Create your own comparison to explore the options that matter most to your decision.</p>',
+                ],
+                15 => [
+                    'headline' => 'Compare [business] with leading alternatives and explore what makes each option different. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other useful details. See where the options differ most. Create your own comparison and discover which details matter most to you.',
+                    'subtext'  => '<p>Compare [business] with leading alternatives and explore what makes each option different. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other useful details. See where the options differ most. Create your own comparison and discover which details matter most to you.</p>',
+                ],
+                16 => [
+                    'headline' => 'Want to compare [business] with other options? Browse popular comparisons across ratings, features, pros & cons, user reviews, and more. Discover where the leading [entities1_lc] differ and what stands out about each one. Create your own comparison for a detailed view of the choices that interest you.',
+                    'subtext'  => '<p>Want to compare [business] with other options? Browse popular comparisons across ratings, features, pros & cons, user reviews, and more. Discover where the leading [entities1_lc] differ and what stands out about each one. Create your own comparison for a detailed view of the choices that interest you.</p>',
+                ],
+                17 => [
+                    'headline' => 'Explore how [business] compares across the details that matter. Popular comparisons include ratings, features, pros & cons, user reviews, and other useful details about the leading options. See where the differences become clear. Create your own comparison and focus on the choices most relevant to you.',
+                    'subtext'  => '<p>Explore how [business] compares across the details that matter. Popular comparisons include ratings, features, pros & cons, user reviews, and other useful details about the leading options. See where the differences become clear. Create your own comparison and focus on the choices most relevant to you.</p>',
+                ],
+                18 => [
+                    'headline' => 'Considering several options alongside [business]? Explore popular comparisons and see how leading [entities1_lc] differ across ratings, features, pros & cons, user reviews, and key details. Discover what makes each option stand out. Create your own comparison to examine the alternatives you want to explore further.',
+                    'subtext'  => '<p>Considering several options alongside [business]? Explore popular comparisons and see how leading [entities1_lc] differ across ratings, features, pros & cons, user reviews, and key details. Discover what makes each option stand out. Create your own comparison to examine the alternatives you want to explore further.</p>',
+                ],
+                19 => [
+                    'headline' => 'Discover the differences between [business] and other leading [entities1_lc]. Browse popular comparisons covering ratings, features, pros & cons, user reviews, and more. Explore what stands out about each option and where they differ most. Create your own comparison around the options that catch your interest.',
+                    'subtext'  => '<p>Discover the differences between [business] and other leading [entities1_lc]. Browse popular comparisons covering ratings, features, pros & cons, user reviews, and more. Explore what stands out about each option and where they differ most. Create your own comparison around the options that catch your interest.</p>',
+                ],
+                20 => [
+                    'headline' => 'Compare [business] with other options and explore the details behind the differences. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other important information. See what makes each option stand out. Create your own comparison to take a closer look at the choices that interest you.',
+                    'subtext'  => '<p>Compare [business] with other options and explore the details behind the differences. Popular comparisons bring together ratings, features, pros & cons, user reviews, and other important information. See what makes each option stand out. Create your own comparison to take a closer look at the choices that interest you.</p>',
                 ],
             ],
             'compare_interactive_tool' => [
@@ -2202,26 +2253,27 @@ class ContentTemplateService
 
         if ($langId > 1) {
             foreach (array_keys($fieldDefs) as $fKey) {
-                $hasFieldTemplate = ContentTemplate::where('section_group', $sectionGroup)
+                $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
                     ->where('field_key', $fKey)
-                    ->where('lang_id', $langId)
-                    ->exists();
+                    ->where('lang_id', 1)
+                    ->get();
 
-                if (!$hasFieldTemplate) {
-                    $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
+                foreach ($defaultTemplates as $defTpl) {
+                    $existsForLang = ContentTemplate::where('section_group', $sectionGroup)
                         ->where('field_key', $fKey)
-                        ->where('lang_id', 1)
-                        ->get();
+                        ->where('lang_id', $langId)
+                        ->where('option_number', $defTpl->option_number)
+                        ->exists();
 
-                    foreach ($defaultTemplates as $defTpl) {
+                    if (!$existsForLang) {
                         ContentTemplate::create([
                             'section_group' => $defTpl->section_group,
-                            'field_key' => $defTpl->field_key,
+                            'field_key'     => $defTpl->field_key,
                             'option_number' => $defTpl->option_number,
-                            'headline' => $defTpl->headline,
-                            'subtext' => $defTpl->subtext,
-                            'is_active' => $defTpl->is_active,
-                            'lang_id' => $langId,
+                            'headline'      => $defTpl->headline,
+                            'subtext'       => $defTpl->subtext,
+                            'is_active'     => $defTpl->is_active,
+                            'lang_id'       => $langId,
                         ]);
                     }
                 }

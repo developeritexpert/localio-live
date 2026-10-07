@@ -721,7 +721,7 @@ $(document).ready(function() {
         if (subtextEditor) {
             let sData = subtextEditor.getData();
             $('#inputSubtext').val(sData);
-            if (!$('#wrapHeadline').is(':visible') || $('#tpl_field_key').val() === 'alternatives_subtext') {
+            if (!$('#wrapHeadline').is(':visible') || $('#tpl_field_key').val() === 'alternatives_subtext' || $('#tpl_field_key').val() === 'compare_subtext') {
                 $('#inputHeadline').val(stripHtmlTags(sData));
             }
         }

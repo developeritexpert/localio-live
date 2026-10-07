@@ -104,7 +104,9 @@
                             'compare_subtext',
                             getCurrentLanguageID()
                         );
-                        $finalCompSub = !empty($resolvedCompSub['headline']) ? $resolvedCompSub['headline'] : $subHeadline;
+                        $finalCompSub = !empty($resolvedCompSub['subtext'])
+                            ? $resolvedCompSub['subtext']
+                            : (!empty($resolvedCompSub['headline']) ? $resolvedCompSub['headline'] : $subHeadline);
                     @endphp
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
                         <h1 style=" margin: 0; ">
@@ -115,7 +117,7 @@
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     @if(!empty($finalCompSub))
-                    <div style="margin: 0; color: #1e3050;">
+                    <div class="ck-content" style="margin: 0; color: #1e3050;">
                         {!! $finalCompSub !!}
                     </div>
                     @endif
@@ -138,30 +140,6 @@
         <div class="row g-4">
             <!-- Left Side: Title 1 & Description 1 AND Interactive Compare Tool -->
             <div class="col-lg-8 col-12">
-                <!-- Section 1: Intro Text -->
-                @php
-                    $resolvedCompOverview = \App\Services\ContentTemplateService::resolveBusinessSection(
-                        $business,
-                        'compare_overview',
-                        getCurrentLanguageID()
-                    );
-                    $finalCompOverviewTitle = !empty($resolvedCompOverview['headline']) ? $resolvedCompOverview['headline'] : $compTitle1;
-                    $finalCompOverviewDesc = !empty($resolvedCompOverview['subtext']) ? $resolvedCompOverview['subtext'] : $compDesc1;
-                @endphp
-                @if($finalCompOverviewTitle || $finalCompOverviewDesc)
-                    <div class="mb-4">
-                        @if($finalCompOverviewTitle)
-                            <h2 style="margin-bottom: 12px;">
-                                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompOverviewTitle) !!}
-                            </h2>
-                        @endif
-                        @if($finalCompOverviewDesc)
-                            <div class="content_box" style="font-size: 15px; color: #4a5568; line-height: 1.6;">
-                                {!! $finalCompOverviewDesc !!}
-                            </div>
-                        @endif
-                    </div>
-                @endif
 
                 <!-- Section 2: Interactive Compare Tool Box (Replacing 2nd text) -->
                 @php
@@ -319,35 +297,6 @@
                     </div>
                 </div>
 
-                <!-- Widget 2: Popular Comparisons Sidebar -->
-                @if(isset($popularComparisons) && count($popularComparisons) > 0)
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
-                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin: 0;">{{ static_text('popular_comparisons_heading') ?: 'Popular comparisons' }}</h6>
-                            <a href="#grid-all-comparisons-section" style="color: #002347; font-weight: 600; font-size: 13px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                View all comparisons
-                            </a>
-                        </div>
-
-                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px;">
-                            @foreach($popularComparisons->take(5) as $popPeer)
-                                @php
-                                    $popPeerName = $popPeer->translations->first()->name ?? 'Business';
-                                    $popUrl = route('product-comparison.seo', [
-                                        'locale' => app()->getLocale(),
-                                        'comparison_slug' => $compSlug,
-                                        'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($popPeerName)
-                                    ]);
-                                @endphp
-                                <li>
-                                    <a href="{{ $popUrl }}" style="color: #2b6cb0; text-decoration: none; font-weight: 600;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                        {{ $bName }} VS {{ $popPeerName }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
 
                 <!-- Widget 3: More About Business Card -->
                 <x-more-about-business :business="$business" current="compare" />
@@ -374,7 +323,7 @@
                 {!! \App\Services\ContentTemplateService::cleanHeading($finalCompPopHeadline) !!}
             </h2>
             @if(!empty($finalCompPopSubtext))
-            <div style="margin: 0; color: #475569; font-size: 15px;">
+            <div style="margin: 0; color: #475569; font-size: 16px;">
                 {!! $finalCompPopSubtext !!}
             </div>
             @endif
@@ -450,7 +399,7 @@
                 {!! \App\Services\ContentTemplateService::cleanHeading($finalCompRecHeadline) !!}
             </h2>
             @if(!empty($finalCompRecSubtext))
-            <div style="margin: 0; color: #475569; font-size: 15px;">
+            <div style="margin: 0; color: #475569; font-size: 16px;">
                 {!! $finalCompRecSubtext !!}
             </div>
             @endif
@@ -508,6 +457,40 @@
 </section>
 @endif
 
+<!-- Discussions Section (From business details page) -->
+<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+    @php
+        $totalDiscsCount = $business->discussions()->count();
+        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'compare_page_discussions',
+            getCurrentLanguageID(),
+            ['[count]' => number_format($totalDiscsCount)]
+        );
+        $finalBizDiscHeadline = null;
+        $finalBizDiscSubtext = null;
+        if (!empty($resolvedBizDiscussions['headline'])) {
+            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
+            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
+                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
+            }
+        }
+        if (!empty($resolvedBizDiscussions['subtext'])) {
+            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
+        }
+
+        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
+            $business,
+            'compare_discussions_prompt_placeholder',
+            getCurrentLanguageID()
+        );
+        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
+    @endphp
+    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
+    </div>
+</section>
+
 <!-- Explore Subcategories Section (Matching Category Page) -->
 @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
 @php
@@ -519,14 +502,14 @@
     $finalCompExploreHeadline = !empty($resolvedCompExplore['headline']) ? $resolvedCompExplore['headline'] : ($exploreSubcategories['title'] ?? 'Explore categories');
     $finalCompExploreSubtext = !empty($resolvedCompExplore['subtext']) ? $resolvedCompExplore['subtext'] : 'Browse specialized categories to find the exact tools and solutions for your requirements.';
 @endphp
-<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
+<section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 style="margin-bottom: 6px;">
                 {!! \App\Services\ContentTemplateService::cleanHeading($finalCompExploreHeadline) !!}
             </h2>
             @if(!empty($finalCompExploreSubtext))
-            <div style="margin: 0; color: #475569; font-size: 15px;">
+            <div style="margin: 0; color: #475569; font-size: 16px;">
                 {!! $finalCompExploreSubtext !!}
             </div>
             @endif
@@ -575,39 +558,7 @@
 </section>
 @endif
 
-<!-- Discussions Section (From business details page) -->
-<section class="business-discussions-sec py-5" id="sectionDiscussions" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
-    <div class="container">
-    @php
-        $totalDiscsCount = $business->discussions()->count();
-        $resolvedBizDiscussions = \App\Services\ContentTemplateService::resolveBusinessSection(
-            $business,
-            'compare_page_discussions',
-            getCurrentLanguageID(),
-            ['[count]' => number_format($totalDiscsCount)]
-        );
-        $finalBizDiscHeadline = null;
-        $finalBizDiscSubtext = null;
-        if (!empty($resolvedBizDiscussions['headline'])) {
-            $finalBizDiscHeadline = $resolvedBizDiscussions['headline'];
-            if (!str_contains($finalBizDiscHeadline, '(') && !str_contains($finalBizDiscHeadline, (string)$totalDiscsCount)) {
-                $finalBizDiscHeadline .= ' (' . number_format($totalDiscsCount) . ')';
-            }
-        }
-        if (!empty($resolvedBizDiscussions['subtext'])) {
-            $finalBizDiscSubtext = $resolvedBizDiscussions['subtext'];
-        }
 
-        $resolvedPromptP = \App\Services\ContentTemplateService::resolveBusinessSection(
-            $business,
-            'compare_discussions_prompt_placeholder',
-            getCurrentLanguageID()
-        );
-        $finalPromptPlaceholder = !empty($resolvedPromptP['headline']) ? $resolvedPromptP['headline'] : null;
-    @endphp
-    <x-community-discussion :business="$business" :headline="$finalBizDiscHeadline" :subtext="$finalBizDiscSubtext" :promptPlaceholder="$finalPromptPlaceholder" />
-    </div>
-</section>
 
 @endsection
 
