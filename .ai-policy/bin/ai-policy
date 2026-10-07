@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# =============================================================================
+# .ai-policy/bin/ai-policy
+# =============================================================================
+# Universal AI Policy -- Command Line Interface
+#
+# COMMANDS
+#   ai-policy check    Machine-readable: prints LOCKED or ENABLED (only)
+#   ai-policy status   Human-readable status report
+#   ai-policy enable   [Phase 1 only] Enable AI coding locally
+#   ai-policy disable  [Phase 1 only] Disable AI coding locally
+#   ai-policy help     Show help
+#
+# PHASE 2 NOTE
+#   The 'enable' and 'disable' commands are Phase 1 prototype commands.
+#   Phase 2 will remove developer-controlled enable/disable.
+#   Authorization will be managed by an administrator via an external
+#   Policy Server. Developers will only retain: check, status.
+#
+# FAIL-CLOSED
+#   Any error resolves to LOCKED. Never fails open.
+# =============================================================================
+
+set -euo pipefail
+
+# Locate this script's directory and source the core library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$(cd "${SCRIPT_DIR}/../lib" && pwd)"
+
+if [[ ! -f "${LIB_DIR}/policy-checker" ]]; then
+    # Core library missing -- fail closed
+    echo "LOCKED" >&2
+    exit 1
+fi
+
+# shellcheck source=.ai-policy/lib/policy-checker
+source "${LIB_DIR}/policy-checker"
+
+# ---------------------------------------------------------------------------
+# Subcommand: check
+#   Outputs exactly LOCKED or ENABLED. Nothing else.
+#   For machine consumption (AI agents, scripts).
+# ---------------------------------------------------------------------------
+cmd_check() {
+    ai_policy_check
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand: status
+#   Human-readable status.
+# ---------------------------------------------------------------------------
+cmd_status() {
+    local project
+    project="$(ai_policy_get_project_name)"
+    local state
+    state="$(ai_policy_check)"
+    printf "Project:     %s\n" "$project"
+    printf "AI coding:   %s\n" "$state"
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand: enable  [Phase 1 prototype only]
+# ---------------------------------------------------------------------------
+cmd_enable() {
+    echo ""
+    echo "  [Phase 1] Developer-controlled enable/disable."
+    echo "  Phase 2 will remove these commands. Authorization will require"
+    echo "  an administrator acting through an external Policy Server."
+    echo ""
+
+    if _ai_policy_write_state "enabled"; then
+        local project
+        project="$(ai_policy_get_project_name)"
+        printf "Project:     %s\n" "$project"
+        printf "AI coding:   ENABLED\n"
+    else
+        echo "ERROR: Failed to write policy state. Check permissions." >&2
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand: disable  [Phase 1 prototype only]
+# ---------------------------------------------------------------------------
+cmd_disable() {
+    echo ""
+    echo "  [Phase 1] Developer-controlled enable/disable."
+    echo "  Phase 2 will remove these commands. Authorization will require"
+    echo "  an administrator acting through an external Policy Server."
+    echo ""
+
+    if _ai_policy_write_state "locked"; then
+        local project
+        project="$(ai_policy_get_project_name)"
+        printf "Project:     %s\n" "$project"
+        printf "AI coding:   LOCKED\n"
+    else
+        echo "ERROR: Failed to write policy state. Check permissions." >&2
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand: help
+# ---------------------------------------------------------------------------
+cmd_help() {
+    cat <<HELPEOF
+ai-policy -- Universal AI Coding Policy CLI
+
+USAGE
+  ai-policy <command>
+
+COMMANDS
+  check      Machine-readable: prints LOCKED or ENABLED (nothing else)
+  status     Human-readable status report
+  enable     [Phase 1 only] Enable AI coding for this project
+  disable    [Phase 1 only] Disable AI coding for this project
+  help       Show this help
+
+POLICY FILE
+  .ai-policy/policy.json (relative to Git repo root)
+
+DEFAULT STATE
+  LOCKED (fail-closed: any error resolves to LOCKED)
+
+PHASE 2
+  The 'enable' and 'disable' commands will be replaced by administrator-
+  controlled external Policy Server authorization.
+
+DOCUMENTATION
+  docs/ai-policy.md
+HELPEOF
+}
+
+# ---------------------------------------------------------------------------
+# Main dispatcher
+# ---------------------------------------------------------------------------
+main() {
+    local subcommand="${1:-help}"
+
+    case "$subcommand" in
+        check)   cmd_check ;;
+        status)  cmd_status ;;
+        enable)  cmd_enable ;;
+        disable) cmd_disable ;;
+        help|--help|-h) cmd_help ;;
+        *)
+            echo "Unknown command: $subcommand" >&2
+            echo "Run: ai-policy help" >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
