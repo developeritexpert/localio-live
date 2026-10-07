@@ -8,6 +8,7 @@ use App\Models\AiContentQueue;
 use App\Models\AiPrompt;
 use App\Models\Business;
 use App\Models\BusinessFaq;
+use App\Models\BusinessFaqCategory;
 use App\Models\BusinessFaqTranslation;
 use App\Models\BusinessTranslation;
 use App\Models\BusinessUsp;
@@ -678,9 +679,28 @@ class ContentGenerationController extends Controller
                 $q = $faq['question'] ?? ($faq['q'] ?? null);
                 $a = $faq['answer'] ?? ($faq['a'] ?? null);
                 if (!$q || !$a) continue;
+
+                $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? '')));
+                $faqCatId = null;
+                if (!empty($catName)) {
+                    $catObj = BusinessFaqCategory::where('business_id', $businessId)
+                        ->whereRaw('LOWER(name) = ?', [mb_strtolower($catName)])
+                        ->first();
+                    if (!$catObj) {
+                        $nextPos = (BusinessFaqCategory::where('business_id', $businessId)->max('position') ?? 0) + 1;
+                        $catObj = BusinessFaqCategory::create([
+                            'business_id' => $businessId,
+                            'name'        => $catName,
+                            'position'    => $nextPos,
+                            'status'      => 1,
+                        ]);
+                    }
+                    $faqCatId = $catObj->id;
+                }
+
                 $bizFaq = BusinessFaq::create([
                     'business_id'              => $businessId,
-                    'business_faq_category_id' => null,
+                    'business_faq_category_id' => $faqCatId,
                     'position'                 => $fIndex + 1,
                     'status'                   => true,
                 ]);
@@ -1379,9 +1399,27 @@ class ContentGenerationController extends Controller
                         $answer   = $faq['answer']   ?? null;
                         if (!$question || !$answer) continue;
 
+                        $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? '')));
+                        $faqCatId = null;
+                        if (!empty($catName)) {
+                            $catObj = BusinessFaqCategory::where('business_id', $businessId)
+                                ->whereRaw('LOWER(name) = ?', [mb_strtolower($catName)])
+                                ->first();
+                            if (!$catObj) {
+                                $nextPos = (BusinessFaqCategory::where('business_id', $businessId)->max('position') ?? 0) + 1;
+                                $catObj = BusinessFaqCategory::create([
+                                    'business_id' => $businessId,
+                                    'name'        => $catName,
+                                    'position'    => $nextPos,
+                                    'status'      => 1,
+                                ]);
+                            }
+                            $faqCatId = $catObj->id;
+                        }
+
                         $bizFaq = BusinessFaq::create([
                             'business_id'              => $businessId,
-                            'business_faq_category_id' => null,
+                            'business_faq_category_id' => $faqCatId,
                             'position'                 => $index + 1,
                             'status'                   => true,
                         ]);
@@ -1563,7 +1601,7 @@ class ContentGenerationController extends Controller
                 break;
             case 'faqs':
                 if (!isset($data['faqs']) || !is_array($data['faqs'])) {
-                    return 'Expected {"faqs": [{"question":..., "answer":...}]}';
+                    return 'Expected {"faqs": [{"category": "...", "question": "...", "answer": "..."}]}';
                 }
                 break;
             case 'categories':
@@ -1645,7 +1683,7 @@ Return JSON: {\"pros\": [\"Pro 1\", \"Pro 2\", \"Pro 3\"], \"cons\": [\"Con 1\",
 
             'services' => "Write the Services section for {$businessName}.{$catInfo}{$urlInfo} which accompanies product screenshots. Provide: 1. A catchy section headline. 2. Top text: 1-2 paragraphs introducing the core platform and user experience before the screenshot tour. 3. Bottom text: 1-2 paragraphs elaborating on extended services, add-ons, or integrations after the screenshots. Return JSON: {\"headline\": \"...\", \"top_text\": \"<p>...</p>\", \"bottom_text\": \"<p>...</p>\"}",
 
-            'faqs' => "Write 5 high-value FAQs for {$businessName}.{$catInfo}{$urlInfo} addressing common customer questions regarding plans, pricing, key features, setup, and support. Return JSON: {\"faqs\": [{\"question\": \"...\", \"answer\": \"...\"}]}",
+            'faqs' => "Write 5 high-value FAQs for {$businessName}.{$catInfo}{$urlInfo} addressing common customer questions regarding plans, pricing, key features, setup, and support. Group each FAQ logically under a category (e.g. \"Plans & Pricing\", \"Setup & Migration\", \"Features\", \"Support\"). Return JSON: {\"faqs\": [{\"category\": \"...\", \"question\": \"...\", \"answer\": \"...\"}]}",
 
             'categories' => "Analyze {$businessName}.{$urlInfo} Select the most suitable primary category ID and up to 3 subcategory IDs from the following list:
 " . ($extra['category_list'] ?? "No category list provided") . "
@@ -2555,10 +2593,12 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 ],
                 "faqs"              => [
                     [
+                        "category" => "Domains & Plans",
                         "question" => "Does HostGator provide a free domain name?",
                         "answer"   => "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
                     ],
                     [
+                        "category" => "Migration & Setup",
                         "question" => "Can I easily migrate an existing site to HostGator?",
                         "answer"   => "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
                     ]
@@ -2601,8 +2641,14 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 ],
                 "faqs"              => [
                     [
+                        "category" => "Coverage & Availability",
                         "question" => "Which countries do you operate in?",
                         "answer"   => "Services are exclusively available in the United States, United Kingdom, Canada, Australia, and Germany."
+                    ],
+                    [
+                        "category" => "Compliance & Security",
+                        "question" => "Are your servers compliant with local data protection regulations?",
+                        "answer"   => "Yes, all regional data centers maintain ISO 27001 certification and comply with local data sovereignty laws."
                     ]
                 ],
                 "categories"        => [

@@ -2032,9 +2032,16 @@ public function uploadFaqJson(): void
                     $catObj = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)
                         ->whereRaw('LOWER(name) = ?', [strtolower($categoryName)])
                         ->first();
-                    if ($catObj) {
-                        $categoryId = $catObj->id;
+                    if (!$catObj) {
+                        $nextCatPos = (BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->max('position') ?? 0) + 1;
+                        $catObj = BusinessFaqCategory::create([
+                            'business_id' => $this->selectedBusinessForFAQ,
+                            'name'        => $categoryName,
+                            'position'    => $nextCatPos,
+                            'status'      => 1
+                        ]);
                     }
+                    $categoryId = $catObj->id;
                 }
 
                 $currentPosition++;
