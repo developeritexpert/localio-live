@@ -127,8 +127,6 @@ PHASE 2
   The 'enable' and 'disable' commands will be replaced by administrator-
   controlled external Policy Server authorization.
 
-DOCUMENTATION
-  docs/ai-policy.md
 HELPEOF
 }
 
