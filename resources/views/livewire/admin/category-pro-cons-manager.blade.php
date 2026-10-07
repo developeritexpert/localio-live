@@ -9,6 +9,9 @@
             </div>
             <div class="nk-block-head-content">
                 <div class="toggle-wrap nk-block-tools-toggle">
+                    <button class="btn btn-outline-danger me-2" wire:click="openDeleteAllModal" @if(($totalProConsCount ?? 0) === 0) disabled @endif>
+                        <em class="icon ni ni-trash"></em> <span>Delete All</span>
+                    </button>
                     <button class="btn btn-outline-primary me-2" wire:click="openJsonModal">
                         <em class="icon ni ni-code"></em> <span>Paste JSON</span>
                     </button>
@@ -281,6 +284,86 @@
                         <button type="button" class="btn btn-primary" wire:click="importJsonText" wire:loading.attr="disabled">
                             <span wire:loading.remove><em class="icon ni ni-check-circle me-1"></em> Import JSON</span>
                             <span wire:loading>Importing...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Delete All Confirmation Modal -->
+    @if($showDeleteAllModal)
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title text-danger d-flex align-items-center gap-2">
+                            <em class="icon ni ni-alert-fill"></em> <span>Delete Pros & Cons</span>
+                        </h5>
+                        <button type="button" class="btn-close" wire:click="closeDeleteAllModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger d-flex align-items-start  mb-3">
+                            <em class="icon ni ni-alert-circle" style="font-size: 20px; flex-shrink: 0; margin-top: 2px;"></em>
+                            <div>
+                                <strong>Warning:</strong> This action will permanently remove the selected Pros & Cons from the database. This cannot be undone.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Scope to Delete</label>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="deleteAllScope" id="scopeAll" value="all" wire:model.live="deleteAllScope">
+                                <label class="form-check-label" for="scopeAll">
+                                    <strong>All Categories</strong> (Entire Database)
+                                    <div class="text-muted small">Delete all {{ $totalProConsCount ?? 0 }} Pros & Cons across all categories.</div>
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="deleteAllScope" id="scopeCategory" value="category" wire:model.live="deleteAllScope">
+                                <label class="form-check-label" for="scopeCategory">
+                                    <strong>Specific Category Only</strong>
+                                    <div class="text-muted small">Only delete Pros & Cons for a single selected category.</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        @if($deleteAllScope === 'category')
+                            <div class="mb-3 ps-3 border-start border-3 border-danger">
+                                <label class="form-label fw-bold">Choose Category <span class="text-danger">*</span></label>
+                                <select class="form-select @error('deleteAllCategoryId') is-invalid @enderror" wire:model.live="deleteAllCategoryId">
+                                    <option value="">-- Select Category --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}">{{ $cat->categoryTranslations->first()->name ?? $cat->categoryTranslations->first()->title ?? 'Category #'.$cat->id }}</option>
+                                    @endforeach
+                                </select>
+                                @error('deleteAllCategoryId') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        @endif
+
+                        <div class="p-3 bg-light rounded border mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Items to be deleted:</span>
+                                <span class="badge bg-danger fs-6">{{ $this->deleteCount }} item(s)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="confirmDeleteCheckbox" wire:model.live="confirmDeleteCheckbox">
+                            <label class="form-check-label text-dark fw-semibold" for="confirmDeleteCheckbox" style="font-size: 13px;">
+                                I confirm that I want to permanently delete these {{ $this->deleteCount }} item(s).
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click="closeDeleteAllModal">Cancel</button>
+                        <button type="button" class="btn btn-danger" wire:click="executeDeleteAll" 
+                                @if(!$confirmDeleteCheckbox || $this->deleteCount === 0) disabled @endif
+                                wire:loading.attr="disabled">
+                            <span wire:loading.remove><em class="icon ni ni-trash me-1"></em> Delete {{ $this->deleteCount }} Item(s)</span>
+                            <span wire:loading><span class="spinner-border spinner-border-sm me-1" role="status"></span> Deleting...</span>
                         </button>
                     </div>
                 </div>

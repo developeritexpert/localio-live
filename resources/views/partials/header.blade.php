@@ -366,7 +366,7 @@
     }
 
     .mobile-subcat-parent-link {
-        color: #F9633B !important;
+        color: #ffffffe6 !important;
         font-size: 16px;
         font-weight: 700 !important;
         text-decoration: none !important;

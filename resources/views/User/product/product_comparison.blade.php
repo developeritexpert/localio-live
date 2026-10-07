@@ -1087,7 +1087,7 @@
                                         $revUser = $rev->user;
                                         $initial = strtoupper(substr($revUser->first_name ?? ($rev->public_name ?? 'A'), 0, 1));
                                     @endphp
-                                                                        <div class="comp-single-review-card review_detl" 
+                                    <div class="comp-single-review-card review_detl" 
                                          id="review-{{ $rev->id }}"
                                          data-rating="{{ round($rev->rating) }}" 
                                          data-date="{{ $rev->created_at->timestamp }}"

@@ -37,6 +37,12 @@ class CategoryProConsManager extends Component
     public $jsonUploadMessage = '';
     public $jsonUploadError = '';
 
+    // Delete All Modal
+    public $showDeleteAllModal = false;
+    public $deleteAllScope = 'all'; // 'all' or 'category'
+    public $deleteAllCategoryId = '';
+    public $confirmDeleteCheckbox = false;
+
     protected $rules = [
         'category_id' => 'required|exists:categories,id',
         'type'        => 'required|in:pro,con',
@@ -234,6 +240,93 @@ class CategoryProConsManager extends Component
         }
     }
 
+    public function openDeleteAllModal()
+    {
+        $this->resetValidation();
+        $this->confirmDeleteCheckbox = false;
+        if (!empty($this->selectedCategoryFilter)) {
+            $this->deleteAllScope = 'category';
+            $this->deleteAllCategoryId = $this->selectedCategoryFilter;
+        } else {
+            $this->deleteAllScope = 'all';
+            $this->deleteAllCategoryId = '';
+        }
+        $this->showDeleteAllModal = true;
+    }
+
+    public function closeDeleteAllModal()
+    {
+        $this->showDeleteAllModal = false;
+        $this->confirmDeleteCheckbox = false;
+        $this->resetValidation();
+    }
+
+    public function getDeleteCountProperty()
+    {
+        if ($this->deleteAllScope === 'category') {
+            if (empty($this->deleteAllCategoryId)) {
+                return 0;
+            }
+            return CategoryProCon::where('category_id', $this->deleteAllCategoryId)->count();
+        }
+
+        return CategoryProCon::count();
+    }
+
+    public function executeDeleteAll()
+    {
+        if (!$this->confirmDeleteCheckbox) {
+            return;
+        }
+
+        if ($this->deleteAllScope === 'category') {
+            $this->validate([
+                'deleteAllCategoryId' => 'required|exists:categories,id',
+            ], [
+                'deleteAllCategoryId.required' => 'Please select a Category to delete.',
+            ]);
+
+            $catId = $this->deleteAllCategoryId;
+            $count = CategoryProCon::where('category_id', $catId)->count();
+
+            if ($count === 0) {
+                session()->flash('message', 'No Pros & Cons found in the selected category.');
+                $this->closeDeleteAllModal();
+                return;
+            }
+
+            \Illuminate\Support\Facades\DB::transaction(function () use ($catId) {
+                $ids = CategoryProCon::where('category_id', $catId)->pluck('id')->toArray();
+                if (!empty($ids)) {
+                    \Illuminate\Support\Facades\DB::table('review_pro_cons')->whereIn('category_pro_con_id', $ids)->delete();
+                    \Illuminate\Support\Facades\DB::table('business_pro_cons')->whereIn('category_pro_con_id', $ids)->update(['category_pro_con_id' => null]);
+                    CategoryProCon::whereIn('id', $ids)->delete();
+                }
+            });
+
+            session()->flash('message', "Successfully deleted {$count} Pros & Cons for the selected category.");
+        } else {
+            $count = CategoryProCon::count();
+
+            if ($count === 0) {
+                session()->flash('message', 'No Pros & Cons found to delete.');
+                $this->closeDeleteAllModal();
+                return;
+            }
+
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                \Illuminate\Support\Facades\DB::table('review_pro_cons')->delete();
+                \Illuminate\Support\Facades\DB::table('business_pro_cons')->whereNotNull('category_pro_con_id')->update(['category_pro_con_id' => null]);
+                CategoryProCon::query()->delete();
+            });
+
+            session()->flash('message', "Successfully deleted all {$count} Pros & Cons.");
+        }
+
+        $this->resetPage();
+        $this->closeDeleteAllModal();
+    }
+
     public function render()
     {
         $langId = getCurrentLanguageID();
@@ -265,8 +358,9 @@ class CategoryProConsManager extends Component
         $items = $query->orderBy('category_id')->orderBy('type')->orderBy('id', 'desc')->paginate(20);
 
         return view('livewire.admin.category-pro-cons-manager', [
-            'categories' => $categories,
-            'items'      => $items,
+            'categories'        => $categories,
+            'items'             => $items,
+            'totalProConsCount' => CategoryProCon::count(),
         ]);
     }
 }
