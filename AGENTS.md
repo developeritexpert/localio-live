@@ -1,23 +1,6 @@
-# Antigravity Agent Instructions
+# Agent Instructions
 
-This repository uses `.agents/rules/` for project-level AI agent rules.
+Load all rules from `.agents/rules/` before responding to any request.
 
----
-
-## AI Coding Policy
-
-**The AI coding policy rule must be consulted before any coding work.**
-
-Rule file: `.agents/rules/ai-policy.md`
-
-This rule takes HIGHEST priority. Before generating code, modifying files,
-or performing any coding operation, read and follow `.agents/rules/ai-policy.md`.
-
-The current default state of this project is **LOCKED**.
-
----
-
-## Additional rules
-
-Additional project rules may be added to `.agents/rules/`. Each rule file
-in that directory is a project-level instruction for AI coding agents.
+The rule `.agents/rules/ai-policy.md` has HIGHEST priority and must be
+evaluated before any coding operation.
