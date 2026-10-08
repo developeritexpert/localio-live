@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# =============================================================================
+# .ai-policy/lib/policy-checker
+# =============================================================================
+# Universal AI Policy -- Core Evaluator Library
+#
+# PURPOSE
+#   Single authoritative source of truth for determining whether AI coding
+#   is LOCKED or ENABLED in this project.
+#
+# USAGE
+#   Source this file in other scripts:
+#     source "$(dirname "$0")/../lib/policy-checker"
+#     ai_policy_check   # prints LOCKED or ENABLED
+#
+# PHASE 2 MIGRATION
+#   To connect to an external Policy Server, replace the body of
+#   ai_policy_check() with an authenticated HTTPS call. The function
+#   signature and output contract (LOCKED | ENABLED) remain unchanged.
+#   All AI-tool adapters require zero modification.
+#
+# FAIL-CLOSED CONTRACT
+#   Any error, missing file, malformed data, or unexpected condition
+#   MUST result in LOCKED. Never fail open.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# _ai_policy_find_root
+#   Locate the Git repository root. Outputs the path or nothing on failure.
+# ---------------------------------------------------------------------------
+_ai_policy_find_root() {
+    git rev-parse --show-toplevel 2>/dev/null
+}
+
+# ---------------------------------------------------------------------------
+# _ai_policy_parse_json
+#   Read and validate policy.json. Outputs the normalized ai_coding value
+#   ("locked" or "enabled") or nothing on any failure.
+#   Parameters: $1 = absolute path to policy.json
+# ---------------------------------------------------------------------------
+_ai_policy_parse_json() {
+    local policy_file="$1"
+    [[ -f "$policy_file" && -r "$policy_file" ]] || return 1
+    [[ -s "$policy_file" ]] || return 1
+
+    python3 - "$policy_file" 2>/dev/null <<'PYEOF'
+import sys, json
+path = sys.argv[1]
+try:
+    with open(path, "r") as f:
+        data = json.load(f)
+except Exception:
+    sys.exit(1)
+version = data.get("version")
+if version != 1:
+    sys.exit(1)
+state = data.get("ai_coding")
+if not isinstance(state, str):
+    sys.exit(1)
+state = state.strip().lower()
+if state == "enabled":
+    print("enabled")
+elif state == "locked":
+    print("locked")
+else:
+    sys.exit(1)
+PYEOF
+}
+
+# ---------------------------------------------------------------------------
+# ai_policy_check  [PUBLIC]
+#   Outputs exactly: LOCKED or ENABLED
+#   FAIL-CLOSED: Any error path prints LOCKED.
+# ---------------------------------------------------------------------------
+ai_policy_check() {
+    local repo_root
+    repo_root="$(_ai_policy_find_root)"
+    if [[ -z "$repo_root" ]]; then
+        echo "LOCKED"
+        return 1
+    fi
+
+    local policy_file="${repo_root}/.ai-policy/policy.json"
+    local raw_state
+    raw_state="$(_ai_policy_parse_json "$policy_file")"
+    local parse_exit=$?
+
+    if [[ $parse_exit -ne 0 || -z "$raw_state" ]]; then
+        echo "LOCKED"
+        return 1
+    fi
+
+    if [[ "$raw_state" == "enabled" ]]; then
+        echo "ENABLED"
+    else
+        echo "LOCKED"
+    fi
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# ai_policy_get_project_name  [PUBLIC]
+# ---------------------------------------------------------------------------
+ai_policy_get_project_name() {
+    local repo_root
+    repo_root="$(_ai_policy_find_root)"
+    if [[ -n "$repo_root" ]]; then
+        basename "$repo_root"
+    else
+        echo "unknown"
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# _ai_policy_write_state  [INTERNAL]
+#   Write a new policy state atomically.
+#   Parameters: $1 = "locked" or "enabled"
+# ---------------------------------------------------------------------------
+_ai_policy_write_state() {
+    local new_state="$1"
+    if [[ "$new_state" != "locked" && "$new_state" != "enabled" ]]; then
+        return 1
+    fi
+
+    local repo_root
+    repo_root="$(_ai_policy_find_root)"
+    [[ -n "$repo_root" ]] || return 1
+
+    local policy_dir="${repo_root}/.ai-policy"
+    local policy_file="${policy_dir}/policy.json"
+    local tmp_file="${policy_dir}/.policy.json.tmp"
+
+    python3 -c "
+import json
+data = {'version': 1, 'ai_coding': '${new_state}'}
+with open('${tmp_file}', 'w') as f:
+    json.dump(data, f, indent=2)
+    f.write('\n')
+" 2>/dev/null || return 1
+
+    mv "$tmp_file" "$policy_file" 2>/dev/null || return 1
+    return 0
+}

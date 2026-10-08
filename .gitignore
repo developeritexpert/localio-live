@@ -49,3 +49,6 @@ yarn-error.log
 !/public/ticket_attachments/.gitkeep
 /public/offerings/*
 !/public/offerings/.gitkeep
+
+# AI policy temporary files
+.ai-policy/.policy.json.tmp
