@@ -597,12 +597,26 @@ class ContentTemplateService
             'field2_label' => 'Top 10 Subtext',
             'description' => 'Headline and subtext for the Top 10 comparison table section on feature page.',
         ],
+        'top_10_under_10' => [
+            'label' => 'TOP 10 (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 comparison table section on feature page when 1 or more businesses in the table have less than 10 Localio reviews.',
+        ],
         'pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros and Cons Headline (H2)',
             'field2_label' => 'Pros and Cons Subtext',
             'description' => 'Headline and subtext for the community feedback section on feature page.',
+        ],
+        'pros_cons_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the community feedback section on feature page when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'popular_comparisons' => [
             'label' => 'POPULAR COMP.',
@@ -2194,6 +2208,62 @@ class ContentTemplateService
         }
     }
 
+    public static function seedDefaultFeaturesOptionsIfMissing(): void
+    {
+        $defaults = [
+            'top_10_under_10' => [
+                1 => [
+                    'headline' => 'Top 10 [category_cap] with [feature_cap] Comparison',
+                    'subtext' => '<p>Side-by-side comparison of the 10 best [entities1_lc] offering [feature_lc].</p>',
+                ],
+                2 => [
+                    'headline' => 'Top 10 [entities1_cap] with [feature_tc]',
+                    'subtext' => '<p>Compare pricing, capabilities, and early ratings across top providers with [feature_lc].</p>',
+                ],
+                3 => [
+                    'headline' => '10 Best [category_tc] Solutions for [feature_cap]',
+                    'subtext' => '<p>Compare top choices to find the right [entity1_lc] offering [feature_lc].</p>',
+                ],
+            ],
+            'pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as one or more businesses currently have fewer than 10 published Localio reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks for providers with [feature_lc].</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight recurring strengths and limitations of [feature_lc] options.</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources while community reviews grow.</p>',
+                ],
+            ],
+        ];
+
+        foreach ($defaults as $fieldKey => $options) {
+            foreach ($options as $optNum => $data) {
+                ContentTemplate::firstOrCreate(
+                    [
+                        'section_group' => 'features',
+                        'field_key'     => $fieldKey,
+                        'option_number' => $optNum,
+                        'lang_id'       => 1,
+                    ],
+                    [
+                        'headline'  => $data['headline'],
+                        'subtext'   => $data['subtext'],
+                        'is_active' => true,
+                    ]
+                );
+            }
+        }
+    }
+
     public static function ensureTemplatesExistForLanguage(string $sectionGroup, int $langId): void
     {
         if ($langId <= 0) {
@@ -2220,6 +2290,8 @@ class ContentTemplateService
             self::seedDefaultBusinessReviewsOptionsIfMissing();
         } elseif ($sectionGroup === 'comparison') {
             self::seedDefaultComparisonOptionsIfMissing();
+        } elseif ($sectionGroup === 'features') {
+            self::seedDefaultFeaturesOptionsIfMissing();
         }
 
         $fieldDefs = [];
@@ -2730,6 +2802,12 @@ class ContentTemplateService
     public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
     {
         $template = self::getTemplateForResolution('feature', $feature->id, $fieldKey, $langId, 'features');
+
+        if (!$template && $fieldKey === 'top_10_under_10') {
+            $template = self::getTemplateForResolution('feature', $feature->id, 'top_10', $langId, 'features');
+        } elseif (!$template && $fieldKey === 'pros_cons_under_10') {
+            $template = self::getTemplateForResolution('feature', $feature->id, 'pros_cons', $langId, 'features');
+        }
 
         $headline = '';
         $subtext = '';

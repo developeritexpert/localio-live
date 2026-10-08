@@ -114,6 +114,26 @@ class FeatureContentTemplatesSeeder extends Seeder
                 'subtext'       => 'Compare top 10 choices to identify the right [entity1_lc] with [feature_lc].',
             ],
 
+            // 4b. Top 10 (< 10 Reviews) (3 options)
+            [
+                'field_key'     => 'top_10_under_10',
+                'option_number' => 1,
+                'headline'      => 'Top 10 [category_cap] with [feature_cap] Comparison',
+                'subtext'       => 'Side-by-side comparison of the 10 best [entities1_lc] offering [feature_lc].',
+            ],
+            [
+                'field_key'     => 'top_10_under_10',
+                'option_number' => 2,
+                'headline'      => 'Top 10 [entities1_cap] with [feature_tc]',
+                'subtext'       => 'Compare pricing, capabilities, and early ratings across top providers with [feature_lc].',
+            ],
+            [
+                'field_key'     => 'top_10_under_10',
+                'option_number' => 3,
+                'headline'      => '10 Best [category_tc] Solutions for [feature_cap]',
+                'subtext'       => 'Compare top choices to find the right [entity1_lc] offering [feature_lc].',
+            ],
+
             // 5. Pros and Cons (3 options)
             [
                 'field_key'     => 'pros_cons',
@@ -132,6 +152,32 @@ class FeatureContentTemplatesSeeder extends Seeder
                 'option_number' => 3,
                 'headline'      => 'Pros and Cons of [category_cap] [feature_cap] Providers',
                 'subtext'       => 'Verified user opinions on speed, support, and reliability with [feature_lc].',
+            ],
+
+            // 5b. Pros and Cons (< 10 Reviews) (4 options)
+            [
+                'field_key'     => 'pros_cons_under_10',
+                'option_number' => 1,
+                'headline'      => 'Pros & cons from public sources',
+                'subtext'       => 'These strengths and drawbacks are gathered from publicly available sources across the web, as one or more businesses currently have fewer than 10 published Localio reviews.',
+            ],
+            [
+                'field_key'     => 'pros_cons_under_10',
+                'option_number' => 2,
+                'headline'      => 'Key pros & cons from public feedback',
+                'subtext'       => 'Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks for providers with [feature_lc].',
+            ],
+            [
+                'field_key'     => 'pros_cons_under_10',
+                'option_number' => 3,
+                'headline'      => 'Summary of pros & cons from public sources',
+                'subtext'       => 'Compiled from publicly available online feedback and reviews to highlight recurring strengths and limitations of [feature_lc] options.',
+            ],
+            [
+                'field_key'     => 'pros_cons_under_10',
+                'option_number' => 4,
+                'headline'      => 'Pros & cons from web sources',
+                'subtext'       => 'A curated overview of recurring pros and cons gathered from public web sources while community reviews grow.',
             ],
 
             // 6. Popular Comparisons (3 options)
