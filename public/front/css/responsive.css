@@ -35,6 +35,10 @@
 }
 
 @media only screen and (max-width: 1599px) {
+    .faq-category-nav {
+        gap: 17px;
+    }
+
     .p_120 {
         padding: 100px 0px;
     }
@@ -898,6 +902,14 @@
 }
 
 @media only screen and (max-width: 1399px) {
+    .faq-category-nav {
+        gap: 15px;
+    }
+
+    .faq-cat-tab {
+        font-size: 12px;
+    }
+
     .review_sec .review_detl .reviw_hd {
         margin-bottom: 14px;
     }
@@ -1870,6 +1882,16 @@
 
     .remove-all {
         max-width: 676px;
+    }
+ 
+    .main_scrl_wrp {
+        overflow-x: scroll;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .main_scrl_wrp .faq-cat-tab {
+        white-space: nowrap;
     }
 }
 
@@ -3650,7 +3672,8 @@
     .pdc_box_count_4 .pdc_choice {
         max-width: 100% !important;
     }
-    .asn_main_sec .frst_rw .asn-rating p{
+
+    .asn_main_sec .frst_rw .asn-rating p {
         font-size: 16px !important;
     }
 }

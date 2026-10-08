@@ -1501,7 +1501,7 @@ public function getFeatureDescriptionProperty()
 
     public function render()
     {
-        $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria'])
+        $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria', 'proCons'])
         ->withAvg(['reviews as average_rating' => function ($q) {
             $q->whereIn('status', ['published', 'active']);
         }], 'rating')

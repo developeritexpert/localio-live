@@ -575,7 +575,7 @@ class ContentTemplateController extends Controller
         ]);
 
         $headline = $request->headline !== null
-            ? trim(strip_tags(html_entity_decode($request->headline, ENT_QUOTES, 'UTF-8')))
+            ? trim($request->headline)
             : null;
 
         $template = ContentTemplate::findOrFail($request->template_id);

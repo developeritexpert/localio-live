@@ -468,10 +468,13 @@
                                     </div>
                                 @endif
                                 @foreach ($businessPros as $index => $pro)
-                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                    <div class="d-flex align-items-center mb-2 gap-2" wire:key="pro-item-{{ $index }}">
                                         <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
                                         <select class="form-select" wire:model.live="businessPros.{{ $index }}.category_pro_con_id" wire:change="onProSelected({{ $index }})">
                                             <option value="">-- Select an Existing Pro --</option>
+                                            @if(!empty($pro['text']) && (empty($pro['category_pro_con_id']) || !collect($availableCategoryPros)->firstWhere('id', (int)$pro['category_pro_con_id'])))
+                                                <option value="{{ $pro['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $pro['text'] }}</option>
+                                            @endif
                                             @foreach($availableCategoryPros as $opt)
                                                 <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
                                             @endforeach
@@ -498,10 +501,13 @@
                                     </div>
                                 @endif
                                 @foreach ($businessCons as $index => $con)
-                                    <div class="d-flex align-items-center mb-2 gap-2">
+                                    <div class="d-flex align-items-center mb-2 gap-2" wire:key="con-item-{{ $index }}">
                                         <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
                                         <select class="form-select" wire:model.live="businessCons.{{ $index }}.category_pro_con_id" wire:change="onConSelected({{ $index }})">
                                             <option value="">-- Select an Existing Con --</option>
+                                            @if(!empty($con['text']) && (empty($con['category_pro_con_id']) || !collect($availableCategoryCons)->firstWhere('id', (int)$con['category_pro_con_id'])))
+                                                <option value="{{ $con['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $con['text'] }}</option>
+                                            @endif
                                             @foreach($availableCategoryCons as $opt)
                                                 <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
                                             @endforeach

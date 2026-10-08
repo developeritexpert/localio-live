@@ -358,9 +358,9 @@
                     </button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
+                    <div class="mb-3" id="wrapHeadline">
                         <label class="form-label font-weight-bold small" id="lblField1">Headline / Question</label>
-                        <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline template...">
+                        <textarea name="headline" id="inputHeadline" class="form-control rich-editor" rows="2" placeholder="Enter headline template..."></textarea>
                     </div>
                     <div class="mb-3" id="wrapSubtext">
                         <label class="form-label font-weight-bold small" id="lblField2">Subtext / Content</label>
@@ -458,7 +458,9 @@ $(document).ready(function() {
 
     let activeInput = $('#inputHeadline');
     let shouldReopenManageTemplates = false;
+    let headlineEditor = null;
     let subtextEditor = null;
+    let activeEditor = null;
 
     @if(session('open_manage_field'))
         $('#modalManageTemplates').modal('show');
@@ -524,7 +526,35 @@ $(document).ready(function() {
         });
     });
 
-        function initSubtextEditor() {
+    function initHeadlineEditor() {
+        const el = document.querySelector('#inputHeadline');
+        if (!el || typeof ClassicEditor === 'undefined' || headlineEditor) return;
+
+        ClassicEditor
+            .create(el, {
+                toolbar: ['bold', 'italic', 'link', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                headlineEditor = editor;
+                el.ckeditorInstance = editor;
+
+                editor.model.document.on('change:data', () => {
+                    el.value = editor.getData();
+                });
+
+                editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
+                    if (isFocused) {
+                        activeInput = $('#inputHeadline');
+                        activeEditor = headlineEditor;
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("CKEditor Headline Init Error:", error);
+            });
+    }
+
+    function initSubtextEditor() {
         const el = document.querySelector('#inputSubtext');
         if (!el || typeof ClassicEditor === 'undefined' || subtextEditor) return;
 
@@ -543,45 +573,68 @@ $(document).ready(function() {
                 editor.ui.focusTracker.on('change:isFocused', (evt, name, isFocused) => {
                     if (isFocused) {
                         activeInput = $('#inputSubtext');
+                        activeEditor = subtextEditor;
                     }
                 });
             })
             .catch(error => {
-                console.error("CKEditor Init Error:", error);
+                console.error("CKEditor Subtext Init Error:", error);
             });
     }
 
-    // Initialize CKEditor for Subtext / Content only
+    // Initialize CKEditors
+    initHeadlineEditor();
     initSubtextEditor();
 
     $('#lblField1').on('click', function() {
-        $('#inputHeadline').focus();
+        if (headlineEditor) {
+            headlineEditor.editing.view.focus();
+            activeInput = $('#inputHeadline');
+            activeEditor = headlineEditor;
+        } else {
+            $('#inputHeadline').focus();
+        }
     });
 
     $('#inputHeadline').on('focus', function() {
         activeInput = $(this);
+        activeEditor = headlineEditor;
     });
 
     $('#lblField2').on('click', function() {
         if (subtextEditor) {
             subtextEditor.editing.view.focus();
             activeInput = $('#inputSubtext');
+            activeEditor = subtextEditor;
+        } else {
+            $('#inputSubtext').focus();
         }
     });
 
     $('.btn-tag-insert').on('click', function(e) {
         e.preventDefault();
         let tag = $(this).data('tag');
-        if (activeInput && activeInput.attr('id') === 'inputSubtext' && subtextEditor) {
+        let targetEditor = activeEditor;
+        if (!targetEditor) {
+            if (activeInput && activeInput.attr('id') === 'inputHeadline') {
+                targetEditor = headlineEditor;
+            } else if (activeInput && activeInput.attr('id') === 'inputSubtext') {
+                targetEditor = subtextEditor;
+            } else {
+                targetEditor = headlineEditor;
+            }
+        }
+
+        if (targetEditor) {
             try {
-                subtextEditor.model.change(writer => {
-                    subtextEditor.model.insertContent(writer.createText(tag + ' '));
+                targetEditor.model.change(writer => {
+                    targetEditor.model.insertContent(writer.createText(tag + ' '));
                 });
             } catch(err) {
-                let cur = subtextEditor.getData() || '';
-                subtextEditor.setData(cur + (cur ? ' ' : '') + tag);
+                let cur = targetEditor.getData() || '';
+                targetEditor.setData(cur + (cur ? ' ' : '') + tag);
             }
-            subtextEditor.editing.view.focus();
+            targetEditor.editing.view.focus();
         } else if (activeInput && activeInput.length) {
             let el = activeInput[0];
             if (el && typeof el.selectionStart === 'number' && typeof el.selectionEnd === 'number') {
@@ -601,6 +654,9 @@ $(document).ready(function() {
     });
 
     $('#templateEditForm').on('submit', function() {
+        if (headlineEditor) {
+            $('#inputHeadline').val(headlineEditor.getData());
+        }
         if (subtextEditor) {
             $('#inputSubtext').val(subtextEditor.getData());
         }
@@ -627,6 +683,9 @@ $(document).ready(function() {
         $('#tpl_field_key').val(field);
         $('#inputHeadline').val('');
         $('#inputSubtext').val('');
+        if (headlineEditor) {
+            headlineEditor.setData('');
+        }
         if (subtextEditor) {
             subtextEditor.setData('');
         }
@@ -644,7 +703,13 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                $('#inputHeadline').focus();
+                if (headlineEditor) {
+                    headlineEditor.editing.view.focus();
+                    activeEditor = headlineEditor;
+                    activeInput = $('#inputHeadline');
+                } else {
+                    $('#inputHeadline').focus();
+                }
             }, 300);
         }, 350);
     });
@@ -679,7 +744,7 @@ $(document).ready(function() {
         let opt = $(this).data('option');
         let rawHeadline = $('#tpl_headline_' + id).val() || $(this).attr('data-headline') || $(this).data('headline') || '';
         let rawSubtext = $('#tpl_subtext_' + id).val() || $(this).attr('data-subtext') || $(this).data('subtext') || '';
-        let headline = stripHtmlTags(decodeHtmlEntities(rawHeadline));
+        let headline = decodeHtmlEntities(rawHeadline);
         let subtext = decodeHtmlEntities(rawSubtext);
         let type = $(this).data('type') || 'combined';
         let f1 = $(this).data('f1') || 'Headline';
@@ -689,6 +754,9 @@ $(document).ready(function() {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
+        if (headlineEditor) {
+            headlineEditor.setData(headline);
+        }
         if (subtextEditor) {
             subtextEditor.setData(subtext);
         }
@@ -706,7 +774,13 @@ $(document).ready(function() {
         setTimeout(function() {
             $('#modalTemplateForm').modal('show');
             setTimeout(function() {
-                $('#inputHeadline').focus();
+                if (headlineEditor) {
+                    headlineEditor.editing.view.focus();
+                    activeEditor = headlineEditor;
+                    activeInput = $('#inputHeadline');
+                } else {
+                    $('#inputHeadline').focus();
+                }
             }, 300);
         }, 350);
     });
