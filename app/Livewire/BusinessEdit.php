@@ -315,6 +315,7 @@ class BusinessEdit extends Component
         if ($this->selected_category) {
             $this->loadCategoryFeatures($this->selected_category);
             $this->loadCategoryTopics($this->selected_category);
+            $this->loadCategoryProCons($this->selected_category);
         }
 
         // slug is loaded directly from translation in editBusiness()
@@ -684,13 +685,30 @@ class BusinessEdit extends Component
             return;
         }
 
-        $items = \App\Models\CategoryProCon::where('category_id', $categoryId)
+        $category = \App\Models\Category::find($categoryId);
+        $categoryIds = [(int)$categoryId];
+
+        if ($category) {
+            if ($category->parent_id) {
+                $categoryIds[] = (int)$category->parent_id;
+            }
+            $childIds = \App\Models\Category::where('parent_id', $category->id)->pluck('id')->map(fn($id) => (int)$id)->toArray();
+            $categoryIds = array_merge($categoryIds, $childIds);
+        }
+
+        if (!empty($this->selected_sub_categories)) {
+            $categoryIds = array_merge($categoryIds, array_map('intval', $this->selected_sub_categories));
+        }
+
+        $categoryIds = array_values(array_unique(array_filter($categoryIds)));
+
+        $items = \App\Models\CategoryProCon::whereIn('category_id', $categoryIds)
             ->where('status', 1)
             ->orderBy('text')
             ->get();
 
-        $this->availableCategoryPros = $items->where('type', 'pro')->values()->toArray();
-        $this->availableCategoryCons = $items->where('type', 'con')->values()->toArray();
+        $this->availableCategoryPros = $items->where('type', 'pro')->unique('id')->values()->toArray();
+        $this->availableCategoryCons = $items->where('type', 'con')->unique('id')->values()->toArray();
     }
 
     public function loadCategoryTopics($categoryId)
@@ -1097,6 +1115,10 @@ class BusinessEdit extends Component
 
         $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings', 'subCategories'])->findOrFail($id);
 
+        // Set the selected category and subcategories first so related pro/cons can be loaded
+        $this->selected_category = $business->category_id ?? null;
+        $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
+
         // Load existing USPs into the form slots (pad to 5 empty slots)
         $existingUsps = $business->usps->pluck('text')->toArray();
         $this->businessUsps = array_map(
@@ -1180,9 +1202,7 @@ class BusinessEdit extends Component
         // Set selected pricing options and features
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
-        $this->selected_category = $business->category_id ?? null;
         $this->admin_rating = $business->admin_rating;
-        $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
             $this->loadCategoryFeatures($this->selected_category);
@@ -1485,6 +1505,9 @@ class BusinessEdit extends Component
             if (!$text && $catProConId) {
                 $found = collect($this->availableCategoryPros)->firstWhere('id', $catProConId);
                 $text = $found['text'] ?? '';
+                if (!$text) {
+                    $text = \App\Models\CategoryProCon::where('id', $catProConId)->value('text') ?? '';
+                }
             }
             if (!empty($text)) {
                 $proConsToInsert[] = [
@@ -1503,6 +1526,9 @@ class BusinessEdit extends Component
             if (!$text && $catProConId) {
                 $found = collect($this->availableCategoryCons)->firstWhere('id', $catProConId);
                 $text = $found['text'] ?? '';
+                if (!$text) {
+                    $text = \App\Models\CategoryProCon::where('id', $catProConId)->value('text') ?? '';
+                }
             }
             if (!empty($text)) {
                 $proConsToInsert[] = [
@@ -1601,6 +1627,24 @@ class BusinessEdit extends Component
     public function addCon()
     {
         $this->businessCons[] = ['category_pro_con_id' => '', 'text' => ''];
+    }
+
+    public function updatedBusinessPros($value, $key)
+    {
+        if (str_ends_with($key, 'category_pro_con_id')) {
+            $parts = explode('.', $key);
+            $index = (int)$parts[0];
+            $this->onProSelected($index);
+        }
+    }
+
+    public function updatedBusinessCons($value, $key)
+    {
+        if (str_ends_with($key, 'category_pro_con_id')) {
+            $parts = explode('.', $key);
+            $index = (int)$parts[0];
+            $this->onConSelected($index);
+        }
     }
 
     public function onProSelected($index)
