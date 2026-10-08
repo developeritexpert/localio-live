@@ -257,7 +257,7 @@
                     <h1 style="font-size: 28px !important; color: #002347; margin: 0;">
                         {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                     </h1>
-                    <p class="text-meta">{{ static_text('last_updated_prefix') ?: 'Last updated' }} {{ now()->subDay()->format('F j, Y') }}</p>
+                    <p class="size-16">{{ static_text('last_updated_prefix') ?: 'Last updated' }} {{ now()->subDay()->format('F j, Y') }}</p>
                     <div style="margin-bottom: 0;">
                         @if(str_contains($finalCompSubtext, '<p>') || str_contains($finalCompSubtext, '<br>'))
                             {!! $finalCompSubtext !!}
