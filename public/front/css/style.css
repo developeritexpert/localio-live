@@ -12035,7 +12035,7 @@ section#section-compare {
 .faq-category-nav {
     display: flex;
     align-items: center;
-    gap: 0 25px;
+    gap: 20px;
     flex-wrap: wrap;
     border-bottom: 1px solid #e2e8f0;
     padding-bottom: 0;
@@ -12044,7 +12044,7 @@ section#section-compare {
 
 .faq-cat-tab {
     padding: 12px 0;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: #64748b;
     text-decoration: none;
@@ -15765,4 +15765,8 @@ button.action-icon-btn.share-trigger-btn:hover {
 .revie_img_sec #section-search-faq p {
     font-size: 20px;
     font-weight: 600;
+}
+
+.size-16 {
+    font-size: 16px;
 }
