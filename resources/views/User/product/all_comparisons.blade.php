@@ -216,6 +216,87 @@
                         </button>
                     </div>
                 </div>
+
+
+                <!-- here both new section come -->
+                 <!-- Section 2: Popular {{ $bName }} comparisons (Top 6 Most Clicked/Popular) -->
+                @if(isset($popularComparisons) && count($popularComparisons) > 0)
+                @php
+                    $resolvedCompPop = \App\Services\ContentTemplateService::resolveBusinessSection(
+                        $business,
+                        'compare_popular',
+                        getCurrentLanguageID()
+                    );
+                    $finalCompPopHeadline = !empty($resolvedCompPop['headline']) ? $resolvedCompPop['headline'] : ('Popular ' . $bName . ' comparisons');
+                    $finalCompPopSubtext = !empty($resolvedCompPop['subtext']) ? $resolvedCompPop['subtext'] : ('See how ' . $bName . ' compares to top competitors.');
+                @endphp
+                <section class="compare-section py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
+                    <div class="container">
+                        <div class="hd_text mb-4">
+                            <h2 style="margin-bottom: 6px;">
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompPopHeadline) !!}
+                            </h2>
+                            @if(!empty($finalCompPopSubtext))
+                            <div style="margin: 0; color: #475569; font-size: 16px;">
+                                {!! $finalCompPopSubtext !!}
+                            </div>
+                            @endif
+                        </div>
+
+                        <div class="row g-4">
+                            @foreach($popularComparisons->take(6) as $popItem)
+                                @php
+                                    $popItemName = $popItem->translations->first()->name ?? 'Business';
+                                    $popItemRating = $popItem->display_rating ?? 0;
+                                    $seoUrlPop = route('product-comparison.seo', [
+                                        'locale' => app()->getLocale(),
+                                        'comparison_slug' => $compSlug,
+                                        'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($popItemName)
+                                    ]);
+                                @endphp
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <a href="{{ $seoUrlPop }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 ; color: inherit; text-decoration: none;">
+                                        <div class="cmpr_bx d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                                    <x-business-logo :business="$business" :name="$bName" />
+                                                </div>
+                                                <div style="min-width: 0;">
+                                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                                    @if($business->should_show_rating)
+                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">{{ static_text('vs_keyword') ?: 'vs' }}</div>
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
+                                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                                    <x-business-logo :business="$popItem" :name="$popItemName" />
+                                                </div>
+                                                <div style="min-width: 0; text-align: left;">
+                                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
+                                                    @if($popItem->should_show_rating)
+                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItem->display_rating) }}</span>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+                @endif
+
+
+
             </div>
 
             <!-- Right Side: Rating Breakdown, Popular Comparisons & More About Business -->
@@ -305,81 +386,7 @@
     </div>
 </section>
 
-<!-- Section 2: Popular {{ $bName }} comparisons (Top 6 Most Clicked/Popular) -->
-@if(isset($popularComparisons) && count($popularComparisons) > 0)
-@php
-    $resolvedCompPop = \App\Services\ContentTemplateService::resolveBusinessSection(
-        $business,
-        'compare_popular',
-        getCurrentLanguageID()
-    );
-    $finalCompPopHeadline = !empty($resolvedCompPop['headline']) ? $resolvedCompPop['headline'] : ('Popular ' . $bName . ' comparisons');
-    $finalCompPopSubtext = !empty($resolvedCompPop['subtext']) ? $resolvedCompPop['subtext'] : ('See how ' . $bName . ' compares to top competitors.');
-@endphp
-<section class="compare-section py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
-    <div class="container">
-        <div class="hd_text mb-4">
-            <h2 style="margin-bottom: 6px;">
-                {!! \App\Services\ContentTemplateService::cleanHeading($finalCompPopHeadline) !!}
-            </h2>
-            @if(!empty($finalCompPopSubtext))
-            <div style="margin: 0; color: #475569; font-size: 16px;">
-                {!! $finalCompPopSubtext !!}
-            </div>
-            @endif
-        </div>
 
-        <div class="row g-4">
-            @foreach($popularComparisons->take(6) as $popItem)
-                @php
-                    $popItemName = $popItem->translations->first()->name ?? 'Business';
-                    $popItemRating = $popItem->display_rating ?? 0;
-                    $seoUrlPop = route('product-comparison.seo', [
-                        'locale' => app()->getLocale(),
-                        'comparison_slug' => $compSlug,
-                        'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($popItemName)
-                    ]);
-                @endphp
-                <div class="col-lg-4 col-md-6 col-12">
-                    <a href="{{ $seoUrlPop }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 ; color: inherit; text-decoration: none;">
-                        <div class="cmpr_bx d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
-                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
-                                    <x-business-logo :business="$business" :name="$bName" />
-                                </div>
-                                <div style="min-width: 0;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
-                                    @if($business->should_show_rating)
-                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($business->display_rating) }}</span>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">{{ static_text('vs_keyword') ?: 'vs' }}</div>
-                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
-                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
-                                    <x-business-logo :business="$popItem" :name="$popItemName" />
-                                </div>
-                                <div style="min-width: 0; text-align: left;">
-                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
-                                    @if($popItem->should_show_rating)
-                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItem->display_rating) }}</span>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
 
 <!-- Section 3: Recently viewed comparisons (3-6 items) -->
 @if(isset($recentlyViewedComparisons) && count($recentlyViewedComparisons) > 0)

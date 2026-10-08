@@ -1339,17 +1339,28 @@
         @endif
         <!-- Top Affiliated Businesses compare section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
+            @php
+                $hasUnder10Reviews = collect($topAffiliatedBusinesses)->contains(function ($biz) {
+                    $revCount = ($biz->relationLoaded('reviews') && $biz->reviews->isNotEmpty())
+                        ? $biz->reviews->whereIn('status', ['published', 'active'])->count()
+                        : $biz->reviews()->whereIn('status', ['published', 'active'])->count();
+                    return $revCount < 10;
+                });
+
+                $top10FieldKey = $hasUnder10Reviews ? 'top_10_under_10' : 'top_10';
+                $resolvedTop10 = \App\Services\ContentTemplateService::resolveCategorySection($category, $top10FieldKey, $currentLangId);
+                if ($hasUnder10Reviews && empty($resolvedTop10['headline']) && empty($resolvedTop10['subtext'])) {
+                    $resolvedTop10 = \App\Services\ContentTemplateService::resolveCategorySection($category, 'top_10', $currentLangId);
+                }
+                $compAlternativesHeadline = !empty($resolvedTop10['headline']) ? $resolvedTop10['headline'] : (!empty($category->translations->compare_alternatives_headline) 
+                    ? $category->translations->compare_alternatives_headline 
+                    : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives'));
+                $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? '');
+            @endphp
             <section class="comparison-table-sec">
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
-                        @php
-                            $resolvedTop10 = \App\Services\ContentTemplateService::resolveCategorySection($category, 'top_10', $currentLangId);
-                            $compAlternativesHeadline = !empty($resolvedTop10['headline']) ? $resolvedTop10['headline'] : (!empty($category->translations->compare_alternatives_headline) 
-                                ? $category->translations->compare_alternatives_headline 
-                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives'));
-                            $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? '');
-                        @endphp
                         <h2>
                             {!! \App\Services\ContentTemplateService::cleanHeading($compAlternativesHeadline) !!}
                         </h2>
@@ -1479,7 +1490,11 @@
                         <div class="community-feedback-table-section">
                             <div class="mb-3">
                                 @php
-                                    $resolvedProsCons = \App\Services\ContentTemplateService::resolveCategorySection($category, 'pros_cons', $currentLangId);
+                                    $prosConsFieldKey = $hasUnder10Reviews ? 'pros_cons_under_10' : 'pros_cons';
+                                    $resolvedProsCons = \App\Services\ContentTemplateService::resolveCategorySection($category, $prosConsFieldKey, $currentLangId);
+                                    if ($hasUnder10Reviews && empty($resolvedProsCons['headline']) && empty($resolvedProsCons['subtext'])) {
+                                        $resolvedProsCons = \App\Services\ContentTemplateService::resolveCategorySection($category, 'pros_cons', $currentLangId);
+                                    }
                                     $commFeedbackHeadline = !empty($resolvedProsCons['headline']) ? $resolvedProsCons['headline'] : (!empty($category->translations->community_says_headline) 
                                         ? $category->translations->community_says_headline 
                                         : 'What the Localio community says');
@@ -1515,27 +1530,48 @@
                                                 $bName = $biz->translations->first()->name ?? $biz->name ?? '';
                                                 $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? '';
                                                 $affiliateUrl = $biz->getTrackedUrl() ?? $biz->affiliate_link ?? $biz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]);
-                                                $topPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                    ->where('reviews.business_id', $biz->id)
-                                                    ->whereIn('reviews.status', ['published', 'active'])
-                                                    ->where('category_pro_cons.type', 'pro')
-                                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
-                                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                                    ->orderByDesc('reviews_count')
-                                                    ->first();
-    
-                                                $topCon = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                    ->where('reviews.business_id', $biz->id)
-                                                    ->whereIn('reviews.status', ['published', 'active'])
-                                                    ->where('category_pro_cons.type', 'con')
-                                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
-                                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                                    ->orderByDesc('reviews_count')
-                                                    ->first();
+                                                
+                                                $bReviews = ($biz->relationLoaded('reviews') && $biz->reviews->isNotEmpty())
+                                                    ? $biz->reviews->whereIn('status', ['published', 'active'])
+                                                    : $biz->reviews()->whereIn('status', ['published', 'active'])->get();
+                                                $bReviewCount = $bReviews->count();
+
+                                                if ($bReviewCount >= 10) {
+                                                    $topPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                        ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                        ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                        ->where('reviews.business_id', $biz->id)
+                                                        ->whereIn('reviews.status', ['published', 'active'])
+                                                        ->where('category_pro_cons.type', 'pro')
+                                                        ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
+                                                        ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                        ->orderByDesc('reviews_count')
+                                                        ->first();
+        
+                                                    $topCon = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                        ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                        ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                        ->where('reviews.business_id', $biz->id)
+                                                        ->whereIn('reviews.status', ['published', 'active'])
+                                                        ->where('category_pro_cons.type', 'con')
+                                                        ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
+                                                        ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                        ->orderByDesc('reviews_count')
+                                                        ->first();
+                                                } else {
+                                                    $manPro = $biz->proCons ? $biz->proCons->where('type', 'pro')->first() : null;
+                                                    $manCon = $biz->proCons ? $biz->proCons->where('type', 'con')->first() : null;
+
+                                                    $topPro = $manPro ? (object)[
+                                                        'text' => $manPro->text,
+                                                        'reviews_count' => null,
+                                                    ] : null;
+
+                                                    $topCon = $manCon ? (object)[
+                                                        'text' => $manCon->text,
+                                                        'reviews_count' => null,
+                                                    ] : null;
+                                                }
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                             <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
@@ -1563,7 +1599,7 @@
                                                 @if($topPro)
                                                     <div class="d-flex align-items-start">
                                                         <span class="me-2" style="font-size: 16px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                        <span style="color: #202124; font-size: 14px;">{{ \Illuminate\Support\Str::limit($topPro->text, 40) }} ({{ $topPro->reviews_count }})</span>
+                                                        <span style="color: #202124; font-size: 14px;">{{ \Illuminate\Support\Str::limit($topPro->text, 40) }}@if(!empty($topPro->reviews_count)) ({{ $topPro->reviews_count }})@endif</span>
                                                     </div>
                                                 @else
                                                     <span class="text-muted">-</span>
@@ -1573,7 +1609,7 @@
                                                 @if($topCon)
                                                     <div class="d-flex align-items-start">
                                                         <span class="me-2" style="font-size: 16px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                        <span style="color: #202124; font-size: 14px;">{{ \Illuminate\Support\Str::limit($topCon->text, 40) }} ({{ $topCon->reviews_count }})</span>
+                                                        <span style="color: #202124; font-size: 14px;">{{ \Illuminate\Support\Str::limit($topCon->text, 40) }}@if(!empty($topCon->reviews_count)) ({{ $topCon->reviews_count }})@endif</span>
                                                     </div>
                                                 @else
                                                     <span class="text-muted">-</span>

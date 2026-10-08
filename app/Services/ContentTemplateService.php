@@ -38,12 +38,26 @@ class ContentTemplateService
             'field2_label' => 'Top 10 Subtext',
             'description' => 'Headline and subtext for the Top 10 comparison table section.',
         ],
+        'top_10_under_10' => [
+            'label' => 'TOP 10 (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 comparison table section on category page when 1 or more businesses in the table have less than 10 Localio reviews.',
+        ],
         'pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',
             'field1_label' => 'Pros and Cons Headline (H2)',
             'field2_label' => 'Pros and Cons Subtext',
             'description' => 'Headline and subtext for the community feedback section.',
+        ],
+        'pros_cons_under_10' => [
+            'label' => 'PROS & CONS (< 10 REVIEWS)',
+            'type' => 'combined',
+            'field1_label' => 'Pros & Cons Headline (H2)',
+            'field2_label' => 'Pros & Cons Subtext',
+            'description' => 'Headline and subtext for the community feedback section on category page when 1 or more businesses in the table have less than 10 Localio reviews.',
         ],
         'popular_comparisons' => [
             'label' => 'POPULAR COMP.',
@@ -1125,6 +1139,38 @@ class ContentTemplateService
     public static function seedDefaultCategoryOptionsIfMissing(): void
     {
         $defaults = [
+            'top_10_under_10' => [
+                1 => [
+                    'headline' => 'Top 10 [entities2_lc] compared',
+                    'subtext' => '<p>Use the Top 10 table to compare early ratings, core features, and starting pricing across top [entities1_lc].</p>',
+                ],
+                2 => [
+                    'headline' => 'Compare Top 10 [category_tc] Alternatives',
+                    'subtext' => '<p>Evaluate the top 10 [entities1_lc] side by side across user ratings, standout features, and verified pricing to find the best match for your requirements.</p>',
+                ],
+                3 => [
+                    'headline' => '10 Leading [entities1_cap] Side by Side',
+                    'subtext' => '<p>Browse our ranked comparison of top 10 [entities1_lc], assessing key capabilities, customer recommendations, and cost-effectiveness.</p>',
+                ],
+            ],
+            'pros_cons_under_10' => [
+                1 => [
+                    'headline' => 'Pros & cons from public sources',
+                    'subtext' => '<p>These strengths and drawbacks are gathered from publicly available sources across the web, as one or more businesses currently have fewer than 10 published Localio reviews.</p>',
+                ],
+                2 => [
+                    'headline' => 'Key pros & cons from public feedback',
+                    'subtext' => '<p>Based on public feedback and web sources, here are the most frequently highlighted advantages and potential drawbacks for [category_lc] providers.</p>',
+                ],
+                3 => [
+                    'headline' => 'Summary of pros & cons from public sources',
+                    'subtext' => '<p>Compiled from publicly available online feedback and reviews to highlight recurring strengths and limitations across [entities1_lc].</p>',
+                ],
+                4 => [
+                    'headline' => 'Pros & cons from web sources',
+                    'subtext' => '<p>A curated overview of recurring pros and cons gathered from public web sources while community reviews grow.</p>',
+                ],
+            ],
             'category_page_faqs' => [
                 1 => [
                     'headline' => 'Frequently asked questions',
@@ -2390,7 +2436,8 @@ class ContentTemplateService
             return '';
         }
         $decoded = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-        $cleaned = strip_tags($decoded);
+        $unwrapped = preg_replace('/^<p>(.*?)<\/p>$/is', '$1', trim($decoded));
+        $cleaned = strip_tags($unwrapped, '<strong><b><em><i><a><span><br>');
         return trim($cleaned);
     }
 
@@ -2599,15 +2646,16 @@ class ContentTemplateService
         $secondText = self::replacePlaceholders($template->subtext, $category, null, $langId);
 
         // Format paragraph 1: individual intro text + space + question
-        // Strip outer <p>...</p> tags if present in individualIntro to merge smoothly
-        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/s', '$1', $individualIntro);
+        // Strip outer <p>...</p> tags if present in individualIntro and question to merge smoothly
+        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/is', '$1', trim($individualIntro));
+        $cleanedQuestion = preg_replace('/^<p>(.*?)<\/p>$/is', '$1', trim($question));
 
         $p1 = trim($cleanedIntro);
-        if ($question) {
+        if ($cleanedQuestion !== '') {
             if ($p1 !== '') {
-                $p1 .= ' ' . $question;
+                $p1 .= ' ' . $cleanedQuestion;
             } else {
-                $p1 = $question;
+                $p1 = $cleanedQuestion;
             }
         }
 
@@ -2639,6 +2687,12 @@ class ContentTemplateService
 
         $template = self::getTemplateForResolution('category', $category->id, $fieldKey, $langId);
 
+        if (!$template && $fieldKey === 'top_10_under_10') {
+            $template = self::getTemplateForResolution('category', $category->id, 'top_10', $langId);
+        } elseif (!$template && $fieldKey === 'pros_cons_under_10') {
+            $template = self::getTemplateForResolution('category', $category->id, 'pros_cons', $langId);
+        }
+
         $headline = '';
         $subtext = '';
         $optionNumber = null;
@@ -2660,10 +2714,12 @@ class ContentTemplateService
                     $subtext = $catTrans->top_rated_listing_subtext ?? '';
                     break;
                 case 'top_10':
+                case 'top_10_under_10':
                     $headline = $catTrans->compare_alternatives_headline ?? ('Compare ' . ($catTrans->name ?? '') . ' alternatives');
                     $subtext = $catTrans->compare_alternatives_subtext ?? '';
                     break;
                 case 'pros_cons':
+                case 'pros_cons_under_10':
                     $headline = $catTrans->community_says_headline ?? 'What the Localio community says';
                     $subtext = $catTrans->community_says_subtext ?? '';
                     break;
@@ -2773,14 +2829,15 @@ class ContentTemplateService
         $question = self::replacePlaceholders($template->headline, $category, $feature, $langId);
         $secondText = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
 
-        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/s', '$1', trim($individualIntro ?? ''));
+        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/is', '$1', trim($individualIntro ?? ''));
+        $cleanedQuestion = preg_replace('/^<p>(.*?)<\/p>$/is', '$1', trim($question));
 
         $p1 = trim($cleanedIntro);
-        if ($question) {
+        if ($cleanedQuestion !== '') {
             if ($p1 !== '') {
-                $p1 .= ' ' . $question;
+                $p1 .= ' ' . $cleanedQuestion;
             } else {
-                $p1 = $question;
+                $p1 = $cleanedQuestion;
             }
         }
 

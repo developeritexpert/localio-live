@@ -663,19 +663,6 @@
                                     <div class="row g-3">
                                         <!-- FAQ Page H1 Title -->
 
-                                        <!-- FAQ Page Subtext below H1 with CKEditor -->
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label class="form-label fw-bold" for="faq_subtext">FAQ Page Subtext (Below H1)</label>
-                                                <div class="form-control-wrap">
-                                                    <textarea class="form-control rich-editor" id="faq_subtext" name="faq_subtext" rows="3" placeholder="Frequently asked questions and answers about this category on Localio.">{!! isset($category_data) ? ($category_data['faq_subtext'] ?? '') : old('faq_subtext') !!}</textarea>
-                                                </div>
-                                                <small class="text-muted d-block mt-1">Rich-text description placed directly underneath the FAQ Page H1 title. Defaults to standard intro text if left empty.</small>
-                                                @error('faq_subtext')
-                                                    <div class="error text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
 
                                         <div class="col-md-12">
                                             <div class="alert alert-light border bg-white d-flex align-items-center justify-content-between p-3 mb-2">

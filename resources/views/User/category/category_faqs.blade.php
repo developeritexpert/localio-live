@@ -210,15 +210,17 @@
                         @if(isset($faqs) && count($faqs) > 0)
                         
                             @if(count($uniqueCategories) > 1)
-                            <div class="faq-category-nav">
-                                <button class="faq-cat-tab active" data-category-id="all">
-                                    All
-                                </button>
-                                @foreach($uniqueCategories as $cat)
-                                    <button class="faq-cat-tab" data-category-id="{{ Str::slug($cat) }}">
-                                        {{ $cat }}
+                            <div class="main_scrl_wrp">
+                                <div class="faq-category-nav">
+                                    <button class="faq-cat-tab active" data-category-id="all">
+                                        All
                                     </button>
-                                @endforeach
+                                    @foreach($uniqueCategories as $cat)
+                                        <button class="faq-cat-tab" data-category-id="{{ Str::slug($cat) }}">
+                                            {{ $cat }}
+                                        </button>
+                                    @endforeach
+                                </div>
                             </div>
                             @endif
 
