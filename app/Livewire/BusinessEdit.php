@@ -648,23 +648,6 @@ class BusinessEdit extends Component
 
     public function updatedSelectedCategory($value)
     {
-        // Clear the selected features when category changes
-        $this->selectedFeatures = [];
-
-        // Prune any selected subcategories that do not belong to the newly selected main category
-        if ($value) {
-            $selectedCat = \App\Models\Category::find($value);
-            if ($selectedCat) {
-                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
-                $validSubIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
-                $this->selected_sub_categories = array_values(array_intersect($this->selected_sub_categories ?? [], $validSubIds));
-            } else {
-                $this->selected_sub_categories = [];
-            }
-        } else {
-            $this->selected_sub_categories = [];
-        }
-
         // Load features for the new category
         $this->loadCategoryFeatures($value);
 
@@ -672,43 +655,81 @@ class BusinessEdit extends Component
 
         $this->loadCategoryProCons($value);
 
-
         // Notify JS to reinitialize
         $this->dispatch('categoryChanged', $this->categoryFeatures);
     }
 
-    public function loadCategoryProCons($categoryId)
+    public function updatedSelectedSubCategories($value)
     {
-        if (!$categoryId) {
+        // When secondary categories or sub-categories are checked/unchecked, refresh pros & cons options
+        $this->loadCategoryProCons($this->selected_category);
+    }
+
+    public function loadCategoryProCons($categoryId = null)
+    {
+        $categoryId = $categoryId ?: $this->selected_category;
+
+        $categoryIds = [];
+        if ($categoryId) {
+            $categoryIds[] = (int)$categoryId;
+            $category = \App\Models\Category::find($categoryId);
+            if ($category) {
+                if ($category->parent_id) {
+                    $categoryIds[] = (int)$category->parent_id;
+                }
+                $childIds = \App\Models\Category::where('parent_id', $category->id)->pluck('id')->map(fn($id) => (int)$id)->toArray();
+                $categoryIds = array_merge($categoryIds, $childIds);
+            }
+        }
+
+        if (!empty($this->selected_sub_categories)) {
+            foreach ($this->selected_sub_categories as $subId) {
+                $categoryIds[] = (int)$subId;
+                $subCat = \App\Models\Category::find($subId);
+                if ($subCat) {
+                    if ($subCat->parent_id) {
+                        $categoryIds[] = (int)$subCat->parent_id;
+                    }
+                    $childIds = \App\Models\Category::where('parent_id', $subCat->id)->pluck('id')->map(fn($id) => (int)$id)->toArray();
+                    $categoryIds = array_merge($categoryIds, $childIds);
+                }
+            }
+        }
+
+        $categoryIds = array_values(array_unique(array_filter($categoryIds)));
+
+        if (empty($categoryIds)) {
             $this->availableCategoryPros = [];
             $this->availableCategoryCons = [];
             return;
         }
 
-        $category = \App\Models\Category::find($categoryId);
-        $categoryIds = [(int)$categoryId];
+        $items = \App\Models\CategoryProCon::with([
+            'category.categoryTranslations' => fn($q) => $q->where('lang_id', 1),
+            'category.translations' => fn($q) => $q->where('lang_id', 1),
+        ])
+        ->whereIn('category_id', $categoryIds)
+        ->where('status', 1)
+        ->orderBy('category_id')
+        ->orderBy('text')
+        ->get();
 
-        if ($category) {
-            if ($category->parent_id) {
-                $categoryIds[] = (int)$category->parent_id;
-            }
-            $childIds = \App\Models\Category::where('parent_id', $category->id)->pluck('id')->map(fn($id) => (int)$id)->toArray();
-            $categoryIds = array_merge($categoryIds, $childIds);
-        }
+        $formatItem = function($item) {
+            $catName = optional($item->category?->translations)->name 
+                ?? optional($item->category?->categoryTranslations?->first())->name 
+                ?? optional($item->category)->name 
+                ?? ('Category #' . $item->category_id);
 
-        if (!empty($this->selected_sub_categories)) {
-            $categoryIds = array_merge($categoryIds, array_map('intval', $this->selected_sub_categories));
-        }
+            return [
+                'id'            => $item->id,
+                'text'          => $item->text,
+                'category_id'   => $item->category_id,
+                'category_name' => $catName,
+            ];
+        };
 
-        $categoryIds = array_values(array_unique(array_filter($categoryIds)));
-
-        $items = \App\Models\CategoryProCon::whereIn('category_id', $categoryIds)
-            ->where('status', 1)
-            ->orderBy('text')
-            ->get();
-
-        $this->availableCategoryPros = $items->where('type', 'pro')->unique('id')->values()->toArray();
-        $this->availableCategoryCons = $items->where('type', 'con')->unique('id')->values()->toArray();
+        $this->availableCategoryPros = $items->where('type', 'pro')->unique('id')->values()->map($formatItem)->toArray();
+        $this->availableCategoryCons = $items->where('type', 'con')->unique('id')->values()->map($formatItem)->toArray();
     }
 
     public function loadCategoryTopics($categoryId)
@@ -2087,15 +2108,10 @@ class BusinessEdit extends Component
         $business->countries()->sync((int)$this->active_all_countries === 1 ? [] : ($this->selectedCountries ?? []));
 
 
-        // Sync sub categories (only allowed subcategories of the primary category's parent/main category)
+        // Sync secondary categories & sub-categories across all selected categories
         $validSubCategoryIds = [];
-        if ($this->selected_category) {
-            $selectedCat = \App\Models\Category::find($this->selected_category);
-            if ($selectedCat) {
-                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
-                $allowedIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
-                $validSubCategoryIds = array_values(array_intersect($this->selected_sub_categories ?? [], $allowedIds));
-            }
+        if (!empty($this->selected_sub_categories)) {
+            $validSubCategoryIds = \App\Models\Category::whereIn('id', $this->selected_sub_categories)->pluck('id')->toArray();
         }
         $business->subCategories()->sync($validSubCategoryIds);
 

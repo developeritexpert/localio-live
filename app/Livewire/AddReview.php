@@ -269,6 +269,9 @@ class AddReview extends Component
         $avg_rating = $criteriaCount > 0 ? round($totalRating / $criteriaCount, 2) : 0;
         $lang_id = getCurrentLanguageID();
 
+        $rawLocale = getCurrentLocale() ?: 'en-us';
+        $submittedLocale = \App\Services\ReviewModerationService::normalizeLocale($rawLocale);
+
         $existingReview = Review::where('user_id', Auth::id())
             ->where('business_id', $this->businessId)
             ->first();
@@ -276,55 +279,95 @@ class AddReview extends Component
         if ($existingReview) {
             $this->reviewId = $existingReview->id;
 
-            $existingReview->update([
-                'rating'    => $avg_rating,
-                'recommend' => (bool)$this->recommend,
-            ]);
-
-            if ($existingReview->translations->first()) {
-                $existingReview->translations->first()->update([
-                    'title'       => $this->title2,
-                    'description' => $this->comment,
+            \Illuminate\Support\Facades\DB::transaction(function () use ($existingReview, $avg_rating, $lang_id, $submittedLocale) {
+                $existingReview->update([
+                    'rating'                => $avg_rating,
+                    'recommend'             => (bool)$this->recommend,
+                    'status'                => Review::STATUS_PROCESSING,
+                    'submitted_locale'      => $submittedLocale,
+                    'laravel_check_status'  => null,
+                    'laravel_fail_reason'   => null,
+                    'moderation_api_passed' => null,
+                    'localio_ai_status'     => Review::AI_STATUS_WAITING,
                 ]);
-            } else {
-                $existingReview->translations()->create([
-                    'business_id' => $this->businessId,
-                    'language_id' => $lang_id,
-                    'title'       => $this->title2,
-                    'description' => $this->comment,
-                ]);
-            }
 
-            // Save / update criteria ratings
-            foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
-                \App\Models\ReviewRating::updateOrCreate(
-                    [
-                        'review_id'   => $existingReview->id,
-                        'criteria_id' => $criteriaId,
-                    ],
-                    [
-                        'rating'      => $ratingVal
-                    ]
-                );
-            }
+                if ($existingReview->translations->first()) {
+                    $existingReview->translations->first()->update([
+                        'title'       => $this->title2,
+                        'description' => $this->comment,
+                    ]);
+                } else {
+                    $existingReview->translations()->create([
+                        'business_id' => $this->businessId,
+                        'language_id' => $lang_id,
+                        'title'       => $this->title2,
+                        'description' => $this->comment,
+                    ]);
+                }
 
-            $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
-            $existingReview->selectedProCons()->sync($selectedIds);
+                foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
+                    \App\Models\ReviewRating::updateOrCreate(
+                        [
+                            'review_id'   => $existingReview->id,
+                            'criteria_id' => $criteriaId,
+                        ],
+                        [
+                            'rating'      => $ratingVal
+                        ]
+                    );
+                }
+
+                $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
+                $existingReview->selectedProCons()->sync($selectedIds);
+            });
+
+            // Dispatch moderation after transaction commits
+            try {
+                \App\Jobs\ProcessReviewModeration::dispatch($existingReview->id);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Error dispatching review moderation: ' . $e->getMessage());
+            }
             return;
         }
 
-        $review = Review::create([
-            'user_id'     => Auth::id(),
-            'business_id' => $this->businessId,
-            'lang_id'     => $lang_id,
-            'rating'      => $avg_rating,
-            'recommend'   => (bool)$this->recommend,
-            'status'      => 'processing',
-        ]);
+        $review = null;
+        \Illuminate\Support\Facades\DB::transaction(function () use (&$review, $lang_id, $avg_rating, $submittedLocale) {
+            $review = Review::create([
+                'user_id'          => Auth::id(),
+                'business_id'      => $this->businessId,
+                'lang_id'          => $lang_id,
+                'rating'           => $avg_rating,
+                'recommend'        => (bool)$this->recommend,
+                'status'           => Review::STATUS_PROCESSING,
+                'submitted_locale' => $submittedLocale,
+                'localio_ai_status'=> Review::AI_STATUS_WAITING,
+            ]);
 
-                $this->reviewId = $review->id;
+            // Save individual criteria ratings
+            foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
+                \App\Models\ReviewRating::create([
+                    'review_id'   => $review->id,
+                    'criteria_id' => $criteriaId,
+                    'rating'      => $ratingVal
+                ]);
+            }
 
-        // Dispatch automated 3-layer review moderation
+            // Create translation BEFORE dispatching moderation
+            $review->translations()->create([
+                'business_id' => $this->businessId,
+                'language_id' => $lang_id,
+                'title'       => $this->title2,
+                'description' => $this->comment,
+            ]);
+
+            // Sync selected pros and cons
+            $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
+            $review->selectedProCons()->sync($selectedIds);
+        });
+
+        $this->reviewId = $review->id;
+
+        // Dispatch automated 3-layer review moderation AFTER translations are saved
         try {
             \App\Jobs\ProcessReviewModeration::dispatch($review->id);
         } catch (\Throwable $e) {
@@ -366,26 +409,6 @@ class AddReview extends Component
                 'review_url'    => $reviewUrl,
             ], $vendor->country_id ?? 1, $vendor);
         }
-
-        // Save individual criteria ratings
-        foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
-            \App\Models\ReviewRating::create([
-                'review_id'   => $review->id,
-                'criteria_id' => $criteriaId,
-                'rating'      => $ratingVal
-            ]);
-        }
-
-        $review->translations()->create([
-            'business_id' => $this->businessId,
-            'language_id' => $lang_id,
-            'title'       => $this->title2,
-            'description' => $this->comment,
-        ]);
-
-        // Sync selected pros and cons
-        $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
-        $review->selectedProCons()->sync($selectedIds);
     }
 
     protected function filterProCons(array $availableItems, array $selectedIds, string $searchQuery): array

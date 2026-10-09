@@ -252,7 +252,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/content-generation/download-countries', [ContentGenerationController::class, 'downloadCountries'])->name('content-gen.download-countries');
     Route::get('/admin-dashboard/content-generation/download-pros-cons', [ContentGenerationController::class, 'downloadProsCons'])->name('content-gen.download-pros-cons');
     Route::get('/admin-dashboard/content-generation/download-features', [ContentGenerationController::class, 'downloadFeatures'])->name('content-gen.download-features');
+    Route::post('/admin-dashboard/content-generation/batch-jobs/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-global-result');
     Route::post('/admin-dashboard/content-generation/batch-jobs/{job}/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-result');
+    Route::delete('/admin-dashboard/content-generation/batch-jobs/{job}', [ContentGenerationController::class, 'deleteBatchJob'])->name('content-gen.batch-jobs.delete');
 
 
 
@@ -549,17 +551,28 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/top-product-page', [SiteContentController::class, 'topProductPageContent'])->name('top-product-page-content');
     Route::post('/admin-dashboard/product-page-update', [SiteContentController::class, 'topProductPageUpdate'])->name('product-page-update');
 
-    // Reviews Section Route
+    // --- 3-Layer Review Moderation Routes ------------------------------------------
     Route::get('/admin-dashboard/reviews', [ReviewController::class, 'reviews'])->name('reviews');
-    Route::get('/admin-dashboard/Unpublished/reviews', [ReviewController::class, 'unpublishedReviews'])->name('admin.unpublished.reviews');
+    Route::get('/admin-dashboard/reviews/pending', [ReviewController::class, 'pending'])->name('admin.reviews.pending');
+    Route::get('/admin-dashboard/reviews/reported', [ReviewController::class, 'reported'])->name('admin.reviews.reported');
+    Route::get('/admin-dashboard/reviews/removed', [ReviewController::class, 'removed'])->name('admin.reviews.removed');
+    Route::get('/admin-dashboard/reviews/appeals', [ReviewController::class, 'appeals'])->name('admin.reviews.appeals');
+    Route::get('/admin-dashboard/reviews/cases', [ReviewController::class, 'cases'])->name('admin.reviews.cases');
+    Route::get('/admin-dashboard/reviews/settings', [ReviewController::class, 'settings'])->name('admin.reviews.settings');
+    Route::post('/admin-dashboard/reviews/settings', [ReviewController::class, 'updateSettings'])->name('admin.reviews.settings.update');
 
+    // Moderator Action Endpoints
+    Route::post('/admin-dashboard/reviews/{id}/approve', [ReviewController::class, 'approve'])->name('admin.reviews.approve');
+    Route::post('/admin-dashboard/reviews/{id}/reject', [ReviewController::class, 'reject'])->name('admin.reviews.reject');
+    Route::post('/admin-dashboard/reviews/{id}/remove', [ReviewController::class, 'remove'])->name('admin.reviews.remove');
+    Route::post('/admin-dashboard/reviews/{id}/assign-locale', [ReviewController::class, 'assignLocale'])->name('admin.reviews.assign-locale');
+    Route::post('/admin-dashboard/reviews/appeals/{id}/action', [ReviewController::class, 'handleAppeal'])->name('admin.reviews.appeals.action');
+
+    Route::get('/admin-dashboard/Unpublished/reviews', [ReviewController::class, 'unpublishedReviews'])->name('admin.unpublished.reviews');
     Route::get('/admin-dashboard/review/add', [ReviewController::class, 'reviewAdd'])->name('review-add');
     Route::post('/admin-dashboard/review-add-procc', [ReviewController::class, 'reviewAddProc'])->name('review-add-procc');
     Route::get('/admin-dashboard/review-status-update/{id}', [ReviewController::class, 'reviewStatusUpdate'])->name('review-status-update');
     Route::get('/admin-dashboard/review-status-edit/{id}', [ReviewController::class, 'reviewEdit'])->name('review-edit');
-    // Add Translation Route
-    //Route::get('/admin-dashboard/review-status-translation/{id}', [ReviewController::class, 'reviewTranslation'])->name('review-translation');
-
     Route::post('/admin-dashboard/review-status-update/{id}', [ReviewController::class, 'reviewUpdate'])->name('review-update');
     Route::get('/admin-dashboard/review-delete/{id}', [ReviewController::class, 'reviewDelete'])->name('review-delete');
     Route::get('/admin-dashboard/configration/update', [AdminSettingsController::class, 'edit'])->name('admin-Default-edit');

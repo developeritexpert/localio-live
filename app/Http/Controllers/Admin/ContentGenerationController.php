@@ -411,12 +411,20 @@ class ContentGenerationController extends Controller
 
         $decoded = json_decode($cleanJson, true);
         if (!is_array($decoded)) {
+            // Attempt auto-fix for missing commas between objects (e.g. "}\n{") and trailing commas
+            $fixedJson = preg_replace('/\}\s*\{/', '},{', $cleanJson);
+            $fixedJson = preg_replace('/,\s*([\]\}])/', '$1', $fixedJson);
+            $decoded   = json_decode($fixedJson, true);
+        }
+
+        if (!is_array($decoded)) {
             // Attempt line-by-line JSONL parse
             $lines = preg_split('/\r\n|\r|\n/', $cleanJson);
             $jsonlItems = [];
             foreach ($lines as $line) {
                 $line = trim($line);
                 if (empty($line)) continue;
+                $line = rtrim($line, ',');
                 $lineDecoded = json_decode($line, true);
                 if (is_array($lineDecoded)) {
                     $jsonlItems[] = $lineDecoded;
@@ -856,10 +864,9 @@ class ContentGenerationController extends Controller
                     // Official business URL only — never affiliate link!
                     $bUrl  = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
                     $businessesData[] = [
-                        'business_id'      => $bizId,
-                        'business_name'    => $bName,
-                        'business_url'     => $bUrl,
-                        'fields_requested' => $fieldsValue,
+                        'business_id'   => $bizId,
+                        'business_name' => $bName,
+                        'business_url'  => $bUrl,
                     ];
                 }
 
@@ -931,8 +938,12 @@ class ContentGenerationController extends Controller
             // Contextual pros/cons list for pros_cons field (includes IDs for strict selection)
             $availableProsStr = "- [ID: 1] High reliability\n- [ID: 2] Good value for money\n- [ID: 3] Affordable pricing\n- [ID: 4] Easy to use interface\n- [ID: 5] 24/7 expert customer support\n- [ID: 6] Fast performance\n- [ID: 7] Comprehensive features";
             $availableConsStr = "- [ID: 8] Steep learning curve\n- [ID: 9] Limited advanced features\n- [ID: 10] Hidden additional fees\n- [ID: 11] Unclear pricing\n- [ID: 12] Occasional support delays";
-            if ($business->category_id) {
-                $catProCons = \App\Models\CategoryProCon::where('category_id', $business->category_id)->where('status', 1)->get();
+            $allBusinessCatIds = array_values(array_unique(array_filter(array_merge(
+                [$business->category_id],
+                $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+            ))));
+            if (!empty($allBusinessCatIds)) {
+                $catProCons = \App\Models\CategoryProCon::whereIn('category_id', $allBusinessCatIds)->where('status', 1)->get();
                 if ($catProCons->isEmpty()) {
                     $catProCons = \App\Models\CategoryProCon::where('status', 1)->take(30)->get();
                 }
@@ -1139,6 +1150,15 @@ class ContentGenerationController extends Controller
         }
 
         return view('Admin.content-generation.batch-job-items', compact('job', 'items', 'businessNames', 'isFeatureJob'));
+    }
+
+    public function deleteBatchJob(AiBatchJob $job)
+    {
+        $batchId = $job->batch_id ?: ('#' . $job->id);
+        $job->queueItems()->delete();
+        $job->delete();
+
+        return back()->with('success', "Batch job {$batchId} and all associated queue items have been deleted successfully.");
     }
 
     // -------------------------------------------------------------------------
@@ -1442,58 +1462,8 @@ class ContentGenerationController extends Controller
                 break;
 
             case 'categories':
-                $catId = $data['category_id'] ?? null;
-                $catName = $data['category_name'] ?? ($data['category'] ?? null);
-
-                // If catId was provided but does not exist in DB, reset it to null
-                if ($catId && !Category::where('id', $catId)->exists()) {
-                    $catId = null;
-                }
-
-                // If catId is null, look up by category name in category_translations
-                if (!$catId && $catName) {
-                    $cleanCatName = trim($catName);
-                    $matchedCatId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanCatName)])
-                        ->orWhere('name', 'like', '%' . $cleanCatName . '%')
-                        ->value('category_id');
-                    if ($matchedCatId) {
-                        $catId = $matchedCatId;
-                    }
-                }
-
-                // If still not matched, check if business name indicates a primary category
-                if (!$catId) {
-                    $bizName = BusinessTranslation::where('business_id', $businessId)->value('name') ?? '';
-                    if (stripos($bizName, 'host') !== false) {
-                        $catId = \App\Models\CategoryTranslation::where('name', 'like', '%hosting%')
-                            ->whereHas('category', fn($q) => $q->whereNull('parent_id'))
-                            ->value('category_id');
-                    }
-                }
-
-                if ($catId && Category::where('id', $catId)->exists()) {
-                    Business::where('id', $businessId)->update(['category_id' => $catId]);
-                }
-
-                // Subcategories: can be array of IDs or array of names
-                $subCatIds = $data['subcategory_ids'] ?? ($data['subcategories'] ?? []);
-                if (is_array($subCatIds) && !empty($subCatIds)) {
-                    $validSubs = [];
-                    foreach ($subCatIds as $sub) {
-                        if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                            $validSubs[] = (int) $sub;
-                        } elseif (is_string($sub)) {
-                            $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                                ->value('category_id');
-                            if ($matchedSub) {
-                                $validSubs[] = $matchedSub;
-                            }
-                        }
-                    }
-                    $biz = Business::find($businessId);
-                    if ($biz && !empty($validSubs)) {
-                        $biz->subCategories()->sync($validSubs);
-                    }
+                if ($bizRecord) {
+                    self::applyCategoriesToBusiness($bizRecord, $data);
                 }
                 break;
 
@@ -2010,56 +1980,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $businesses  = Business::with([
             'translations' => fn($q) => $q->where('lang_id', 1),
             'websites',
-            'category.translations' => fn($q) => $q->where('lang_id', 1),
-            'subCategories.translations' => fn($q) => $q->where('lang_id', 1),
         ])->whereIn('id', $businessIds)->get();
-
-        $requestedFields = array_values(array_filter(explode(',', $job->prompt_type ?: '')));
-        if (empty($requestedFields)) {
-            $requestedFields = self::CONTENT_FIELDS;
-        }
-        $isAll = empty(array_diff(self::CONTENT_FIELDS, $requestedFields));
-        $fieldsValue = $isAll ? 'ALL' : $requestedFields;
 
         $bList = [];
         foreach ($businesses as $b) {
             $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
-            $cat = $b->category;
-            $catName = optional(optional($cat)->translations->firstWhere('lang_id', 1))->name ?? optional($cat)->name ?? '';
-            $subCats = $b->subCategories->map(fn($sc) => optional(optional($sc)->translations->firstWhere('lang_id', 1))->name ?? $sc->name ?? '')->filter()->values()->toArray();
-
-            $bProCons = null;
-            $bFeatures = null;
-            if ($b->category_id) {
-                $catProCons = \App\Models\CategoryProCon::where('category_id', $b->category_id)->where('status', 1)->orderBy('id')->get();
-                if ($catProCons->isNotEmpty()) {
-                    $bProCons = [
-                        'pros' => $catProCons->where('type', 'pro')->values()->map(fn($p) => ['id' => $p->id, 'text' => $p->text])->toArray(),
-                        'cons' => $catProCons->where('type', 'con')->values()->map(fn($c) => ['id' => $c->id, 'text' => $c->text])->toArray(),
-                    ];
-                }
-
-                $catFeats = Feature::where('category_id', $b->category_id)->where('status', 'active')
-                    ->with(['translations' => fn($t) => $t->where('lang_id', 1)])
-                    ->get();
-                if ($catFeats->isNotEmpty()) {
-                    $bFeatures = $catFeats->map(fn($f) => [
-                        'id'   => $f->id,
-                        'name' => optional($f->translations->first())->name ?? ('Feature #' . $f->id),
-                    ])->values()->toArray();
-                }
-            }
-
             $bList[] = [
-                'business_id'         => $b->id,
-                'business_name'       => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
-                'business_url'        => $bUrl,
-                'category_id'         => $b->category_id,
-                'category_name'       => $catName ?: null,
-                'subcategories'       => !empty($subCats) ? $subCats : null,
-                'fields_requested'    => $fieldsValue,
-                'available_pros_cons' => $bProCons,
-                'available_features'  => $bFeatures,
+                'business_id'   => $b->id,
+                'business_name' => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                'business_url'  => $bUrl,
             ];
         }
 
@@ -2221,7 +2150,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     // -------------------------------------------------------------------------
     // UPLOAD BATCH RESULT JSON (From ChatGPT)
     // -------------------------------------------------------------------------
-    public function uploadBatchResult(Request $request, AiBatchJob $job)
+    public function uploadBatchResult(Request $request, ?AiBatchJob $job = null)
     {
         $request->validate([
             'result_file' => 'nullable|file|max:10240',
@@ -2249,7 +2178,64 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
         }
 
-        $isFeatureJob = $job->queueItems()->where('resource_type', 'category_feature')->exists()
+        // Auto-detect batch job if not provided in URL
+        if (!$job || !$job->exists) {
+            $batchId = $parsed['batch_id'] ?? ($parsed['id'] ?? ($parsed['batch_job_id'] ?? null));
+
+            if (!$batchId && isset($parsed['businesses']) && is_array($parsed['businesses'])) {
+                foreach ($parsed['businesses'] as $b) {
+                    if (is_array($b) && isset($b['batch_id'])) {
+                        $batchId = $b['batch_id'];
+                        break;
+                    }
+                }
+            }
+            if (!$batchId && isset($parsed['features']) && is_array($parsed['features'])) {
+                foreach ($parsed['features'] as $f) {
+                    if (is_array($f) && isset($f['batch_id'])) {
+                        $batchId = $f['batch_id'];
+                        break;
+                    }
+                }
+            }
+
+            if ($batchId) {
+                $job = AiBatchJob::where('batch_id', $batchId)->first();
+                if (!$job && is_numeric($batchId)) {
+                    $job = AiBatchJob::find($batchId);
+                }
+                if (!$job && preg_match('/BATCH-(\d+)/i', (string)$batchId, $m)) {
+                    $job = AiBatchJob::find($m[1]);
+                }
+            }
+
+            // Fallback: match by business IDs in queue items
+            if (!$job) {
+                $bList = $parsed['businesses'] ?? (array_is_list($parsed) ? $parsed : []);
+                $candidateBizIds = [];
+                foreach ($bList as $b) {
+                    if (!is_array($b)) continue;
+                    $bId = $b['business_id'] ?? ($b['id'] ?? null);
+                    if ($bId) $candidateBizIds[] = $bId;
+                }
+                if (!empty($candidateBizIds)) {
+                    $matchedJobId = AiContentQueue::where('resource_type', 'business')
+                        ->whereIn('resource_id', $candidateBizIds)
+                        ->whereNotNull('batch_job_id')
+                        ->latest('id')
+                        ->value('batch_job_id');
+                    if ($matchedJobId) {
+                        $job = AiBatchJob::find($matchedJobId);
+                    }
+                }
+            }
+
+            if (!$job) {
+                return back()->with('error', 'Could not detect which batch job this result belongs to. Please make sure the JSON includes "batch_id": "BATCH-..." matching one of your batch jobs.');
+            }
+        }
+
+        $isFeatureJob = ($job->queueItems()->where('resource_type', 'category_feature')->exists())
             || str_starts_with($job->prompt_type ?: '', 'feature:')
             || isset($parsed['features']);
 
@@ -2405,6 +2391,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             $rawBizId = $bData['business_id'] ?? ($bData['id'] ?? null);
             $bizName  = trim($bData['business_name'] ?? ($bData['name'] ?? ''));
+            $bizUrl   = trim($bData['business_url'] ?? ($bData['url'] ?? ($bData['permanent_url'] ?? '')));
+
+            if (!empty($bizUrl) && !preg_match('/^https?:\/\//i', $bizUrl)) {
+                $bizUrl = 'https://' . $bizUrl;
+            }
 
             $biz = null;
 
@@ -2423,6 +2414,17 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ->whereHas('translations', function($q) use ($bizName) {
                         $q->where('name', 'like', "%{$bizName}%");
                     })->first();
+            }
+
+            // 2b. Try matching by URL against businesses in this batch job
+            if (!$biz && !empty($bizUrl) && $job) {
+                $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique();
+                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
+                if (!empty($normalizedUrl)) {
+                    $biz = Business::whereIn('id', $jobBizIds)
+                        ->whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
+                        ->first();
+                }
             }
 
             // 3. Fallback: If this batch job only has 1 business in its queue items
@@ -2446,6 +2448,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ?? BusinessTranslation::where('name', 'like', "%{$cleanName}%")->value('business_id');
                 if ($matchedBizId) {
                     $biz = Business::find($matchedBizId);
+                }
+            }
+
+            // 5b. Try matching globally by permanent URL
+            if (!$biz && !empty($bizUrl)) {
+                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
+                if (!empty($normalizedUrl)) {
+                    $biz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
+                        ->first();
                 }
             }
 
@@ -2493,14 +2504,85 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $bizId = $biz->id;
             $appliedBusinessesCount++;
 
-            // Process each of the 9 fields
-            foreach (self::CONTENT_FIELDS as $field) {
-                if (!isset($bData[$field])) continue;
+            // Order fields so 'categories' is processed first to set category_id before pros_cons & features!
+            $orderedFields = self::CONTENT_FIELDS;
+            if (($catIdx = array_search('categories', $orderedFields)) !== false) {
+                unset($orderedFields[$catIdx]);
+                array_unshift($orderedFields, 'categories');
+            }
 
-                $fieldVal = $bData[$field];
+            foreach ($orderedFields as $field) {
+                $fieldVal = null;
+                $hasField = false;
+
+                if ($field === 'categories') {
+                    if (isset($bData['categories'])) {
+                        $fieldVal = $bData['categories'];
+                        $hasField = true;
+                    } elseif (isset($bData['category']) || isset($bData['category_id'])) {
+                        $fieldVal = [
+                            'category_id'     => $bData['category_id'] ?? null,
+                            'category_name'   => $bData['category'] ?? null,
+                            'subcategory_ids' => $bData['subcategory_ids'] ?? ($bData['subcategories'] ?? []),
+                        ];
+                        $hasField = true;
+                    }
+                } elseif ($field === 'pros_cons') {
+                    if (isset($bData['pros_cons'])) {
+                        $fieldVal = $bData['pros_cons'];
+                        $hasField = true;
+                    } elseif (isset($bData['pro_ids']) || isset($bData['con_ids']) || isset($bData['pros']) || isset($bData['cons'])) {
+                        $fieldVal = [
+                            'pro_ids' => $bData['pro_ids'] ?? ($bData['pros'] ?? []),
+                            'con_ids' => $bData['con_ids'] ?? ($bData['cons'] ?? []),
+                        ];
+                        $hasField = true;
+                    }
+                } elseif ($field === 'reviews_description') {
+                    if (isset($bData['reviews_description'])) {
+                        $fieldVal = $bData['reviews_description'];
+                        $hasField = true;
+                    } elseif (isset($bData['review_description'])) {
+                        $fieldVal = $bData['review_description'];
+                        $hasField = true;
+                    } elseif (isset($bData['short_business_description_reviews'])) {
+                        $fieldVal = $bData['short_business_description_reviews'];
+                        $hasField = true;
+                    }
+                } elseif ($field === 'rating') {
+                    if (isset($bData['rating'])) {
+                        $fieldVal = $bData['rating'];
+                        $hasField = true;
+                    } elseif (isset($bData['admin_rating'])) {
+                        $fieldVal = $bData['admin_rating'];
+                        $hasField = true;
+                    }
+                } elseif ($field === 'features') {
+                    if (isset($bData['features'])) {
+                        $fieldVal = $bData['features'];
+                        $hasField = true;
+                    } elseif (isset($bData['feature_ids'])) {
+                        $fieldVal = $bData['feature_ids'];
+                        $hasField = true;
+                    }
+                } elseif (isset($bData[$field])) {
+                    $fieldVal = $bData[$field];
+                    $hasField = true;
+                }
+
+                if (!$hasField) continue;
+
                 $normalizedData = is_array($fieldVal) ? $fieldVal : [$field => $fieldVal];
 
-                if ($field === 'short_description' && is_string($fieldVal)) {
+                if ($field === 'categories') {
+                    if (is_string($fieldVal)) {
+                        $normalizedData = ['category_name' => $fieldVal];
+                    } elseif (is_numeric($fieldVal)) {
+                        $normalizedData = ['category_id' => (int)$fieldVal];
+                    } elseif (is_array($fieldVal)) {
+                        $normalizedData = $fieldVal;
+                    }
+                } elseif ($field === 'short_description' && is_string($fieldVal)) {
                     $normalizedData = ['short_description' => $fieldVal];
                 } elseif ($field === 'long_description' && is_string($fieldVal)) {
                     $normalizedData = ['long_preview_description' => $fieldVal, 'long_description' => $fieldVal];
@@ -2550,6 +2632,9 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 try {
                     $this->applyResultToRecord($queueItem, $normalizedData);
                     $appliedFieldsCount++;
+                    if ($field === 'categories') {
+                        $biz->refresh();
+                    }
                 } catch (\Exception $e) {
                     Log::error("Failed to auto-apply field {$field} for business {$bizId}: " . $e->getMessage());
                 }
@@ -2577,93 +2662,97 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     public static function getBatchResultExampleJson(): string
     {
         $example = [
-            [
-                "business_id"       => 101,
-                "business_name"     => "HostGator (Global Business Example)",
-                "short_description" => "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
-                "long_description"  => "HostGator offers robust shared, VPS, and dedicated web hosting built for high performance and reliability.",
-                "usps"              => [
-                    "99.9% uptime guarantee",
-                    "Free domain registration for the first year",
-                    "24/7/365 phone, chat, and email support",
-                    "One-click WordPress and CMS installs"
-                ],
-                "what_is"           => "HostGator is an established global web hosting provider and domain registrar serving businesses and web creators worldwide.",
-                "reviews_description" => "HostGator is a trusted web hosting provider offering reliable shared, cloud, and VPS hosting solutions tailored for individuals and businesses.", 
-                "pros_cons"         => [
-                    "pro_ids" => [20, 22, 24],
-                    "con_ids" => [21, 23]
-                ],
-                "features"          => [1007, 1008, 1012],
-                "services"          => [
-                    "headline"    => "Full-Service Web Hosting & Domain Management",
-                    "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
-                    "bottom_text" => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
-                ],
-                "faqs"              => [
-                    [
-                        "category" => "Domains & Plans",
-                        "question" => "Does HostGator provide a free domain name?",
-                        "answer"   => "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
+            'batch_id'   => 'BATCH-MANUAL-SAMPLE1234',
+            'businesses' => [
+                [
+                    "business_id"         => 101,
+                    "business_name"       => "HostGator",
+                    "short_description"   => "Leading web hosting provider offering shared, VPS, and dedicated servers with unmetered bandwidth.",
+                    "long_description"    => "HostGator is a global provider of web hosting and related services. Founded in a Florida dorm room, it has grown into a world-leading provider of Shared, Reseller, VPS, and Dedicated web hosting.",
+                    "usps"                => [
+                        "99.9% Uptime Guarantee",
+                        "Free SSL Certificate Included",
+                        "One-Click WordPress Installs",
+                        "24/7/365 Live Support"
                     ],
-                    [
-                        "category" => "Migration & Setup",
-                        "question" => "Can I easily migrate an existing site to HostGator?",
-                        "answer"   => "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
-                    ]
-                ],
-                "categories"        => [
-                    "category_id"     => 11,
-                    "subcategory_ids" => [19, 20]
-                ],
-                "active_countries"  => [
-                    "active_all_countries" => true
-                ],
-                "rating"            => 4.7
-            ],
-            [
-                "business_id"       => 102,
-                "business_name"     => "Specific Region Provider (Specific Countries Example)",
-                "short_description" => "Regional infrastructure provider delivering dedicated servers and compliant cloud hosting in select countries.",
-                "long_description"  => "High-compliance hosting tailored for businesses operating in designated jurisdictions with localized data centers.",
-                "usps"              => [
-                    "Local data residency guarantee",
-                    "ISO 27001 certified security",
-                    "Sub-10ms localized latency",
-                    "Dedicated regional account manager"
-                ],
-                "what_is"           => "A specialized hosting provider focused on strict geographic data sovereignty and regional compliance.",
-                "reviews_description" => "A regional cloud hosting provider offering high-compliance infrastructure and localized support for enterprises.", 
-                "pros_cons"         => [
-                    "pro_ids" => [25, 26],
-                    "con_ids" => [27]
-                ],
-                "services"          => [
-                    "headline"    => "Regional Cloud & Dedicated Servers",
-                    "top_text"    => "Secure regional infrastructure optimized for local compliance.",
-                    "bottom_text" => "Fully managed migration and disaster recovery solutions."
-                ],
-                "faqs"              => [
-                    [
-                        "category" => "Coverage & Availability",
-                        "question" => "Which countries do you operate in?",
-                        "answer"   => "Services are exclusively available in the United States, United Kingdom, Canada, Australia, and Germany."
+                    "what_is"             => "A comprehensive web hosting platform catering to personal blogs, small businesses, and scalable enterprise web apps.",
+                    "reviews_description" => "A reliable, beginner-friendly web hosting solution with flexible pricing tiers and 24/7 customer support.",
+                    "pros_cons"           => [
+                        "pro_ids" => [20, 22, 24],
+                        "con_ids" => [21, 23]
                     ],
-                    [
-                        "category" => "Compliance & Security",
-                        "question" => "Are your servers compliant with local data protection regulations?",
-                        "answer"   => "Yes, all regional data centers maintain ISO 27001 certification and comply with local data sovereignty laws."
-                    ]
+                    "features"            => [1007, 1008, 1012],
+                    "services"            => [
+                        "headline"    => "Full-Service Web Hosting & Domain Management",
+                        "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
+                        "bottom_text" => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
+                    ],
+                    "faqs"                => [
+                        [
+                            "category" => "Domains & Plans",
+                            "question" => "Does HostGator provide a free domain name?",
+                            "answer"   => "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
+                        ],
+                        [
+                            "category" => "Migration & Setup",
+                            "question" => "Can I easily migrate an existing site to HostGator?",
+                            "answer"   => "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
+                        ]
+                    ],
+                    "categories"          => [
+                        "category_id"     => 11,
+                        "subcategory_ids" => [19, 20]
+                    ],
+                    "active_countries"    => [
+                        "active_all_countries" => true
+                    ],
+                    "rating"              => 4.7
                 ],
-                "categories"        => [
-                    "category_id"     => 11,
-                    "subcategory_ids" => [22, 25]
-                ],
-                "active_countries"  => [
-                    "active_all_countries" => false,
-                    "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
-                ],
-                "rating"            => 4.5
+                [
+                    "business_id"         => 102,
+                    "business_name"       => "CloudFlare & Enterprise Hosting (Multiple Categories Example)",
+                    "short_description"   => "High-performance edge cloud platform providing CDN, DNS, DDoS protection, and cloud server hosting.",
+                    "long_description"    => "An integrated global cloud platform that delivers security, performance, and reliability across edge networks and cloud infrastructure.",
+                    "usps"                => [
+                        "Global Anycast Network across 300+ cities",
+                        "Enterprise DDoS protection",
+                        "Integrated Serverless Workers",
+                        "Sub-millisecond DNS resolution"
+                    ],
+                    "what_is"             => "A unified cloud infrastructure and edge networking platform.",
+                    "reviews_description" => "Industry-standard CDN and edge compute provider with robust enterprise security capabilities.",
+                    "pros_cons"           => [
+                        "pro_ids" => [25, 26],
+                        "con_ids" => [27]
+                    ],
+                    "services"            => [
+                        "headline"    => "Global Edge Cloud & Infrastructure",
+                        "top_text"    => "Secure regional infrastructure optimized for low latency and high availability.",
+                        "bottom_text" => "Automated edge routing and enterprise threat intelligence."
+                    ],
+                    "faqs"                => [
+                        [
+                            "category" => "Coverage & Availability",
+                            "question" => "Which countries do you operate in?",
+                            "answer"   => "Services are distributed globally across more than 100 countries."
+                        ]
+                    ],
+                    "categories"          => [
+                        [
+                            "category_id"     => 11,
+                            "subcategory_ids" => [19, 20]
+                        ],
+                        [
+                            "category_id"     => 14,
+                            "subcategory_ids" => [35, 36]
+                        ]
+                    ],
+                    "active_countries"    => [
+                        "active_all_countries" => false,
+                        "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                    ],
+                    "rating"              => 4.8
+                ]
             ]
         ];
 
@@ -2699,10 +2788,121 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     /**
      * Apply Pros and Cons to a Business strictly from existing CategoryProCon records.
      */
+    public static function applyCategoriesToBusiness(Business $business, $catData): void
+    {
+        $primaryCatId = null;
+        $secondaryCatIds = [];
+        $subCatIds = [];
+
+        if (is_string($catData)) {
+            $catData = ['category_name' => $catData];
+        } elseif (is_numeric($catData)) {
+            $catData = ['category_id' => (int)$catData];
+        }
+
+        // Format 1: Array of category objects: [ {"category_id": 11, "subcategory_ids": [19, 20]}, ... ]
+        if (is_array($catData) && array_is_list($catData) && !empty($catData)) {
+            foreach ($catData as $entry) {
+                if (!is_array($entry)) {
+                    if (is_numeric($entry)) {
+                        if ($primaryCatId === null) $primaryCatId = (int)$entry;
+                        else $secondaryCatIds[] = (int)$entry;
+                    }
+                    continue;
+                }
+                $cId = $entry['category_id'] ?? ($entry['id'] ?? null);
+                $cName = $entry['category_name'] ?? ($entry['category'] ?? ($entry['name'] ?? null));
+                if (!$cId && $cName) {
+                    $clean = trim($cName);
+                    $cId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                        ->orWhere('name', 'like', '%' . $clean . '%')
+                        ->value('category_id');
+                }
+                if ($cId && Category::where('id', $cId)->exists()) {
+                    if ($primaryCatId === null) {
+                        $primaryCatId = (int)$cId;
+                    } else {
+                        $secondaryCatIds[] = (int)$cId;
+                    }
+                }
+
+                $subs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? ($entry['subcategory_id'] ?? []));
+                if (!is_array($subs)) $subs = [$subs];
+                foreach ($subs as $sub) {
+                    if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
+                        $subCatIds[] = (int)$sub;
+                    } elseif (is_string($sub) && trim($sub) !== '') {
+                        $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
+                            ->value('category_id');
+                        if ($matchedSub) $subCatIds[] = $matchedSub;
+                    }
+                }
+            }
+        } elseif (is_array($catData)) {
+            // Format 2: Object with category_ids / category_id and subcategory_ids
+            $cIds = $catData['category_ids'] ?? [];
+            if (!empty($cIds)) {
+                if (!is_array($cIds)) $cIds = [$cIds];
+                foreach ($cIds as $cid) {
+                    if (is_numeric($cid) && Category::where('id', $cid)->exists()) {
+                        if ($primaryCatId === null) {
+                            $primaryCatId = (int)$cid;
+                        } else {
+                            $secondaryCatIds[] = (int)$cid;
+                        }
+                    }
+                }
+            }
+
+            if ($primaryCatId === null) {
+                $rawCid = $catData['category_id'] ?? null;
+                $catName = $catData['category_name'] ?? ($catData['category'] ?? null);
+
+                if ($rawCid && Category::where('id', $rawCid)->exists()) {
+                    $primaryCatId = (int)$rawCid;
+                } elseif ($catName) {
+                    $clean = trim($catName);
+                    $matched = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                        ->orWhere('name', 'like', '%' . $clean . '%')
+                        ->value('category_id');
+                    if ($matched) {
+                        $primaryCatId = (int)$matched;
+                    }
+                }
+            }
+
+            $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
+            if (!is_array($subs)) $subs = [$subs];
+            foreach ($subs as $sub) {
+                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
+                    $subCatIds[] = (int)$sub;
+                } elseif (is_string($sub) && trim($sub) !== '') {
+                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
+                        ->value('category_id');
+                    if ($matchedSub) $subCatIds[] = $matchedSub;
+                }
+            }
+        }
+
+        if ($primaryCatId) {
+            $business->update(['category_id' => $primaryCatId]);
+        }
+
+        $allPivotIds = array_values(array_unique(array_filter(array_merge($secondaryCatIds, $subCatIds))));
+        if (!empty($allPivotIds)) {
+            $business->subCategories()->sync($allPivotIds);
+        }
+    }
+
     public static function applyProsConsToBusiness(Business $business, array $data): int
     {
         $businessId = $business->id;
-        $categoryId = $business->category_id;
+
+        // Gather all category IDs the business belongs to (Primary category + Secondary categories / subcategories)
+        $allCategoryIds = array_values(array_unique(array_filter(array_merge(
+            [$business->category_id],
+            $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+        ))));
 
         $rawPros = $data['pro_ids'] ?? ($data['pros'] ?? []);
         $rawCons = $data['con_ids'] ?? ($data['cons'] ?? []);
@@ -2732,8 +2932,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $found = null;
             if (is_numeric($val)) {
                 $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'pro')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
                 }
                 if (!$found) {
                     $found = $query->first();
@@ -2741,8 +2941,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             } elseif (is_string($val) && trim($val) !== '') {
                 $cleanText = trim($val);
                 $query = \App\Models\CategoryProCon::where('type', 'pro')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
                         ->where(function($q) use ($cleanText) {
                             $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
                               ->orWhereJsonContains('aliases', $cleanText);
@@ -2765,8 +2965,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $found = null;
             if (is_numeric($val)) {
                 $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'con')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
                 }
                 if (!$found) {
                     $found = $query->first();
@@ -2774,8 +2974,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             } elseif (is_string($val) && trim($val) !== '') {
                 $cleanText = trim($val);
                 $query = \App\Models\CategoryProCon::where('type', 'con')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
                         ->where(function($q) use ($cleanText) {
                             $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
                               ->orWhereJsonContains('aliases', $cleanText);

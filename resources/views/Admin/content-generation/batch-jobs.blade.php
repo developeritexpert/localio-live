@@ -17,22 +17,25 @@
                     </p>
                 </div>
                 <div class="nk-block-head-content d-flex flex-wrap gap-2">
-                    <a href="{{ route('content-gen.download-categories') }}" class="btn btn-outline-primary btn-sm" title="Download all category names with their IDs as JSON">
+                    <button type="button" class="btn btn-success btn-sm" onclick="openGlobalUploadModal()" title="Paste or upload ChatGPT result JSON — auto-detects batch ID">
+                        <em class="icon ni ni-upload-cloud me-1"></em> Upload Batch Result
+                    </button>
+                    <a href="{{ route('content-gen.download-categories') }}" class="btn btn-primary btn-sm" title="Download all category names with their IDs as JSON">
                         <em class="icon ni ni-folder me-1"></em> Categories & IDs
                     </a>
-                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-outline-primary btn-sm" title="Download all supported country codes and names as JSON">
+                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-primary btn-sm" title="Download all supported country codes and names as JSON">
                         <em class="icon ni ni-globe me-1"></em> Country Codes
                     </a>
-                    <a href="{{ route('content-gen.download-pros-cons') }}" class="btn btn-outline-primary btn-sm" title="Download all Pros & Cons with their IDs in each category as JSON">
+                    <a href="{{ route('content-gen.download-pros-cons') }}" class="btn btn-primary btn-sm" title="Download all Pros & Cons with their IDs in each category as JSON">
                         <em class="icon ni ni-check-circle me-1"></em> Pros & Cons & IDs
                     </a>
-                    <a href="{{ route('content-gen.download-features') }}" class="btn btn-outline-primary btn-sm" title="Download all Features with their IDs in each category as JSON">
+                    <a href="{{ route('content-gen.download-features') }}" class="btn btn-primary btn-sm" title="Download all Features with their IDs in each category as JSON">
                         <em class="icon ni ni-grid-add me-1"></em> Features & IDs
                     </a>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openExampleModal()">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="openExampleModal()">
                         <em class="icon ni ni-file-code me-1"></em> Result JSON Format
                     </button>
-                    <a href="{{ route('content-gen.poll-now') }}" class="btn btn-outline-info btn-sm">
+                    <a href="{{ route('content-gen.poll-now') }}" class="btn btn-info btn-sm">
                         <em class="icon ni ni-reload me-1"></em> Poll Status Now
                     </a>
                     <a href="{{ route('content-gen.businesses') }}" class="btn btn-primary btn-sm">
@@ -153,22 +156,19 @@
                                     <td class="text-soft small">{{ $job->completed_at ? $job->completed_at->diffForHumans() : '-' }}</td>
                                     <td class="text-end text-nowrap">
                                         {{-- Copy JSON for ChatGPT --}}
-                                        <button type="button" class="btn btn-xs btn-outline-info me-1" onclick="copyBatchJson({{ $job->id }}, this)" title="Copy batch JSON for ChatGPT to clipboard">
+                                        <button type="button" class="btn btn-xs btn-info me-1" onclick="copyBatchJson({{ $job->id }}, this)" title="Copy batch JSON for ChatGPT to clipboard">
                                             <em class="icon ni ni-copy me-1"></em> Copy JSON
                                         </button>
 
-                                        {{-- Upload Result JSON --}}
-                                        @php
-                                            $isFeat = str_starts_with($job->prompt_type ?? '', 'feature:');
-                                        @endphp
-                                        <button type="button" class="btn btn-xs btn-outline-success me-1" onclick="openUploadModal({{ $job->id }}, '{{ $job->batch_id }}', {{ $isFeat ? 'true' : 'false' }})" title="Upload ChatGPT result JSON for this batch">
-                                            <em class="icon ni ni-upload me-1"></em> Upload Result
-                                        </button>
-
                                         {{-- View Items --}}
-                                        <a href="{{ route('content-gen.batch-job-items', $job->id) }}" class="btn btn-xs btn-outline-secondary" title="View individual queue items">
+                                        <a href="{{ route('content-gen.batch-job-items', $job->id) }}" class="btn btn-xs btn-secondary me-1" title="View individual queue items">
                                             <em class="icon ni ni-list-check me-1"></em> Items ({{ $job->queue_items_count }})
                                         </a>
+
+                                        {{-- Delete Batch Job --}}
+                                        <button type="button" class="btn btn-xs btn-danger" onclick="confirmDeleteBatch({{ $job->id }}, '{{ $job->batch_id }}')" title="Delete this batch job">
+                                            <em class="icon ni ni-trash me-1"></em> Delete
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -185,26 +185,33 @@
     </div>
 </div>
 
+{{-- Hidden Delete Batch Form --}}
+<form id="deleteBatchForm" action="" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
 {{-- Upload Batch Result Modal --}}
 <div class="modal fade" id="uploadResultModal" tabindex="-1" role="dialog" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="uploadResultModalLabel">
-                    <em class="icon ni ni-upload-cloud text-success me-2"></em>Upload Batch Result JSON
+                    <em class="icon ni ni-upload-cloud text-success me-2"></em>Upload / Paste Batch Result JSON
                 </h5>
                 <a href="javascript:void(0)" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" onclick="closeUploadModal()">
                     <em class="icon ni ni-cross"></em>
                 </a>
             </div>
-            <form id="uploadResultForm" action="" method="POST" enctype="multipart/form-data">
+            <form id="uploadResultForm" action="{{ route('content-gen.batch-jobs.upload-global-result') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body p-4">
-                    <p class="text-muted small mb-3">
-                        Upload the output JSON generated by ChatGPT for Batch <strong id="uploadModalBatchId" class="text-dark"></strong>.
-                        You can either upload a <code>.json</code> file or paste the JSON text directly below.
-                        Localio will parse the results and automatically apply them across all fields to the corresponding businesses.
-                    </p>
+                    <div class="alert alert-info py-2 px-3 mb-3 small d-flex align-items-center">
+                        <em class="icon ni ni-info-fill fs-5 me-2 text-info"></em>
+                        <div>
+                            <strong>Automatic Batch Detection:</strong> Paste your completed JSON result from ChatGPT below. Localio automatically detects the <code>batch_id</code> (or matches the businesses) and applies the generated content directly.
+                        </div>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Upload JSON File</label>
@@ -213,7 +220,7 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <label class="form-label fw-bold small mb-0">Or Paste JSON Text</label>
-                        <button type="button" class="btn btn-xs btn-outline-light text-dark" onclick="insertSampleResult()">
+                        <button type="button" class="btn btn-xs btn-light text-dark" onclick="insertSampleResult()">
                             <em class="icon ni ni-copy me-1"></em> Insert Sample Result
                         </button>
                     </div>
@@ -263,6 +270,20 @@
 
                 {{-- Business Format Panel --}}
                 <div id="businessFormatPanel">
+                    <div class="alert alert-primary py-2 px-3 mb-3 small">
+                        <div class="fw-bold mb-1"><em class="icon ni ni-layers me-1"></em> Categories & Subcategories Format:</div>
+                        <div>Businesses can belong to a single category or multiple categories and subcategories:</div>
+                        <ul class="mb-0 ps-3 mt-1">
+                            <li><strong>Single Category:</strong> <code>"categories": {"category_id": 11, "subcategory_ids": [19, 20]}</code></li>
+                            <li><strong>Multiple Categories & Subcategories:</strong>
+                                <code>"categories": [
+                                    {"category_id": 11, "subcategory_ids": [19, 20]},
+                                    {"category_id": 14, "subcategory_ids": [35, 36]}
+                                ]</code>
+                                <br><span class="text-muted">The first category ID is assigned as the primary category, and additional categories + subcategories are linked via sub-categories.</span>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="alert alert-info py-2 px-3 mb-3 small">
                         <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
                         <ul class="mb-0 ps-3">
@@ -281,7 +302,7 @@
                         <p class="text-muted small mb-0">
                             Ask ChatGPT to output a JSON array of businesses matching this exact structure:
                         </p>
-                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                        <button type="button" class="btn btn-xs btn-primary" onclick="copyExampleJson()">
                             <em class="icon ni ni-copy me-1"></em> Copy Example JSON
                         </button>
                     </div>
@@ -298,7 +319,7 @@
                         <p class="text-muted small mb-0">
                             Ask ChatGPT to output a JSON array of features matching this exact structure:
                         </p>
-                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="copyExampleJson()">
+                        <button type="button" class="btn btn-xs btn-primary" onclick="copyExampleJson()">
                             <em class="icon ni ni-copy me-1"></em> Copy Example JSON
                         </button>
                     </div>
@@ -319,6 +340,31 @@
 const sampleResultJson = `{!! addslashes($batchResultExample ?? '') !!}`;
 const sampleFeatureResultJson = `{!! addslashes($featureBatchResultExample ?? '') !!}`;
 let currentModalIsFeature = false;
+
+function openGlobalUploadModal() {
+    currentModalIsFeature = false;
+    const form = document.getElementById('uploadResultForm');
+    form.action = "{{ route('content-gen.batch-jobs.upload-global-result') }}";
+    document.getElementById('resultTextInput').value = '';
+    if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
+        $('#uploadResultModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('uploadResultModal')).show();
+    } else {
+        const el = document.getElementById('uploadResultModal');
+        el.classList.add('show');
+        el.style.display = 'block';
+    }
+}
+
+function confirmDeleteBatch(jobId, batchId) {
+    const label = batchId ? `batch "${batchId}"` : `batch #${jobId}`;
+    if (confirm(`Are you sure you want to delete ${label}? All queue items for this batch job will be permanently removed.`)) {
+        const form = document.getElementById('deleteBatchForm');
+        form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}`;
+        form.submit();
+    }
+}
 let currentExampleTab = 'business';
 
 function openUploadModal(jobId, batchId, isFeature = false) {
@@ -425,12 +471,12 @@ function copyBatchJson(jobId, btn) {
         }
     })
     .then(() => {
-        btn.classList.remove('btn-outline-info');
+        btn.classList.remove('btn-info');
         btn.classList.add('btn-success');
         btn.innerHTML = '<em class="icon ni ni-check me-1"></em> Copied!';
         setTimeout(() => {
             btn.classList.remove('btn-success');
-            btn.classList.add('btn-outline-info');
+            btn.classList.add('btn-info');
             btn.innerHTML = originalHtml;
             btn.disabled = false;
         }, 2000);

@@ -248,7 +248,7 @@
                                                     <span class="text-muted small">--</span>
                                                 @elseif($qi && $qi->status === 'completed')
                                                     <div class="d-inline-flex align-items-center">
-                                                        <span class="badge badge-dim bg-success" title="{{ Str::limit($qi->result, 80) }}">
+                                                        <span class="badge badge-dim bg-success" title="{{ Str::limit((string)($qi->result ?? ''), 80) }}">
                                                             <em class="icon ni ni-check"></em>
                                                         </span>
                                                         <a href="{{ route('content-gen.view-result', $qi->id) }}" class="btn btn-icon btn-xs btn-dim btn-outline-primary ms-1" title="View Result">

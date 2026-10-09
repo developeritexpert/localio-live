@@ -67,6 +67,21 @@
                             </div>
                         </div>
 
+                        <!-- Feature name with lowercase [feature_with_lc] -->
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="feature_with_lc">Feature name with lowercase <code class="text-primary">[feature_with_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="feature_with_lc" name="feature_with_lc"
+                                        value="{{ old('feature_with_lc') }}" placeholder="e.g. with a free SSL certificate" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: with a free SSL certificate or with daily backups</small>
+                                @error('feature_with_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Categories -->
                         <div class="col-md-12">
                             <div class="form-group">
@@ -114,13 +129,21 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const featCapInput = document.getElementById('feature_cap');
-            const featTcInput  = document.getElementById('features_tc');
-            const featLcInput  = document.getElementById('feature_lc');
-            const nameInput    = document.getElementById('name');
+            const featCapInput    = document.getElementById('feature_cap');
+            const featTcInput     = document.getElementById('features_tc');
+            const featLcInput     = document.getElementById('feature_lc');
+            const featWithLcInput = document.getElementById('feature_with_lc');
+            const nameInput       = document.getElementById('name');
 
-            let userModifiedTc = false;
-            let userModifiedLc = false;
+            let userModifiedTc     = false;
+            let userModifiedLc     = false;
+            let userModifiedWithLc = false;
+
+            if (featWithLcInput) {
+                featWithLcInput.addEventListener('input', function() {
+                    userModifiedWithLc = true;
+                });
+            }
 
             if (featTcInput && featTcInput.value.trim() !== '') userModifiedTc = true;
             if (featLcInput && featLcInput.value.trim() !== '') userModifiedLc = true;
@@ -152,6 +175,9 @@
                     }
                     if (!userModifiedLc && featLcInput) {
                         featLcInput.value = val ? val.toLowerCase() : '';
+                    }
+                    if (!userModifiedWithLc && featWithLcInput) {
+                        featWithLcInput.value = val ? ('with ' + val.toLowerCase()) : '';
                     }
                 });
             }

@@ -230,6 +230,7 @@
                             '[feature_tc]' => 'Free Domain Privacy',
                             '[feature_cap]' => 'Free domain privacy',
                             '[feature_lc]' => 'free domain privacy',
+                            '[feature_with_lc]' => 'with free domain privacy',
                             '[entity1_cap]' => 'Web hosting provider',
                             '[entity1_lc]' => 'web hosting provider',
                             '[entities1_cap]' => 'Web hosting providers',

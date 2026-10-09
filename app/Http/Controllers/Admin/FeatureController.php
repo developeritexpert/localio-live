@@ -90,10 +90,11 @@ class FeatureController extends Controller
             'category_ids' => 'required',
             'status'       => 'required|in:active,inactive',
             'name'         => 'required|string|unique:feature_translations,name,NULL,id,lang_id,' . $lang_id,
-            'feature_cap'  => 'nullable|string',
-            'features_tc'  => 'nullable|string',
-            'feature_tc'   => 'nullable|string',
-            'feature_lc'   => 'nullable|string',
+            'feature_cap'     => 'nullable|string',
+            'features_tc'     => 'nullable|string',
+            'feature_tc'      => 'nullable|string',
+            'feature_lc'      => 'nullable|string',
+            'feature_with_lc' => 'nullable|string',
         ]);
         DB::beginTransaction();
 
@@ -104,21 +105,23 @@ class FeatureController extends Controller
                 'status'      => $request->status,
             ]);
 
-            $featureCap = $name;
-            $featureTc  = trim($request->features_tc ?? ($request->feature_tc ?? ($request->category_tc ?? ''))) ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
-            $featureLc  = trim($request->feature_lc ?? ($request->category_lc ?? '')) ?: mb_strtolower($name);
+            $featureCap    = $name;
+            $featureTc     = trim($request->features_tc ?? ($request->feature_tc ?? ($request->category_tc ?? ''))) ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+            $featureLc     = trim($request->feature_lc ?? ($request->category_lc ?? '')) ?: mb_strtolower($name);
+            $featureWithLc = trim($request->feature_with_lc ?? '') ?: ('with ' . $featureLc);
 
             // Create translations - populate both feature_* and category_* fields
             $feature->translations()->create([
-                'lang_id'      => $lang_id,
-                'name'         => $name,
-                'feature_cap'  => $featureCap,
-                'feature_tc'   => $featureTc,
-                'features_tc'  => $featureTc,
-                'feature_lc'   => $featureLc,
-                'category_cap' => $featureCap,
-                'category_tc'  => $featureTc,
-                'category_lc'  => $featureLc,
+                'lang_id'         => $lang_id,
+                'name'            => $name,
+                'feature_cap'     => $featureCap,
+                'feature_tc'      => $featureTc,
+                'features_tc'     => $featureTc,
+                'feature_lc'      => $featureLc,
+                'feature_with_lc' => $featureWithLc,
+                'category_cap'    => $featureCap,
+                'category_tc'     => $featureTc,
+                'category_lc'     => $featureLc,
             ]);
             DB::commit();
 
@@ -186,9 +189,10 @@ class FeatureController extends Controller
                 }
 
                 // Extract all variations ([feature_cap], [features_tc], [feature_lc])
-                $featureCap = $item['feature_cap'] ?? ($item['category_cap'] ?? ($item['name'] ?? ($item['feature_name'] ?? '')));
-                $featureTc  = $item['features_tc'] ?? ($item['feature_tc'] ?? ($item['category_tc'] ?? ''));
-                $featureLc  = $item['feature_lc'] ?? ($item['category_lc'] ?? '');
+                $featureCap    = $item['feature_cap'] ?? ($item['category_cap'] ?? ($item['name'] ?? ($item['feature_name'] ?? '')));
+                $featureTc     = $item['features_tc'] ?? ($item['feature_tc'] ?? ($item['category_tc'] ?? ''));
+                $featureLc     = $item['feature_lc'] ?? ($item['category_lc'] ?? '');
+                $featureWithLc = $item['feature_with_lc'] ?? '';
 
                 // Fallbacks if any field is empty
                 if (empty($featureCap) && !empty($featureTc)) {
@@ -206,6 +210,9 @@ class FeatureController extends Controller
                 }
                 if (empty($featureLc)) {
                     $featureLc = mb_strtolower($featureCap);
+                }
+                if (empty($featureWithLc)) {
+                    $featureWithLc = 'with ' . $featureLc;
                 }
 
                 // Base name: explicit name if given, else featureCap
@@ -230,15 +237,16 @@ class FeatureController extends Controller
                     if ($feature) {
                         $feature->update(['category_id' => $request->category_id]);
                         $updateData = [
-                            'name'         => $name,
-                            'feature_cap'  => $featureCap,
-                            'feature_tc'   => $featureTc,
-                            'features_tc'  => $featureTc,
-                            'feature_lc'   => $featureLc,
-                            'category_cap' => $featureCap,
-                            'category_tc'  => $featureTc,
-                            'category_lc'  => $featureLc,
-                            'updated_at'   => now(),
+                            'name'            => $name,
+                            'feature_cap'     => $featureCap,
+                            'feature_tc'      => $featureTc,
+                            'features_tc'     => $featureTc,
+                            'feature_lc'      => $featureLc,
+                            'feature_with_lc' => $featureWithLc,
+                            'category_cap'    => $featureCap,
+                            'category_tc'     => $featureTc,
+                            'category_lc'     => $featureLc,
+                            'updated_at'      => now(),
                         ];
                         if (!empty($description)) {
                             $updateData['description'] = $description;
@@ -252,15 +260,16 @@ class FeatureController extends Controller
                     ]);
 
                     $insertData = [
-                        'lang_id'      => $lang_id,
-                        'name'         => $name,
-                        'feature_cap'  => $featureCap,
-                        'feature_tc'   => $featureTc,
-                        'features_tc'  => $featureTc,
-                        'feature_lc'   => $featureLc,
-                        'category_cap' => $featureCap,
-                        'category_tc'  => $featureTc,
-                        'category_lc'  => $featureLc,
+                        'lang_id'         => $lang_id,
+                        'name'            => $name,
+                        'feature_cap'     => $featureCap,
+                        'feature_tc'      => $featureTc,
+                        'features_tc'     => $featureTc,
+                        'feature_lc'      => $featureLc,
+                        'feature_with_lc' => $featureWithLc,
+                        'category_cap'    => $featureCap,
+                        'category_tc'     => $featureTc,
+                        'category_lc'     => $featureLc,
                     ];
                     if (!empty($description)) {
                         $insertData['description'] = $description;
@@ -331,10 +340,11 @@ class FeatureController extends Controller
                     ->where('lang_id', $lang_id)
                     ->ignore($id, 'feature_id'),
             ],
-            'feature_cap'  => 'nullable|string',
-            'features_tc'  => 'nullable|string',
-            'feature_tc'   => 'nullable|string',
-            'feature_lc'   => 'nullable|string',
+            'feature_cap'     => 'nullable|string',
+            'features_tc'     => 'nullable|string',
+            'feature_tc'      => 'nullable|string',
+            'feature_lc'      => 'nullable|string',
+            'feature_with_lc' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -348,22 +358,24 @@ class FeatureController extends Controller
                 'status'      => $request->status,
             ]);
 
-            $featureCap = $name;
-            $featureTc  = trim($request->features_tc ?? ($request->feature_tc ?? ($request->category_tc ?? ''))) ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
-            $featureLc  = trim($request->feature_lc ?? ($request->category_lc ?? '')) ?: mb_strtolower($name);
+            $featureCap    = $name;
+            $featureTc     = trim($request->features_tc ?? ($request->feature_tc ?? ($request->category_tc ?? ''))) ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+            $featureLc     = trim($request->feature_lc ?? ($request->category_lc ?? '')) ?: mb_strtolower($name);
+            $featureWithLc = trim($request->feature_with_lc ?? '') ?: ('with ' . $featureLc);
 
             // Update or create translation for current language
             $feature->translations()->updateOrCreate(
                 ['lang_id' => $lang_id],
                 [
-                    'name'         => $name,
-                    'feature_cap'  => $featureCap,
-                    'feature_tc'   => $featureTc,
-                    'features_tc'  => $featureTc,
-                    'feature_lc'   => $featureLc,
-                    'category_cap' => $featureCap,
-                    'category_tc'  => $featureTc,
-                    'category_lc'  => $featureLc,
+                    'name'            => $name,
+                    'feature_cap'     => $featureCap,
+                    'feature_tc'      => $featureTc,
+                    'features_tc'     => $featureTc,
+                    'feature_lc'      => $featureLc,
+                    'feature_with_lc' => $featureWithLc,
+                    'category_cap'    => $featureCap,
+                    'category_tc'     => $featureTc,
+                    'category_lc'     => $featureLc,
                 ]
             );
             DB::commit();

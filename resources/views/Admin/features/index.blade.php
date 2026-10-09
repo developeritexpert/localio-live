@@ -212,19 +212,21 @@
   {
     "feature_cap": "Access logs",
     "features_tc": "Access Logs",
-    "feature_lc": "access logs"
+    "feature_lc": "access logs",
+    "feature_with_lc": "with access logs"
   },
   {
     "feature_cap": "Website backups",
     "features_tc": "Website Backups",
-    "feature_lc": "website backups"
+    "feature_lc": "website backups",
+    "feature_with_lc": "with daily backups"
   }
 ]'></textarea>
                             <div class="alert alert-fill alert-light alert-icon mt-2 py-2 px-3">
                                 <em class="icon ni ni-info"></em>
                                 <div class="small">
                                     <strong>Supported Formats:</strong> JSON supports all versions with or without brackets:
-                                    <code>[feature_cap]</code>, <code>[features_tc]</code> (or <code>[feature_tc]</code>), and <code>[feature_lc]</code> (or standard <code>name</code>). Missing versions will be automatically derived.
+                                    <code>[feature_cap]</code>, <code>[features_tc]</code>, <code>[feature_lc]</code>, and <code>[feature_with_lc]</code> (or standard <code>name</code>). Missing versions will be automatically derived.
                                 </div>
                             </div>
                         </div>
@@ -268,12 +270,14 @@
   {
     "feature_cap": "Access logs",
     "features_tc": "Access Logs",
-    "feature_lc": "access logs"
+    "feature_lc": "access logs",
+    "feature_with_lc": "with access logs"
   },
   {
     "feature_cap": "Website backups",
     "features_tc": "Website Backups",
-    "feature_lc": "website backups"
+    "feature_lc": "website backups",
+    "feature_with_lc": "with daily backups"
   }
 ]`;
             navigator.clipboard.writeText(exampleFormat).then(() => {

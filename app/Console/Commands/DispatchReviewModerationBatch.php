@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AiBatchJob;
 use App\Models\Review;
+use App\Services\ReviewModerationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -50,35 +51,71 @@ class DispatchReviewModerationBatch extends Command
             $category     = $review->business?->category?->name ?? 'Software';
             $reviewTitle  = $translation?->title ?? '';
             $reviewText   = $translation?->description ?? '';
-            $submittedLocale = static::normalizeLocale($review->submitted_locale ?? 'en-us');
+            $submittedLocale = ReviewModerationService::normalizeLocale($review->submitted_locale ?? 'en-US');
 
             $accountAge      = $review->user ? now()->diffInDays($review->user->created_at) : 0;
             $previousReviews = Review::where('user_id', $review->user_id)
                 ->where('id', '!=', $review->id)
-                ->whereIn('status', [Review::STATUS_PUBLISHED, Review::STATUS_REMOVED, Review::STATUS_REJECTED])
+                ->whereIn('status', [Review::STATUS_PUBLISHED, Review::STATUS_REMOVED, Review::STATUS_REJECTED, 'active'])
                 ->count();
+
+            // Calculate heuristic risk signals for GPT context
+            $sameIpReviewsCount = 0;
+            if (!empty($review->ip_address)) {
+                $sameIpReviewsCount = Review::where('ip_address', $review->ip_address)
+                    ->where('id', '!=', $review->id)
+                    ->count();
+            }
+            $ipRiskSignal = $sameIpReviewsCount >= 3 ? 'HIGH' : ($sameIpReviewsCount >= 1 ? 'MEDIUM' : 'LOW');
+
+            // Business relationship signal
+            $bizRelSignal = 'NONE';
+            if ($review->user) {
+                if ($review->user->business_id == $review->business_id) {
+                    $bizRelSignal = 'OWNER_OR_STAFF';
+                } elseif (in_array($review->user->user_type ?? '', ['vendor', 'admin', 'super_admin'])) {
+                    $bizRelSignal = 'VENDOR_ACCOUNT';
+                }
+            }
+
+            // Duplicate similarity signal check
+            $duplicateSignal = 'NONE';
+            if (mb_strlen($reviewText) >= 20) {
+                $duplicateExists = Review::where('id', '!=', $review->id)
+                    ->whereHas('translations', function ($q) use ($reviewText) {
+                        $q->where('description', 'like', mb_substr($reviewText, 0, 50) . '%');
+                    })
+                    ->exists();
+                if ($duplicateExists) {
+                    $duplicateSignal = 'HIGH_SIMILARITY_MATCH';
+                }
+            }
 
             $lines[] = json_encode([
                 'custom_id' => 'review-' . $review->id,
                 'method'    => 'POST',
                 'url'       => '/v1/responses',
                 'body'      => [
-                    'model'    => $model,
+                    'model'     => $model,
                     'reasoning' => ['effort' => $reasoning],
-                    'prompt'   => [
-                        'id'      => $promptId,
-                        'version' => $promptVer,
+                    'prompt'    => [
+                        'id'        => $promptId,
+                        'version'   => $promptVer,
                         'variables' => [
-                            'business_name'              => $bizName,
-                            'category'                   => $category,
-                            'rating'                     => (string) $review->rating,
-                            'review_title'               => $reviewTitle,
-                            'review_text'                => $reviewText,
-                            'submitted_locale'           => $submittedLocale,
-                            'supported_locales'          => $locales,
-                            'reviewer_account_age_days'  => (string) $accountAge,
-                            'previous_review_count'      => (string) $previousReviews,
-                            'invitation_source'          => 'organic',
+                            'business_name'                => $bizName,
+                            'category'                     => $category,
+                            'rating'                       => (string) $review->rating,
+                            'review_title'                 => $reviewTitle,
+                            'review_text'                  => $reviewText,
+                            'submitted_locale'             => $submittedLocale,
+                            'supported_locales'            => $locales,
+                            'reviewer_account_age'         => (string) $accountAge,
+                            'previous_review_count'        => (string) $previousReviews,
+                            'invitation_source'            => 'organic',
+                            'duplicate_similarity_signal'  => $duplicateSignal,
+                            'ip_risk_signal'               => $ipRiskSignal,
+                            'device_risk_signal'           => 'NORMAL',
+                            'business_relationship_signal' => $bizRelSignal,
                         ],
                     ],
                 ],
@@ -110,8 +147,8 @@ class DispatchReviewModerationBatch extends Command
         try {
             $batchResponse = Http::withToken($apiKey)
                 ->post('https://api.openai.com/v1/batches', [
-                    'input_file_id'    => $fileId,
-                    'endpoint'         => '/v1/responses',
+                    'input_file_id'     => $fileId,
+                    'endpoint'          => '/v1/responses',
                     'completion_window' => '24h',
                 ]);
 
@@ -129,38 +166,26 @@ class DispatchReviewModerationBatch extends Command
         }
 
         // Save batch job record
-        $batchJob = AiBatchJob::create([
-            'provider'      => 'openai',
-            'batch_id'      => $batchId,
-            'prompt_type'   => 'review_moderation',
-            'status'        => 'processing',
-            'submitted_at'  => now(),
-            'total_items'   => $reviews->count(),
+        AiBatchJob::create([
+            'provider'     => 'openai',
+            'batch_id'     => $batchId,
+            'prompt_type'  => 'review_moderation',
+            'status'       => 'processing',
+            'submitted_at' => now(),
+            'total_items'  => $reviews->count(),
         ]);
 
         // Mark all reviews as processing in Layer 3
         foreach ($reviews as $review) {
             $review->update([
-                'localio_ai_status'  => Review::AI_STATUS_PROCESSING,
+                'localio_ai_status'   => Review::AI_STATUS_PROCESSING,
                 'localio_ai_batch_id' => $batchId,
             ]);
         }
 
-        $this->info("✅ Batch dispatched: {$batchId} with {$reviews->count()} reviews.");
+        $this->info("? Batch dispatched: {$batchId} with {$reviews->count()} reviews.");
         Log::info("moderation:dispatch-batch: Dispatched batch {$batchId} with {$reviews->count()} reviews.");
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Normalize Localio internal locale (en-us) to BCP-47 (en-US).
-     */
-    protected static function normalizeLocale(string $locale): string
-    {
-        $parts = explode('-', $locale, 2);
-        if (count($parts) === 2) {
-            return strtolower($parts[0]) . '-' . strtoupper($parts[1]);
-        }
-        return strtolower($locale);
     }
 }

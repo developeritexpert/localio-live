@@ -11,6 +11,9 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\TranslateContent::class,
         \App\Console\Commands\CacheLanguages::class,
         \App\Console\Commands\FeatureTranslations::class,
+        \App\Console\Commands\DispatchReviewModerationBatch::class,
+        \App\Console\Commands\PollReviewModerationBatch::class,
+        \App\Console\Commands\DetectModerationCases::class,
     ];
 
     /**
@@ -23,6 +26,25 @@ class Kernel extends ConsoleKernel
             $controller = app(\App\Http\Controllers\Admin\ContentGenerationController::class);
             $controller->pollBatches();
         })->everyThirtyMinutes()->name('poll-ai-batches')->withoutOverlapping();
+
+        // -- 3-Layer Review Moderation Automation -----------------------------
+        // Dispatch reviews awaiting Layer 3 GPT-5.6-Luna Batch (twice daily / every 12h)
+        $schedule->command('moderation:dispatch-batch')
+            ->twiceDaily(1, 13)
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/moderation_batch_dispatch.log'));
+
+        // Poll OpenAI Batch status every 30 minutes and apply Layer 3 results
+        $schedule->command('moderation:poll-batch')
+            ->everyThirtyMinutes()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/moderation_batch_poll.log'));
+
+        // Scan for coordinated manipulation and IP clusters daily
+        $schedule->command('moderation:detect-cases')
+            ->dailyAt('02:30')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/moderation_cases.log'));
     }
 
     /**

@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class ReviewModerationService
 {
-    // ─── Spam/link patterns ──────────────────────────────────────────────────────
+    // --- Spam/link patterns ------------------------------------------------------
     protected static array $spamPatterns = [
-        '/\b(buy now|click here|free money|earn \$|make money fast|casino|viagra|cialis|porn|xxx)\b/i',
-        '/(\[url=|<a href=)/i',
+        '/\b(buy now|click here|free money|earn \$|make money fast|casino|viagra|cialis|porn|xxx|crypto investment|forex trading|whatsapp \+\d+)\b/i',
+        '/(\[url=|<a\s+href=)/i',
     ];
 
     protected static array $prohibitedLinkPattern = [
@@ -21,7 +21,31 @@ class ReviewModerationService
         '/www\.\S+\.\S+/i',
     ];
 
-    // ─── Layer 1: Laravel deterministic checks ───────────────────────────────────
+    // --- Locale normalization & validation ----------------------------------------
+
+    public static function normalizeLocale(?string $locale): string
+    {
+        if (!$locale) {
+            return 'en-US';
+        }
+        $parts = explode('-', trim($locale), 2);
+        if (count($parts) === 2) {
+            return strtolower($parts[0]) . '-' . strtoupper($parts[1]);
+        }
+        return strtolower($locale);
+    }
+
+    public static function isSupportedLocale(?string $locale): bool
+    {
+        if (!$locale) {
+            return false;
+        }
+        $normalized = static::normalizeLocale($locale);
+        $supported = config('openai.supported_locales', []);
+        return in_array($normalized, $supported, true);
+    }
+
+    // --- Layer 1: Laravel deterministic checks -----------------------------------
 
     /**
      * Run Layer 1 synchronous deterministic checks.
@@ -31,12 +55,12 @@ class ReviewModerationService
     {
         // Get the review's text from its first translation
         $translation = $review->translations()->first();
-        $text = trim(($translation->description ?? '') . ' ' . ($translation->title ?? ''));
-        $userId   = $review->user_id;
-        $bizId    = $review->business_id;
+        $text = trim(($translation->title ?? '') . ' ' . ($translation->description ?? ''));
+        $userId = $review->user_id;
+        $bizId  = $review->business_id;
 
         // 1. Text length
-        $strippedText = strip_tags($text);
+        $strippedText = trim(strip_tags($text));
         $length = mb_strlen($strippedText);
         if ($length < 10) {
             return ['pass' => false, 'reason' => 'too_short'];
@@ -49,7 +73,7 @@ class ReviewModerationService
         $duplicate = Review::where('user_id', $userId)
             ->where('business_id', $bizId)
             ->where('id', '!=', $review->id)
-            ->whereIn('status', [Review::STATUS_PUBLISHED, Review::STATUS_PROCESSING, Review::STATUS_PENDING_REVIEW])
+            ->whereIn('status', [Review::STATUS_PUBLISHED, Review::STATUS_PROCESSING, Review::STATUS_PENDING_REVIEW, 'active'])
             ->exists();
         if ($duplicate) {
             return ['pass' => false, 'reason' => 'duplicate_review'];
@@ -73,7 +97,7 @@ class ReviewModerationService
 
         // 5. Blocked / inactive account
         $user = $review->user;
-        if (!$user || (isset($user->status) && $user->status === 'blocked')) {
+        if (!$user || (isset($user->status) && $user->status === 'blocked') || (isset($user->is_active) && $user->is_active === 0)) {
             return ['pass' => false, 'reason' => 'blocked_account'];
         }
 
@@ -85,13 +109,13 @@ class ReviewModerationService
         }
 
         // 7. Conflict of interest: user is vendor/owner of the reviewed business
-        if ($user && isset($user->business_id) && $user->business_id == $bizId) {
-            return ['pass' => false, 'reason' => 'conflict_of_interest'];
-        }
-
-        // 8. User is an admin
-        if ($user && isset($user->user_type) && in_array($user->user_type, ['admin', 'super_admin'])) {
-            return ['pass' => false, 'reason' => 'admin_submitting_review'];
+        if ($user) {
+            if (isset($user->business_id) && $user->business_id == $bizId) {
+                return ['pass' => false, 'reason' => 'conflict_of_interest'];
+            }
+            if (isset($user->user_type) && in_array($user->user_type, ['admin', 'super_admin'])) {
+                return ['pass' => false, 'reason' => 'admin_submitting_review'];
+            }
         }
 
         return ['pass' => true, 'reason' => null];
@@ -136,7 +160,7 @@ class ReviewModerationService
         }
     }
 
-    // ─── Layer 2: OpenAI Moderation API ─────────────────────────────────────────
+    // --- Layer 2: OpenAI Moderation API -----------------------------------------
 
     /**
      * Run the free OpenAI omni-moderation-latest check on a review's text.
@@ -150,8 +174,8 @@ class ReviewModerationService
             return ['flagged' => false, 'categories' => [], 'skipped' => true];
         }
 
-        $translation  = $review->translations()->first();
-        $textToCheck  = trim(($translation->title ?? '') . "\n" . ($translation->description ?? ''));
+        $translation = $review->translations()->first();
+        $textToCheck = trim(($translation->title ?? '') . "\n" . ($translation->description ?? ''));
 
         if (empty($textToCheck)) {
             Log::warning("ReviewModerationService: No text to moderate for review #{$review->id}.");
@@ -204,23 +228,23 @@ class ReviewModerationService
     {
         $fromStatus = $review->status;
 
-        // If we skipped (no API key), just mark as waiting for batch
+        // If skipped (no API key configured), mark as waiting for batch
         if (!empty($result['skipped'])) {
-            $review->moderation_api_passed      = true; // treat as passed so batch can run
-            $review->moderation_api_checked_at  = now();
-            $review->moderation_api_result      = ['skipped' => true, 'reason' => 'no_api_key'];
-            $review->localio_ai_status          = Review::AI_STATUS_WAITING;
+            $review->moderation_api_passed     = true;
+            $review->moderation_api_checked_at = now();
+            $review->moderation_api_result     = ['skipped' => true, 'reason' => 'no_api_key'];
+            $review->localio_ai_status         = Review::AI_STATUS_WAITING;
             $review->save();
             return;
         }
 
         if ($result['flagged']) {
-            $review->moderation_api_passed      = false;
-            $review->moderation_api_result      = $result['raw'] ?? [];
-            $review->moderation_api_checked_at  = now();
-            $review->status                     = Review::STATUS_PENDING_REVIEW;
-            $review->escalation_source          = Review::ESCALATION_MODERATION_API;
-            $review->localio_ai_status          = Review::AI_STATUS_SKIPPED;
+            $review->moderation_api_passed     = false;
+            $review->moderation_api_result     = $result['raw'] ?? [];
+            $review->moderation_api_checked_at = now();
+            $review->status                    = Review::STATUS_PENDING_REVIEW;
+            $review->escalation_source         = Review::ESCALATION_MODERATION_API;
+            $review->localio_ai_status         = Review::AI_STATUS_SKIPPED;
             $review->save();
 
             ReviewModerationLog::logSystem(
@@ -232,10 +256,10 @@ class ReviewModerationService
                 ['flagged' => true, 'categories' => $result['categories']]
             );
         } else {
-            $review->moderation_api_passed      = true;
-            $review->moderation_api_result      = $result['raw'] ?? [];
-            $review->moderation_api_checked_at  = now();
-            $review->localio_ai_status          = Review::AI_STATUS_WAITING;
+            $review->moderation_api_passed     = true;
+            $review->moderation_api_result     = $result['raw'] ?? [];
+            $review->moderation_api_checked_at = now();
+            $review->localio_ai_status         = Review::AI_STATUS_WAITING;
             $review->save();
 
             ReviewModerationLog::logSystem(
@@ -249,23 +273,38 @@ class ReviewModerationService
         }
     }
 
-    // ─── Layer 3 result application (called by batch poll command) ───────────────
+    // --- Layer 3: GPT-5.6-Luna Batch Result Application --------------------------
 
     /**
      * Apply GPT-5.6-Luna batch result to a review.
      * Called by PollReviewModerationBatch command after batch completes.
      */
-    public static function applyLayer3(Review $review, array $gptResult, string $batchId, string $model, string $promptId, string $promptVersion): void
-    {
+    public static function applyLayer3(
+        Review $review,
+        array $gptResult,
+        string $batchId,
+        string $model,
+        string $promptId,
+        string $promptVersion
+    ): void {
         $fromStatus = $review->status;
 
-        $decision      = strtoupper($gptResult['decision'] ?? 'HUMAN_REVIEW');
-        $riskLevel     = strtoupper($gptResult['risk_level'] ?? 'MEDIUM');
-        $flags         = $gptResult['flags'] ?? [];
-        $confidence    = $gptResult['confidence'] ?? null;
-        $reason        = $gptResult['reason'] ?? null;
-        $localeStatus  = strtoupper($gptResult['locale_status'] ?? Review::LOCALE_HUMAN_REVIEW);
-        $detectedLocale = $gptResult['detected_locale'] ?? null;
+        $decision       = strtoupper($gptResult['decision'] ?? 'HUMAN_REVIEW');
+        $riskLevel      = strtoupper($gptResult['risk_level'] ?? 'MEDIUM');
+        $flags          = $gptResult['flags'] ?? [];
+        $confidence     = isset($gptResult['confidence']) ? (float) $gptResult['confidence'] : null;
+        $reason         = $gptResult['reason'] ?? null;
+        $localeStatus   = strtoupper($gptResult['locale_status'] ?? Review::LOCALE_HUMAN_REVIEW);
+        $detectedLocale = isset($gptResult['detected_locale']) ? static::normalizeLocale($gptResult['detected_locale']) : null;
+        $submittedLocale= isset($gptResult['submitted_locale']) ? static::normalizeLocale($gptResult['submitted_locale']) : ($review->submitted_locale ?: 'en-US');
+
+        // Validate detected locale if reassigned
+        if ($localeStatus === Review::LOCALE_REASSIGNED) {
+            if (!$detectedLocale || !static::isSupportedLocale($detectedLocale)) {
+                $localeStatus = Review::LOCALE_HUMAN_REVIEW;
+                $decision     = 'HUMAN_REVIEW';
+            }
+        }
 
         // Update all AI fields
         $review->localio_ai_decision       = $decision;
@@ -280,17 +319,18 @@ class ReviewModerationService
         $review->localio_ai_processed_at   = now();
         $review->localio_ai_status         = Review::AI_STATUS_DONE;
         $review->locale_status             = $localeStatus;
+        $review->submitted_locale          = $submittedLocale;
 
         if ($decision === 'PASS') {
             // Process locale result first
             if ($localeStatus === Review::LOCALE_MATCH) {
-                $review->source_locale = $review->submitted_locale;
+                $review->source_locale = $submittedLocale;
                 $review->status        = Review::STATUS_PUBLISHED;
             } elseif ($localeStatus === Review::LOCALE_REASSIGNED && $detectedLocale) {
                 $review->source_locale = $detectedLocale;
                 $review->status        = Review::STATUS_PUBLISHED;
             } else {
-                // HUMAN_REVIEW on locale — cannot publish
+                // HUMAN_REVIEW on locale � cannot publish without moderator locale assignment
                 $review->status            = Review::STATUS_PENDING_REVIEW;
                 $review->escalation_source = Review::ESCALATION_LOCALIO_AI;
             }
@@ -309,22 +349,22 @@ class ReviewModerationService
             $review->status,
             ReviewModerationLog::LAYER_3,
             [
-                'decision'       => $decision,
-                'risk_level'     => $riskLevel,
-                'flags'          => $flags,
-                'confidence'     => $confidence,
-                'reason'         => $reason,
-                'locale_status'  => $localeStatus,
+                'decision'        => $decision,
+                'risk_level'      => $riskLevel,
+                'flags'           => $flags,
+                'confidence'      => $confidence,
+                'reason'          => $reason,
+                'locale_status'   => $localeStatus,
                 'detected_locale' => $detectedLocale,
-                'batch_id'       => $batchId,
-                'model'          => $model,
-                'prompt_id'      => $promptId,
-                'prompt_version' => $promptVersion,
+                'batch_id'        => $batchId,
+                'model'           => $model,
+                'prompt_id'       => $promptId,
+                'prompt_version'  => $promptVersion,
             ]
         );
     }
 
-    // ─── Re-moderation for reported reviews ─────────────────────────────────────
+    // --- Re-moderation for reported reviews -------------------------------------
 
     /**
      * Re-run Layer 2 + optionally queue for Layer 3 on a reported review.
@@ -337,7 +377,7 @@ class ReviewModerationService
         $layer2Result = static::runLayer2Moderation($review);
 
         if (!empty($layer2Result['flagged'])) {
-            // Flagged by moderation API — send to human
+            // Flagged by moderation API � send to human review
             $fromStatus = $review->status;
             $review->moderation_api_passed     = false;
             $review->moderation_api_result     = $layer2Result['raw'] ?? [];
@@ -358,7 +398,7 @@ class ReviewModerationService
                 ['triggered_by' => 'report_id_' . $report->id, 'categories' => $layer2Result['categories']]
             );
         } else {
-            // Not flagged by Layer 2 — queue for next GPT batch
+            // Not flagged by Layer 2 � queue for next GPT batch
             $review->moderation_api_passed     = true;
             $review->moderation_api_result     = $layer2Result['raw'] ?? [];
             $review->moderation_api_checked_at = now();

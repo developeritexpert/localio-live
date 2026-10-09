@@ -2046,76 +2046,6 @@
         </script>
         
 
-        <!-- listing section -->
-        <!-- 3. Explore Subcategories Section -->
-        @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-        @php
-            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
-                ? $category->translations->first() 
-                : ($category->translations ?? $category->translation);
-            $resolvedExploreSub = \App\Services\ContentTemplateService::resolveCategorySection($category, 'explore_subcategories', $currentLangId);
-            $exploreHeadline = !empty($resolvedExploreSub['headline']) ? $resolvedExploreSub['headline'] : (!empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories'));
-            $exploreSubtext = !empty($resolvedExploreSub['subtext']) ? $resolvedExploreSub['subtext'] : ($catTrans->explore_subcategories_subtext ?? null);
-        @endphp
-        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
-            <div class="container">
-                <div class="text-start mb-4">
-                    <h2 class="explore-cat-h2" >
-                        {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
-                    </h2>
-                    @if(!empty($exploreSubtext))
-                        <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
-                            {!! $exploreSubtext !!}
-                        </div>
-                    @else
-                        <p style="color: #002347; margin: 0;">
-                            Browse specialized categories to find the exact tools and solutions for your requirements.
-                        </p>
-                    @endif
-                </div>
-
-                <div class="row g-3">
-                    @foreach($exploreSubcategories['items'] as $subcatItem)
-                    @php
-                        $subTrans = null;
-                        if (isset($subcatItem->translations)) {
-                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
-                                $subTrans = $subcatItem->translations;
-                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
-                                $subTrans = $subcatItem->translations->first();
-                            }
-                        }
-                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
-                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                        $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
-                    @endphp
-                    <div class="col-lg-4 col-sm-6 col-12">
-                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
-                            <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
-                                
-                                <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
-                                    @if(isset($subcatItem->topRatedImageMedia))
-                                        <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
-                                    @else
-                                        <!-- Placeholder if no SVG is uploaded -->
-                                        <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
-                                    @endif
-                                </div>
-                                
-                                <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
-                                    <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
-                                    <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'listing' : 'listings' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-        @endif
 
 
         
@@ -2172,7 +2102,7 @@
                         </div>
 
                         <div class="accordion" id="categoryFaqAccordion">
-                            @foreach($faqs as $fIndex => $faq)
+                            @foreach(array_slice($faqs, 0, 10) as $fIndex => $faq)
                             <div class="accordion-item mb-3 category-faq-item" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
@@ -2262,46 +2192,95 @@
             </div>
         </section>
 
-        <section class="subs_sec light ">
-            {{-- <div class="container">
-                <div class="subs_content">
-                    <div class="sub_img">
-                        <img src="{{ asset('front/img/subs.png') }}">
-    </div>
-    <h2 data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_titile') }}</h2>
-    <p data-aos="fade-up" data-aos-duration="1000">{{static_text('top_rated_mail_section_desc')}}
-    </p>
-    <div class="mail_field" data-aos="fade-up" data-aos-duration="1000">
-        <div class="email_box">
-            <input type="email" id="email" name="email" placeholder="Email Address*">
-        </div>
-        <div class="accor-btn sbs_bttn">
-            <a href="javascript:void(0)" class="cta cta_white">{{ static_text('subscribe')}}</a>
-        </div>
-    </div>
-    <div class="checkbox_field" data-aos="fade-up" data-aos-duration="1000"
-        style="margin-top: 10px; display: flex; justify-content: center;">
-        <label style="display: flex; align-items: center; gap: 5px;">
-            <input type="checkbox" id="agree_terms" name="agree_terms" required>
-            <span>{{ static_text('mail_below_text') }}</span>
-        </label>
-    </div>
-</div>
-</div> --}}
-<x-news-letter-subscription />
-</section>
-<script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
-<script>
-function initPriceSlider() {
-    setTimeout(() => {
-        const slider = document.getElementById('priceRangeSlider2');
-        const minInput = document.getElementById('minPriceInput2');
-        const maxInput = document.getElementById('maxPriceInput2');
-        // Get the dynamic maximum price from the data attribute
-        const maxPriceValue = slider && slider.dataset.maxPrice ? parseInt(slider.dataset.maxPrice) : 10000;
 
-        if (!slider || !minInput || !maxInput || typeof noUiSlider === 'undefined') {
-            console.warn("Slider init failed.");
+                <!-- listing section -->
+        <!-- 3. Explore Subcategories Section -->
+        @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+        @php
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $resolvedExploreSub = \App\Services\ContentTemplateService::resolveCategorySection($category, 'explore_subcategories', $currentLangId);
+            $exploreHeadline = !empty($resolvedExploreSub['headline']) ? $resolvedExploreSub['headline'] : (!empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories'));
+            $exploreSubtext = !empty($resolvedExploreSub['subtext']) ? $resolvedExploreSub['subtext'] : ($catTrans->explore_subcategories_subtext ?? null);
+        @endphp
+        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="text-start mb-4">
+                    <h2 class="explore-cat-h2" >
+                        {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
+                    </h2>
+                    @if(!empty($exploreSubtext))
+                        <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
+                            {!! $exploreSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            Browse specialized categories to find the exact tools and solutions for your requirements.
+                        </p>
+                    @endif
+                </div>
+
+                <div class="row g-3">
+                    @foreach($exploreSubcategories['items'] as $subcatItem)
+                    @php
+                        $subTrans = null;
+                        if (isset($subcatItem->translations)) {
+                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                                $subTrans = $subcatItem->translations;
+                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
+                                $subTrans = $subcatItem->translations->first();
+                            }
+                        }
+                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
+                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                        $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
+                    @endphp
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
+                            <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
+                                
+                                <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
+                                    @if(isset($subcatItem->topRatedImageMedia))
+                                        <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
+                                    @else
+                                        <!-- Placeholder if no SVG is uploaded -->
+                                        <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
+                                    @endif
+                                </div>
+                                
+                                <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
+                                    <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
+                                    <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
+                                        {{ $listingsCount }} {{ $listingsCount == 1 ? 'listing' : 'listings' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
+
+
+        <section class="subs_sec light ">
+                <x-news-letter-subscription />
+        </section>
+        <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+        <script>
+        function initPriceSlider() {
+            setTimeout(() => {
+                const slider = document.getElementById('priceRangeSlider2');
+                const minInput = document.getElementById('minPriceInput2');
+                const maxInput = document.getElementById('maxPriceInput2');
+                // Get the dynamic maximum price from the data attribute
+                const maxPriceValue = slider && slider.dataset.maxPrice ? parseInt(slider.dataset.maxPrice) : 10000;
+
+                if (!slider || !minInput || !maxInput || typeof noUiSlider === 'undefined') {
+                    console.warn("Slider init failed.");
             return;
         }
 
@@ -2343,7 +2322,7 @@ function initPriceSlider() {
             slider.noUiSlider.set([null, this.value]);
         });
     }, 100); // slight delay to ensure DOM is updated
-}
+    }
 
 document.addEventListener('DOMContentLoaded', initPriceSlider);
 document.addEventListener('livewire:load', initPriceSlider);

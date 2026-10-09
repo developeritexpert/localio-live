@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class PollReviewModerationBatch extends Command
 {
     protected $signature   = 'moderation:poll-batch';
-    protected $description = 'Poll OpenAI batch results for Layer 3 review moderation and apply outcomes.';
+    protected $description = 'Poll OpenAI for completed GPT-5.6-Luna review moderation batch jobs and apply results.';
 
     public function handle(): int
     {
@@ -66,14 +66,14 @@ class PollReviewModerationBatch extends Command
                     $this->warn("Batch {$job->batch_id} has status: {$status}. Marking failed.");
                     $job->update(['status' => 'failed', 'error_message' => "Batch status: {$status}"]);
 
-                    // Reviews stuck in AI_STATUS_PROCESSING should go to human review
+                    // Reviews stuck in AI_STATUS_PROCESSING should safely go to human review
                     Review::where('localio_ai_batch_id', $job->batch_id)
                         ->where('localio_ai_status', Review::AI_STATUS_PROCESSING)
                         ->update([
                             'localio_ai_status' => Review::AI_STATUS_DONE,
                             'status'            => Review::STATUS_PENDING_REVIEW,
                             'escalation_source' => Review::ESCALATION_MANUAL,
-                            'localio_ai_reason' => "Batch {$status}. Requires human review.",
+                            'localio_ai_reason' => "Batch {$status}. Escrowed for human review.",
                         ]);
                 } else {
                     $this->info("Batch {$job->batch_id} still {$status}. Will check again next poll.");
@@ -145,31 +145,36 @@ class PollReviewModerationBatch extends Command
                 continue;
             }
 
-            // Extract GPT response
-            // Responses API output format
+            // Extract response
             $responseBody = $item['response']['body'] ?? null;
 
             if (!$responseBody) {
                 $this->warn("No response body for review #{$reviewId}. Sending to human review.");
                 $review->update([
-                    'localio_ai_status'    => Review::AI_STATUS_DONE,
-                    'status'               => Review::STATUS_PENDING_REVIEW,
-                    'escalation_source'    => Review::ESCALATION_LOCALIO_AI,
-                    'localio_ai_reason'    => 'Empty response from AI batch.',
+                    'localio_ai_status' => Review::AI_STATUS_DONE,
+                    'status'            => Review::STATUS_PENDING_REVIEW,
+                    'escalation_source' => Review::ESCALATION_LOCALIO_AI,
+                    'localio_ai_reason' => 'Empty response from AI batch.',
                 ]);
                 $failed++;
                 continue;
             }
 
-            // Parse structured JSON output from GPT
+            // Parse text output from both /v1/responses and /v1/chat/completions
             $outputText = null;
-            if (isset($responseBody['output'])) {
-                foreach ($responseBody['output'] as $output) {
-                    if (isset($output['content'])) {
-                        foreach ($output['content'] as $contentItem) {
-                            if (($contentItem['type'] ?? '') === 'output_text') {
-                                $outputText = $contentItem['text'] ?? null;
-                                break 2;
+            if (isset($responseBody['choices'][0]['message']['content'])) {
+                $outputText = $responseBody['choices'][0]['message']['content'];
+            } elseif (isset($responseBody['output'])) {
+                if (is_string($responseBody['output'])) {
+                    $outputText = $responseBody['output'];
+                } elseif (is_array($responseBody['output'])) {
+                    foreach ($responseBody['output'] as $output) {
+                        if (isset($output['content']) && is_array($output['content'])) {
+                            foreach ($output['content'] as $contentItem) {
+                                if (($contentItem['type'] ?? '') === 'output_text' && !empty($contentItem['text'])) {
+                                    $outputText = $contentItem['text'];
+                                    break 2;
+                                }
                             }
                         }
                     }
@@ -179,31 +184,38 @@ class PollReviewModerationBatch extends Command
             if (!$outputText) {
                 $this->warn("No output text for review #{$reviewId}.");
                 $review->update([
-                    'localio_ai_status'  => Review::AI_STATUS_DONE,
-                    'status'             => Review::STATUS_PENDING_REVIEW,
-                    'escalation_source'  => Review::ESCALATION_LOCALIO_AI,
-                    'localio_ai_reason'  => 'Could not parse AI output.',
+                    'localio_ai_status' => Review::AI_STATUS_DONE,
+                    'status'            => Review::STATUS_PENDING_REVIEW,
+                    'escalation_source' => Review::ESCALATION_LOCALIO_AI,
+                    'localio_ai_reason' => 'Could not extract text from AI batch output.',
                 ]);
                 $failed++;
                 continue;
             }
 
-            // GPT returns structured JSON
-            $gptResult = json_decode($outputText, true);
+            // Strip markdown code fences if present
+            $trimmed = trim($outputText);
+            if (str_starts_with($trimmed, '```')) {
+                $trimmed = preg_replace('/^```(?:json)?\s*/i', '', $trimmed);
+                $trimmed = preg_replace('/\s*```$/', '', $trimmed);
+                $trimmed = trim($trimmed);
+            }
+
+            $gptResult = json_decode($trimmed, true);
 
             if (!$gptResult || !isset($gptResult['decision'])) {
                 $this->warn("Invalid JSON from GPT for review #{$reviewId}: {$outputText}");
                 $review->update([
-                    'localio_ai_status'  => Review::AI_STATUS_DONE,
-                    'status'             => Review::STATUS_PENDING_REVIEW,
-                    'escalation_source'  => Review::ESCALATION_LOCALIO_AI,
-                    'localio_ai_reason'  => 'Invalid structured output from AI.',
+                    'localio_ai_status' => Review::AI_STATUS_DONE,
+                    'status'            => Review::STATUS_PENDING_REVIEW,
+                    'escalation_source' => Review::ESCALATION_LOCALIO_AI,
+                    'localio_ai_reason' => 'Invalid structured output JSON from AI.',
                 ]);
                 $failed++;
                 continue;
             }
 
-            // Apply the result
+            // Apply Layer 3 logic
             ReviewModerationService::applyLayer3(
                 $review,
                 $gptResult,
@@ -213,7 +225,7 @@ class PollReviewModerationBatch extends Command
                 $promptVer
             );
 
-            $this->line("  ✓ Review #{$reviewId}: decision={$gptResult['decision']}, status={$review->fresh()->status}");
+            $this->line("  ? Review #{$reviewId}: decision={$gptResult['decision']}, status={$review->fresh()->status}");
             $processed++;
         }
 

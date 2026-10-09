@@ -163,12 +163,17 @@ class MetaTagService
             ? $targetTrans->feature_lc 
             : (!empty($targetTrans?->category_lc) ? $targetTrans->category_lc : mb_strtolower($rawFeatName));
 
+        $featWithLc = !empty($targetTrans?->feature_with_lc)
+            ? $targetTrans->feature_with_lc
+            : (!empty($featLc) ? ('with ' . $featLc) : '');
+
         return [
-            'feature_name' => $rawFeatName,
-            'feature_cap'  => $featCap,
-            'features_tc'  => $featTc,
-            'feature_tc'   => $featTc,
-            'feature_lc'   => $featLc,
+            'feature_name'    => $rawFeatName,
+            'feature_cap'     => $featCap,
+            'features_tc'     => $featTc,
+            'feature_tc'      => $featTc,
+            'feature_lc'      => $featLc,
+            'feature_with_lc' => $featWithLc,
         ];
     }
 
@@ -983,7 +988,7 @@ class MetaTagService
             '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]',
             '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]',
             '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]',
-            '[feature_cap]', '[features_tc]', '[feature_tc]', '[feature_lc]',
+            '[feature_cap]', '[features_tc]', '[feature_tc]', '[feature_lc]', '[feature_with_lc]',
             '[country1]', '[country2]',
             '[year]', '[Year]',
             '[website]',
@@ -1007,7 +1012,7 @@ class MetaTagService
             $e1ShortCap, $e1ShortLc, $es1ShortCap, $es1ShortLc,
             $e2Cap, $e2Lc, $es2Cap, $es2Lc,
             $e2ShortCap, $e2ShortLc, $es2ShortCap, $es2ShortLc,
-            $featCap, $featTc, $featTc, $featLc,
+            $featCap, $featTc, $featTc, $featLc, ($context['feature_with_lc'] ?? ($featLc ? 'with ' . $featLc : '')),
             $c1, $c2,
             $year, $year,
             $site,
