@@ -2589,19 +2589,23 @@ class ContentTemplateService
             $rawFeatName = $featTrans?->name ?? $feature->name ?? '';
             $featCap = !empty($featTrans?->category_cap) ? $featTrans->category_cap : (!empty($featTrans?->feature_cap) ? $featTrans->feature_cap : ucfirst(mb_strtolower($rawFeatName)));
             $featTc  = !empty($featTrans?->features_tc) ? $featTrans->features_tc : (!empty($featTrans?->feature_tc) ? $featTrans->feature_tc : (!empty($featTrans?->category_tc) ? $featTrans->category_tc : mb_convert_case($rawFeatName, MB_CASE_TITLE, 'UTF-8')));
-            $featLc  = !empty($featTrans?->category_lc)  ? $featTrans->category_lc  : (!empty($featTrans?->feature_lc)  ? $featTrans->feature_lc  : mb_strtolower($rawFeatName));
+            $featLc     = !empty($featTrans?->category_lc)  ? $featTrans->category_lc  : (!empty($featTrans?->feature_lc)  ? $featTrans->feature_lc  : mb_strtolower($rawFeatName));
+            $featWithLc = !empty($featTrans?->feature_with_lc) 
+                ? $featTrans->feature_with_lc 
+                : (!empty($featLc) ? ('with ' . $featLc) : '');
 
             $featReplacements = [
-                '[feature_cap]'  => $featCap,
-                '[feature_tc]'   => $featTc,
-                '[features_tc]'  => $featTc,
-                '[feature_lc]'   => $featLc,
-                '[feature]'      => $featLc,
-                '[Feature]'      => $featCap,
-                '[feature name]' => $featLc,
-                '[Feature Name]' => $featCap,
-                '{feature}'      => $featLc,
-                '{Feature}'      => $featCap,
+                '[feature_cap]'     => $featCap,
+                '[feature_tc]'      => $featTc,
+                '[features_tc]'     => $featTc,
+                '[feature_lc]'      => $featLc,
+                '[feature_with_lc]' => $featWithLc,
+                '[feature]'         => $featLc,
+                '[Feature]'         => $featCap,
+                '[feature name]'    => $featLc,
+                '[Feature Name]'    => $featCap,
+                '{feature}'         => $featLc,
+                '{Feature}'         => $featCap,
             ];
 
             // If no category was passed, also replace [category_cap], etc. with feature values
