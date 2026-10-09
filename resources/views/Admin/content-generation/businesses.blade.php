@@ -186,7 +186,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="status-dot {{ $isLive ? 'bg-success' : 'bg-danger' }}" title="{{ $isLive ? 'Live' : 'Offline' }}"></span>
-                                            <span class="fw-medium">{{ $name }}</span>
+                                            <div>
+                                                <span class="fw-medium text-dark">{{ $name }}</span>
+                                                @if(!empty($business->permanent_url))
+                                                    <div>
+                                                        <a href="{{ $business->permanent_url }}" target="_blank" rel="noopener noreferrer" class="text-soft small text-truncate d-inline-block" style="max-width: 220px; font-size: 11px;" title="{{ $business->permanent_url }}">
+                                                            <em class="icon ni ni-link-alt me-1" style="font-size: 10px;"></em>{{ preg_replace('#^https?://(www\.)?#i', '', $business->permanent_url) }}
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -242,7 +251,7 @@
                                                         <em class="icon ni ni-star-fill text-warning me-1"></em>{{ number_format((float)$business->admin_rating, 1) }}
                                                     </span>
                                                 @else
-                                                    <span class="badge badge-dim bg-success" title="{{ Str::limit($qi->result, 100) }}">
+                                                    <span class="badge badge-dim bg-success" title="{{ Str::limit((string)($qi->result ?? ''), 100) }}">
                                                         <em class="icon ni ni-check"></em>
                                                     </span>
                                                 @endif
@@ -421,40 +430,12 @@ function applyAllCompleted(businessId) {
 function insertSampleJson() {
     const sample = JSON.stringify([
         {
-            "name": "HostGator",
-            "url": "https://www.hostgator.com",
-            "category": "Web Hosting",
-            "short_description": "HostGator is a leading provider of secure, scalable, and affordable web hosting solutions.",
-            "rating": 4.6,
-            "usps": [
-                "99.9% uptime guarantee",
-                "Free domain registration for the first year",
-                "24/7/365 phone, chat, and email support"
-            ],
-            "reviews_description": "HostGator provides verified reliable cloud, VPS, and shared hosting for modern businesses.",
-            "pros_cons": {
-                "pro_ids": [20, 22, 24],
-                "con_ids": [21, 23]
-            },
-            "faqs": [
-                {
-                    "category": "Domains & Plans",
-                    "question": "Does HostGator provide a free domain name?",
-                    "answer": "Yes, HostGator includes a free domain name for the first year with select annual hosting plans."
-                },
-                {
-                    "category": "Migration & Setup",
-                    "question": "Can I easily migrate an existing site to HostGator?",
-                    "answer": "Yes, HostGator offers free cPanel website migration assistance for qualifying new accounts."
-                }
-            ]
+            "name": "Hostgator",
+            "url": "https://www.hostgator.com"
         },
         {
             "name": "Bluehost",
-            "url": "https://www.bluehost.com",
-            "category": "Web Hosting",
-            "short_description": "Recommended by WordPress.org, Bluehost delivers fast WordPress and cloud solutions.",
-            "rating": 4.8
+            "url": "https://www.bluehost.com"
         }
     ], null, 2);
     document.getElementById('jsonInputTextarea').value = sample;
@@ -477,7 +458,7 @@ function insertSampleJson() {
                 @csrf
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
-                        Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Supports single objects, arrays, or wrapped payloads (<code>{"businesses": [...]}</code>). Markdown code blocks are automatically cleaned.
+                        Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Each entry only requires the business <strong>Name</strong> and <strong>URL</strong> (which identifies the business exactly). Once imported, they will appear in the table below ready to be selected for AI batch jobs to get all missing information.
                     </p>
 
                     {{-- Option 1: File Upload --}}
@@ -486,7 +467,7 @@ function insertSampleJson() {
                             <em class="icon ni ni-upload-cloud me-1 text-primary"></em> Upload .json or .jsonl File
                         </label>
                         <input type="file" name="json_file" id="jsonFileInput" class="form-control form-control-sm" accept=".json,.jsonl,application/json,text/plain">
-                        <span class="text-muted small">Select a file from your computer (ideal for large batches of 50+ businesses).</span>
+                        <span class="text-muted small">Select a file from your computer (ideal for large batches of hundreds of businesses).</span>
                     </div>
 
                     <div class="text-center my-2 position-relative">
@@ -504,14 +485,12 @@ function insertSampleJson() {
                         </div>
                         <textarea name="json_data" id="jsonInputTextarea" class="form-control font-monospace text-dark" rows="9" style="font-size: 13px; line-height: 1.5; background: #f8fafc;" placeholder='[
   {
-    "name": "HostGator",
-    "url": "https://www.hostgator.com",
-    "category": "Web Hosting"
+    "name": "Hostgator",
+    "url": "https://www.hostgator.com"
   },
   {
     "name": "Bluehost",
-    "url": "https://www.bluehost.com",
-    "category": "Web Hosting"
+    "url": "https://www.bluehost.com"
   }
 ]'></textarea>
                     </div>
@@ -526,7 +505,7 @@ function insertSampleJson() {
 
                     <div class="alert alert-light border mt-3 py-2 px-3 small text-muted">
                         <em class="icon ni ni-info-fill text-info me-1"></em>
-                        <strong>Supported fields:</strong> <code>name</code>, <code>url</code>, <code>category</code> / <code>category_id</code>, <code>subcategories</code>, <code>short_description</code>, <code>what_is</code>, <code>rating</code>, <code>usps</code>, <code>pros_cons</code>, <code>faqs</code>, and <code>services</code>.
+                        <strong>Required keys:</strong> <code>name</code> (or <code>business_name</code>) and <code>url</code> (or <code>business_url</code>, <code>website</code>). Once uploaded, select businesses in the table below to send them to batch jobs for missing information.
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
