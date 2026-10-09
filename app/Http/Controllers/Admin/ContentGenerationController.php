@@ -938,8 +938,12 @@ class ContentGenerationController extends Controller
             // Contextual pros/cons list for pros_cons field (includes IDs for strict selection)
             $availableProsStr = "- [ID: 1] High reliability\n- [ID: 2] Good value for money\n- [ID: 3] Affordable pricing\n- [ID: 4] Easy to use interface\n- [ID: 5] 24/7 expert customer support\n- [ID: 6] Fast performance\n- [ID: 7] Comprehensive features";
             $availableConsStr = "- [ID: 8] Steep learning curve\n- [ID: 9] Limited advanced features\n- [ID: 10] Hidden additional fees\n- [ID: 11] Unclear pricing\n- [ID: 12] Occasional support delays";
-            if ($business->category_id) {
-                $catProCons = \App\Models\CategoryProCon::where('category_id', $business->category_id)->where('status', 1)->get();
+            $allBusinessCatIds = array_values(array_unique(array_filter(array_merge(
+                [$business->category_id],
+                $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+            ))));
+            if (!empty($allBusinessCatIds)) {
+                $catProCons = \App\Models\CategoryProCon::whereIn('category_id', $allBusinessCatIds)->where('status', 1)->get();
                 if ($catProCons->isEmpty()) {
                     $catProCons = \App\Models\CategoryProCon::where('status', 1)->take(30)->get();
                 }
@@ -2893,7 +2897,12 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     public static function applyProsConsToBusiness(Business $business, array $data): int
     {
         $businessId = $business->id;
-        $categoryId = $business->category_id;
+
+        // Gather all category IDs the business belongs to (Primary category + Secondary categories / subcategories)
+        $allCategoryIds = array_values(array_unique(array_filter(array_merge(
+            [$business->category_id],
+            $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+        ))));
 
         $rawPros = $data['pro_ids'] ?? ($data['pros'] ?? []);
         $rawCons = $data['con_ids'] ?? ($data['cons'] ?? []);
@@ -2923,8 +2932,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $found = null;
             if (is_numeric($val)) {
                 $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'pro')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
                 }
                 if (!$found) {
                     $found = $query->first();
@@ -2932,8 +2941,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             } elseif (is_string($val) && trim($val) !== '') {
                 $cleanText = trim($val);
                 $query = \App\Models\CategoryProCon::where('type', 'pro')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
                         ->where(function($q) use ($cleanText) {
                             $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
                               ->orWhereJsonContains('aliases', $cleanText);
@@ -2956,8 +2965,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $found = null;
             if (is_numeric($val)) {
                 $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'con')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)->first();
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
                 }
                 if (!$found) {
                     $found = $query->first();
@@ -2965,8 +2974,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             } elseif (is_string($val) && trim($val) !== '') {
                 $cleanText = trim($val);
                 $query = \App\Models\CategoryProCon::where('type', 'con')->where('status', 1);
-                if ($categoryId) {
-                    $found = (clone $query)->where('category_id', $categoryId)
+                if (!empty($allCategoryIds)) {
+                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
                         ->where(function($q) use ($cleanText) {
                             $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
                               ->orWhereJsonContains('aliases', $cleanText);

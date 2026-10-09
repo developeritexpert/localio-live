@@ -475,8 +475,19 @@
                                             @if(!empty($pro['text']) && (empty($pro['category_pro_con_id']) || !collect($availableCategoryPros)->firstWhere('id', (int)$pro['category_pro_con_id'])))
                                                 <option value="{{ $pro['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $pro['text'] }}</option>
                                             @endif
-                                            @foreach($availableCategoryPros as $opt)
-                                                <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
+                                            @php
+                                                $groupedPros = collect($availableCategoryPros)->groupBy('category_name');
+                                            @endphp
+                                            @foreach($groupedPros as $catName => $opts)
+                                                @if($groupedPros->count() > 1)
+                                                    <optgroup label="{{ $catName }}">
+                                                @endif
+                                                @foreach($opts as $opt)
+                                                    <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedPros->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
+                                                @endforeach
+                                                @if($groupedPros->count() > 1)
+                                                    </optgroup>
+                                                @endif
                                             @endforeach
                                         </select>
                                         <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
@@ -508,8 +519,19 @@
                                             @if(!empty($con['text']) && (empty($con['category_pro_con_id']) || !collect($availableCategoryCons)->firstWhere('id', (int)$con['category_pro_con_id'])))
                                                 <option value="{{ $con['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $con['text'] }}</option>
                                             @endif
-                                            @foreach($availableCategoryCons as $opt)
-                                                <option value="{{ $opt['id'] }}">{{ $opt['text'] }}</option>
+                                            @php
+                                                $groupedCons = collect($availableCategoryCons)->groupBy('category_name');
+                                            @endphp
+                                            @foreach($groupedCons as $catName => $opts)
+                                                @if($groupedCons->count() > 1)
+                                                    <optgroup label="{{ $catName }}">
+                                                @endif
+                                                @foreach($opts as $opt)
+                                                    <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedCons->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
+                                                @endforeach
+                                                @if($groupedCons->count() > 1)
+                                                    </optgroup>
+                                                @endif
                                             @endforeach
                                         </select>
                                         <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
