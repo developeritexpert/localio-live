@@ -458,14 +458,45 @@
                                         <span class="nk-menu-text">Reviews</span>
                                     </a>
                                     <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item">
+                                        <li class="nk-menu-item {{ request()->routeIs('reviews') ? 'active' : '' }}">
                                             <a href="{{ route('reviews') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Published Reviews</span>
+                                                <span class="nk-menu-text">All Reviews</span>
                                             </a>
                                         </li>
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('admin.unpublished.reviews') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Unpublished Reviews</span>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.pending') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.pending') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Pending Queue</span>
+                                                @php
+                                                    $pendingCount = \App\Models\Review::where('status', \App\Models\Review::STATUS_PENDING_REVIEW)->count();
+                                                @endphp
+                                                @if($pendingCount > 0)
+                                                    <span class="badge bg-danger ms-auto">{{ $pendingCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.reported') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.reported') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Reported Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.removed') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.removed') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Removed Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.appeals') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.appeals') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Review Appeals</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.cases') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.cases') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Moderation Cases</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.settings') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.settings') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Moderation Settings</span>
                                             </a>
                                         </li>
                                     </ul>

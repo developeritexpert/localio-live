@@ -1126,13 +1126,28 @@ class ViewController extends Controller
             'report_details' => 'nullable|string|max:1000'
         ]);
 
-        ReviewReport::create([
-            'review_id' => $request->input('review_id'),
-            'user_id' => auth()->id(),
+        $user = auth()->user();
+        $reporterType = ($user && $user->business_id) ? 'business' : 'user';
+
+        $report = ReviewReport::create([
+            'review_id'     => $request->input('review_id'),
+            'user_id'       => $user->id,
             'report_reason' => $request->input('report_reason'),
-            'report_details' => $request->input('report_details'),
-            'status' => 'pending'
+            'report_type'   => $request->input('report_type') ?: strtolower(str_replace(' ', '_', $request->input('report_reason'))),
+            'reporter_type' => $reporterType,
+            'report_details'=> $request->input('report_details'),
+            'status'        => \App\Models\ReviewReport::STATUS_PENDING,
         ]);
+
+        // Trigger automated reassessment pipeline (omni-moderation -> GPT-5.6 Luna batch)
+        $review = \App\Models\Review::find($request->input('review_id'));
+        if ($review) {
+            try {
+                \App\Services\ReviewModerationService::triggerRemoderation($review, $report);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Error triggering review re-moderation: ' . $e->getMessage());
+            }
+        }
 
         return response()->json([
             'success' => true,
