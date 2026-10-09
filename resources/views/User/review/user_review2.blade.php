@@ -1730,19 +1730,5 @@ function submitReviewReport() {
     </div>
 </div>
 <style>
-    .report-review-option-card:hover {
-        border-color: #94a3b8 !important;
-        background: #f8fafc;
-    }
-    .report-review-option-card.selected {
-        border-color: #002347 !important;
-        background: #f0f4ff;
-    }
-    .report-review-option-card.selected .report-check {
-        background: #002347;
-        border-color: #002347;
-    }
-    .report-review-option-card.selected .report-check i {
-        color: #ffffff !important;
-    }
+  
 </style>

@@ -5,58 +5,10 @@
 <style>
             /* Sticky Sidebar & Table of contents */
         .sticky-sidebar-nav-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(0, 35, 71, 0.04);
             padding: 20px;
-            border: 1px solid #eef2f6;
-            width: 100%;
-            box-sizing: border-box;
         }
         .sticky-nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
             margin: 8px 0 0 0;
-        }
-        .sticky-nav-item {
-            display: flex;
-            align-items: center;
-            padding: 9px 14px;
-            border-radius: 8px;
-            color:#5b6b7a;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-        }
-        .sticky-nav-item:hover {
-            background-color: #f4f7fb;
-            color: #003f7d;
-            font-weight: 600;
-            transform: translateX(3px);
-        }
-        .sticky-nav-item.active {
-            background-color: #eaf1f9;
-            color: #002347;
-            font-weight: 700;
-        }
-        .sticky-nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 60%;
-            width: 3.5px;
-            background-color: #003f7d;
-            border-radius: 0 3px 3px 0;
-        }
-        .revie_img_sec .image_revie_inr {
-            display: flex !important;
-            align-items: flex-start !important;
-            gap: 40px !important;
         }
         .revie_img_sec .imges_left_sde {
             width: 62% !important;
@@ -64,22 +16,11 @@
             min-width: 0 !important;
         }
         .revie_img_sec .thre_revi_rgt {
-            position: relative !important;
-            display: flex !important;
-            flex-direction: column !important;
-            width: 38% !important;
             flex: 0 0 38% !important;
-            max-width: 38% !important;
-            height: auto !important;
             gap: 20px !important;
         }
         .sticky-sidebar-nav-wrapper {
-            position: -webkit-sticky !important;
-            position: sticky !important;
             top: 90px !important;
-            z-index: 30 !important;
-            width: 100% !important;
-            margin-top: 0 !important;
         }
     </style>
 @endpush
@@ -1033,84 +974,6 @@
         background: #002347;
         border-color: #002347;
     }
-        /* Sticky Sidebar & Table of contents */
-        .sticky-sidebar-nav-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(0, 35, 71, 0.04);
-            padding: 20px;
-            border: 1px solid #eef2f6;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .sticky-nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin: 8px 0 0 0;
-        }
-        .sticky-nav-item {
-            display: flex;
-            align-items: center;
-            padding: 9px 14px;
-            border-radius: 8px;
-            color: #5b6b7a;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-        }
-        .sticky-nav-item:hover {
-            background-color: #f4f7fb;
-            color: #003f7d;
-            font-weight: 600;
-            transform: translateX(3px);
-        }
-        .sticky-nav-item.active {
-            background-color: #eaf1f9;
-            color: #002347;
-            font-weight: 700;
-        }
-        .sticky-nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 60%;
-            width: 3.5px;
-            background-color: #003f7d;
-            border-radius: 0 3px 3px 0;
-        }
-        .revie_img_sec .image_revie_inr {
-            display: flex !important;
-            align-items: flex-start !important;
-            gap: 40px !important;
-        }
-        .revie_img_sec .imges_left_sde {
-            width: 62% !important;
-            flex: 1 1 62% !important;
-            min-width: 0 !important;
-        }
-        .revie_img_sec .thre_revi_rgt {
-            position: relative !important;
-            display: flex !important;
-            flex-direction: column !important;
-            width: 38% !important;
-            flex: 0 0 38% !important;
-            max-width: 38% !important;
-            height: auto !important;
-            gap: 20px !important;
-        }
-        .sticky-sidebar-nav-wrapper {
-            position: -webkit-sticky !important;
-            position: sticky !important;
-            top: 90px !important;
-            z-index: 30 !important;
-            width: 100% !important;
-            margin-top: 0 !important;
-        }
     </style>
 
 @livewire('add-review')
