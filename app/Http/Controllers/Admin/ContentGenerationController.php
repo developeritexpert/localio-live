@@ -522,11 +522,15 @@ class ContentGenerationController extends Controller
                         $counter++;
                     }
 
+                    $affLinkInitial = trim($item['affiliate_link'] ?? ($item['affiliate_url'] ?? ''));
+                    $isAffInitial = (!empty($affLinkInitial) || !empty($item['is_affiliate'])) ? 1 : 0;
+
                     $business = Business::create([
                         'permanent_url'        => $url ?: null,
+                        'affiliate_link'       => $affLinkInitial ?: null,
                         'status'               => 1,
                         'created_by'           => auth()->id() ?? 1,
-                        'is_affiliate'         => 0,
+                        'is_affiliate'         => $isAffInitial,
                         'active_all_countries' => 1,
                         'category_id'          => null,
                     ]);
@@ -573,44 +577,20 @@ class ContentGenerationController extends Controller
         $appliedCount = 0;
 
         // 1. Categories
-        $catId = $item['category_id'] ?? null;
-        $catName = $item['category_name'] ?? ($item['category'] ?? null);
-
-        if ($catId && !Category::where('id', $catId)->exists()) {
-            $catId = null;
+        $catData = $item['categories'] ?? null;
+        if (!$catData && (isset($item['category_id']) || isset($item['category']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
+            $catData = [
+                'primary_category_id'    => $item['primary_category_id'] ?? null,
+                'primary_subcategory_id' => $item['primary_subcategory_id'] ?? null,
+                'category_id'            => $item['category_id'] ?? null,
+                'category_name'          => $item['category_name'] ?? ($item['category'] ?? null),
+                'category_ids'           => $item['category_ids'] ?? [],
+                'subcategory_ids'        => $item['subcategory_ids'] ?? ($item['subcategories'] ?? []),
+            ];
         }
-
-        if (!$catId && $catName) {
-            $cleanCatName = trim($catName);
-            $catId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanCatName)])
-                ->orWhere('name', 'like', '%' . $cleanCatName . '%')
-                ->value('category_id');
-        }
-
-        if ($catId && Category::where('id', $catId)->exists()) {
-            $business->category_id = $catId;
-            $business->save();
+        if ($catData) {
+            self::applyCategoriesToBusiness($business, $catData);
             $appliedCount++;
-        }
-
-        $subCatIds = $item['subcategory_ids'] ?? ($item['subcategories'] ?? []);
-        if (is_array($subCatIds) && !empty($subCatIds)) {
-            $validSubs = [];
-            foreach ($subCatIds as $sub) {
-                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                    $validSubs[] = (int) $sub;
-                } elseif (is_string($sub)) {
-                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                        ->value('category_id');
-                    if ($matchedSub) {
-                        $validSubs[] = $matchedSub;
-                    }
-                }
-            }
-            if (!empty($validSubs)) {
-                $business->subCategories()->sync($validSubs);
-                $appliedCount++;
-            }
         }
 
         // 2. Short description
@@ -666,14 +646,14 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
-        // 7b. Features (strictly selected from features table via business_feature)
+        // 7b. Features
         $featData = $item['feature_ids'] ?? ($item['features'] ?? null);
         if (!empty($featData)) {
             $featCount = self::applyFeaturesToBusiness($business, $featData);
             if ($featCount > 0) $appliedCount++;
         }
 
-        // 8. Pros & Cons (strictly selected from category_pro_cons)
+        // 8. Pros & Cons
         $proConData = $item['pros_cons'] ?? null;
         if (!$proConData && (isset($item['pro_ids']) || isset($item['con_ids']))) {
             $proConData = [
@@ -729,13 +709,13 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
-        // 10. Services / Offering
+        // 10. Services / Offering (headline is optional as templates provide it)
         if (isset($item['services']) && is_array($item['services'])) {
             $headline = $item['services']['headline'] ?? null;
             $topText = $item['services']['top_text'] ?? null;
             $bottomText = $item['services']['bottom_text'] ?? null;
             $offering = \App\Models\BusinessOffering::firstOrNew(['business_id' => $businessId]);
-            if ($headline !== null) $offering->headline = $headline;
+            if ($headline !== null && trim($headline) !== '') $offering->headline = $headline;
             if ($topText !== null) $offering->top_text = $topText;
             if ($bottomText !== null) $offering->bottom_text = $bottomText;
             $offering->save();
@@ -745,14 +725,62 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
-        // 11. Active countries
+        // 11. Active countries (support country_ids as primary, fallback to country_codes)
         if (isset($item['active_countries']) && is_array($item['active_countries'])) {
             $activeAll = !empty($item['active_countries']['active_all_countries']);
             $business->active_all_countries = $activeAll ? 1 : 0;
             $business->save();
-            if (!$activeAll && !empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
-                $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
-                $business->countries()->sync($countryIds);
+            if (!$activeAll) {
+                $countryIds = [];
+                if (!empty($item['active_countries']['country_ids']) && is_array($item['active_countries']['country_ids'])) {
+                    $countryIds = array_values(array_filter(array_map('intval', $item['active_countries']['country_ids'])));
+                } elseif (!empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
+                    $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
+                }
+                if (!empty($countryIds)) {
+                    $business->countries()->sync($countryIds);
+                }
+            }
+            $appliedCount++;
+        }
+
+        // 12. Affiliate & Website URLs
+        $affLink = trim($item['affiliate_link'] ?? ($item['affiliate_url'] ?? ($item['affiliate'] ?? '')));
+        $isAffVal = isset($item['is_affiliate']) ? (bool)$item['is_affiliate'] : null;
+
+        if (!empty($affLink)) {
+            $business->affiliate_link = $affLink;
+            $business->is_affiliate = 1;
+            $business->save();
+            $appliedCount++;
+        } elseif ($isAffVal !== null) {
+            $business->is_affiliate = $isAffVal ? 1 : 0;
+            $business->save();
+            $appliedCount++;
+        }
+
+        $websitesList = $item['websites'] ?? ($item['affiliate_urls'] ?? ($item['country_websites'] ?? null));
+        if (!empty($websitesList) && is_array($websitesList)) {
+            $hasAnyAffiliate = false;
+            foreach ($websitesList as $wEntry) {
+                if (!is_array($wEntry)) continue;
+                $cId = $wEntry['country_id'] ?? null;
+                if (!$cId && !empty($wEntry['country_code'])) {
+                    $cId = \App\Models\Country::where('country_code', strtoupper($wEntry['country_code']))->value('id');
+                }
+                $wUrl = trim($wEntry['url'] ?? ($wEntry['website_url'] ?? ($wEntry['affiliate_url'] ?? '')));
+                $wIsAff = isset($wEntry['is_affiliate']) ? (bool)$wEntry['is_affiliate'] : true;
+                if ($cId && !empty($wUrl)) {
+                    \App\Models\BusinessWebsite::updateOrCreate(
+                        ['business_id' => $businessId, 'country_id' => $cId],
+                        ['website_url' => $wUrl, 'is_affiliate' => $wIsAff ? 1 : 0, 'status' => 1]
+                    );
+                    if ($wIsAff) $hasAnyAffiliate = true;
+                }
+            }
+            if ($hasAnyAffiliate) {
+                $business->is_affiliate = 1;
+                $business->save();
             }
             $appliedCount++;
         }
@@ -1471,10 +1499,15 @@ class ContentGenerationController extends Controller
                 $activeAll = !empty($data['active_all_countries']);
                 Business::where('id', $businessId)->update(['active_all_countries' => $activeAll ? 1 : 0]);
 
-                if (!$activeAll && !empty($data['country_codes']) && is_array($data['country_codes'])) {
-                    $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
+                if (!$activeAll) {
+                    $countryIds = [];
+                    if (!empty($data['country_ids']) && is_array($data['country_ids'])) {
+                        $countryIds = array_values(array_filter(array_map('intval', $data['country_ids'])));
+                    } elseif (!empty($data['country_codes']) && is_array($data['country_codes'])) {
+                        $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
+                    }
                     $biz = Business::find($businessId);
-                    if ($biz) {
+                    if ($biz && !empty($countryIds)) {
                         $biz->countries()->sync($countryIds);
                     }
                 }
@@ -1574,8 +1607,8 @@ class ContentGenerationController extends Controller
                 }
                 break;
             case 'services':
-                if (!isset($data['top_text']) && !isset($data['headline']) && !isset($data['bottom_text'])) {
-                    return 'Expected {"headline": "...", "top_text": "...", "bottom_text": "..."}';
+                if (!isset($data['top_text']) && !isset($data['bottom_text'])) {
+                    return 'Expected {"top_text": "...", "bottom_text": "..."}';
                 }
                 break;
             case 'faqs':
@@ -1660,7 +1693,7 @@ Available Cons:
 
 Return JSON strictly using the selected IDs: {\"pro_ids\": [1, 2, 3], \"con_ids\": [6, 7]}",
 
-            'services' => "Write the Services section for {$businessName}.{$catInfo}{$urlInfo} which accompanies product screenshots. Provide: 1. A catchy section headline. 2. Top text: 1-2 paragraphs introducing the core platform and user experience before the screenshot tour. 3. Bottom text: 1-2 paragraphs elaborating on extended services, add-ons, or integrations after the screenshots. Return JSON: {\"headline\": \"...\", \"top_text\": \"<p>...</p>\", \"bottom_text\": \"<p>...</p>\"}",
+            'services' => "Write the Services section for {$businessName}.{$catInfo}{$urlInfo} which accompanies product screenshots. Provide: 1. Top text: 1-2 paragraphs introducing the core platform and user experience before the screenshot tour. 2. Bottom text: 1-2 paragraphs elaborating on extended services, add-ons, or integrations after the screenshots. (Headline is generated by templates and not required in JSON). Return JSON: {\"top_text\": \"<p>...</p>\", \"bottom_text\": \"<p>...</p>\"}",
 
             'faqs' => "Write 5 high-value FAQs for {$businessName}.{$catInfo}{$urlInfo} addressing common customer questions regarding plans, pricing, key features, setup, and support. Group each FAQ logically under a category (e.g. \"Plans & Pricing\", \"Setup & Migration\", \"Features\", \"Support\"). Return JSON: {\"faqs\": [{\"category\": \"...\", \"question\": \"...\", \"answer\": \"...\"}]}",
 
@@ -1669,7 +1702,7 @@ Return JSON strictly using the selected IDs: {\"pro_ids\": [1, 2, 3], \"con_ids\
 
 Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\": [2, 3]}",
 
-            'active_countries' => 'Analyze ' . $businessName . '.' . $urlInfo . ' Determine whether this business operates globally (available in all countries) or is restricted to specific countries. If available globally in all countries, return JSON: {"active_all_countries": true}. If restricted to specific countries, return JSON: {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]} using standard 2-letter ISO country codes.',
+            'active_countries' => 'Analyze ' . $businessName . '.' . $urlInfo . ' Determine whether this business operates globally (available in all countries) or is restricted to specific countries. If available globally in all countries, return JSON: {"active_all_countries": true}. If restricted to specific countries, return JSON: {"active_all_countries": false, "country_ids": [1, 2, 3]} using localio country IDs.',
 
             'rating' => "Evaluate the overall market reputation, service quality, and reliability for {$businessName}.{$catInfo}{$urlInfo} Provide an initial overall editorial rating score between 1.0 and 5.0 (with one or two decimal places, e.g. 4.6 or 4.8) to be displayed on their directory profile until 10 approved user reviews are reached. Return JSON: {\"rating\": 4.6}",
 
@@ -2054,9 +2087,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             ->orderBy('name')
             ->get()
             ->map(fn($c) => [
-                'country_code' => strtoupper($c->country_code),
-                'country_name' => $c->name,
                 'country_id'   => $c->id,
+                'country_name' => $c->name,
             ])
             ->values();
 
@@ -2064,7 +2096,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
         return response($json, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="localio_country_codes.json"',
+            'Content-Disposition' => 'attachment; filename="localio_country_ids.json"',
         ]);
     }
 
@@ -2479,11 +2511,14 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $counter++;
                 }
 
+                $affLinkInitial = trim($bData['affiliate_link'] ?? ($bData['affiliate_url'] ?? ''));
+                $isAffInitial = (!empty($affLinkInitial) || !empty($bData['is_affiliate'])) ? 1 : 0;
                 $biz = Business::create([
                     'permanent_url'        => $bizUrl ?: null,
+                    'affiliate_link'       => $affLinkInitial ?: null,
                     'status'               => 1,
                     'created_by'           => auth()->id() ?? 1,
-                    'is_affiliate'         => 0,
+                    'is_affiliate'         => $isAffInitial,
                     'active_all_countries' => 1,
                     'category_id'          => null,
                 ]);
@@ -2602,9 +2637,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     if ($activeAll) {
                         $normalizedData = ['active_all_countries' => true];
                     } else {
+                        $countryIds = $fieldVal['country_ids'] ?? [];
                         $countryCodes = $fieldVal['country_codes'] ?? ($fieldVal['countries'] ?? []);
                         $normalizedData = [
                             'active_all_countries' => false,
+                            'country_ids'          => is_array($countryIds) ? array_values(array_filter(array_map('intval', $countryIds))) : [],
                             'country_codes'        => is_array($countryCodes) ? array_values($countryCodes) : [],
                         ];
                     }
@@ -2637,6 +2674,40 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     }
                 } catch (\Exception $e) {
                     Log::error("Failed to auto-apply field {$field} for business {$bizId}: " . $e->getMessage());
+                }
+            }
+
+            // Also ingest affiliate link / websites from batch result if provided
+            $affLink = trim($bData['affiliate_link'] ?? ($bData['affiliate_url'] ?? ($bData['affiliate'] ?? '')));
+            if (!empty($affLink)) {
+                $biz->affiliate_link = $affLink;
+                $biz->is_affiliate = 1;
+                $biz->save();
+            } elseif (isset($bData['is_affiliate'])) {
+                $biz->is_affiliate = $bData['is_affiliate'] ? 1 : 0;
+                $biz->save();
+            }
+            if (!empty($bData['websites']) && is_array($bData['websites'])) {
+                $hasAff = false;
+                foreach ($bData['websites'] as $wEntry) {
+                    if (!is_array($wEntry)) continue;
+                    $cId = $wEntry['country_id'] ?? null;
+                    if (!$cId && !empty($wEntry['country_code'])) {
+                        $cId = \App\Models\Country::where('country_code', strtoupper($wEntry['country_code']))->value('id');
+                    }
+                    $wUrl = trim($wEntry['url'] ?? ($wEntry['website_url'] ?? ''));
+                    $wAff = isset($wEntry['is_affiliate']) ? (bool)$wEntry['is_affiliate'] : true;
+                    if ($cId && !empty($wUrl)) {
+                        \App\Models\BusinessWebsite::updateOrCreate(
+                            ['business_id' => $biz->id, 'country_id' => $cId],
+                            ['website_url' => $wUrl, 'is_affiliate' => $wAff ? 1 : 0, 'status' => 1]
+                        );
+                        if ($wAff) $hasAff = true;
+                    }
+                }
+                if ($hasAff) {
+                    $biz->is_affiliate = 1;
+                    $biz->save();
                 }
             }
         }
@@ -2683,7 +2754,6 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ],
                     "features"            => [1007, 1008, 1012],
                     "services"            => [
-                        "headline"    => "Full-Service Web Hosting & Domain Management",
                         "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
                         "bottom_text" => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
                     ],
@@ -2700,8 +2770,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         ]
                     ],
                     "categories"          => [
-                        "category_id"     => 11,
-                        "subcategory_ids" => [19, 20]
+                        "primary_category_id"    => 11,
+                        "primary_subcategory_id" => null,
+                        "category_ids"           => [11, 30],
+                        "subcategory_ids"        => [19, 20, 23, 32, 33, 50]
                     ],
                     "active_countries"    => [
                         "active_all_countries" => true
@@ -2710,7 +2782,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 ],
                 [
                     "business_id"         => 102,
-                    "business_name"       => "CloudFlare & Enterprise Hosting (Multiple Categories Example)",
+                    "business_name"       => "CloudFlare & Enterprise Hosting (Primary Subcategory Example)",
                     "short_description"   => "High-performance edge cloud platform providing CDN, DNS, DDoS protection, and cloud server hosting.",
                     "long_description"    => "An integrated global cloud platform that delivers security, performance, and reliability across edge networks and cloud infrastructure.",
                     "usps"                => [
@@ -2726,7 +2798,6 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         "con_ids" => [27]
                     ],
                     "services"            => [
-                        "headline"    => "Global Edge Cloud & Infrastructure",
                         "top_text"    => "Secure regional infrastructure optimized for low latency and high availability.",
                         "bottom_text" => "Automated edge routing and enterprise threat intelligence."
                     ],
@@ -2738,18 +2809,14 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         ]
                     ],
                     "categories"          => [
-                        [
-                            "category_id"     => 11,
-                            "subcategory_ids" => [19, 20]
-                        ],
-                        [
-                            "category_id"     => 14,
-                            "subcategory_ids" => [35, 36]
-                        ]
+                        "primary_category_id"    => null,
+                        "primary_subcategory_id" => 23,
+                        "category_ids"           => [],
+                        "subcategory_ids"        => [23, 20]
                     ],
                     "active_countries"    => [
                         "active_all_countries" => false,
-                        "country_codes"        => ["US", "GB", "CA", "AU", "DE"]
+                        "country_ids"          => [1, 2, 3, 4, 5]
                     ],
                     "rating"              => 4.8
                 ]
@@ -2800,46 +2867,20 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $catData = ['category_id' => (int)$catData];
         }
 
-        // Format 1: Array of category objects: [ {"category_id": 11, "subcategory_ids": [19, 20]}, ... ]
-        if (is_array($catData) && array_is_list($catData) && !empty($catData)) {
-            foreach ($catData as $entry) {
-                if (!is_array($entry)) {
-                    if (is_numeric($entry)) {
-                        if ($primaryCatId === null) $primaryCatId = (int)$entry;
-                        else $secondaryCatIds[] = (int)$entry;
-                    }
-                    continue;
-                }
-                $cId = $entry['category_id'] ?? ($entry['id'] ?? null);
-                $cName = $entry['category_name'] ?? ($entry['category'] ?? ($entry['name'] ?? null));
-                if (!$cId && $cName) {
-                    $clean = trim($cName);
-                    $cId = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
-                        ->orWhere('name', 'like', '%' . $clean . '%')
-                        ->value('category_id');
-                }
-                if ($cId && Category::where('id', $cId)->exists()) {
-                    if ($primaryCatId === null) {
-                        $primaryCatId = (int)$cId;
-                    } else {
-                        $secondaryCatIds[] = (int)$cId;
-                    }
-                }
+        if (is_array($catData)) {
+            // Check primary category vs subcategory as defined by user:
+            // "primary_category_id": 11, "primary_subcategory_id": null
+            // OR "primary_category_id": null, "primary_subcategory_id": 23
+            $rawPrimaryCat = $catData['primary_category_id'] ?? null;
+            $rawPrimarySub = $catData['primary_subcategory_id'] ?? null;
 
-                $subs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? ($entry['subcategory_id'] ?? []));
-                if (!is_array($subs)) $subs = [$subs];
-                foreach ($subs as $sub) {
-                    if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                        $subCatIds[] = (int)$sub;
-                    } elseif (is_string($sub) && trim($sub) !== '') {
-                        $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                            ->value('category_id');
-                        if ($matchedSub) $subCatIds[] = $matchedSub;
-                    }
-                }
+            if (!empty($rawPrimaryCat) && Category::where('id', $rawPrimaryCat)->exists()) {
+                $primaryCatId = (int)$rawPrimaryCat;
+            } elseif (!empty($rawPrimarySub) && Category::where('id', $rawPrimarySub)->exists()) {
+                $primaryCatId = (int)$rawPrimarySub;
             }
-        } elseif (is_array($catData)) {
-            // Format 2: Object with category_ids / category_id and subcategory_ids
+
+            // category_ids: [11, 30]
             $cIds = $catData['category_ids'] ?? [];
             if (!empty($cIds)) {
                 if (!is_array($cIds)) $cIds = [$cIds];
@@ -2854,6 +2895,24 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
+            // subcategory_ids: [19, 20, 23, ...]
+            $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
+            if (!is_array($subs)) $subs = [$subs];
+            foreach ($subs as $sub) {
+                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
+                    if ($primaryCatId === null && !empty($rawPrimarySub)) {
+                        $primaryCatId = (int)$sub;
+                    } else {
+                        $subCatIds[] = (int)$sub;
+                    }
+                } elseif (is_string($sub) && trim($sub) !== '') {
+                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
+                        ->value('category_id');
+                    if ($matchedSub) $subCatIds[] = $matchedSub;
+                }
+            }
+
+            // Fallback for previous formats: category_id or category_name
             if ($primaryCatId === null) {
                 $rawCid = $catData['category_id'] ?? null;
                 $catName = $catData['category_name'] ?? ($catData['category'] ?? null);
@@ -2871,15 +2930,28 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
-            $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
-            if (!is_array($subs)) $subs = [$subs];
-            foreach ($subs as $sub) {
-                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                    $subCatIds[] = (int)$sub;
-                } elseif (is_string($sub) && trim($sub) !== '') {
-                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                        ->value('category_id');
-                    if ($matchedSub) $subCatIds[] = $matchedSub;
+            // Format: Array of category objects: [ {"category_id": 11, "subcategory_ids": [19, 20]}, ... ]
+            if (array_is_list($catData)) {
+                foreach ($catData as $entry) {
+                    if (!is_array($entry)) {
+                        if (is_numeric($entry) && Category::where('id', $entry)->exists()) {
+                            if ($primaryCatId === null) $primaryCatId = (int)$entry;
+                            else $secondaryCatIds[] = (int)$entry;
+                        }
+                        continue;
+                    }
+                    $cId = $entry['category_id'] ?? ($entry['id'] ?? null);
+                    if ($cId && Category::where('id', $cId)->exists()) {
+                        if ($primaryCatId === null) $primaryCatId = (int)$cId;
+                        else $secondaryCatIds[] = (int)$cId;
+                    }
+                    $eSubs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? []);
+                    if (!is_array($eSubs)) $eSubs = [$eSubs];
+                    foreach ($eSubs as $s) {
+                        if (is_numeric($s) && Category::where('id', $s)->exists()) {
+                            $subCatIds[] = (int)$s;
+                        }
+                    }
                 }
             }
         }
@@ -2889,9 +2961,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         }
 
         $allPivotIds = array_values(array_unique(array_filter(array_merge($secondaryCatIds, $subCatIds))));
-        if (!empty($allPivotIds)) {
-            $business->subCategories()->sync($allPivotIds);
-        }
+        $business->subCategories()->sync($allPivotIds);
     }
 
     public static function applyProsConsToBusiness(Business $business, array $data): int

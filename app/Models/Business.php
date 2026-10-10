@@ -216,6 +216,20 @@ class Business extends Model
         return $this->hasMany(BusinessUsp::class)->orderBy('sort_order');
     }
 
+        public function getIsAffiliateAttribute($value)
+    {
+        if (!empty($value)) {
+            return 1;
+        }
+        if (!empty($this->affiliate_link)) {
+            return 1;
+        }
+        if ($this->relationLoaded('websites') && $this->websites->contains(fn($w) => !empty($w->is_affiliate))) {
+            return 1;
+        }
+        return 0;
+    }
+
     public function isAffiliated()
     {
         return (bool) $this->is_affiliate;

@@ -1259,7 +1259,7 @@ foreach ($altCriteria as $criterion) {
                                                                 <!-- Buttons -->
                                                                 <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
                                                                     @if(!empty($item->is_affiliate))
-                                                                    <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
+                                                                    <a href="{{ $item->getEffectiveWebsiteUrl() ?: ($item->affiliate_link ?: $item->permanent_url) }}"
                                                                         class="cta cta_orange justify-content-center"
                                                                         target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center;">
                                                                         {{ static_text('visit_website') ?: 'Visit website' }}

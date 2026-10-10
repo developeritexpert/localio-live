@@ -23,8 +23,8 @@
                     <a href="{{ route('content-gen.download-categories') }}" class="btn btn-primary btn-sm" title="Download all category names with their IDs as JSON">
                         <em class="icon ni ni-folder me-1"></em> Categories & IDs
                     </a>
-                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-primary btn-sm" title="Download all supported country codes and names as JSON">
-                        <em class="icon ni ni-globe me-1"></em> Country Codes
+                    <a href="{{ route('content-gen.download-countries') }}" class="btn btn-primary btn-sm" title="Download all supported country IDs and names as JSON">
+                        <em class="icon ni ni-globe me-1"></em> Country IDs
                     </a>
                     <a href="{{ route('content-gen.download-pros-cons') }}" class="btn btn-primary btn-sm" title="Download all Pros & Cons with their IDs in each category as JSON">
                         <em class="icon ni ni-check-circle me-1"></em> Pros & Cons & IDs
@@ -272,15 +272,13 @@
                 <div id="businessFormatPanel">
                     <div class="alert alert-primary py-2 px-3 mb-3 small">
                         <div class="fw-bold mb-1"><em class="icon ni ni-layers me-1"></em> Categories & Subcategories Format:</div>
-                        <div>Businesses can belong to a single category or multiple categories and subcategories:</div>
+                        <div>Specify the primary category or subcategory, plus any secondary category and subcategory IDs:</div>
                         <ul class="mb-0 ps-3 mt-1">
-                            <li><strong>Single Category:</strong> <code>"categories": {"category_id": 11, "subcategory_ids": [19, 20]}</code></li>
-                            <li><strong>Multiple Categories & Subcategories:</strong>
-                                <code>"categories": [
-                                    {"category_id": 11, "subcategory_ids": [19, 20]},
-                                    {"category_id": 14, "subcategory_ids": [35, 36]}
-                                ]</code>
-                                <br><span class="text-muted">The first category ID is assigned as the primary category, and additional categories + subcategories are linked via sub-categories.</span>
+                            <li><strong>Case 1: Primary category is a Category:</strong><br>
+                                <code>"categories": { "primary_category_id": 11, "primary_subcategory_id": null, "category_ids": [11, 30], "subcategory_ids": [19, 20, 23, 32, 33, 50] }</code>
+                            </li>
+                            <li class="mt-2"><strong>Case 2: Primary category is a Subcategory:</strong><br>
+                                <code>"categories": { "primary_category_id": null, "primary_subcategory_id": 23, "category_ids": [], "subcategory_ids": [23, 20] }</code>
                             </li>
                         </ul>
                     </div>
@@ -288,7 +286,7 @@
                         <div class="fw-bold mb-1"><em class="icon ni ni-info-fill me-1"></em> Availability in Active Countries:</div>
                         <ul class="mb-0 ps-3">
                             <li><strong>Available globally in all countries:</strong> <code>"active_countries": {"active_all_countries": true}</code></li>
-                            <li><strong>Restricted to specific countries only:</strong> <code>"active_countries": {"active_all_countries": false, "country_codes": ["US", "GB", "CA", "AU", "DE"]}</code></li>
+                            <li><strong>Restricted to specific countries only (by Country ID):</strong> <code>"active_countries": {"active_all_countries": false, "country_ids": [1, 2, 3, 4, 5]}</code> <span class="text-muted">(Use "Country IDs" button above to view all country IDs)</span></li>
                         </ul>
                     </div>
                     <div class="alert alert-warning py-2 px-3 mb-3 small">
