@@ -846,7 +846,9 @@
                                     <span class="fw-bold text-dark">Affiliate</span>
                                     <div class="form-check form-switch m-0">
                                         <input class="form-check-input" type="checkbox" role="switch"
-                                            x-model="isAffiliate" id="affiliateToggleFormMain" style="cursor: pointer; width: 2.75rem; height: 1.35rem;">
+                                            x-model="isAffiliate"
+                                            @change="$wire.set('is_affiliate', isAffiliate ? 1 : 0); $wire.set('is_affiliate_partner', isAffiliate ? 1 : 0)"
+                                            id="affiliateToggleFormMain" style="cursor: pointer; width: 2.75rem; height: 1.35rem;">
                                     </div>
                                 </div>
                                 <div>
@@ -866,37 +868,10 @@
                             <!-- Default Redirect URL Box (Visible ONLY when Affiliate is ON) -->
                             <div x-show="isAffiliate" class="mb-3">
                                 <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
-                                <!-- Display Mode -->
-                                <div x-show="!editing" @click="startEdit()"
-                                    class="border rounded-2 p-2 px-3 bg-white d-flex align-items-center justify-content-between"
-                                    style="cursor: pointer; transition: all 0.2s ease-in-out;">
-                                    <span class="text-truncate text-dark fw-medium" x-text="tempUrl || 'Enter redirect URL'" :title="tempUrl"></span>
-                                    <button type="button" class="btn btn-icon btn-sm btn-soft-primary" title="Edit URL">
-                                        <em class="icon ni ni-edit fs-5"></em>
-                                    </button>
+                                <div class="form-control-wrap">
+                                    <input type="url" class="form-control" wire:model="affiliate_link"
+                                        placeholder="https://example.com/redirect-link">
                                 </div>
-
-                                <!-- Edit Mode -->
-                                <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm">
-                                    <div class="form-group mb-2">
-                                        <label class="form-label mb-1 fs-7 text-muted">Default URL</label>
-                                        <input type="url" class="form-control"
-                                            x-model="tempUrl" x-ref="urlInput"
-                                            placeholder="https://example.com/redirect-link"
-                                            @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
-                                        <div x-show="validationError" class="text-danger small mt-1" x-text="validationError"></div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end gap-2 mt-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary px-3" @click="cancelEdit()">
-                                            Cancel
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-primary px-3" @click="saveEdit()">
-                                            <em class="icon ni ni-check me-1"></em> Save
-                                        </button>
-                                    </div>
-                                </div>
-
                                 @error('affiliate_link')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror

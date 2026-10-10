@@ -1812,7 +1812,7 @@ class BusinessEdit extends Component
             ],
             'affiliate_partner' => 'nullable|string|max:191',
             'countryIsAffiliate' => 'boolean',
-            'affiliate_link' => $this->is_affiliate_partner ? 'required|url|max:191' : 'nullable',
+            'affiliate_link' => 'nullable|url|max:191',
             'icon_file' => 'nullable|mimes:png,svg|max:2048',
             'image_file' => 'nullable|mimes:jpg,png,svg|max:2048',
             'active_all_countries' => 'required|boolean',
@@ -2021,10 +2021,24 @@ class BusinessEdit extends Component
             session()->flash('error', 'Upload Error: ' . $e->getMessage());
         }
 
+        $isAffVal = (int) $this->is_affiliate;
+        if (!empty($this->affiliate_link)) {
+            $isAffVal = 1;
+        }
+        if (!empty($this->countryWebsiteUrls)) {
+            foreach ($this->countryWebsiteUrls as $u) {
+                if (isset($u[0]) && is_array($u[0])) $u = $u[0];
+                if (is_array($u) && !empty($u['is_affiliate'])) {
+                    $isAffVal = 1;
+                    break;
+                }
+            }
+        }
+
         $business->update([
-            'affiliate_partner' => $this->is_affiliate_partner ? $this->affiliate_partner : null,
+            'affiliate_partner' => $isAffVal ? ($this->affiliate_partner ?: 'partner') : null,
             'affiliate_link' => $this->affiliate_link,
-            'is_affiliate' => (int) $this->is_affiliate,
+            'is_affiliate' => $isAffVal,
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,

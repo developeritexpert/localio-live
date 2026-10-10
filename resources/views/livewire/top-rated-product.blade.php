@@ -917,7 +917,7 @@
                                                 <div class="auto-choice-btn d-flex flex-column gap-2 mt-3"
                                                     style="width: 100%; margin: 0;">
                                                     @if($item->is_affiliate)
-                                                    <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
+                                                    <a href="{{ $item->getEffectiveWebsiteUrl() ?: ($item->affiliate_link ?: $item->permanent_url) }}"
                                                         class="btn-orng cta cta_orange justify-content-center"
                                                         target="_blank"
                                                         style="display: flex !important; width: 100%; align-items: center;">
