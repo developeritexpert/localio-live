@@ -1021,26 +1021,33 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>
                             </div>
 
-                            @if(!empty($ratingTexts['features']['intro_text']))
-                            <div class="mb-3">{!! $ratingTexts['features']['intro_text'] !!}</div>
-                            @endif
-
                             @if($hasUserRatings)
-                            <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                <div class="community-rating mb-2" style="">User rating </div>
-                                <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                    <span class="rating_bar_span">Features</span>
-                                    <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
-                                    </div>
-                                    <span class="rating_bar_span">{{ formatRating($featRatingVal) }}</span>
-                                </div>
-                                <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
-                            </div>
-                            @endif
+                                @if(!empty($ratingTexts['features']['intro_text']))
+                                <div class="mb-3">{!! $ratingTexts['features']['intro_text'] !!}</div>
+                                @endif
 
-                            @if(!empty($ratingTexts['features']['end_text']))
-                            <div class="mb-3">{!! $ratingTexts['features']['end_text'] !!}</div>
+                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <div class="community-rating mb-2" style="">User rating </div>
+                                    <div class="d-flex align-items-center mb-2" style="gap: 12px;">
+                                        <span class="rating_bar_span">Features</span>
+                                        <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                        </div>
+                                        <span class="rating_bar_span">{{ formatRating($featRatingVal) }}</span>
+                                    </div>
+                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                </div>
+
+                                @if(!empty($ratingTexts['features']['end_text']))
+                                <div class="mb-3">{!! $ratingTexts['features']['end_text'] !!}</div>
+                                @endif
+                            @else
+                                @php
+                                $featU10 = $featuresUnder10Text ?? ($ratingTexts['features']['under_10_text'] ?? '');
+                                @endphp
+                                @if(!empty($featU10))
+                                <div class="mb-3">{!! $featU10 !!}</div>
+                                @endif
                             @endif
 
                             @if($business->features->count() > 0)

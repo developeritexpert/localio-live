@@ -195,6 +195,10 @@
                         '[category_cap]' => 'Web hosting',
                         '[category_tc]' => 'Web Hosting',
                         '[category_lc]' => 'web hosting',
+                        '[entities1_lc]' => 'providers',
+                        '[entities1_cap]' => 'Providers',
+                        '[entity1_lc]' => 'provider',
+                        '[entity1_cap]' => 'Provider',
                         '[feature_cap]' => 'Feature Name',
                         '[feature_tc]' => 'Feature Name',
                         '[feature_lc]' => 'feature name',
@@ -243,8 +247,12 @@
                                 <thead class="table-light small">
                                     <tr>
                                         <th style="width: 85px;">Option #</th>
-                                        <th style="width: 35%;">{{ $def['field1_label'] }}</th>
-                                        @if(($def['type'] ?? '') !== 'single')
+                                        @if(($def['type'] ?? '') === 'rich')
+                                            <th>{{ $def['field1_label'] ?? 'Template Text' }}</th>
+                                        @elseif(($def['type'] ?? '') === 'single')
+                                            <th>{{ $def['field1_label'] ?? 'Text' }}</th>
+                                        @else
+                                            <th style="width: 35%;">{{ $def['field1_label'] }}</th>
                                             <th>{{ $def['field2_label'] ?? 'Subtext / Content' }}</th>
                                         @endif
                                         <th class="text-end" style="width: 140px;">Actions</th>
@@ -253,18 +261,26 @@
                                 <tbody>
                                     @forelse($templates[$key] ?? [] as $item)
                                         @php
-                                            $decodedHeadline = html_entity_decode($item->headline, ENT_QUOTES, 'UTF-8');
-                                            $decodedSubtext = html_entity_decode($item->subtext, ENT_QUOTES, 'UTF-8');
+                                            $decodedHeadline = html_entity_decode($item->headline ?? '', ENT_QUOTES, 'UTF-8');
+                                            $decodedSubtext = html_entity_decode($item->subtext ?? '', ENT_QUOTES, 'UTF-8');
                                             $cleanSnippet = Str::limit(strip_tags($decodedSubtext), 150);
                                         @endphp
                                         <tr>
                                             <td class="font-weight-bold text-center">
                                                 <span class="badge bg-dark text-white">#{{ $item->option_number }}</span>
                                             </td>
-                                            <td>
-                                                <span class="text-dark fs-13px fw-bold">{{ Str::limit(strip_tags($decodedHeadline), 150) }}</span>
-                                            </td>
-                                            @if(($def['type'] ?? '') !== 'single')
+                                            @if(($def['type'] ?? '') === 'rich')
+                                                <td>
+                                                    <div class="text-dark fs-13px">{!! !empty($decodedSubtext) ? Str::limit(strip_tags($decodedSubtext), 250) : Str::limit(strip_tags($decodedHeadline), 250) !!}</div>
+                                                </td>
+                                            @elseif(($def['type'] ?? '') === 'single')
+                                                <td>
+                                                    <span class="text-dark fs-13px fw-bold">{{ Str::limit(strip_tags($decodedHeadline), 150) }}</span>
+                                                </td>
+                                            @else
+                                                <td>
+                                                    <span class="text-dark fs-13px fw-bold">{{ Str::limit(strip_tags($decodedHeadline), 150) }}</span>
+                                                </td>
                                                 <td>
                                                     <span class="text-muted small">{{ $cleanSnippet }}</span>
                                                 </td>
@@ -291,7 +307,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center py-4 text-muted">
+                                            <td colspan="{{ ($def['type'] ?? '') === 'combined' ? 4 : 3 }}" class="text-center py-4 text-muted">
                                                 No template variations defined yet for this range under this category. Click <strong>Add New Option</strong> above.
                                             </td>
                                         </tr>
@@ -325,7 +341,7 @@
                     </button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
+                    <div class="mb-3" id="wrapHeadline">
                         <label class="form-label font-weight-bold small" id="lblField1">Upper text (Headline)</label>
                         <input type="text" name="headline" id="inputHeadline" class="form-control" placeholder="Enter headline / upper text...">
                     </div>
@@ -505,7 +521,18 @@ $(document).ready(function() {
         if (subtextEditor) {
             $('#inputSubtext').val(subtextEditor.getData());
         }
+        if ($('#wrapHeadline').is(':hidden')) {
+            $('#inputHeadline').val('');
+        }
     });
+
+    @if(session('open_manage_field'))
+        let openField = "{{ session('open_manage_field') }}";
+        let targetTab = $('#tab-' + openField);
+        if (targetTab.length) {
+            targetTab.tab('show');
+        }
+    @endif
 
     function stripHtmlTags(str) {
         if (!str) return '';
@@ -548,19 +575,40 @@ $(document).ready(function() {
             subtextEditor.setData('');
         }
 
-        $('#lblField1').text(f1);
-        $('#lblField2').text(f2);
-        if (type === 'single') {
-            $('#wrapSubtext').hide();
-        } else {
+        if (type === 'rich') {
+            $('#wrapHeadline').hide();
             $('#wrapSubtext').show();
+            $('#lblField2').text(f1 || 'Template text (Rich Content)');
+            $('#tplModalTitle').text('Add New Option (' + (f1 || 'Template text') + ')');
+            activeInput = $('#inputSubtext');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                if (subtextEditor) {
+                    subtextEditor.editing.view.focus();
+                }
+            }, 300);
+        } else if (type === 'single') {
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').hide();
+            $('#lblField1').text(f1);
+            $('#tplModalTitle').text('Add New Option (' + f1 + ')');
+            activeInput = $('#inputHeadline');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                $('#inputHeadline').focus();
+            }, 300);
+        } else {
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').show();
+            $('#lblField1').text(f1);
+            $('#lblField2').text(f2);
+            $('#tplModalTitle').text('Add New Option');
+            activeInput = $('#inputHeadline');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                $('#inputHeadline').focus();
+            }, 300);
         }
-        $('#tplModalTitle').text('Add New Option (' + f1 + ')');
-
-        $('#modalTemplateForm').modal('show');
-        setTimeout(function() {
-            $('#inputHeadline').focus();
-        }, 300);
     });
 
     $('.btn-edit-tpl').on('click', function(e) {
@@ -579,23 +627,49 @@ $(document).ready(function() {
         $('#tpl_id').val(id);
         $('#inputHeadline').val(headline);
         $('#inputSubtext').val(subtext);
-        if (subtextEditor) {
-            subtextEditor.setData(subtext);
-        }
 
-        $('#lblField1').text(f1);
-        $('#lblField2').text(f2);
-        if (type === 'single') {
-            $('#wrapSubtext').hide();
-        } else {
+        if (type === 'rich') {
+            let richVal = subtext || rawHeadline;
+            $('#inputSubtext').val(richVal);
+            if (subtextEditor) {
+                subtextEditor.setData(richVal);
+            }
+            $('#wrapHeadline').hide();
             $('#wrapSubtext').show();
+            $('#lblField2').text(f1 || 'Template text (Rich Content)');
+            $('#tplModalTitle').text('Edit Option #' + opt + ' (' + (f1 || 'Template text') + ')');
+            activeInput = $('#inputSubtext');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                if (subtextEditor) {
+                    subtextEditor.editing.view.focus();
+                }
+            }, 300);
+        } else if (type === 'single') {
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').hide();
+            $('#lblField1').text(f1);
+            $('#tplModalTitle').text('Edit Option #' + opt + ' (' + f1 + ')');
+            activeInput = $('#inputHeadline');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                $('#inputHeadline').focus();
+            }, 300);
+        } else {
+            if (subtextEditor) {
+                subtextEditor.setData(subtext);
+            }
+            $('#wrapHeadline').show();
+            $('#wrapSubtext').show();
+            $('#lblField1').text(f1);
+            $('#lblField2').text(f2);
+            $('#tplModalTitle').text('Edit Option #' + opt);
+            activeInput = $('#inputHeadline');
+            $('#modalTemplateForm').modal('show');
+            setTimeout(function() {
+                $('#inputHeadline').focus();
+            }, 300);
         }
-        $('#tplModalTitle').text('Edit Option #' + opt);
-
-        $('#modalTemplateForm').modal('show');
-        setTimeout(function() {
-            $('#inputHeadline').focus();
-        }, 300);
     });
 });
 </script>

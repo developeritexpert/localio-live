@@ -392,11 +392,13 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         foreach ($ratingTextsRecords as $rTxt) {
             if (!empty($rTxt->intro_text) || !empty($rTxt->end_text)) {
                 $ratingTexts[$rTxt->criteria_key] = [
-                    'intro_text' => $rTxt->intro_text ?: ($ratingTexts[$rTxt->criteria_key]['intro_text'] ?? ''),
-                    'end_text' => $rTxt->end_text ?: ($ratingTexts[$rTxt->criteria_key]['end_text'] ?? ''),
+                    'intro_text'    => $rTxt->intro_text ?: ($ratingTexts[$rTxt->criteria_key]['intro_text'] ?? ''),
+                    'end_text'      => $rTxt->end_text ?: ($ratingTexts[$rTxt->criteria_key]['end_text'] ?? ''),
+                    'under_10_text' => $ratingTexts[$rTxt->criteria_key]['under_10_text'] ?? '',
                 ];
             }
         }
+        $featuresUnder10Text = $ratingTexts['features']['under_10_text'] ?? \App\Services\ContentTemplateService::resolveCriteriaUnder10Text($business, 1, $currentLangId);
 
         // Aggregate User Selected Pros and Cons for this business from active reviews
         $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
@@ -476,6 +478,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             'recommendPercent',
             'peerComparisons',
             'ratingTexts',
+            'featuresUnder10Text',
             'aggregatedPros',
             'aggregatedCons'
         ));

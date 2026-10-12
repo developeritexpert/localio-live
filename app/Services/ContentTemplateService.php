@@ -1090,6 +1090,18 @@ class ContentTemplateService
         $ranges = self::getCriteriaRanges();
 
         if ($criteriaId) {
+            $criteria = \App\Models\DefaultRatingCriteria::find($criteriaId);
+            $isFeatures = ($criteria && $criteria->key === 'features') || $criteriaId == 1;
+
+            if ($isFeatures) {
+                $fields["criteria_{$criteriaId}_under_10"] = [
+                    'label' => 'Less than 10 reviews',
+                    'type' => 'rich',
+                    'field1_label' => 'Template text',
+                    'description' => 'Template text shown for features when a business has less than 10 approved reviews',
+                ];
+            }
+
             foreach ($ranges as $rKey => $rData) {
                 $rLabel = $rData['label'];
                 $fields["criteria_{$criteriaId}_range_{$rKey}"] = [
@@ -2367,6 +2379,24 @@ class ContentTemplateService
             preg_match('/^criteria_ratings_(\d+)/', $sectionGroup, $m);
             $critId = (int) ($m[1] ?? 0);
             $fieldDefs = self::getCriteriaFields($critId);
+
+            if ($critId === 1 && !str_contains($sectionGroup, '_cat_')) {
+                $hasUnder10 = ContentTemplate::where('section_group', 'criteria_ratings_1')
+                    ->where('field_key', 'criteria_1_under_10')
+                    ->where('lang_id', 1)
+                    ->exists();
+                if (!$hasUnder10) {
+                    ContentTemplate::create([
+                        'section_group' => 'criteria_ratings_1',
+                        'field_key'     => 'criteria_1_under_10',
+                        'option_number' => 1,
+                        'headline'      => null,
+                        'subtext'       => '<p>Discover what [business] offers and select any feature to find more [entities1_lc] that offer it.</p>',
+                        'lang_id'       => 1,
+                        'is_active'     => true,
+                    ]);
+                }
+            }
         }
 
         if ($langId > 1) {
@@ -3011,13 +3041,101 @@ class ContentTemplateService
                 $subtext = self::replacePlaceholders($template->subtext, $activeCategory, null, $langId, $business);
             }
 
+            $under10Text = ($critId === 1 || $critKey === 'features')
+                ? self::resolveCriteriaUnder10Text($business, $critId, $langId)
+                : '';
+
             $result[$critKey] = [
-                'intro_text' => $headline,
-                'end_text'   => $subtext,
+                'intro_text'    => $headline,
+                'end_text'      => $subtext,
+                'under_10_text' => $under10Text,
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * Resolves under-10 reviews template text for a rating criterion (Features).
+     */
+    public static function resolveCriteriaUnder10Text(\App\Models\Business $business, int $criteriaId = 1, int $langId = 1): string
+    {
+        $primarySubcat = $business->subCategories->first();
+        $parentCat = $business->category;
+        if (!$parentCat && $primarySubcat?->parent_id) {
+            $parentCat = $primarySubcat->parent;
+        }
+
+        $fieldKey = "criteria_{$criteriaId}_under_10";
+        $templates = collect();
+
+        // 1. Subcategory override
+        if ($primarySubcat) {
+            $subcatSection = "criteria_ratings_{$criteriaId}_cat_{$primarySubcat->id}";
+            $templates = ContentTemplate::where('section_group', $subcatSection)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->orderBy('option_number', 'asc')
+                ->get();
+            if ($templates->isEmpty() && $langId !== 1) {
+                $templates = ContentTemplate::where('section_group', $subcatSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->get();
+            }
+        }
+
+        // 2. Parent Category override
+        if ($templates->isEmpty() && $parentCat) {
+            $parentSection = "criteria_ratings_{$criteriaId}_cat_{$parentCat->id}";
+            $templates = ContentTemplate::where('section_group', $parentSection)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->orderBy('option_number', 'asc')
+                ->get();
+            if ($templates->isEmpty() && $langId !== 1) {
+                $templates = ContentTemplate::where('section_group', $parentSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->get();
+            }
+        }
+
+        // 3. Global Default
+        if ($templates->isEmpty()) {
+            $globalSection = "criteria_ratings_{$criteriaId}";
+            $templates = ContentTemplate::where('section_group', $globalSection)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->orderBy('option_number', 'asc')
+                ->get();
+            if ($templates->isEmpty() && $langId !== 1) {
+                $templates = ContentTemplate::where('section_group', $globalSection)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->orderBy('option_number', 'asc')
+                    ->get();
+            }
+        }
+
+        if ($templates->isEmpty()) {
+            return '';
+        }
+
+        $count = $templates->count();
+        $template = $count > 1 ? $templates[$business->id % $count] : $templates->first();
+
+        $activeCategory = $primarySubcat ?? $parentCat;
+        $rawText = !empty($template->subtext) ? $template->subtext : ($template->headline ?? '');
+        return self::replacePlaceholders($rawText, $activeCategory, null, $langId, $business);
     }
 
     /**
