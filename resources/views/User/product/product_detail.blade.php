@@ -658,7 +658,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 @endphp
                                 <h2>{!! \App\Services\ContentTemplateService::cleanHeading($finalBizWhatIs) !!}</h2>
                                 <div class="is_text">
-                                    {!! $business->translations->first()->description !!}
+                                    {!! $business->translations->first()?->description ?? "" !!}
                                 </div>
                             </div>
                         </div>
@@ -972,7 +972,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </script>
 
                         @php
-                        $afterImageDesc = $business->translations->first()->after_image_description ?? ($offering->bottom_text ?? null);
+                        $afterImageDesc = $business->translations->first()?->after_image_description ?? ($offering->bottom_text ?? null);
                         @endphp
                         @if (!empty($afterImageDesc))
                         <div class="col-lg-12 mt-2 after-image-desc">

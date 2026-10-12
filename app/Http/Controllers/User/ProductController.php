@@ -70,7 +70,14 @@ class ProductController extends Controller
                 },
             'usps',
         ])->firstOrFail();
-        // dd($business);
+
+        if ($business->translations->isEmpty()) {
+            $business->load(['translations' => fn($q) => $q->where('lang_id', 1)->orWhereRaw('1=1')]);
+        }
+        if ($business->category && !$business->category->translation) {
+            $business->category->load(['translation' => fn($q) => $q->where('lang_id', 1)->orWhereRaw('1=1')]);
+        }
+
         $languages = Language::all();
         // 10-Review Threshold Rule:
         // As long as a business has < 10 approved reviews, show admin_rating (and no detailed rating).

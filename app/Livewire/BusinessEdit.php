@@ -1919,10 +1919,24 @@ class BusinessEdit extends Component
             session()->flash('error', 'Upload Error: ' . $e->getMessage());
         }
 
+        $isAffVal = (int) $this->is_affiliate;
+        if (!empty($this->affiliate_link)) {
+            $isAffVal = 1;
+        }
+        if (!empty($this->countryWebsiteUrls)) {
+            foreach ($this->countryWebsiteUrls as $u) {
+                if (isset($u[0]) && is_array($u[0])) $u = $u[0];
+                if (is_array($u) && !empty($u['is_affiliate'])) {
+                    $isAffVal = 1;
+                    break;
+                }
+            }
+        }
+
         return Business::create([
-            'affiliate_partner' => $this->is_affiliate_partner ? $this->affiliate_partner : null,
+            'affiliate_partner' => $isAffVal ? ($this->affiliate_partner ?: 'partner') : null,
             'affiliate_link' => $this->affiliate_link,
-            'is_affiliate' => $this->is_affiliate,
+            'is_affiliate' => $isAffVal,
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,

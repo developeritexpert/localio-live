@@ -1156,8 +1156,16 @@ class ViewController extends Controller
     }
 
 
-    public function goBusiness($locale, $slug)
+    public function goBusiness($locale, $slug = null)
     {
+        if ($slug === null) {
+            $slug = $locale;
+            $locale = request()->segment(1) ?: 'en-us';
+            if ($locale === 'go') {
+                $locale = 'en-us';
+            }
+        }
+
         // Find business translation by slug
         $translation = BusinessTranslation::where('slug', $slug)->first();
         if ($translation) {
@@ -1175,8 +1183,22 @@ class ViewController extends Controller
             abort(404);
         }
 
+        // Resolve country ID for locale
+        $countryId = null;
+        if (!empty($locale)) {
+            $matchedLang = \App\Models\Language::where('lang_code', strtolower($locale))->first();
+            if ($matchedLang) {
+                $cl = \App\Models\CountryLanguage::where('language_id', $matchedLang->id)->first();
+                if ($cl) {
+                    $countryId = $cl->country_id;
+                } elseif ($matchedLang->country_id) {
+                    $countryId = $matchedLang->country_id;
+                }
+            }
+        }
+
         // Get the target destination URL for current country
-        $targetUrl = $business->getEffectiveWebsiteUrl();
+        $targetUrl = $business->getEffectiveWebsiteUrl($countryId);
 
         if (!$targetUrl) {
             abort(404);

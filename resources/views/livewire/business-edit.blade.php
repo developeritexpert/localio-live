@@ -1022,7 +1022,7 @@
                         <div x-show="isAffiliate" class="mb-3">
                             <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
                             <div class="form-control-wrap">
-                                <input type="url" class="form-control" wire:model="affiliate_link"
+                                <input type="url" class="form-control" wire:model.live="affiliate_link"
                                     placeholder="https://example.com/redirect-link">
                             </div>
                             @error('affiliate_link')
