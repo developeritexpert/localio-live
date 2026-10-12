@@ -113,7 +113,7 @@
                             {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                         </h1>
                     </div>
-                    <p class="text-meta">
+                    <p class="size-16">
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     @if(!empty($finalCompSub))
@@ -254,9 +254,9 @@
                                         'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($popItemName)
                                     ]);
                                 @endphp
-                                <div class="col-lg-4 col-md-6 col-12">
+                                <div class="col-lg-6 col-md-6 col-12">
                                     <a href="{{ $seoUrlPop }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 ; color: inherit; text-decoration: none;">
-                                        <div class="cmpr_bx d-flex align-items-center justify-content-between">
+                                        <div class="cmpr_bx d-flex align-items-center justify-content-between gap-2">
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                                     <x-business-logo :business="$business" :name="$bName" />
@@ -425,7 +425,7 @@
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
                     <a href="{{ $seoUrlRec }}" class="comparison-box p-3 h-100 d-flex flex-column justify-content-center" style="border-radius: 12px !important; border: 1px solid #e2e8f0; color: inherit; text-decoration: none; ">
-                        <div class="cmpr_bx d-flex align-items-center justify-content-between">
+                        <div class="cmpr_bx d-flex align-items-center justify-content-between gap-2">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                     <x-business-logo :business="$business" :name="$bName" />

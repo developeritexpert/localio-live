@@ -10474,7 +10474,7 @@ section.community-feedback-sec {
 }
 
 .cat-faq-sec {
-    background: var(--color-bg-default);
+    background:#f7f9fb;
 }
 
 .close-country-menu {
@@ -11380,7 +11380,7 @@ body.country-modal-open footer {
     font-weight: 700;
 }
 
-.sticky-nav-item.active::before {
+/* .sticky-nav-item.active::before {
     content: "";
     position: absolute;
     left: 0;
@@ -11390,7 +11390,7 @@ body.country-modal-open footer {
     width: 3.5px;
     background-color: var(--color-dark-blue-text);
     border-radius: 0 3px 3px 0;
-}
+} */
 
 a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
     background-color: #e4e7ea !important;
