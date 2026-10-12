@@ -450,7 +450,12 @@
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
                                 <label class="form-label mb-0"><strong>Pros & Cons</strong></label>
-                                <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
+                                <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business. As long as less than 10 reviews exist, they are ordered by weight (importance: 10 most important first).</p>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalProsConsJson">
+                                    <em class="icon ni ni-code me-1"></em>Upload / Paste JSON
+                                </button>
                             </div>
                         </div>
 
@@ -468,31 +473,43 @@
                                     </div>
                                 @endif
                                 @foreach ($businessPros as $index => $pro)
-                                    <div class="d-flex align-items-center mb-2 gap-2" wire:key="pro-item-{{ $index }}">
-                                        <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
-                                        <select class="form-select" wire:model.live="businessPros.{{ $index }}.category_pro_con_id" wire:change="onProSelected({{ $index }})">
-                                            <option value="">-- Select an Existing Pro --</option>
-                                            @if(!empty($pro['text']) && (empty($pro['category_pro_con_id']) || !collect($availableCategoryPros)->firstWhere('id', (int)$pro['category_pro_con_id'])))
-                                                <option value="{{ $pro['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $pro['text'] }}</option>
-                                            @endif
-                                            @php
-                                                $groupedPros = collect($availableCategoryPros)->groupBy('category_name');
-                                            @endphp
-                                            @foreach($groupedPros as $catName => $opts)
-                                                @if($groupedPros->count() > 1)
-                                                    <optgroup label="{{ $catName }}">
-                                                @endif
-                                                @foreach($opts as $opt)
-                                                    <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedPros->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
-                                                @endforeach
-                                                @if($groupedPros->count() > 1)
-                                                    </optgroup>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
-                                            <em class="icon ni ni-trash"></em>
-                                        </button>
+                                    <div class="card card-bordered p-2 mb-2 bg-light" wire:key="pro-item-{{ $index }}">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="text-success fw-bold" style="font-size:18px;">+</span>
+                                            <div class="flex-grow-1">
+                                                <select class="form-select form-select-sm" wire:model.live="businessPros.{{ $index }}.category_pro_con_id" wire:change="onProSelected({{ $index }})">
+                                                    <option value="">-- Select an Existing Pro --</option>
+                                                    @if(!empty($pro['text']) && (empty($pro['category_pro_con_id']) || !collect($availableCategoryPros)->firstWhere('id', (int)$pro['category_pro_con_id'])))
+                                                        <option value="{{ $pro['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $pro['text'] }}</option>
+                                                    @endif
+                                                    @php
+                                                        $groupedPros = collect($availableCategoryPros)->groupBy('category_name');
+                                                    @endphp
+                                                    @foreach($groupedPros as $catName => $opts)
+                                                        @if($groupedPros->count() > 1)
+                                                            <optgroup label="{{ $catName }}">
+                                                        @endif
+                                                        @foreach($opts as $opt)
+                                                            <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedPros->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
+                                                        @endforeach
+                                                        @if($groupedPros->count() > 1)
+                                                            </optgroup>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="input-group input-group-sm" style="width: 110px;" title="Importance Weight: 10 (most important) to 1 (less important)">
+                                                <span class="input-group-text py-0 px-1 text-muted" style="font-size: 11px;">Wt</span>
+                                                <input type="number" min="1" max="10" class="form-control form-control-sm text-center px-1" wire:model.live="businessPros.{{ $index }}.weight" placeholder="1-10">
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="removePro({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 ps-3">
+                                            <span class="text-muted small" style="font-size: 11px; min-width: 65px;"><em class="icon ni ni-info me-1"></em>Explain:</span>
+                                            <input type="text" class="form-control form-control-sm py-0" style="font-size: 12px;" wire:model.live="businessPros.{{ $index }}.description" placeholder="Explanation text (shown when hovering/clicking info icon)...">
+                                        </div>
                                     </div>
                                 @endforeach
                                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro" @if(empty($availableCategoryPros)) disabled @endif>
@@ -512,36 +529,96 @@
                                     </div>
                                 @endif
                                 @foreach ($businessCons as $index => $con)
-                                    <div class="d-flex align-items-center mb-2 gap-2" wire:key="con-item-{{ $index }}">
-                                        <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
-                                        <select class="form-select" wire:model.live="businessCons.{{ $index }}.category_pro_con_id" wire:change="onConSelected({{ $index }})">
-                                            <option value="">-- Select an Existing Con --</option>
-                                            @if(!empty($con['text']) && (empty($con['category_pro_con_id']) || !collect($availableCategoryCons)->firstWhere('id', (int)$con['category_pro_con_id'])))
-                                                <option value="{{ $con['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $con['text'] }}</option>
-                                            @endif
-                                            @php
-                                                $groupedCons = collect($availableCategoryCons)->groupBy('category_name');
-                                            @endphp
-                                            @foreach($groupedCons as $catName => $opts)
-                                                @if($groupedCons->count() > 1)
-                                                    <optgroup label="{{ $catName }}">
-                                                @endif
-                                                @foreach($opts as $opt)
-                                                    <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedCons->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
-                                                @endforeach
-                                                @if($groupedCons->count() > 1)
-                                                    </optgroup>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
-                                            <em class="icon ni ni-trash"></em>
-                                        </button>
+                                    <div class="card card-bordered p-2 mb-2 bg-light" wire:key="con-item-{{ $index }}">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="text-danger fw-bold" style="font-size:18px;">-</span>
+                                            <div class="flex-grow-1">
+                                                <select class="form-select form-select-sm" wire:model.live="businessCons.{{ $index }}.category_pro_con_id" wire:change="onConSelected({{ $index }})">
+                                                    <option value="">-- Select an Existing Con --</option>
+                                                    @if(!empty($con['text']) && (empty($con['category_pro_con_id']) || !collect($availableCategoryCons)->firstWhere('id', (int)$con['category_pro_con_id'])))
+                                                        <option value="{{ $con['category_pro_con_id'] ?? '' }}" selected disabled>Current (Custom): {{ $con['text'] }}</option>
+                                                    @endif
+                                                    @php
+                                                        $groupedCons = collect($availableCategoryCons)->groupBy('category_name');
+                                                    @endphp
+                                                    @foreach($groupedCons as $catName => $opts)
+                                                        @if($groupedCons->count() > 1)
+                                                            <optgroup label="{{ $catName }}">
+                                                        @endif
+                                                        @foreach($opts as $opt)
+                                                            <option value="{{ $opt['id'] }}">{{ $opt['text'] }}@if($groupedCons->count() <= 1 && !empty($opt['category_name'])) ({{ $opt['category_name'] }})@endif</option>
+                                                        @endforeach
+                                                        @if($groupedCons->count() > 1)
+                                                            </optgroup>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="input-group input-group-sm" style="width: 110px;" title="Importance Weight: 10 (most important) to 1 (less important)">
+                                                <span class="input-group-text py-0 px-1 text-muted" style="font-size: 11px;">Wt</span>
+                                                <input type="number" min="1" max="10" class="form-control form-control-sm text-center px-1" wire:model.live="businessCons.{{ $index }}.weight" placeholder="1-10">
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="removeCon({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 ps-3">
+                                            <span class="text-muted small" style="font-size: 11px; min-width: 65px;"><em class="icon ni ni-info me-1"></em>Explain:</span>
+                                            <input type="text" class="form-control form-control-sm py-0" style="font-size: 12px;" wire:model.live="businessCons.{{ $index }}.description" placeholder="Explanation text (shown when hovering/clicking info icon)...">
+                                        </div>
                                     </div>
                                 @endforeach
                                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon" @if(empty($availableCategoryCons)) disabled @endif>
                                     <em class="icon ni ni-plus"></em> Add Con
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Modal for JSON import for Pros & Cons --}}
+                <div class="modal fade" id="modalProsConsJson" tabindex="-1" wire:ignore.self>
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Paste / Upload Pros &amp; Cons JSON</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted small mb-2">
+                                    Paste JSON containing pros and cons with explanation (<code>description</code>) and importance weight (<code>weight</code>: 10 = most important, 1 = least important). Items will be ordered by importance automatically.
+                                </p>
+
+                                @if(!empty($prosConsJsonError))
+                                    <div class="alert alert-danger py-2 small mb-2">{{ $prosConsJsonError }}</div>
+                                @endif
+                                @if(!empty($prosConsJsonSuccess))
+                                    <div class="alert alert-success py-2 small mb-2">{{ $prosConsJsonSuccess }}</div>
+                                @endif
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label small fw-bold">JSON Payload</label>
+                                    <textarea class="form-control font-monospace small" rows="10" wire:model="prosConsJsonInput" placeholder='[
+  {
+    "type": "pro",
+    "text": "Customer support",
+    "description": "Helpful assistance with hosting questions and problems.",
+    "weight": 10,
+    "aliases": ["helpful support", "good customer service"]
+  },
+  {
+    "type": "con",
+    "text": "Customer support",
+    "description": "Unhelpful or unclear assistance with hosting questions.",
+    "weight": 8,
+    "aliases": ["unhelpful support", "poor customer service"]
+  }
+]'></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" wire:click="importProsConsJson">Apply JSON to Business</button>
                             </div>
                         </div>
                     </div>
@@ -1022,7 +1099,7 @@
                         <div x-show="isAffiliate" class="mb-3">
                             <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
                             <div class="form-control-wrap">
-                                <input type="url" class="form-control" wire:model="affiliate_link"
+                                <input type="url" class="form-control" wire:model.live="affiliate_link"
                                     placeholder="https://example.com/redirect-link">
                             </div>
                             @error('affiliate_link')

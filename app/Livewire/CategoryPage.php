@@ -96,6 +96,17 @@ class CategoryPage extends Component
             }])->first();
         }
 
+        if ($this->category && !$this->category->translations) {
+            $this->category->load(['translations' => function ($query) {
+                $query->where('lang_id', 1)->orWhereRaw('1=1');
+            }]);
+        }
+        if ($this->category && $this->category->parent && !$this->category->parent->translations) {
+            $this->category->parent->load(['translations' => function ($query) {
+                $query->where('lang_id', 1)->orWhereRaw('1=1');
+            }]);
+        }
+
         if (!$this->category) {
             abort(404);
         }
@@ -348,11 +359,13 @@ class CategoryPage extends Component
         return $query->where('status', 1)
             ->where('is_affiliate', 1)
             ->where(function ($q) {
-                $q->whereHas('languages', function ($lq) {
-                    $lq->where('language_id', $this->lang_id);
-                })->orWhereHas('translations', function ($tq) {
-                    $tq->where('lang_id', $this->lang_id);
-                });
+                $q->where(function ($lq) {
+                    $lq->whereHas('languages', function ($inner) {
+                        $inner->where('language_id', $this->lang_id);
+                    })->orWhereHas('translations', function ($inner) {
+                        $inner->where('lang_id', $this->lang_id);
+                    });
+                })->orWhere('active_all_countries', 1);
             })
             ->where(function ($q) {
                 $q->where('active_all_countries', 1)
@@ -454,7 +467,7 @@ class CategoryPage extends Component
         $query->where('status', 1)
             ->with([
                 'translations' => function ($q) {
-                    $q->where('lang_id', $this->lang_id);
+                    $q->where('lang_id', $this->lang_id)->orWhere('lang_id', 1);
                 },'limitedFeatures.translations'=>fn($q) => $q->where('lang_id', $this->lang_id),
                 'proCons',
                 'products' => function ($pq) {
@@ -487,11 +500,13 @@ class CategoryPage extends Component
                     ->whereIn('status', ['published', 'active'])
             ])
             ->where(function ($query) {
-                $query->whereHas('languages', function ($lq) {
-                    $lq->where('language_id', $this->lang_id);
-                })->orWhereHas('translations', function ($tq) {
-                    $tq->where('lang_id', $this->lang_id);
-                });
+                $query->where(function ($q) {
+                    $q->whereHas('languages', function ($lq) {
+                        $lq->where('language_id', $this->lang_id);
+                    })->orWhereHas('translations', function ($tq) {
+                        $tq->where('lang_id', $this->lang_id);
+                    });
+                })->orWhere('active_all_countries', 1);
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
@@ -1508,6 +1523,12 @@ public function getFeatureDescriptionProperty()
         ->where('category_id', $this->category->id)
         ->where('status', 1)
         ->where('is_affiliate', 1)
+        ->where(function ($query) {
+            $query->where('active_all_countries', 1)
+                ->orWhereHas('countries', function ($cq) {
+                    $cq->where('country_id', $this->country_id);
+                });
+        })
         ->orderByDesc('average_rating')
         ->take(10)
         ->get();

@@ -158,7 +158,7 @@ class Business extends Model
             }
         }
 
-        if ($this->is_affiliate) {
+        if ($this->is_affiliate || !empty($this->affiliate_link)) {
             return $this->affiliate_link ?: $this->permanent_url;
         }
 
@@ -167,15 +167,38 @@ class Business extends Model
 
     public function getTrackedUrl($locale = null)
     {
-        $targetUrl = $this->getEffectiveWebsiteUrl();
+        $loc = $locale ?: (session('lang_code') ?: (request()->route('locale') ?: (request()->segment(1) ?: 'en-us')));
+
+        $countryId = null;
+        if (function_exists('getCurrentCountry')) {
+            $countryId = getCurrentCountry();
+        }
+
+        $targetUrl = $this->getEffectiveWebsiteUrl($countryId);
         if (!$targetUrl) {
             return null;
         }
 
-        $loc = $locale ?: (session('lang_code') ?: (request()->route('locale') ?: 'en-us'));
         $slug = $this->translation->slug ?? ($this->translations->first()->slug ?? \Illuminate\Support\Str::slug($this->name));
 
         return url('/' . strtolower($loc) . '/go/' . $slug);
+    }
+
+    public function isAffiliatedForCountry($countryId = null)
+    {
+        $countryId = $countryId ?: (function_exists('getCurrentCountry') ? getCurrentCountry() : null);
+
+        if ($countryId) {
+            $countryWebsite = $this->relationLoaded('websites')
+                ? $this->websites->firstWhere('country_id', $countryId)
+                : $this->websites()->where('country_id', $countryId)->first();
+
+            if ($countryWebsite) {
+                return !empty($countryWebsite->is_affiliate);
+            }
+        }
+
+        return !empty($this->is_affiliate) || !empty($this->affiliate_link);
     }
 
 
@@ -216,7 +239,7 @@ class Business extends Model
         return $this->hasMany(BusinessUsp::class)->orderBy('sort_order');
     }
 
-        public function getIsAffiliateAttribute($value)
+    public function getIsAffiliateAttribute($value)
     {
         if (!empty($value)) {
             return 1;
@@ -225,6 +248,9 @@ class Business extends Model
             return 1;
         }
         if ($this->relationLoaded('websites') && $this->websites->contains(fn($w) => !empty($w->is_affiliate))) {
+            return 1;
+        }
+        if ($this->exists && method_exists($this, 'websites') && $this->websites()->where('is_affiliate', 1)->exists()) {
             return 1;
         }
         return 0;

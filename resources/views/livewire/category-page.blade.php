@@ -27,8 +27,8 @@
 @endpush
 
     @php
-        $catMetaTitle = !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page');
-        $catMetaDescription = !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations->description)) ?? '');
+        $catMetaTitle = !empty($category->translations?->meta_title) ? $category->translations?->meta_title : ($category->translations?->name ?? 'Category Page');
+        $catMetaDescription = !empty($category->translations?->meta_description) ? $category->translations?->meta_description : strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations?->description)) ?? '');
     @endphp
     @if (session()->has('message'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -51,16 +51,16 @@
                                 </li>
                                 @if($category->parent)
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent?->translations?->slug ?? '']) }}"
                                         style="color: inherit; text-decoration: none; font-size: 13px;"
                                         onmouseout="this.style.color=''">
-                                        {{ $category->parent->translations->name ?? 'Main Category' }}
+                                        {{ $category->parent?->translations?->name ?? 'Main Category' }}
                                     </a>
                                 </li>
                                 @endif
                                 <li class="breadcrumb-item active" aria-current="page"
                                     style="font-size: 13px; color: #6c757d; text-decoration:none;">
-                                    {{ $category->translations->name ?? 'Category' }}
+                                    {{ $category->translations?->name ?? 'Category' }}
                                 </li>
                             </ol>
                         </nav>
@@ -89,7 +89,7 @@
                             @endphp
 
                             @php
-                                $baseTitle = !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products');
+                                $baseTitle = !empty($category->translations?->page_title) ? $category->translations?->page_title : ($category->translations?->name ?? 'Products');
                                 if (!empty($category->page_title_addition)) {
                                     $baseTitle .= ' ' . $category->page_title_addition;
                                 }
@@ -169,10 +169,10 @@
                         <!-- <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
-                                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations?->name ?? 'Products' }}</h1>
                                         <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                            {{ strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations->description)) ?? 'Browse and compare the best options') }}
+                                            {{ strip_tags(preg_replace('/<p>\s*<p>/', '<p>', preg_replace('/<\/p>\s*<\/p>/', '</p>', $category->translations?->description)) ?? 'Browse and compare the best options') }}
                                         </p>
                                     </div>
                                     <div class="col-md-4 mt-4 mt-md-0 text-start">
@@ -753,7 +753,7 @@
                                                                 <div class="inn_h">
                                                                     <div class="sl_main">
                                                                         <p class="head">
-                                                                            {{ $item->translations->first()->name }}
+                                                                            {{ $item->translations->first()?->name ?? $item->name }}
                                                                         </p>
                                                                         <div class="d-none"
                                                                             wire:key="wishlist-container-{{ $item->id }}">
@@ -797,7 +797,7 @@
                                                     @if(!empty($item->translations->first()->short_description))
                                                     <div class="mb-3 mt-1 text-start"
                                                         style="font-size: 14px; color: #002347; line-height: 1.5; width: 100%;">
-                                                        {{ $item->translations->first()->short_description }}
+                                                        {{ $item->translations->first()?->short_description ?? "" }}
                                                     </div>
                                                     @endif
 
@@ -871,9 +871,10 @@
                                                     <div class="auto-choice-btn d-flex flex-column gap-2 mt-3"
                                                         style="width: 100%; margin: 0;">
                                                         @if($item->is_affiliate)
-                                                        <a href="{{ $item->getEffectiveWebsiteUrl() ?: ($item->affiliate_link ?: $item->permanent_url) }}"
+                                                        <a href="{{ $item->getTrackedUrl() ?: ($item->getEffectiveWebsiteUrl() ?: ($item->affiliate_link ?: $item->permanent_url)) }}"
                                                             class="btn-orng cta cta_orange justify-content-center"
                                                             target="_blank"
+                                                            rel="sponsored"
                                                             style="display: flex !important; width: 100%; align-items: center;">
                                                             {{ static_text('visit_website') ?: 'Visit website' }}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -1218,22 +1219,27 @@
                                                 })->values()->take(5);
                                             }
                                         } else {
-                                            // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
+                                            // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons) ordered by weight DESC
                                             if ($biz->proCons && $biz->proCons->isNotEmpty()) {
-                                                $topPros = $biz->proCons->where('type', 'pro')->map(function($item) {
+                                                $biz->loadMissing(['proCons.categoryProCon']);
+                                                $topPros = $biz->proCons->where('type', 'pro')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                                     return (object)[
                                                         'id'            => $item->id,
                                                         'type'          => 'pro',
                                                         'text'          => $item->text,
+                                                        'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                                        'weight'        => $item->weight ?? 5,
                                                         'reviews_count' => null,
                                                     ];
                                                 })->values()->take(5);
 
-                                                $topCons = $biz->proCons->where('type', 'con')->map(function($item) {
+                                                $topCons = $biz->proCons->where('type', 'con')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                                     return (object)[
                                                         'id'            => $item->id,
                                                         'type'          => 'con',
                                                         'text'          => $item->text,
+                                                        'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                                        'weight'        => $item->weight ?? 5,
                                                         'reviews_count' => null,
                                                     ];
                                                 })->values()->take(5);
@@ -1352,10 +1358,10 @@
                 if ($hasUnder10Reviews && empty($resolvedTop10['headline']) && empty($resolvedTop10['subtext'])) {
                     $resolvedTop10 = \App\Services\ContentTemplateService::resolveCategorySection($category, 'top_10', $currentLangId);
                 }
-                $compAlternativesHeadline = !empty($resolvedTop10['headline']) ? $resolvedTop10['headline'] : (!empty($category->translations->compare_alternatives_headline) 
-                    ? $category->translations->compare_alternatives_headline 
-                    : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives'));
-                $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? '');
+                $compAlternativesHeadline = !empty($resolvedTop10['headline']) ? $resolvedTop10['headline'] : (!empty($category->translations?->compare_alternatives_headline) 
+                    ? $category->translations?->compare_alternatives_headline 
+                    : ('Compare ' . ($category->translations?->name ?? $category->name) . ' alternatives'));
+                $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations?->compare_alternatives_subtext ?? '');
             @endphp
             <section class="comparison-table-sec">
                 <!-- Comparison Tables -->
@@ -1495,10 +1501,10 @@
                                     if ($hasUnder10Reviews && empty($resolvedProsCons['headline']) && empty($resolvedProsCons['subtext'])) {
                                         $resolvedProsCons = \App\Services\ContentTemplateService::resolveCategorySection($category, 'pros_cons', $currentLangId);
                                     }
-                                    $commFeedbackHeadline = !empty($resolvedProsCons['headline']) ? $resolvedProsCons['headline'] : (!empty($category->translations->community_says_headline) 
-                                        ? $category->translations->community_says_headline 
+                                    $commFeedbackHeadline = !empty($resolvedProsCons['headline']) ? $resolvedProsCons['headline'] : (!empty($category->translations?->community_says_headline) 
+                                        ? $category->translations?->community_says_headline 
                                         : 'What the Localio community says');
-                                    $commFeedbackSubtext = !empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations->community_says_subtext ?? '');
+                                    $commFeedbackSubtext = !empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations?->community_says_subtext ?? '');
                                 @endphp
                                 <h2 style="margin-bottom: 4px;">{!! \App\Services\ContentTemplateService::cleanHeading($commFeedbackHeadline) !!}</h2>
                                 @if(!empty($commFeedbackSubtext))

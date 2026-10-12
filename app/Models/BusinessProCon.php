@@ -14,6 +14,12 @@ class BusinessProCon extends Model
         'category_pro_con_id',
         'type',
         'text',
+        'description',
+        'weight',
+    ];
+
+    protected $casts = [
+        'weight' => 'integer',
     ];
 
     public function business()

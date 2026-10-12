@@ -27,6 +27,7 @@ class CategoryProConsManager extends Component
     public $type = 'pro';
     public $text = '';
     public $aliases = '';
+    public $description = '';
     public $status = 1;
     public $showModal = false;
 
@@ -47,6 +48,7 @@ class CategoryProConsManager extends Component
         'category_id' => 'required|exists:categories,id',
         'type'        => 'required|in:pro,con',
         'text'        => 'required|string|max:255',
+        'description' => 'nullable|string',
         'aliases'     => 'nullable|string',
         'status'      => 'required|boolean',
     ];
@@ -58,6 +60,7 @@ class CategoryProConsManager extends Component
         $this->category_id = $this->selectedCategoryFilter ?: '';
         $this->type = 'pro';
         $this->text = '';
+        $this->description = '';
         $this->aliases = '';
         $this->status = 1;
         $this->showModal = true;
@@ -71,6 +74,7 @@ class CategoryProConsManager extends Component
         $this->category_id = $item->category_id;
         $this->type = $item->type;
         $this->text = $item->text;
+        $this->description = $item->description ?? '';
         $this->aliases = is_array($item->aliases) ? implode("\n", $item->aliases) : '';
         $this->status = (int)$item->status;
         $this->showModal = true;
@@ -80,6 +84,7 @@ class CategoryProConsManager extends Component
     {
         $this->showModal = false;
         $this->editingId = null;
+        $this->description = '';
         $this->aliases = '';
     }
 
@@ -95,6 +100,7 @@ class CategoryProConsManager extends Component
                 'category_id' => $this->category_id,
                 'type'        => $this->type,
                 'text'        => trim($this->text),
+                'description' => trim($this->description) ?: null,
                 'aliases'     => !empty($parsedAliases) ? $parsedAliases : null,
                 'status'      => $this->status,
             ]
@@ -211,11 +217,12 @@ class CategoryProConsManager extends Component
                     continue;
                 }
 
-                // Parse aliases if present
+                // Parse aliases & description if present
                 $aliases = [];
                 if (isset($item['aliases'])) {
                     $aliases = $this->parseAliasesInput($item['aliases']);
                 }
+                $description = isset($item['description']) ? trim((string)$item['description']) : null;
 
                 CategoryProCon::updateOrCreate(
                     [
@@ -224,6 +231,7 @@ class CategoryProConsManager extends Component
                         'text'        => $text,
                     ],
                     [
+                        'description' => $description !== '' ? $description : null,
                         'aliases'     => !empty($aliases) ? $aliases : null,
                         'status'      => isset($item['status']) ? (bool)$item['status'] : true,
                     ]

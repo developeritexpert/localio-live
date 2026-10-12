@@ -2112,14 +2112,16 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         ->map(function ($cat) {
             $catName = optional($cat->translation)->name ?? ($cat->name ?? ('Category #' . $cat->id));
             $pros = $cat->proCons->where('type', 'pro')->values()->map(fn($item) => [
-                'id'      => $item->id,
-                'text'    => $item->text,
-                'aliases' => $item->aliases ?: [],
+                'id'          => $item->id,
+                'text'        => $item->text,
+                'description' => $item->description ?? '',
+                'aliases'     => $item->aliases ?: [],
             ]);
             $cons = $cat->proCons->where('type', 'con')->values()->map(fn($item) => [
-                'id'      => $item->id,
-                'text'    => $item->text,
-                'aliases' => $item->aliases ?: [],
+                'id'          => $item->id,
+                'text'        => $item->text,
+                'description' => $item->description ?? '',
+                'aliases'     => $item->aliases ?: [],
             ]);
 
             return [
@@ -2968,127 +2970,155 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     {
         $businessId = $business->id;
 
-        // Gather all category IDs the business belongs to (Primary category + Secondary categories / subcategories)
+        // Gather all category IDs the business belongs to
         $allCategoryIds = array_values(array_unique(array_filter(array_merge(
             [$business->category_id],
             $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
         ))));
 
-        $rawPros = $data['pro_ids'] ?? ($data['pros'] ?? []);
-        $rawCons = $data['con_ids'] ?? ($data['cons'] ?? []);
+        $rawItems = [];
+        if (isset($data['pros_cons']) && is_array($data['pros_cons'])) {
+            $rawItems = $data['pros_cons'];
+        } elseif (isset($data[0]) && is_array($data[0])) {
+            $rawItems = $data;
+        }
 
-        $extractValues = function($items) {
+        $rawPros = [];
+        $rawCons = [];
+
+        if (!empty($rawItems)) {
+            foreach ($rawItems as $item) {
+                if (!is_array($item)) continue;
+                $t = strtolower($item['type'] ?? 'pro');
+                if ($t === 'con') {
+                    $rawCons[] = $item;
+                } else {
+                    $rawPros[] = $item;
+                }
+            }
+        } else {
+            $rawPros = $data['pro_ids'] ?? ($data['pros'] ?? []);
+            $rawCons = $data['con_ids'] ?? ($data['cons'] ?? []);
+        }
+
+        $normalizeList = function($items, $defaultType) use ($allCategoryIds) {
             if (!is_array($items)) {
                 $items = array_filter(array_map('trim', explode("\n", (string)$items)));
             }
-            $result = [];
+
+            $results = [];
             foreach ($items as $item) {
+                $id = null;
+                $text = null;
+                $description = null;
+                $weight = 5;
+                $aliases = [];
+
                 if (is_array($item)) {
-                    $result[] = $item['id'] ?? ($item['text'] ?? null);
-                } else {
-                    $result[] = $item;
+                    $id = $item['id'] ?? ($item['category_pro_con_id'] ?? null);
+                    $text = $item['text'] ?? ($item['name'] ?? null);
+                    $description = $item['description'] ?? ($item['desc'] ?? null);
+                    if (isset($item['weight']) && is_numeric($item['weight'])) {
+                        $weight = max(1, min(10, (int)$item['weight']));
+                    }
+                    if (isset($item['aliases']) && is_array($item['aliases'])) {
+                        $aliases = $item['aliases'];
+                    }
+                } elseif (is_numeric($item)) {
+                    $id = (int)$item;
+                } elseif (is_string($item)) {
+                    $text = trim($item);
+                }
+
+                $found = null;
+                if ($id) {
+                    $query = \App\Models\CategoryProCon::where('id', (int)$id)->where('type', $defaultType)->where('status', 1);
+                    if (!empty($allCategoryIds)) {
+                        $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
+                    }
+                    if (!$found) {
+                        $found = $query->first();
+                    }
+                }
+
+                if (!$found && !empty($text)) {
+                    $cleanText = trim($text);
+                    $query = \App\Models\CategoryProCon::where('type', $defaultType)->where('status', 1);
+                    if (!empty($allCategoryIds)) {
+                        $found = (clone $query)->whereIn('category_id', $allCategoryIds)
+                            ->where(function($q) use ($cleanText, $aliases) {
+                                $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                                  ->orWhereJsonContains('aliases', $cleanText);
+                                foreach ($aliases as $al) {
+                                    $q->orWhereRaw('LOWER(text) = ?', [strtolower($al)])
+                                      ->orWhereJsonContains('aliases', $al);
+                                }
+                            })->first();
+                    }
+                    if (!$found) {
+                        $found = $query->where(function($q) use ($cleanText, $aliases) {
+                            $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                              ->orWhereJsonContains('aliases', $cleanText);
+                            foreach ($aliases as $al) {
+                                $q->orWhereRaw('LOWER(text) = ?', [strtolower($al)])
+                                  ->orWhereJsonContains('aliases', $al);
+                            }
+                        })->first();
+                    }
+                }
+
+                $finalCatId = $found ? $found->id : ($id ?: null);
+                $finalText = $text ?: ($found ? $found->text : '');
+                $finalDesc = !empty($description) ? $description : ($found ? $found->description : null);
+
+                if (!empty($finalText)) {
+                    $results[] = [
+                        'category_pro_con_id' => $finalCatId,
+                        'type'                => $defaultType,
+                        'text'                => $finalText,
+                        'description'         => $finalDesc ?: null,
+                        'weight'              => $weight,
+                    ];
                 }
             }
-            return array_filter($result);
+
+            // Order by importance: highest weight first (10 to 1)
+            usort($results, fn($a, $b) => ($b['weight'] ?? 5) <=> ($a['weight'] ?? 5));
+            return $results;
         };
 
-        $prosList = $extractValues($rawPros);
-        $consList = $extractValues($rawCons);
-
-        $matchedPros = collect();
-        $matchedCons = collect();
-
-        foreach ($prosList as $val) {
-            $found = null;
-            if (is_numeric($val)) {
-                $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'pro')->where('status', 1);
-                if (!empty($allCategoryIds)) {
-                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
-                }
-                if (!$found) {
-                    $found = $query->first();
-                }
-            } elseif (is_string($val) && trim($val) !== '') {
-                $cleanText = trim($val);
-                $query = \App\Models\CategoryProCon::where('type', 'pro')->where('status', 1);
-                if (!empty($allCategoryIds)) {
-                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
-                        ->where(function($q) use ($cleanText) {
-                            $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
-                              ->orWhereJsonContains('aliases', $cleanText);
-                        })->first();
-                }
-                if (!$found) {
-                    $found = $query->where(function($q) use ($cleanText) {
-                        $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
-                          ->orWhereJsonContains('aliases', $cleanText);
-                    })->first();
-                }
-            }
-
-            if ($found && !$matchedPros->contains('id', $found->id)) {
-                $matchedPros->push($found);
-            }
-        }
-
-        foreach ($consList as $val) {
-            $found = null;
-            if (is_numeric($val)) {
-                $query = \App\Models\CategoryProCon::where('id', (int)$val)->where('type', 'con')->where('status', 1);
-                if (!empty($allCategoryIds)) {
-                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)->first();
-                }
-                if (!$found) {
-                    $found = $query->first();
-                }
-            } elseif (is_string($val) && trim($val) !== '') {
-                $cleanText = trim($val);
-                $query = \App\Models\CategoryProCon::where('type', 'con')->where('status', 1);
-                if (!empty($allCategoryIds)) {
-                    $found = (clone $query)->whereIn('category_id', $allCategoryIds)
-                        ->where(function($q) use ($cleanText) {
-                            $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
-                              ->orWhereJsonContains('aliases', $cleanText);
-                        })->first();
-                }
-                if (!$found) {
-                    $found = $query->where(function($q) use ($cleanText) {
-                        $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
-                          ->orWhereJsonContains('aliases', $cleanText);
-                    })->first();
-                }
-            }
-
-            if ($found && !$matchedCons->contains('id', $found->id)) {
-                $matchedCons->push($found);
-            }
-        }
+        $matchedPros = $normalizeList($rawPros, 'pro');
+        $matchedCons = $normalizeList($rawCons, 'con');
 
         \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
 
         foreach ($matchedPros as $pro) {
             \App\Models\BusinessProCon::create([
                 'business_id'         => $businessId,
-                'category_pro_con_id' => $pro->id,
+                'category_pro_con_id' => $pro['category_pro_con_id'],
                 'type'                => 'pro',
-                'text'                => $pro->text,
+                'text'                => $pro['text'],
+                'description'         => $pro['description'],
+                'weight'              => $pro['weight'],
             ]);
         }
 
         foreach ($matchedCons as $con) {
             \App\Models\BusinessProCon::create([
                 'business_id'         => $businessId,
-                'category_pro_con_id' => $con->id,
+                'category_pro_con_id' => $con['category_pro_con_id'],
                 'type'                => 'con',
-                'text'                => $con->text,
+                'text'                => $con['text'],
+                'description'         => $con['description'],
+                'weight'              => $con['weight'],
             ]);
         }
 
-        $business->pro_cons_intro = $matchedPros->pluck('text')->implode("\n");
-        $business->pro_cons_summary = $matchedCons->pluck('text')->implode("\n");
+        $business->pro_cons_intro = collect($matchedPros)->pluck('text')->implode("\n");
+        $business->pro_cons_summary = collect($matchedCons)->pluck('text')->implode("\n");
         $business->save();
 
-        return $matchedPros->count() + $matchedCons->count();
+        return count($matchedPros) + count($matchedCons);
     }
 
     /**

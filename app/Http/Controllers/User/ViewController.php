@@ -455,16 +455,14 @@ class ViewController extends Controller
             ->groupBy('rounded_rating')
             ->pluck('count', 'rounded_rating');
 
-        $totalReviews = $ratingsCount->sum();
-
-        // Aggregate User Selected Pros and Cons for this business from active reviews
+        $totalReviews = $ratingsCount->sum();        // Aggregate User Selected Pros and Cons for this business from active reviews
         $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
             ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
             ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
             ->where('reviews.business_id', $business->id)
             ->whereIn('reviews.status', ['published', 'active'])
-            ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
-            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+            ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', 'category_pro_cons.description', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', 'category_pro_cons.description')
             ->orderByDesc('review_count')
             ->get();
 
@@ -472,23 +470,59 @@ class ViewController extends Controller
         $aggregatedCons = $aggregatedProCons->where('type', 'con')->values();
 
         // 10-Review Threshold Rule:
-        // As long as business has < 10 reviews, show ONLY uploaded/selected pros & cons from business_pro_cons
+        // As long as business has < 10 reviews, show ONLY uploaded/selected pros & cons from business_pro_cons ordered by weight DESC (importance)
         if ($totalReviews < 10) {
-            $aggregatedPros = $business->proCons->where('type', 'pro')->map(function($item) {
-                return (object)[
-                    'id'   => $item->id,
-                    'type' => 'pro',
-                    'text' => $item->text,
-                ];
-            })->values();
+            $business->loadMissing(['proCons.categoryProCon']);
+            $aggregatedPros = $business->proCons->where('type', 'pro')
+                ->sortByDesc(fn($item) => $item->weight ?? 5)
+                ->map(function($item) {
+                    return (object)[
+                        'id'          => $item->id,
+                        'type'        => 'pro',
+                        'text'        => $item->text,
+                        'description' => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                        'weight'      => $item->weight ?? 5,
+                    ];
+                })->values();
 
-            $aggregatedCons = $business->proCons->where('type', 'con')->map(function($item) {
-                return (object)[
-                    'id'   => $item->id,
-                    'type' => 'con',
-                    'text' => $item->text,
-                ];
-            })->values();
+            $aggregatedCons = $business->proCons->where('type', 'con')
+                ->sortByDesc(fn($item) => $item->weight ?? 5)
+                ->map(function($item) {
+                    return (object)[
+                        'id'          => $item->id,
+                        'type'        => 'con',
+                        'text'        => $item->text,
+                        'description' => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                        'weight'      => $item->weight ?? 5,
+                    ];
+                })->values();
+        } elseif ($aggregatedProCons->isEmpty() && $business->proCons->isNotEmpty()) {
+            $business->loadMissing(['proCons.categoryProCon']);
+            $aggregatedPros = $business->proCons->where('type', 'pro')
+                ->sortByDesc(fn($item) => $item->weight ?? 5)
+                ->map(function($item) {
+                    return (object)[
+                        'id'           => $item->id,
+                        'type'         => 'pro',
+                        'text'         => $item->text,
+                        'description'  => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                        'weight'       => $item->weight ?? 5,
+                        'review_count' => 1,
+                    ];
+                })->values();
+
+            $aggregatedCons = $business->proCons->where('type', 'con')
+                ->sortByDesc(fn($item) => $item->weight ?? 5)
+                ->map(function($item) {
+                    return (object)[
+                        'id'           => $item->id,
+                        'type'         => 'con',
+                        'text'         => $item->text,
+                        'description'  => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                        'weight'       => $item->weight ?? 5,
+                        'review_count' => 1,
+                    ];
+                })->values();
         }
 
         if ($request->ajax()) {
@@ -1156,8 +1190,16 @@ class ViewController extends Controller
     }
 
 
-    public function goBusiness($locale, $slug)
+    public function goBusiness($locale, $slug = null)
     {
+        if ($slug === null) {
+            $slug = $locale;
+            $locale = request()->segment(1) ?: 'en-us';
+            if ($locale === 'go') {
+                $locale = 'en-us';
+            }
+        }
+
         // Find business translation by slug
         $translation = BusinessTranslation::where('slug', $slug)->first();
         if ($translation) {
@@ -1175,8 +1217,22 @@ class ViewController extends Controller
             abort(404);
         }
 
+        // Resolve country ID for locale
+        $countryId = null;
+        if (!empty($locale)) {
+            $matchedLang = \App\Models\Language::where('lang_code', strtolower($locale))->first();
+            if ($matchedLang) {
+                $cl = \App\Models\CountryLanguage::where('language_id', $matchedLang->id)->first();
+                if ($cl) {
+                    $countryId = $cl->country_id;
+                } elseif ($matchedLang->country_id) {
+                    $countryId = $matchedLang->country_id;
+                }
+            }
+        }
+
         // Get the target destination URL for current country
-        $targetUrl = $business->getEffectiveWebsiteUrl();
+        $targetUrl = $business->getEffectiveWebsiteUrl($countryId);
 
         if (!$targetUrl) {
             abort(404);
