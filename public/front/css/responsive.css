@@ -3708,6 +3708,9 @@
 }
 
 @media only screen and (max-width: 767px) {
+    .size-16{
+        font-size: 14px;
+    }
     .sticky-comp-col {
         padding: 8px 10px;
         gap: var(--space-xxs);

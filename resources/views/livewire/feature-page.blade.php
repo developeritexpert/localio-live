@@ -2319,7 +2319,7 @@
             $exploreHeadline = !empty($featureContent->explore_subcategories_headline) ? $featureContent->explore_subcategories_headline : $defaultExpH2;
             $exploreSubtext = !empty($featureContent->explore_subcategories_subtext) ? $featureContent->explore_subcategories_subtext : (!empty($resolvedExploreSub['subtext']) ? $resolvedExploreSub['subtext'] : ($catTrans->explore_subcategories_subtext ?? null));
         @endphp
-        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
+        <section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 class="explore-cat-h2" style="text-transform: math-auto;">
