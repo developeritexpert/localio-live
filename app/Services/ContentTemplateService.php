@@ -2379,24 +2379,6 @@ class ContentTemplateService
             preg_match('/^criteria_ratings_(\d+)/', $sectionGroup, $m);
             $critId = (int) ($m[1] ?? 0);
             $fieldDefs = self::getCriteriaFields($critId);
-
-            if ($critId === 1 && !str_contains($sectionGroup, '_cat_')) {
-                $hasUnder10 = ContentTemplate::where('section_group', 'criteria_ratings_1')
-                    ->where('field_key', 'criteria_1_under_10')
-                    ->where('lang_id', 1)
-                    ->exists();
-                if (!$hasUnder10) {
-                    ContentTemplate::create([
-                        'section_group' => 'criteria_ratings_1',
-                        'field_key'     => 'criteria_1_under_10',
-                        'option_number' => 1,
-                        'headline'      => null,
-                        'subtext'       => '<p>Discover what [business] offers and select any feature to find more [entities1_lc] that offer it.</p>',
-                        'lang_id'       => 1,
-                        'is_active'     => true,
-                    ]);
-                }
-            }
         }
 
         if ($langId > 1) {

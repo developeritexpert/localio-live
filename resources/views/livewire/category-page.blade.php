@@ -1219,22 +1219,27 @@
                                                 })->values()->take(5);
                                             }
                                         } else {
-                                            // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
+                                            // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons) ordered by weight DESC
                                             if ($biz->proCons && $biz->proCons->isNotEmpty()) {
-                                                $topPros = $biz->proCons->where('type', 'pro')->map(function($item) {
+                                                $biz->loadMissing(['proCons.categoryProCon']);
+                                                $topPros = $biz->proCons->where('type', 'pro')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                                     return (object)[
                                                         'id'            => $item->id,
                                                         'type'          => 'pro',
                                                         'text'          => $item->text,
+                                                        'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                                        'weight'        => $item->weight ?? 5,
                                                         'reviews_count' => null,
                                                     ];
                                                 })->values()->take(5);
 
-                                                $topCons = $biz->proCons->where('type', 'con')->map(function($item) {
+                                                $topCons = $biz->proCons->where('type', 'con')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                                     return (object)[
                                                         'id'            => $item->id,
                                                         'type'          => 'con',
                                                         'text'          => $item->text,
+                                                        'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                                        'weight'        => $item->weight ?? 5,
                                                         'reviews_count' => null,
                                                     ];
                                                 })->values()->take(5);

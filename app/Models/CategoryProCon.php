@@ -15,6 +15,7 @@ class CategoryProCon extends Model
         'category_id',
         'type',
         'text',
+        'description',
         'aliases',
         'status',
     ];

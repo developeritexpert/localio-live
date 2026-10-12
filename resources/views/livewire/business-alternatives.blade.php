@@ -646,8 +646,8 @@ foreach ($altCriteria as $criterion) {
                                                         $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
                                                     } else {
                                                         // When < 10 reviews: Check business_pro_cons first, or fallback to any review pro/con
-                                                        $manPro = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'pro')->first() : null;
-                                                        $manCon = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'con')->first() : null;
+                                                        $manPro = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'pro')->sortByDesc(fn($p) => $p->weight ?? 5)->first() : null;
+                                                        $manCon = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'con')->sortByDesc(fn($c) => $c->weight ?? 5)->first() : null;
 
                                                         if ($manPro) {
                                                             $proStr = $manPro->text;
@@ -1595,22 +1595,27 @@ foreach ($altCriteria as $criterion) {
                                     })->values()->take(5);
                                 }
                             } else {
-                                // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
+                                // When < 10 reviews: ONLY show manually added pros and cons (from business_pro_cons) ordered by weight DESC
                                 if ($biz->proCons && $biz->proCons->isNotEmpty()) {
-                                    $topPros = $biz->proCons->where('type', 'pro')->map(function($item) {
+                                    $biz->loadMissing(['proCons.categoryProCon']);
+                                    $topPros = $biz->proCons->where('type', 'pro')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                         return (object)[
                                             'id'            => $item->id,
                                             'type'          => 'pro',
                                             'text'          => $item->text,
+                                            'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                            'weight'        => $item->weight ?? 5,
                                             'reviews_count' => null,
                                         ];
                                     })->values()->take(5);
 
-                                    $topCons = $biz->proCons->where('type', 'con')->map(function($item) {
+                                    $topCons = $biz->proCons->where('type', 'con')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                         return (object)[
                                             'id'            => $item->id,
                                             'type'          => 'con',
                                             'text'          => $item->text,
+                                            'description'   => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                            'weight'        => $item->weight ?? 5,
                                             'reviews_count' => null,
                                         ];
                                     })->values()->take(5);

@@ -91,6 +91,11 @@
                             </td>
                             <td class="nk-tb-col">
                                 <span class="tb-amount fw-bold">{{ $item->text }}</span>
+                                @if(!empty($item->description))
+                                    <div class="small text-muted mt-1 fst-italic" style="font-size: 12px; line-height: 1.35;">
+                                        <em class="icon ni ni-info text-primary me-1"></em>{{ $item->description }}
+                                    </div>
+                                @endif
                                 @if(!empty($item->aliases) && is_array($item->aliases))
                                     <div class="mt-1 d-flex flex-wrap gap-1" style="gap: 4px;">
                                         @foreach($item->aliases as $alias)
@@ -183,6 +188,14 @@
                             @error('text') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Explanation / Description <small class="text-muted">(Optional - displayed on info symbol hover/click)</small></label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" 
+                                      wire:model="description" 
+                                      rows="2" 
+                                      placeholder="e.g. Helpful assistance with hosting questions and problems."></textarea>
+                            @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Aliases <small class="text-muted">(Optional - one per line or comma-separated)</small></label>
                             <textarea class="form-control @error('aliases') is-invalid @enderror" 
                                       wire:model="aliases" 
@@ -257,22 +270,20 @@
 [
   {
     "type": "pro",
-    "text": "Helpful customer support",
+    "text": "Customer support",
+    "description": "Helpful assistance with hosting questions and problems.",
     "aliases": [
       "helpful support",
-      "helpful customer service",
-      "support was helpful",
-      "customer service was helpful"
+      "good customer service"
     ]
   },
   {
     "type": "con",
-    "text": "Expensive renewal pricing",
+    "text": "Customer support",
+    "description": "Unhelpful or unclear assistance with hosting questions.",
     "aliases": [
-      "high renewal prices",
-      "renewal costs are expensive",
-      "costly renewals",
-      "renewal price is too high"
+      "unhelpful support",
+      "poor customer service"
     ]
   }
 ]

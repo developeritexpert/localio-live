@@ -702,10 +702,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
+                                                @php $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.'; @endphp
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $pro->text }}
-                                                        @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                        <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($proDesc) }}">
+                                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                            </svg>
+                                                            <span class="pro-con-tooltip">{{ $proDesc }}</span>
+                                                        </span>
+                                                        @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -719,10 +727,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
+                                                @php $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.'; @endphp
                                                 <li class="d-flex align-items-start mb-2">
                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                     <span style="color: #202124;">{{ $con->text }}
-                                                        @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                        <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($conDesc) }}">
+                                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                            </svg>
+                                                            <span class="pro-con-tooltip">{{ $conDesc }}</span>
+                                                        </span>
+                                                        @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -755,10 +771,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
+                                                    @php $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.'; @endphp
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $pro->text }}
-                                                            @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                            <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($proDesc) }}">
+                                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                    <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                                </svg>
+                                                                <span class="pro-con-tooltip">{{ $proDesc }}</span>
+                                                            </span>
+                                                            @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                         </span>
                                                     </li>
                                                     @endforeach
@@ -774,10 +798,18 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
+                                                    @php $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.'; @endphp
                                                     <li class="d-flex align-items-start mb-2">
                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                         <span style="color: #202124;">{{ $con->text }}
-                                                            @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                            <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($conDesc) }}">
+                                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                    <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                                </svg>
+                                                                <span class="pro-con-tooltip">{{ $conDesc }}</span>
+                                                            </span>
+                                                            @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
                                                         </span>
                                                     </li>
                                                     @endforeach
@@ -802,7 +834,115 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     height: 2px;
                                     background-color: #1e3050;
                                 }
+
+                                /* Info icon & tooltip styles */
+                                .pro-con-info-btn {
+                                    position: relative;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: pointer;
+                                    vertical-align: middle;
+                                    outline: none;
+                                    padding: 0;
+                                    margin-left: 6px;
+                                    border: none;
+                                    background: transparent;
+                                    color: #64748b;
+                                    line-height: 1;
+                                }
+                                .pro-con-info-svg, .pro-con-info-icon {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    color: #64748b;
+                                    transition: transform 0.15s ease, color 0.15s ease;
+                                }
+                                .pro-con-info-btn:hover .pro-con-info-svg,
+                                .pro-con-info-btn:hover .pro-con-info-icon,
+                                .pro-con-info-btn:focus .pro-con-info-svg,
+                                .pro-con-info-btn:focus .pro-con-info-icon,
+                                .pro-con-info-btn.is-active .pro-con-info-svg,
+                                .pro-con-info-btn.is-active .pro-con-info-icon {
+                                    color: #0284c7;
+                                    transform: scale(1.2);
+                                }
+                                .pro-con-tooltip {
+                                    visibility: hidden;
+                                    opacity: 0;
+                                    position: absolute;
+                                    bottom: calc(100% + 8px);
+                                    left: 50%;
+                                    transform: translateX(-50%) translateY(4px);
+                                    background-color: #1e293b;
+                                    color: #ffffff;
+                                    text-align: left;
+                                    padding: 8px 12px;
+                                    border-radius: 8px;
+                                    font-size: 12.5px;
+                                    font-weight: 400;
+                                    line-height: 1.45;
+                                    white-space: normal;
+                                    min-width: 200px;
+                                    max-width: 280px;
+                                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+                                    z-index: 9999 !important;
+                                    pointer-events: none;
+                                    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+                                }
+                                .pro-con-tooltip::after {
+                                    content: "";
+                                    position: absolute;
+                                    top: 100%;
+                                    left: 50%;
+                                    margin-left: -5px;
+                                    border-width: 5px;
+                                    border-style: solid;
+                                    border-color: #1e293b transparent transparent transparent;
+                                }
+                                .pro-con-info-btn:hover .pro-con-tooltip,
+                                .pro-con-info-btn:focus .pro-con-tooltip,
+                                .pro-con-info-btn.is-active .pro-con-tooltip {
+                                    visibility: visible;
+                                    opacity: 1;
+                                    transform: translateX(-50%) translateY(0);
+                                    pointer-events: auto;
+                                }
+                                /* Prevent parent clipping */
+                                .card-bordered, .card-body {
+                                    overflow: visible !important;
+                                }
+                                @media (max-width: 576px) {
+                                    .pro-con-tooltip {
+                                        left: 0;
+                                        transform: translateY(4px);
+                                        max-width: 240px;
+                                    }
+                                    .pro-con-tooltip::after {
+                                        left: 12px;
+                                    }
+                                    .pro-con-info-btn:hover .pro-con-tooltip,
+                                    .pro-con-info-btn:focus .pro-con-tooltip,
+                                    .pro-con-info-btn.is-active .pro-con-tooltip {
+                                        transform: translateY(0);
+                                    }
+                                }
                             </style>
+@endpush
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.pro-con-info-btn');
+            document.querySelectorAll('.pro-con-info-btn.is-active').forEach(function(el) {
+                if (el !== btn) el.classList.remove('is-active');
+            });
+            if (btn) {
+                e.stopPropagation();
+                btn.classList.toggle('is-active');
+            }
+        });
+    });
+</script>
 @endpush
 
                         </div>

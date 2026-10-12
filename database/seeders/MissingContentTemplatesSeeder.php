@@ -192,15 +192,6 @@ class MissingContentTemplatesSeeder extends Seeder
         foreach ($criteriaList as $criteria) {
             $critSection = 'criteria_ratings_' . $criteria->id;
 
-            if ($criteria->id == 1 || $criteria->key === 'features') {
-                $insertOptions($critSection, 'criteria_' . $criteria->id . '_under_10', [
-                    [
-                        'headline' => null,
-                        'subtext'  => '<p>Discover what [business] offers and select any feature to find more [entities1_lc] that offer it.</p>'
-                    ]
-                ]);
-            }
-
             // Range 1 (1.0 - 1.9)
             $insertOptions($critSection, 'criteria_' . $criteria->id . '_range_1', [
                 ['headline' => 'Users have reported significant issues.', 'subtext' => '<p>This area requires major improvements.</p>'],

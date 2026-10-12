@@ -178,6 +178,9 @@ class BusinessEdit extends Component
     // Pros & Cons
     public $businessPros = [];
     public $businessCons = [];
+    public $prosConsJsonInput = '';
+    public $prosConsJsonError = '';
+    public $prosConsJsonSuccess = '';
     public $availableCategoryPros = [];
     public $availableCategoryCons = [];
 
@@ -723,6 +726,7 @@ class BusinessEdit extends Component
             return [
                 'id'            => $item->id,
                 'text'          => $item->text,
+                'description'   => $item->description ?? '',
                 'category_id'   => $item->category_id,
                 'category_name' => $catName,
             ];
@@ -1152,8 +1156,8 @@ class BusinessEdit extends Component
             $this->loadCategoryProCons($this->selected_category);
         }
 
-        // Load existing Pros (linking to category_pro_con_id)
-        $this->businessPros = $business->proCons->where('type', 'pro')->map(function($pc) {
+        // Load existing Pros (linking to category_pro_con_id) ordered by weight DESC
+        $this->businessPros = $business->proCons->where('type', 'pro')->sortByDesc(fn($pc) => $pc->weight ?? 5)->map(function($pc) {
             $catId = $pc->category_pro_con_id;
             if (!$catId && !empty($pc->text)) {
                 $matched = collect($this->availableCategoryPros)->first(function($item) use ($pc) {
@@ -1166,11 +1170,13 @@ class BusinessEdit extends Component
             return [
                 'category_pro_con_id' => $catId,
                 'text'                => $pc->text,
+                'description'         => $pc->description ?? '',
+                'weight'              => $pc->weight ?? 5,
             ];
         })->values()->toArray();
 
-        // Load existing Cons (linking to category_pro_con_id)
-        $this->businessCons = $business->proCons->where('type', 'con')->map(function($pc) {
+        // Load existing Cons (linking to category_pro_con_id) ordered by weight DESC
+        $this->businessCons = $business->proCons->where('type', 'con')->sortByDesc(fn($pc) => $pc->weight ?? 5)->map(function($pc) {
             $catId = $pc->category_pro_con_id;
             if (!$catId && !empty($pc->text)) {
                 $matched = collect($this->availableCategoryCons)->first(function($item) use ($pc) {
@@ -1183,6 +1189,8 @@ class BusinessEdit extends Component
             return [
                 'category_pro_con_id' => $catId,
                 'text'                => $pc->text,
+                'description'         => $pc->description ?? '',
+                'weight'              => $pc->weight ?? 5,
             ];
         })->values()->toArray();
 
@@ -1523,19 +1531,26 @@ class BusinessEdit extends Component
         foreach ($this->businessPros as $pro) {
             $catProConId = !empty($pro['category_pro_con_id']) ? (int)$pro['category_pro_con_id'] : null;
             $text = trim($pro['text'] ?? '');
+            $desc = trim($pro['description'] ?? '');
             if (!$text && $catProConId) {
                 $found = collect($this->availableCategoryPros)->firstWhere('id', $catProConId);
                 $text = $found['text'] ?? '';
                 if (!$text) {
                     $text = \App\Models\CategoryProCon::where('id', $catProConId)->value('text') ?? '';
                 }
+                if (!$desc && $found && !empty($found['description'])) {
+                    $desc = $found['description'];
+                }
             }
+            $weight = (isset($pro['weight']) && $pro['weight'] !== '') ? max(1, min(10, (int)$pro['weight'])) : 5;
             if (!empty($text)) {
                 $proConsToInsert[] = [
                     'business_id'         => $businessId,
                     'category_pro_con_id' => $catProConId,
                     'type'                => 'pro',
                     'text'                => $text,
+                    'description'         => $desc ?: null,
+                    'weight'              => $weight,
                     'created_at'          => now(),
                     'updated_at'          => now(),
                 ];
@@ -1544,19 +1559,26 @@ class BusinessEdit extends Component
         foreach ($this->businessCons as $con) {
             $catProConId = !empty($con['category_pro_con_id']) ? (int)$con['category_pro_con_id'] : null;
             $text = trim($con['text'] ?? '');
+            $desc = trim($con['description'] ?? '');
             if (!$text && $catProConId) {
                 $found = collect($this->availableCategoryCons)->firstWhere('id', $catProConId);
                 $text = $found['text'] ?? '';
                 if (!$text) {
                     $text = \App\Models\CategoryProCon::where('id', $catProConId)->value('text') ?? '';
                 }
+                if (!$desc && $found && !empty($found['description'])) {
+                    $desc = $found['description'];
+                }
             }
+            $weight = (isset($con['weight']) && $con['weight'] !== '') ? max(1, min(10, (int)$con['weight'])) : 5;
             if (!empty($text)) {
                 $proConsToInsert[] = [
                     'business_id'         => $businessId,
                     'category_pro_con_id' => $catProConId,
                     'type'                => 'con',
                     'text'                => $text,
+                    'description'         => $desc ?: null,
+                    'weight'              => $weight,
                     'created_at'          => now(),
                     'updated_at'          => now(),
                 ];
@@ -1636,7 +1658,7 @@ class BusinessEdit extends Component
 
     public function addPro()
     {
-        $this->businessPros[] = ['category_pro_con_id' => '', 'text' => ''];
+        $this->businessPros[] = ['category_pro_con_id' => '', 'text' => '', 'description' => '', 'weight' => 5];
     }
 
     public function removePro($index)
@@ -1647,7 +1669,7 @@ class BusinessEdit extends Component
 
     public function addCon()
     {
-        $this->businessCons[] = ['category_pro_con_id' => '', 'text' => ''];
+        $this->businessCons[] = ['category_pro_con_id' => '', 'text' => '', 'description' => '', 'weight' => 5];
     }
 
     public function updatedBusinessPros($value, $key)
@@ -1674,6 +1696,9 @@ class BusinessEdit extends Component
         if ($catProId) {
             $found = collect($this->availableCategoryPros)->firstWhere('id', (int)$catProId);
             $this->businessPros[$index]['text'] = $found['text'] ?? '';
+            if (empty($this->businessPros[$index]['description']) && !empty($found['description'])) {
+                $this->businessPros[$index]['description'] = $found['description'];
+            }
         } else {
             $this->businessPros[$index]['text'] = '';
         }
@@ -1685,9 +1710,112 @@ class BusinessEdit extends Component
         if ($catConId) {
             $found = collect($this->availableCategoryCons)->firstWhere('id', (int)$catConId);
             $this->businessCons[$index]['text'] = $found['text'] ?? '';
+            if (empty($this->businessCons[$index]['description']) && !empty($found['description'])) {
+                $this->businessCons[$index]['description'] = $found['description'];
+            }
         } else {
             $this->businessCons[$index]['text'] = '';
         }
+    }
+
+    public function importProsConsJson()
+    {
+        $this->prosConsJsonError = '';
+        $this->prosConsJsonSuccess = '';
+
+        $raw = trim($this->prosConsJsonInput);
+        if (empty($raw)) {
+            $this->prosConsJsonError = 'Please paste JSON data in the box.';
+            return;
+        }
+
+        $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+        $raw = preg_replace('/\s*```$/', '', $raw);
+        $data = json_decode(trim($raw), true);
+
+        if (!is_array($data)) {
+            $this->prosConsJsonError = 'Invalid JSON: ' . json_last_error_msg();
+            return;
+        }
+
+        $items = [];
+        if (isset($data['pros_cons']) && is_array($data['pros_cons'])) {
+            $items = $data['pros_cons'];
+        } elseif (isset($data['pros']) || isset($data['cons'])) {
+            foreach ($data['pros'] ?? [] as $p) {
+                if (is_array($p)) {
+                    $p['type'] = 'pro';
+                    $items[] = $p;
+                } elseif (is_string($p)) {
+                    $items[] = ['type' => 'pro', 'text' => $p];
+                }
+            }
+            foreach ($data['cons'] ?? [] as $c) {
+                if (is_array($c)) {
+                    $c['type'] = 'con';
+                    $items[] = $c;
+                } elseif (is_string($c)) {
+                    $items[] = ['type' => 'con', 'text' => $c];
+                }
+            }
+        } elseif (isset($data[0])) {
+            $items = $data;
+        } else {
+            $items = [$data];
+        }
+
+        $newPros = [];
+        $newCons = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item)) continue;
+            $type = strtolower($item['type'] ?? 'pro');
+            $text = trim($item['text'] ?? ($item['name'] ?? ''));
+            $desc = trim($item['description'] ?? ($item['desc'] ?? ''));
+            $weight = (isset($item['weight']) && $item['weight'] !== '') ? max(1, min(10, (int)$item['weight'])) : 5;
+            $catId = $item['category_pro_con_id'] ?? ($item['id'] ?? null);
+
+            $availableList = ($type === 'con') ? $this->availableCategoryCons : $this->availableCategoryPros;
+            if (!$catId && !empty($text)) {
+                $matched = collect($availableList)->first(function($opt) use ($text, $item) {
+                    if (strcasecmp($opt['text'], $text) === 0) return true;
+                    if (!empty($item['aliases']) && is_array($item['aliases'])) {
+                        foreach ($item['aliases'] as $alias) {
+                            if (strcasecmp($opt['text'], trim($alias)) === 0) return true;
+                        }
+                    }
+                    return false;
+                });
+                if ($matched) {
+                    $catId = $matched['id'];
+                    if (empty($desc) && !empty($matched['description'])) {
+                        $desc = $matched['description'];
+                    }
+                }
+            }
+
+            $entry = [
+                'category_pro_con_id' => $catId ?: '',
+                'text'                => $text,
+                'description'         => $desc,
+                'weight'              => $weight,
+            ];
+
+            if ($type === 'con') {
+                $newCons[] = $entry;
+            } else {
+                $newPros[] = $entry;
+            }
+        }
+
+        // Sort by weight descending (10 most important first)
+        usort($newPros, fn($a, $b) => ($b['weight'] ?? 5) <=> ($a['weight'] ?? 5));
+        usort($newCons, fn($a, $b) => ($b['weight'] ?? 5) <=> ($a['weight'] ?? 5));
+
+        $this->businessPros = $newPros;
+        $this->businessCons = $newCons;
+        $this->prosConsJsonSuccess = 'Successfully imported ' . count($newPros) . ' pros and ' . count($newCons) . ' cons (ordered by importance).';
+        $this->prosConsJsonInput = '';
     }
 
     public function removeCon($index)

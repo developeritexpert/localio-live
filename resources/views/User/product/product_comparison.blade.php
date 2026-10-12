@@ -625,20 +625,24 @@
                             if ($bRevCount < 10) {
                                 // Less than 10 reviews: ONLY show manually added pros and cons (from business_pro_cons)
                                 $manualProsCons = $b->relationLoaded('proCons') ? $b->proCons : ($b->proCons ?? collect());
-                                $pros = $manualProsCons->where('type', 'pro')->map(function($item) {
+                                $pros = $manualProsCons->where('type', 'pro')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                     return (object)[
                                         'id'           => $item->id,
                                         'type'         => 'pro',
                                         'text'         => $item->text,
+                                        'description'  => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                        'weight'       => $item->weight ?? 5,
                                         'review_count' => null,
                                     ];
                                 })->values();
 
-                                $cons = $manualProsCons->where('type', 'con')->map(function($item) {
+                                $cons = $manualProsCons->where('type', 'con')->sortByDesc(fn($item) => $item->weight ?? 5)->map(function($item) {
                                     return (object)[
                                         'id'           => $item->id,
                                         'type'         => 'con',
                                         'text'         => $item->text,
+                                        'description'  => !empty($item->description) ? $item->description : optional($item->categoryProCon)->description,
+                                        'weight'       => $item->weight ?? 5,
                                         'review_count' => null,
                                     ];
                                 })->values();
