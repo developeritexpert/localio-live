@@ -2850,6 +2850,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     }
                                     }
                                     @endphp
+                                    @if($hasUserRatings && isset($topReviews) && $topReviews->count() > 0)
                                     <div class="main_feature_lg">
                                         <div class="feture_box review-breakdown-box not-on-mobile">
 
@@ -2939,6 +2940,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         </div>
                                     </div>
+                                    @endif
                                     @php
                                         $sidebarDiscussions = $business->discussions()->with(['user'])->latest()->take(2)->get();
                                     @endphp

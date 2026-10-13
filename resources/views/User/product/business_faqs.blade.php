@@ -612,7 +612,7 @@
                     @endif
 
                     <!-- 4. Highlighted Reviews -->
-                    @if(isset($topReviews) && $topReviews->count() > 0)
+                    @if(($business->approved_reviews_count >= 10) && isset($topReviews) && $topReviews->count() > 0)
                         <div class="boxshadow_border bg-white p-4 not-on-mobile" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                             <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                 <h2 class="m-0 card-h-title">Highlighted reviews</h2>

@@ -995,7 +995,7 @@
                                 $topReviews = $business->reviews;
                             }
                         @endphp
-                        @if($topReviews && $topReviews->count() > 0)
+                        @if($hasUserRatings && $topReviews && $topReviews->count() > 0)
                         <div class="main_feature_lg">
                             <div class="feture_box review-breakdown-box">
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
