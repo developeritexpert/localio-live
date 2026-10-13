@@ -357,38 +357,49 @@
                             </button> --}}
                         </div>
 
-                        <!-- If you're using Alpine.js -->
+                        <!-- Business Description CKEditor -->
                         <div wire:ignore x-data="{
                                 editor: null,
                                 init() {
                                     this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.editor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.business_description = editor.getData();
-                                                });
-                                                // AI Output Upload listener
-                                                window.addEventListener('ai-content-applied', function(e) {
-                                                    if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
-                                                        editor.setData(e.detail.fields.business_description);
+                                        if (this.editor) return;
+                                        if (!this.$refs.editor_business_desc) return;
+                                        if (typeof ClassicEditor !== 'undefined') {
+                                            ClassicEditor
+                                                .create(this.$refs.editor_business_desc)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    if (this.$wire.business_description && !editor.getData()) {
+                                                        editor.setData(this.$wire.business_description);
                                                     }
+                                                    editor.model.document.on('change:data', () => {
+                                                        const data = editor.getData();
+                                                        this.$wire.business_description = data;
+                                                        this.$wire.set('business_description', data);
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
+                                                            editor.setData(e.detail.fields.business_description);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.business_description || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error('CKEditor error on business_description:', error);
                                                 });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
+                                        }
                                     });
                                 }
                             }">
                             <div class="form-group">
                                 <textarea
-                                    x-ref="editor"
+                                    x-ref="editor_business_desc"
                                     class="form-control b_description @error('business_description') is-invalid @enderror"
                                     wire:model.live="business_description"
-                                    rows="5">
-                                    </textarea>
+                                    rows="5">{!! $business_description !!}</textarea>
                                 @error('business_description')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -404,38 +415,49 @@
                             <label class="form-label">Short business description (Reviews page)</label>
                         </div>
 
-                        <!-- If you're using Alpine.js -->
+                        <!-- Short business description (Reviews page) CKEditor -->
                         <div wire:ignore x-data="{
                                 editor: null,
                                 init() {
                                     this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.editor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.reviews_description = editor.getData();
-                                                });
-                                                // AI Output Upload listener
-                                                window.addEventListener('ai-content-applied', function(e) {
-                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
-                                                        editor.setData(e.detail.fields.reviews_description);
+                                        if (this.editor) return;
+                                        if (!this.$refs.editor_reviews_desc) return;
+                                        if (typeof ClassicEditor !== 'undefined') {
+                                            ClassicEditor
+                                                .create(this.$refs.editor_reviews_desc)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    if (this.$wire.reviews_description && !editor.getData()) {
+                                                        editor.setData(this.$wire.reviews_description);
                                                     }
+                                                    editor.model.document.on('change:data', () => {
+                                                        const data = editor.getData();
+                                                        this.$wire.reviews_description = data;
+                                                        this.$wire.set('reviews_description', data);
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
+                                                            editor.setData(e.detail.fields.reviews_description);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.reviews_description || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error('CKEditor error on reviews_description:', error);
                                                 });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
+                                        }
                                     });
                                 }
                             }">
                             <div class="form-group">
                                 <textarea
-                                    x-ref="editor"
+                                    x-ref="editor_reviews_desc"
                                     class="form-control r_description @error('reviews_description') is-invalid @enderror"
                                     wire:model.live="reviews_description"
-                                    rows="5">
-                                    </textarea>
+                                    rows="5">{!! $reviews_description !!}</textarea>
                                 @error('reviews_description')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -619,6 +641,129 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary" wire:click="importProsConsJson">Apply JSON to Business</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Description of Products / Services (2 Service Text Areas with CKEditor) --}}
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <label class="form-label mb-0"><strong>Description of Products / Services</strong></label>
+                                <p class="text-muted small mb-0">Summarize offered products / services with a headline, screenshot introduction text, and concluding details.</p>
+                            </div>
+                        </div>
+
+                        <div class="border p-3 mb-3 rounded bg-white">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-semibold">Products / Services Headline</label>
+                                <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does this service offer?">
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-semibold mb-0">Products / Services Introduction</label>
+                                    <span class="text-muted" style="font-size:0.78rem;">Shown above screenshots on product detail page</span>
+                                </div>
+                                <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                if (this.editor) return;
+                                                if (!this.$refs.editor_offerings_top) return;
+                                                if (typeof ClassicEditor !== 'undefined') {
+                                                    ClassicEditor
+                                                        .create(this.$refs.editor_offerings_top)
+                                                        .then(editor => {
+                                                            this.editor = editor;
+                                                            if (this.$wire.businessOfferings && this.$wire.businessOfferings[0] && this.$wire.businessOfferings[0].top_text && !editor.getData()) {
+                                                                editor.setData(this.$wire.businessOfferings[0].top_text);
+                                                            }
+                                                            editor.model.document.on('change:data', () => {
+                                                                const data = editor.getData();
+                                                                this.$wire.set('businessOfferings.0.top_text', data);
+                                                            });
+                                                            window.addEventListener('ai-content-applied', function(e) {
+                                                                if (e.detail && e.detail.fields && e.detail.fields.offerings_top_text !== undefined) {
+                                                                    editor.setData(e.detail.fields.offerings_top_text);
+                                                                }
+                                                            });
+                                                            window.addEventListener('languageSwitched', () => {
+                                                                const val = (this.$wire.businessOfferings && this.$wire.businessOfferings[0]) ? (this.$wire.businessOfferings[0].top_text || '') : '';
+                                                                editor.setData(val);
+                                                            });
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('CKEditor error on offerings_top_text:', error);
+                                                        });
+                                                }
+                                            });
+                                        }
+                                    }">
+                                    <div class="form-group">
+                                        <textarea
+                                            x-ref="editor_offerings_top"
+                                            class="form-control"
+                                            wire:model.live="businessOfferings.0.top_text"
+                                            rows="5">{!! $businessOfferings[0]['top_text'] ?? '' !!}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-semibold mb-0">Products / Services Ending Text (After Screenshots / Images)</label>
+                                    <span class="text-muted" style="font-size:0.78rem;">Shown below screenshots on product detail page</span>
+                                </div>
+                                <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                if (this.editor) return;
+                                                if (!this.$refs.editor_after_image) return;
+                                                if (typeof ClassicEditor !== 'undefined') {
+                                                    ClassicEditor
+                                                        .create(this.$refs.editor_after_image)
+                                                        .then(editor => {
+                                                            this.editor = editor;
+                                                            if (this.$wire.after_image_description && !editor.getData()) {
+                                                                editor.setData(this.$wire.after_image_description);
+                                                            }
+                                                            editor.model.document.on('change:data', () => {
+                                                                const data = editor.getData();
+                                                                this.$wire.after_image_description = data;
+                                                                this.$wire.set('after_image_description', data);
+                                                                this.$wire.set('businessOfferings.0.bottom_text', data);
+                                                            });
+                                                            window.addEventListener('ai-content-applied', function(e) {
+                                                                if (e.detail && e.detail.fields && e.detail.fields.after_image_description !== undefined) {
+                                                                    editor.setData(e.detail.fields.after_image_description);
+                                                                }
+                                                            });
+                                                            window.addEventListener('languageSwitched', () => {
+                                                                editor.setData(this.$wire.after_image_description || '');
+                                                            });
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('CKEditor error on after_image_description:', error);
+                                                        });
+                                                }
+                                            });
+                                        }
+                                    }">
+                                    <div class="form-group">
+                                        <textarea
+                                            x-ref="editor_after_image"
+                                            class="form-control @error('after_image_description') is-invalid @enderror"
+                                            wire:model.live="after_image_description"
+                                            rows="5">{!! $after_image_description !!}</textarea>
+                                        @error('after_image_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

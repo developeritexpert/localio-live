@@ -1594,7 +1594,15 @@ class BusinessEdit extends Component
         // For simplicity, we delete and recreate offerings.
         \App\Models\BusinessOffering::where('business_id', $businessId)->delete();
         foreach ($this->businessOfferings as $index => $offering) {
-            if (empty(trim($offering['headline'] ?? '')) && empty(trim($offering['top_text'] ?? ''))) {
+            $headline = trim($offering['headline'] ?? '');
+            $topText = trim($offering['top_text'] ?? '');
+            $bottomText = trim($offering['bottom_text'] ?? '');
+
+            if (empty($bottomText) && !empty(trim($this->after_image_description ?? ''))) {
+                $bottomText = trim($this->after_image_description);
+            }
+
+            if (empty($headline) && empty($topText) && empty($bottomText)) {
                 continue; // skip empty offerings
             }
 
@@ -1610,9 +1618,9 @@ class BusinessEdit extends Component
 
             \App\Models\BusinessOffering::create([
                 'business_id' => $businessId,
-                'headline' => trim($offering['headline'] ?? ''),
-                'top_text' => trim($offering['top_text'] ?? ''),
-                'bottom_text' => trim($offering['bottom_text'] ?? ''),
+                'headline' => $headline,
+                'top_text' => $topText,
+                'bottom_text' => $bottomText,
                 'image' => $imagePath,
             ]);
         }
@@ -2578,6 +2586,9 @@ class BusinessEdit extends Component
         $this->dispatch('ai-content-applied', fields: [
             'business_description'       => $this->business_description,
             'long_preview_description'   => $this->long_preview_description,
+            'reviews_description'        => $this->reviews_description,
+            'offerings_top_text'         => $this->businessOfferings[0]['top_text'] ?? '',
+            'after_image_description'    => $this->after_image_description,
         ]);
 
         $this->aiApplyStatus = 'success';
