@@ -113,7 +113,7 @@
                             {!! \App\Services\ContentTemplateService::cleanHeading($finalCompH1) !!}
                         </h1>
                     </div>
-                    <p class="size-16">
+                    <p class="size-16 txt-gry">
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     @if(!empty($finalCompSub))

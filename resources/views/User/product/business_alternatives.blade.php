@@ -100,7 +100,7 @@
                             {!! \App\Services\ContentTemplateService::cleanHeading($finalAltH1) !!}
                         </h1>
                     </div>
-                    <p class="text-meta">
+                    <p class="size-16 txt-gry">
                         Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     @if(!empty($finalAltSub))
