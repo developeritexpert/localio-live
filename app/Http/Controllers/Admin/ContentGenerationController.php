@@ -2679,6 +2679,28 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
+            // Ingest basic business information ("At a glance" fields)
+            $glanceUpdates = [];
+            if (isset($bData['main_offering'])) {
+                $glanceUpdates['main_offering'] = is_string($bData['main_offering']) ? trim($bData['main_offering']) : null;
+            }
+            if (isset($bData['suitable_for'])) {
+                $glanceUpdates['suitable_for'] = is_string($bData['suitable_for']) ? trim($bData['suitable_for']) : null;
+            }
+            $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
+            if ($opt3Val !== null) {
+                $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+            }
+            $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
+            if ($opt4Val !== null) {
+                $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+            }
+            if (!empty($glanceUpdates)) {
+                BusinessTranslation::where('business_id', $bizId)
+                    ->where('lang_id', 1)
+                    ->update($glanceUpdates);
+            }
+
             // Also ingest affiliate link / websites from batch result if provided
             $affLink = trim($bData['affiliate_link'] ?? ($bData['affiliate_url'] ?? ($bData['affiliate'] ?? '')));
             if (!empty($affLink)) {
@@ -2749,6 +2771,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         "24/7/365 Live Support"
                     ],
                     "what_is"             => "A comprehensive web hosting platform catering to personal blogs, small businesses, and scalable enterprise web apps.",
+                    "main_offering"       => "Web hosting and domain services",
+                    "suitable_for"        => "Website owners, bloggers, small businesses, and online stores",
+                    "glance_option_3"     => "Shared hosting, WordPress hosting, VPS, and dedicated servers",
+                    "glance_option_4"     => "WordPress installation, website management, and ecommerce tools",
                     "reviews_description" => "A reliable, beginner-friendly web hosting solution with flexible pricing tiers and 24/7 customer support.",
                     "pros_cons"           => [
                         "pro_ids" => [20, 22, 24],

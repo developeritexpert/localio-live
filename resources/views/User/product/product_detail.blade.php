@@ -927,23 +927,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     }
                                 }
                             </style>
-@endpush
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.pro-con-info-btn');
-            document.querySelectorAll('.pro-con-info-btn.is-active').forEach(function(el) {
-                if (el !== btn) el.classList.remove('is-active');
-            });
-            if (btn) {
-                e.stopPropagation();
-                btn.classList.toggle('is-active');
-            }
-        });
-    });
-</script>
-@endpush
+                            @endpush
+                            @push('scripts')
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    document.addEventListener('click', function(e) {
+                                        const btn = e.target.closest('.pro-con-info-btn');
+                                        document.querySelectorAll('.pro-con-info-btn.is-active').forEach(function(el) {
+                                            if (el !== btn) el.classList.remove('is-active');
+                                        });
+                                        if (btn) {
+                                            e.stopPropagation();
+                                            btn.classList.toggle('is-active');
+                                        }
+                                    });
+                                });
+                            </script>
+                            @endpush
 
                         </div>
                         @endif
@@ -1560,9 +1560,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             @if ($altbusiness->id == $business->id)
                                                             @continue
                                                             @endif
+                                                            @php
+                                                                $altSlug = !empty($altbusiness->translations->first()->slug) ? $altbusiness->translations->first()->slug : (!empty($altbusiness->slug) ? $altbusiness->slug : (string)$altbusiness->id);
+                                                            @endphp
                                                             <div class="sftware-alternative-pck" data-aos="fade-up"
                                                                 data-aos-duration="1000"
-                                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}'; }"
+                                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}'; }"
                                                                 style="cursor: pointer; padding: 25px 20px;">
                                                                 @php
                                                                 $altStartingPrice = 'N/A';
@@ -1726,7 +1729,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @endif
 
                                                                 <div class="sftwre-alt-btn pt-2">
-                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
+                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}"
                                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                         style=" padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                                         {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
@@ -1744,7 +1747,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     $languageObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                                     $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
                                                     @endphp
-                                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug ?? $business->slug ?? '', 'alternatives_slug' => $expectedAlternativesSlug]) }}"
+                                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => !empty($business->translations->first()->slug) ? $business->translations->first()->slug : (!empty($business->slug) ? $business->slug : (string)$business->id), 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                                         class="view-more-link"
                                                         style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                         View more alternatives
@@ -2699,6 +2702,95 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                 </div>
                             </div>
+
+                            @php
+                                $glanceResolved = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_at_a_glance', $lang_id ?? 1);
+                                $glanceHeadline = !empty($glanceResolved['headline']) 
+                                    ? $glanceResolved['headline'] 
+                                    : (($business->translations->first()->name ?? $business->name ?? '') . ' at a glance');
+                                $glanceLabels = $business->getGlanceLabels($lang_id ?? 1);
+                                $mainOfferingLabel = static_text('main_offering') ?: 'Main offering';
+                                $suitableForLabel = static_text('suitable_for') ?: 'Suitable for';
+                                $opt3Label = $glanceLabels['option_3'] ?: 'Option 3';
+                                $opt4Label = $glanceLabels['option_4'] ?: 'Option 4';
+
+                                $bTransGlance = $business->translations->where('lang_id', $lang_id ?? 1)->first() ?? $business->translations->first();
+                                $mainOfferingVal = $bTransGlance->main_offering ?? null;
+                                $suitableForVal = $bTransGlance->suitable_for ?? null;
+                                $opt3Val = $bTransGlance->glance_option_3 ?? null;
+                                $opt4Val = $bTransGlance->glance_option_4 ?? null;
+                                $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || !empty($opt3Val) || !empty($opt4Val);
+                            @endphp
+
+                            @if($hasGlanceData)
+                            <div class="main_feature_lg not-on-mobile d-none d-md-block business-glance-card-wrapper" style="margin-top: 20px;">
+                                <style>
+                                    .business-glance-list .glance-item {
+                                        display: flex;
+                                        align-items: flex-start;
+                                        justify-content: space-between;
+                                        gap: 16px;
+                                        padding: 11px 0;
+                                        border-bottom: 1px solid #f0f0f0;
+                                    }
+                                    .business-glance-list .glance-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
+                                    .business-glance-list .glance-item:first-child {
+                                        padding-top: 4px;
+                                    }
+                                    .business-glance-list .glance-label {
+                                        font-weight: 600;
+                                        font-size: 13.5px;
+                                        color: #1e3050;
+                                        flex: 0 0 35%;
+                                        min-width: 110px;
+                                        line-height: 1.4;
+                                    }
+                                    .business-glance-list .glance-value {
+                                        font-size: 13px;
+                                        color: #475569;
+                                        line-height: 1.45;
+                                        flex: 1;
+                                        text-align: left;
+                                    }
+                                </style>
+                                <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
+                                    <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
+                                        <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
+                                            {{ $glanceHeadline }}
+                                        </h3>
+                                    </div>
+                                    <div class="business-glance-list">
+                                        @if(!empty($mainOfferingVal))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $mainOfferingLabel }}</span>
+                                            <span class="glance-value">{{ $mainOfferingVal }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($suitableForVal))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $suitableForLabel }}</span>
+                                            <span class="glance-value">{{ $suitableForVal }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($opt3Val))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $opt3Label }}</span>
+                                            <span class="glance-value">{{ $opt3Val }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($opt4Val))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $opt4Label }}</span>
+                                            <span class="glance-value">{{ $opt4Val }}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
                             @php
                             $hasFreeTrial = false;

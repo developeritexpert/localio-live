@@ -209,6 +209,12 @@ class ContentTemplateService
             'field1_label' => 'Headline',
             'description' => 'Headline for the What [business] offers section.',
         ],
+        'profile_at_a_glance' => [
+            'label' => 'AT A GLANCE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the basic business information / at a glance section (e.g. [business] at a glance).',
+        ],
         'profile_pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',

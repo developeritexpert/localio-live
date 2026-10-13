@@ -35,6 +35,8 @@ class CategoryTranslation extends Model
         'entities2_short_cap',
         'entities2_short_lc',
         'comparison_name',
+        'glance_option_3_label',
+        'glance_option_4_label',
         'see_all_text',
         'page_title',
         'title',

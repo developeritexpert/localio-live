@@ -236,6 +236,66 @@
                     </div>
                 </div>
 
+                {{-- Basic Business Information ("At a glance") --}}
+                <div class="card card-bordered mb-3">
+                    <div class="card-inner">
+                        <div class="form-group mb-2">
+                            <label class="form-label fw-bold" style="font-size: 1rem; color: #1e3050;">Basic Business Information ("At a glance")</label>
+                            <span class="text-muted d-block" style="font-size:0.8rem;">Values displayed in the "At a glance" card on the business profile page.</span>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="main_offering">{{ static_text('main_offering') ?: 'Main offering' }}</label>
+                                    <input type="text" class="form-control @error('main_offering') is-invalid @enderror"
+                                        id="main_offering"
+                                        placeholder="e.g. Web hosting and domain services"
+                                        wire:model.live="main_offering" />
+                                    @error('main_offering')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="suitable_for">{{ static_text('suitable_for') ?: 'Suitable for' }}</label>
+                                    <input type="text" class="form-control @error('suitable_for') is-invalid @enderror"
+                                        id="suitable_for"
+                                        placeholder="e.g. Website owners, bloggers, small businesses, and online stores"
+                                        wire:model.live="suitable_for" />
+                                    @error('suitable_for')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="glance_option_3">{{ $glanceOption3Label ?? 'Option 3' }}</label>
+                                    <input type="text" class="form-control @error('glance_option_3') is-invalid @enderror"
+                                        id="glance_option_3"
+                                        placeholder="Value for {{ $glanceOption3Label ?? 'Option 3' }}"
+                                        wire:model.live="glance_option_3" />
+                                    @error('glance_option_3')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="glance_option_4">{{ $glanceOption4Label ?? 'Option 4' }}</label>
+                                    <input type="text" class="form-control @error('glance_option_4') is-invalid @enderror"
+                                        id="glance_option_4"
+                                        placeholder="Value for {{ $glanceOption4Label ?? 'Option 4' }}"
+                                        wire:model.live="glance_option_4" />
+                                    @error('glance_option_4')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Preview Description (short_description) --}}
                 <div class="card card-bordered mb-3">
                     <div class="card-inner">

@@ -627,6 +627,8 @@ class CategoriesController extends Controller
                 'entities2_short_cap' => $request->input('entities2_short_cap'),
                 'entities2_short_lc'  => $request->input('entities2_short_lc'),
                 'comparison_name' => $validate['comparison_name'] ?? null,
+                'glance_option_3_label' => $request->input('glance_option_3_label'),
+                'glance_option_4_label' => $request->input('glance_option_4_label'),
                 'page_title'   => $validate['page_title'] ?? null,
                 'description'  => $validate['description'],
                 'faq_h1_title' => $request->input('faq_h1_title'),

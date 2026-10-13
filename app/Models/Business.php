@@ -407,5 +407,65 @@ class Business extends Model
         return $this->approved_reviews_count >= 10;
     }
 
-}
 
+    /**
+     * Resolve Option 3 and Option 4 labels for the "At a glance" box.
+     * Checks subcategory first (overwriting parent), then falls back to parent category.
+     */
+    public function getGlanceLabels(?int $langId = null): array
+    {
+        $langId = $langId ?? (function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : 1);
+        $option3 = null;
+        $option4 = null;
+
+        // 1. Check subcategories
+        $subCat = null;
+        if ($this->category && $this->category->parent_id) {
+            $subCat = $this->category;
+        } elseif ($this->relationLoaded('subCategories') ? $this->subCategories->isNotEmpty() : $this->subCategories()->exists()) {
+            $subCat = $this->relationLoaded('subCategories') ? $this->subCategories->first() : $this->subCategories()->first();
+        }
+
+        if ($subCat) {
+            $subTrans = \App\Models\CategoryTranslation::where('category_id', $subCat->id)
+                ->where('lang_id', $langId)
+                ->first() 
+                ?? \App\Models\CategoryTranslation::where('category_id', $subCat->id)->first();
+            if ($subTrans) {
+                if (!empty($subTrans->glance_option_3_label)) {
+                    $option3 = $subTrans->glance_option_3_label;
+                }
+                if (!empty($subTrans->glance_option_4_label)) {
+                    $option4 = $subTrans->glance_option_4_label;
+                }
+            }
+        }
+
+        // 2. Fall back to parent category if not set on subcategory
+        $parentCat = null;
+        if ($this->category) {
+            $parentCat = $this->category->parent_id ? $this->category->parent : $this->category;
+        }
+
+        if ($parentCat) {
+            $parentTrans = \App\Models\CategoryTranslation::where('category_id', $parentCat->id)
+                ->where('lang_id', $langId)
+                ->first() 
+                ?? \App\Models\CategoryTranslation::where('category_id', $parentCat->id)->first();
+            if ($parentTrans) {
+                if (empty($option3) && !empty($parentTrans->glance_option_3_label)) {
+                    $option3 = $parentTrans->glance_option_3_label;
+                }
+                if (empty($option4) && !empty($parentTrans->glance_option_4_label)) {
+                    $option4 = $parentTrans->glance_option_4_label;
+                }
+            }
+        }
+
+        return [
+            'option_3' => $option3 ?: 'Option 3',
+            'option_4' => $option4 ?: 'Option 4',
+        ];
+    }
+
+}
