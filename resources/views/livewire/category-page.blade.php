@@ -98,7 +98,7 @@
                                 {{ $applyDynamicVars($baseTitle) }}
                             </h1>
 
-                            <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
+                            <p class="size-16 txt-gry">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <div class="host-parra row ">
                         <div class="col-md-6 text-start">
                             
