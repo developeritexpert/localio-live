@@ -1265,7 +1265,7 @@
                                         </h2>
                                     
                                     @if(!empty($longDescription))
-                                    <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
+                                    <div class="rich-text-content mb-4" style="font-size: 16px; color: var(--color-dark-blue-text, #002347); line-height: 1.6;">
                                         {!! $longDescription !!}
                                     </div>
                                     @endif

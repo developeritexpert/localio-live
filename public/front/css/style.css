@@ -2111,11 +2111,46 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     font-size: 14px;
 }
 
-.is-asana-lft .is_text p {
+.is-asana-lft .is_text,
+.is-asana-lft .is_text p,
+.offering-section .is_text,
+.offering-section .is_text p,
+.after-image-desc .is_text,
+.after-image-desc .is_text p,
+.rich-text-content,
+.rich-text-content p {
     max-width: 100%;
-    padding-right: 12px;
+    font-size: 16px;
+    line-height: 1.6;
     font-weight: 400;
     color: var(--color-dark-blue-text);
+}
+
+.is-asana-lft .is_text p,
+.offering-section .is_text p,
+.after-image-desc .is_text p,
+.rich-text-content p {
+    padding-right: 12px;
+    margin-bottom: 14px;
+}
+
+/* Paragraph spacing for <br> in descriptions */
+.is_text br,
+.is-asana-lft br,
+.offering-section br,
+.after-image-desc br,
+.rich-text-content br {
+    content: "";
+    display: block;
+    margin-top: 14px;
+}
+
+.is_text br + br,
+.is-asana-lft br + br,
+.offering-section br + br,
+.after-image-desc br + br,
+.rich-text-content br + br {
+    display: none;
 }
 
 .subs_sec .email_box input {

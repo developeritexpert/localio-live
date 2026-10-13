@@ -1,4 +1,5 @@
 <div>
+    @include('User.partials.business_detail_styles')
 @php
     $lang_id = getCurrentLanguageID();
     $bCategoryIds = array_filter(array_unique(array_merge(
@@ -1515,7 +1516,7 @@ foreach ($altCriteria as $criterion) {
                             </h2>
                         
                             @if(!empty($longDescription))
-                            <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
+                            <div class="rich-text-content mb-4" style="font-size: 16px; color: var(--color-dark-blue-text, #002347); line-height: 1.6;">
                                 {!! $longDescription !!}
                             </div>
                             @endif

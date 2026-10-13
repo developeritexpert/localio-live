@@ -1,0 +1,51 @@
+/* Consistent Typography & Color for Business Descriptions, Services, and Previews */
+.is-asana-lft .is_text,
+.is-asana-lft .is_text p,
+.offering-section .is_text,
+.offering-section .is_text p,
+.after-image-desc .is_text,
+.after-image-desc .is_text p,
+.rich-text-content,
+.rich-text-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-dark-blue-text, #002347) !important;
+    font-weight: 400;
+}
+
+.is-asana-lft .is_text p,
+.offering-section .is_text p,
+.after-image-desc .is_text p,
+.rich-text-content p {
+    margin-bottom: 14px;
+}
+
+/* Paragraph spacing for <br> in frontend text content (e.g. from JSON or editor) */
+.is_text br,
+.is-asana-lft br,
+.offering-section br,
+.after-image-desc br,
+.rich-text-content br {
+    content: "";
+    display: block;
+    margin-top: 14px;
+}
+
+.is_text br + br,
+.is-asana-lft br + br,
+.offering-section br + br,
+.after-image-desc br + br,
+.rich-text-content br + br {
+    display: none;
+}
+
+.is-asana-lft .is_text b,
+.is-asana-lft .is_text strong,
+.offering-section .is_text b,
+.offering-section .is_text strong,
+.after-image-desc .is_text b,
+.after-image-desc .is_text strong,
+.rich-text-content b,
+.rich-text-content strong {
+    font-weight: 600;
+}

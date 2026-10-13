@@ -951,7 +951,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @php $offering = $business->offerings->first(); @endphp
                         @if($offering && (!empty($offering->headline) || !empty($offering->top_text)))
                         <div class="col-lg-12 mt-4 mb-2">
-                            <div class="offering-section">
+                            <div class="is-asana-lft offering-section">
                                 @php
                                     $bizOffersFallback = 'What ' . ($business->translations->first()->name ?? $business->name ?? '') . ' offers';
                                     $resolvedBizOffers = \App\Services\ContentTemplateService::resolveBusinessSection(
@@ -963,10 +963,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         ? $resolvedBizOffers['headline'] 
                                         : (!empty($offering->headline) ? $offering->headline : $bizOffersFallback);
                                 @endphp
-                                <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalBizOffers) !!}</h2>
+                                <h2 class="mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalBizOffers) !!}</h2>
 
                                 @if(!empty($offering->top_text))
-                                <div class="mb-2">
+                                <div class="is_text">
                                     {!! $offering->top_text !!}
                                 </div>
                                 @endif
@@ -1116,8 +1116,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endphp
                         @if (!empty($afterImageDesc))
                         <div class="col-lg-12 mt-2 after-image-desc">
-                            <div class="is_text">
-                                {!! $afterImageDesc !!}
+                            <div class="is-asana-lft">
+                                <div class="is_text">
+                                    {!! $afterImageDesc !!}
+                                </div>
                             </div>
                         </div>
                         @endif
