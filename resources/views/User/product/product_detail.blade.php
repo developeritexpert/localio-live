@@ -967,7 +967,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                 @if(!empty($offering->top_text))
                                 <div class="is_text">
-                                    {!! $offering->top_text !!}
+                                    {!! \App\Services\ContentTemplateService::formatServiceText($offering->top_text) !!}
                                 </div>
                                 @endif
                             </div>
@@ -1118,7 +1118,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="col-lg-12 mt-2 after-image-desc">
                             <div class="is-asana-lft">
                                 <div class="is_text">
-                                    {!! $afterImageDesc !!}
+                                    {!! \App\Services\ContentTemplateService::formatServiceText($afterImageDesc) !!}
                                 </div>
                             </div>
                         </div>
@@ -1193,20 +1193,150 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             @if($business->features->count() > 0)
-                            <div class="features-chips-container mt-3">
-                                <div class="fw-bold mb-2" style="font-size: 14px; color: #1e3050;">Key features</div>
+                            @php
+                                $bizFeatures = $business->features;
+                                $featuresByGroup = [];
+                                $allFeatList = [];
+
+                                foreach ($bizFeatures as $feat) {
+                                    $priority = intval($feat->key_priority ?? ($feat->translations->first()?->key_priority ?? 0));
+                                    $grp = trim($feat->group_key ?? ($feat->translations->first()?->group_key ?? ''));
+                                    
+                                    $item = [
+                                        'model'    => $feat,
+                                        'name'     => optional($feat->translations->first())->name ?? $feat->name,
+                                        'priority' => $priority,
+                                        'group'    => $grp,
+                                    ];
+                                    
+                                    if ($grp !== '') {
+                                        $featuresByGroup[$grp][] = $item;
+                                    }
+                                    $allFeatList[] = $item;
+                                }
+
+                                // Sort each group's features by priority DESC, then name
+                                foreach ($featuresByGroup as $grp => &$gItems) {
+                                    usort($gItems, function($a, $b) {
+                                        if ($b['priority'] === $a['priority']) {
+                                            return strcmp($a['name'], $b['name']);
+                                        }
+                                        return $b['priority'] <=> $a['priority'];
+                                    });
+                                }
+                                unset($gItems);
+
+                                // Compute top ~10 Key Features with a balanced mix across groups
+                                $keyFeatures = [];
+                                $selectedIds = [];
+                                $maxKeyFeatures = 10;
+
+                                if (count($allFeatList) <= $maxKeyFeatures) {
+                                    usort($allFeatList, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                    $keyFeatures = $allFeatList;
+                                } else {
+                                    // Step 1: Pick top feature from each group first to guarantee representation
+                                    foreach ($featuresByGroup as $grp => $gItems) {
+                                        if (!empty($gItems)) {
+                                            $top = $gItems[0];
+                                            $keyFeatures[] = $top;
+                                            $selectedIds[$top['model']->id] = true;
+                                            if (count($keyFeatures) >= $maxKeyFeatures) break;
+                                        }
+                                    }
+
+                                    // Step 2: Fill remaining slots up to 10 by overall priority
+                                    if (count($keyFeatures) < $maxKeyFeatures) {
+                                        $rem = [];
+                                        foreach ($allFeatList as $item) {
+                                            if (!isset($selectedIds[$item['model']->id])) {
+                                                $rem[] = $item;
+                                            }
+                                        }
+                                        usort($rem, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                        foreach ($rem as $item) {
+                                            $keyFeatures[] = $item;
+                                            $selectedIds[$item['model']->id] = true;
+                                            if (count($keyFeatures) >= $maxKeyFeatures) break;
+                                        }
+                                    }
+
+                                    // Sort key features by priority DESC
+                                    usort($keyFeatures, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                }
+                            @endphp
+
+                            <div class="features-tabs-wrapper mt-3">
+                                @if(count($featuresByGroup) > 0)
+                                <ul class="nav feature-nav-tabs mb-3 border-bottom d-flex flex-wrap" id="featureTabList" role="tablist" style="border-bottom: 2px solid #edf2f7 !important; gap: 20px;">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active feature-tab-link" id="tab-feat-key" data-bs-toggle="tab" data-bs-target="#pane-feat-key" type="button" role="tab" aria-selected="true">
+                                            Key features
+                                        </button>
+                                    </li>
+                                    @foreach($featuresByGroup as $grpName => $grpItems)
+                                    @php $grpSlug = 'feat-grp-' . Str::slug($grpName); @endphp
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link feature-tab-link" id="tab-{{ $grpSlug }}" data-bs-toggle="tab" data-bs-target="#pane-{{ $grpSlug }}" type="button" role="tab" aria-selected="false">
+                                            {{ $grpName }}
+                                        </button>
+                                    </li>
+                                    @endforeach
+                                </ul>
+
+                                <div class="tab-content" id="featureTabContent">
+                                    {{-- Key Features Pane --}}
+                                    <div class="tab-pane fade show active" id="pane-feat-key" role="tabpanel" aria-labelledby="tab-feat-key">
+                                        <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
+                                            @foreach($keyFeatures as $kf)
+                                            @php
+                                            $featModel = $kf['model'];
+                                            $featName = $kf['name'];
+                                            $featSlug = Str::slug($featName);
+                                            $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                            @endphp
+                                            <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
+                                                {{ $featName }}
+                                            </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Group Panes --}}
+                                    @foreach($featuresByGroup as $grpName => $grpItems)
+                                    @php $grpSlug = 'feat-grp-' . Str::slug($grpName); @endphp
+                                    <div class="tab-pane fade" id="pane-{{ $grpSlug }}" role="tabpanel" aria-labelledby="tab-{{ $grpSlug }}">
+                                        <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
+                                            @foreach($grpItems as $gf)
+                                            @php
+                                            $featModel = $gf['model'];
+                                            $featName = $gf['name'];
+                                            $featSlug = Str::slug($featName);
+                                            $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                            @endphp
+                                            <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
+                                                {{ $featName }}
+                                            </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
                                 <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
-                                    @foreach($business->features as $feat)
+                                    @foreach($allFeatList as $kf)
                                     @php
-                                    $featName = optional($feat->translations->first())->name ?? $feat->name;
+                                    $featModel = $kf['model'];
+                                    $featName = $kf['name'];
                                     $featSlug = Str::slug($featName);
                                     $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
                                     @endphp
-                                    <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px; ">
+                                    <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
                                         {{ $featName }}
                                     </a>
                                     @endforeach
                                 </div>
+                                @endif
                             </div>
                             @endif
                         </div>

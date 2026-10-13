@@ -111,7 +111,7 @@
                     x-data="{
                              open: false,
                              copyTemplate() {
-                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[long_preview_description]\n<p>Extended preview description...</p>\n\n[features]\nFeature Name 1\nFeature Name 2\nFeature Name 3\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click install\nFree CDN included';
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[long_preview_description]\n<p>Extended preview description...</p>\n\n[offerings_top_text]\n<p>Services introduction text...</p>\n\n[after_image_description]\n[headline]Feature Capability 1[/headline]\n<p>Description of capability 1...</p>\n\n[headline]Feature Capability 2[/headline]\n<p>Description of capability 2...</p>\n\n[features]\nFeature Name 1\nFeature Name 2\nFeature Name 3\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click install\nFree CDN included';
                                  navigator.clipboard.writeText(t).then(function() {
                                      alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
                                  }).catch(function() {

@@ -49,3 +49,66 @@
 .rich-text-content strong {
     font-weight: 600;
 }
+
+/* Service Subheadings (e.g. from [headline]...[/headline] or <h3> in service text) */
+.after-image-desc .is_text h3,
+.offering-section .is_text h3,
+.is_text h3,
+.service-subheading {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark-blue-text, #002347) !important;
+    margin-top: 26px !important;
+    margin-bottom: 10px !important;
+    line-height: 1.4 !important;
+}
+
+.after-image-desc .is_text > h3:first-child,
+.offering-section .is_text > h3:first-child,
+.is_text > h3:first-child {
+    margin-top: 6px !important;
+}
+
+/* Feature Category Tabs (Style matching criteria tabs with active underline) */
+.feature-nav-tabs {
+    border-bottom: 2px solid #edf2f7 !important;
+    gap: 20px;
+    padding-left: 0;
+    margin-bottom: 18px;
+    list-style: none;
+}
+
+.feature-nav-tabs .feature-tab-link {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 4px 10px 4px;
+    border: none !important;
+    background: transparent !important;
+    position: relative;
+    color: #718096 !important;
+    border-bottom: 2px solid transparent !important;
+    margin-bottom: -2px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.feature-nav-tabs .feature-tab-link:hover {
+    color: #1e3050 !important;
+}
+
+.feature-nav-tabs .feature-tab-link.active {
+    color: #1e3050 !important;
+    font-weight: 600 !important;
+    border-bottom: 2px solid #1e3050 !important;
+}
+
+.feature-pill {
+    transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.feature-pill:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-1px);
+}

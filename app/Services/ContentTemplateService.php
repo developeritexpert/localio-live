@@ -2442,6 +2442,32 @@ class ContentTemplateService
      * Cleans heading text from CKEditor by decoding entities, stripping block tags (<p>, <div>, etc.)
      * and preserving inline styling (<b>, <strong>, <i>, <em>, <span>, <mark>, <small>).
      */
+    /**
+     * Formats service description text by converting general [headline]...[/headline] markers
+     * or ### headings into semantic <h3> headlines, removing redundant <br> tags around them,
+     * and ensuring proper vertical spacing.
+     */
+    public static function formatServiceText(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // 1. Convert [headline]...[/headline], [h3]...[/h3], [headline: ...] to <h3>...</h3>
+        $text = preg_replace('/\[headline\](.*?)\[\/headline\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+        $text = preg_replace('/\[h3\](.*?)\[\/h3\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+        $text = preg_replace('/\[headline:\s*(.*?)\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+
+        // 2. Convert markdown ### Heading to <h3>Heading</h3>
+        $text = preg_replace('/(?:^|<br\s*\/?>|\n)\s*###\s*(.*?)(?=<br\s*\/?>|\n|$)/im', '<h3 class="service-subheading">$1</h3>', $text);
+
+        // 3. Remove redundant <br> tags immediately before or after <h2|h3> tags
+        $text = preg_replace('/(?:<br\s*\/?>\s*)+(<h[23][^>]*>)/i', '$1', $text);
+        $text = preg_replace('/(<\/h[23]>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $text);
+
+        return $text;
+    }
+
     public static function cleanHeading(?string $text): string
     {
         if (empty($text)) {
@@ -3109,7 +3135,8 @@ class ContentTemplateService
         }
 
         if ($templates->isEmpty()) {
-            return '';
+            $bName = $business->translations->first()->name ?? $business->name ?? 'this provider';
+            return '<p>Features and capabilities are compiled from publicly available sources and official specifications, as ' . $bName . ' currently has fewer than 10 verified community reviews.</p>';
         }
 
         $count = $templates->count();
