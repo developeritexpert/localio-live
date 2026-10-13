@@ -71,6 +71,12 @@ class BusinessEdit extends Component
     public $is_affiliate_partner = false;
     public $description_title = '';
     public $business_description = '';
+    public $main_offering = '';
+    public $suitable_for = '';
+    public $glance_option_3 = '';
+    public $glance_option_4 = '';
+    public $service_guide_html = '';
+    public $comparison_fit_summary = '';
     public $long_preview_description = '';
     public $alternatives_title = '';
     public $alternatives_description = '';
@@ -328,7 +334,14 @@ class BusinessEdit extends Component
 
     public function render()
     {
+        $bizForLabels = $this->businessId ? Business::with(['category.translations', 'subCategories.translations'])->find($this->businessId) : null;
+        $glanceLabels = $bizForLabels ? $bizForLabels->getGlanceLabels((int)($this->languages_supported ?: 1)) : ['option_3' => 'Option 3', 'option_4' => 'Option 4'];
+        $glanceOption3Label = $glanceLabels['option_3'];
+        $glanceOption4Label = $glanceLabels['option_4'];
+
         return view('livewire.business-edit', [
+            'glanceOption3Label' => $glanceOption3Label,
+            'glanceOption4Label' => $glanceOption4Label,
             'countries' => $this->countries,
         ]);
     }
@@ -1297,7 +1310,13 @@ class BusinessEdit extends Component
         $this->comparison_meta_title = $translation->comparison_meta_title ?? '';
         $this->comparison_meta_description = $translation->comparison_meta_description ?? '';
         $this->short_description = $translation->short_description ?? '';
+        $this->main_offering = $translation->main_offering ?? '';
+        $this->suitable_for = $translation->suitable_for ?? '';
+        $this->glance_option_3 = $translation->glance_option_3 ?? '';
+        $this->glance_option_4 = $translation->glance_option_4 ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
+        $this->service_guide_html = $translation->service_guide_html ?? '';
+        $this->comparison_fit_summary = $translation->comparison_fit_summary ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->slug = $translation->slug ?? '';
         $this->isSlugCustomized = !empty($this->slug) && !empty($this->name) && $this->slug !== Str::slug($this->name);
@@ -1594,7 +1613,15 @@ class BusinessEdit extends Component
         // For simplicity, we delete and recreate offerings.
         \App\Models\BusinessOffering::where('business_id', $businessId)->delete();
         foreach ($this->businessOfferings as $index => $offering) {
-            if (empty(trim($offering['headline'] ?? '')) && empty(trim($offering['top_text'] ?? ''))) {
+            $headline = trim($offering['headline'] ?? '');
+            $topText = trim($offering['top_text'] ?? '');
+            $bottomText = trim($offering['bottom_text'] ?? '');
+
+            if (empty($bottomText) && !empty(trim($this->after_image_description ?? ''))) {
+                $bottomText = trim($this->after_image_description);
+            }
+
+            if (empty($headline) && empty($topText) && empty($bottomText)) {
                 continue; // skip empty offerings
             }
 
@@ -1610,9 +1637,9 @@ class BusinessEdit extends Component
 
             \App\Models\BusinessOffering::create([
                 'business_id' => $businessId,
-                'headline' => trim($offering['headline'] ?? ''),
-                'top_text' => trim($offering['top_text'] ?? ''),
-                'bottom_text' => trim($offering['bottom_text'] ?? ''),
+                'headline' => $headline,
+                'top_text' => $topText,
+                'bottom_text' => $bottomText,
                 'image' => $imagePath,
             ]);
         }
@@ -1909,7 +1936,13 @@ class BusinessEdit extends Component
         $this->comparison_title_2        = $translation->comparison_title_2 ?? '';
         $this->comparison_description_2  = $translation->comparison_description_2 ?? '';
         $this->short_description         = $translation->short_description ?? '';
+        $this->main_offering             = $translation->main_offering ?? '';
+        $this->suitable_for              = $translation->suitable_for ?? '';
+        $this->glance_option_3           = $translation->glance_option_3 ?? '';
+        $this->glance_option_4           = $translation->glance_option_4 ?? '';
         $this->after_image_description   = $translation->after_image_description ?? '';
+        $this->service_guide_html        = $translation->service_guide_html ?? '';
+        $this->comparison_fit_summary    = $translation->comparison_fit_summary ?? '';
         $this->primary_keywords          = $translation->primary_keywords ?? '';
         $this->secondary_keywords        = $translation->secondary_keywords ?? '';
         $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
@@ -1985,7 +2018,13 @@ class BusinessEdit extends Component
             'comparison_title_2' => 'nullable|string|max:255',
             'comparison_description_2' => 'nullable|string',
             'short_description' => 'nullable|string',
+            'main_offering' => 'nullable|string',
+            'suitable_for' => 'nullable|string',
+            'glance_option_3' => 'nullable|string',
+            'glance_option_4' => 'nullable|string',
             'after_image_description' => 'nullable|string',
+            'service_guide_html' => 'nullable|string',
+            'comparison_fit_summary' => 'nullable|string',
             'slug' => [
                 'required',
                 'string',
@@ -2124,7 +2163,13 @@ class BusinessEdit extends Component
             'comparison_title_2' => $this->comparison_title_2,
             'comparison_description_2' => $this->comparison_description_2,
             'short_description' => $this->short_description,
+                'main_offering' => $this->main_offering,
+                'suitable_for' => $this->suitable_for,
+                'glance_option_3' => $this->glance_option_3,
+                'glance_option_4' => $this->glance_option_4,
             'after_image_description' => $this->after_image_description,
+            'service_guide_html' => $this->service_guide_html,
+            'comparison_fit_summary' => $this->comparison_fit_summary,
             'primary_keywords' => $this->primary_keywords,
             'secondary_keywords' => $this->secondary_keywords,
             'long_tail_keywords' => $this->long_tail_keywords,
@@ -2248,7 +2293,13 @@ class BusinessEdit extends Component
                 'comparison_meta_title' => $this->comparison_meta_title,
                 'comparison_meta_description' => $this->comparison_meta_description,
                 'short_description' => $this->short_description,
+                'main_offering' => $this->main_offering,
+                'suitable_for' => $this->suitable_for,
+                'glance_option_3' => $this->glance_option_3,
+                'glance_option_4' => $this->glance_option_4,
                 'after_image_description' => $this->after_image_description,
+                'service_guide_html' => $this->service_guide_html,
+                'comparison_fit_summary' => $this->comparison_fit_summary,
                 'primary_keywords' => $this->primary_keywords,
                 'secondary_keywords' => $this->secondary_keywords,
                 'long_tail_keywords' => $this->long_tail_keywords,
@@ -2414,12 +2465,25 @@ class BusinessEdit extends Component
         $scalarMap = [
             'name'                       => 'name',
             'short_description'          => 'short_description',
+            'main_offering'              => 'main_offering',
+            'suitable_for'               => 'suitable_for',
+            'glance_option_3'            => 'glance_option_3',
+            'option_3'                   => 'glance_option_3',
+            'hosting_options'            => 'glance_option_3',
+            'glance_option_4'            => 'glance_option_4',
+            'option_4'                   => 'glance_option_4',
+            'website_tools'              => 'glance_option_4',
             'description_title'          => 'description_title',
             'business_description'       => 'business_description',
             'pro_cons_headline'          => 'pro_cons_headline',
             'pro_cons_intro'             => 'pro_cons_intro',
             'pro_cons_summary'           => 'pro_cons_summary',
             'after_image_description'    => 'after_image_description',
+            'service_guide_html'         => 'service_guide_html',
+            'service_guide'              => 'service_guide_html',
+            'service_guide_text'         => 'service_guide_html',
+            'comparison_fit_summary'     => 'comparison_fit_summary',
+            'fit_summary'                => 'comparison_fit_summary',
             'alternatives_title'         => 'alternatives_title',
             'alternatives_description'   => 'alternatives_description',
             'alternatives_title_2'       => 'alternatives_title_2',
@@ -2578,6 +2642,9 @@ class BusinessEdit extends Component
         $this->dispatch('ai-content-applied', fields: [
             'business_description'       => $this->business_description,
             'long_preview_description'   => $this->long_preview_description,
+            'reviews_description'        => $this->reviews_description,
+            'offerings_top_text'         => $this->businessOfferings[0]['top_text'] ?? '',
+            'after_image_description'    => $this->after_image_description,
         ]);
 
         $this->aiApplyStatus = 'success';
@@ -2636,6 +2703,12 @@ class BusinessEdit extends Component
             'selectedPricingOptions',
             'categoryFeatures',
             'selectedFeatures',
+            'main_offering',
+            'suitable_for',
+            'glance_option_3',
+            'glance_option_4',
+            'service_guide_html',
+            'comparison_fit_summary',
         ]);
         $this->is_affiliate_partner = true;
         $this->affiliate_link = '';

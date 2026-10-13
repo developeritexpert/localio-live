@@ -183,6 +183,8 @@
                                             @endphp
                                             @php
                                                 $keyLabels = [
+                                                    'main_offering' => 'Main Offering Label (Business at a Glance)',
+                                                    'suitable_for' => 'Suitable For Label (Business at a Glance)',
                                                     'profile_and_reviews' => 'Profile & Reviews Button (formerly "View details")',
                                                     'visit_website' => 'Visit Website Button',
                                                     'category_badge_label' => 'Top Rated Badge (formerly "Top choice")',

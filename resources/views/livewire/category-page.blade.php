@@ -98,7 +98,7 @@
                                 {{ $applyDynamicVars($baseTitle) }}
                             </h1>
 
-                            <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
+                            <p class="size-16 txt-gry">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <div class="host-parra row ">
                         <div class="col-md-6 text-start">
                             
@@ -1139,7 +1139,7 @@
                                         </h2>
                                     
                                     @if(!empty($longDescription))
-                                    <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
+                                    <div class="rich-text-content mb-4" style="font-size: 16px; color: var(--color-dark-blue-text, #002347); line-height: 1.6;">
                                         {!! $longDescription !!}
                                     </div>
                                     @endif

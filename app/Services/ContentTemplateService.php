@@ -209,6 +209,24 @@ class ContentTemplateService
             'field1_label' => 'Headline',
             'description' => 'Headline for the What [business] offers section.',
         ],
+        'profile_at_a_glance' => [
+            'label' => 'AT A GLANCE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the basic business information / at a glance section (e.g. [business] at a glance).',
+        ],
+        'profile_service_guide' => [
+            'label' => 'SERVICE GUIDE HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline for the service guide / which service fits your needs section (e.g. Which [business] service fits your needs?).',
+        ],
+        'profile_detailed_services' => [
+            'label' => 'DETAILED SERVICES HEADLINE',
+            'type' => 'single',
+            'field1_label' => 'Headline',
+            'description' => 'Headline on the top of the second part of the services text (after screenshots).',
+        ],
         'profile_pros_cons' => [
             'label' => 'PROS & CONS',
             'type' => 'combined',
@@ -1627,6 +1645,16 @@ class ContentTemplateService
                 1 => 'What [business] offers',
                 2 => 'What does [business] offer?',
             ],
+            'profile_service_guide' => [
+                1 => 'Which [business] service fits your needs?',
+                2 => 'Find the right [business] service for your needs',
+                3 => 'Which [business] solution is right for you?',
+            ],
+            'profile_detailed_services' => [
+                1 => 'Detailed services',
+                2 => '[business] detailed services',
+                3 => 'Detailed services & features',
+            ],
             'profile_reviews' => [
                 1 => [
                     'headline' => '[business] user reviews ([count])',
@@ -2442,6 +2470,60 @@ class ContentTemplateService
      * Cleans heading text from CKEditor by decoding entities, stripping block tags (<p>, <div>, etc.)
      * and preserving inline styling (<b>, <strong>, <i>, <em>, <span>, <mark>, <small>).
      */
+    /**
+     * Formats service description text by converting general [headline]...[/headline] markers
+     * or ### headings into semantic <h3> headlines, removing redundant <br> tags around them,
+     * and ensuring proper vertical spacing.
+     */
+    public static function formatServiceText(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // 1. Convert [headline]...[/headline], <headline>...</headline>, [h3]...[/h3], [headline: ...] to <h3>...</h3>
+        $text = preg_replace('/<headline>(.*?)<\/headline>/is', '<h3 class="service-subheading">$1</h3>', $text);
+        $text = preg_replace('/\[headline\](.*?)\[\/headline\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+        $text = preg_replace('/\[h3\](.*?)\[\/h3\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+        $text = preg_replace('/\[headline:\s*(.*?)\]/is', '<h3 class="service-subheading">$1</h3>', $text);
+
+        // 2. Convert markdown ### Heading to <h3>Heading</h3>
+        $text = preg_replace('/(?:^|<br\s*\/?>|\n)\s*###\s*(.*?)(?=<br\s*\/?>|\n|$)/im', '<h3 class="service-subheading">$1</h3>', $text);
+
+        // 3. Remove redundant <br> tags immediately before or after <h2|h3> tags
+        $text = preg_replace('/(?:<br\s*\/?>\s*)+(<h[23][^>]*>)/i', '$1', $text);
+        $text = preg_replace('/(<\/h[23]>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $text);
+
+        return $text;
+    }
+
+    public static function formatServiceGuide(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // 1. Convert tags to <h3>
+        $text = preg_replace('/<headline>(.*?)<\/headline>/is', '<h3>$1</h3>', $text);
+        $text = preg_replace('/\[headline\](.*?)\[\/headline\]/is', '<h3>$1</h3>', $text);
+        $text = preg_replace('/\[h3\](.*?)\[\/h3\]/is', '<h3>$1</h3>', $text);
+        $text = preg_replace('/\[headline:\s*(.*?)\]/is', '<h3>$1</h3>', $text);
+
+        // 2. Convert markdown ### Heading to <h3>Heading</h3>
+        $text = preg_replace('/(?:^|<br\s*\/?>|
+)\s*###\s*(.*?)(?=<br\s*\/?>|
+|$)/im', '<h3>$1</h3>', $text);
+
+        // 3. Remove redundant <br> tags immediately before or after <h3|h2> tags
+        $text = preg_replace('/(?:<br\s*\/?>\s*)+(<h[23][^>]*>)/i', '$1', $text);
+        $text = preg_replace('/(<\/h[23]>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $text);
+
+        // 4. Remove empty paragraphs
+        $text = preg_replace('/<p>\s*(?:<br\s*\/?>|&nbsp;|\s)*<\/p>/i', '', $text);
+
+        return trim($text);
+    }
+
     public static function cleanHeading(?string $text): string
     {
         if (empty($text)) {
@@ -3109,7 +3191,8 @@ class ContentTemplateService
         }
 
         if ($templates->isEmpty()) {
-            return '';
+            $bName = $business->translations->first()->name ?? $business->name ?? 'this provider';
+            return '<p>Features and capabilities are compiled from publicly available sources and official specifications, as ' . $bName . ' currently has fewer than 10 verified community reviews.</p>';
         }
 
         $count = $templates->count();

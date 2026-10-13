@@ -401,6 +401,36 @@
                             </div>
                         </div>
 
+                        {{-- Basic Business Information ("At a glance") Labels for Options 3 & 4 --}}
+                        <div class="col-12 mt-4 pt-3 border-top">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-list-alt me-1"></i> Basic Business Information ("At a glance") Labels</h6>
+                            <small class="text-muted d-block mb-3">Define category-specific attribute labels for options 3 &amp; 4 displayed in the business profile "At a glance" card. If left blank on a subcategory, it inherits from the parent category.</small>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="glance_option_3_label">Option 3 Label</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="glance_option_3_label" name="glance_option_3_label"
+                                        placeholder="e.g. Hosting options"
+                                        value="{{ isset($category_data) ? ($category_data['glance_option_3_label'] ?? '') : old('glance_option_3_label') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Hosting options (leave blank on subcategory to inherit from parent)</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="glance_option_4_label">Option 4 Label</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="glance_option_4_label" name="glance_option_4_label"
+                                        placeholder="e.g. Website tools"
+                                        value="{{ isset($category_data) ? ($category_data['glance_option_4_label'] ?? '') : old('glance_option_4_label') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Website tools (leave blank on subcategory to inherit from parent)</small>
+                            </div>
+                        </div>
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="description">Header Text (First Introductory Paragraph)</label>

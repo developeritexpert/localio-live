@@ -927,23 +927,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     }
                                 }
                             </style>
-@endpush
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.pro-con-info-btn');
-            document.querySelectorAll('.pro-con-info-btn.is-active').forEach(function(el) {
-                if (el !== btn) el.classList.remove('is-active');
-            });
-            if (btn) {
-                e.stopPropagation();
-                btn.classList.toggle('is-active');
-            }
-        });
-    });
-</script>
-@endpush
+                            @endpush
+                            @push('scripts')
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    document.addEventListener('click', function(e) {
+                                        const btn = e.target.closest('.pro-con-info-btn');
+                                        document.querySelectorAll('.pro-con-info-btn.is-active').forEach(function(el) {
+                                            if (el !== btn) el.classList.remove('is-active');
+                                        });
+                                        if (btn) {
+                                            e.stopPropagation();
+                                            btn.classList.toggle('is-active');
+                                        }
+                                    });
+                                });
+                            </script>
+                            @endpush
 
                         </div>
                         @endif
@@ -951,7 +951,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @php $offering = $business->offerings->first(); @endphp
                         @if($offering && (!empty($offering->headline) || !empty($offering->top_text)))
                         <div class="col-lg-12 mt-4 mb-2">
-                            <div class="offering-section">
+                            <div class="is-asana-lft offering-section">
                                 @php
                                     $bizOffersFallback = 'What ' . ($business->translations->first()->name ?? $business->name ?? '') . ' offers';
                                     $resolvedBizOffers = \App\Services\ContentTemplateService::resolveBusinessSection(
@@ -963,13 +963,83 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         ? $resolvedBizOffers['headline'] 
                                         : (!empty($offering->headline) ? $offering->headline : $bizOffersFallback);
                                 @endphp
-                                <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalBizOffers) !!}</h2>
+                                <h2 class="mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalBizOffers) !!}</h2>
 
                                 @if(!empty($offering->top_text))
-                                <div class="mb-2">
-                                    {!! $offering->top_text !!}
+                                <div class="is_text">
+                                    {!! \App\Services\ContentTemplateService::formatServiceText($offering->top_text) !!}
                                 </div>
                                 @endif
+                            </div>
+                        </div>
+                        @endif
+
+                        @php
+                            $bTransGuide = $business->translations->where('lang_id', getCurrentLanguageID())->first() ?? $business->translations->first();
+                            $serviceGuideHtml = $bTransGuide->service_guide_html ?? null;
+                        @endphp
+                        @if(!empty($serviceGuideHtml))
+                        <div class="col-lg-12 mt-4 mb-4 service-guide-section">
+                            <style>
+                                .service-guide-box {
+                                    border: 1px solid #eef2f6;
+                                    border-radius: 12px;
+                                    background-color: #ffffff;
+                                    box-shadow: 0 2px 10px rgba(0, 35, 71, 0.04);
+                                    padding: 24px 28px;
+                                }
+                                .service-guide-box .service-guide-title {
+                                    color: #002347;
+                                    font-weight: 700;
+                                    font-size: 20px;
+                                    line-height: 1.35;
+                                    margin-bottom: 20px;
+                                }
+                                .service-guide-content h3 {
+                                    color: #002347;
+                                    font-size: 15px;
+                                    font-weight: 700;
+                                    line-height: 1.4;
+                                    margin-top: 18px;
+                                    margin-bottom: 6px;
+                                }
+                                .service-guide-content > *:first-child,
+                                .service-guide-content > h3:first-child {
+                                    margin-top: 0 !important;
+                                    border-top: none !important;
+                                    padding-top: 0 !important;
+                                }
+                                .service-guide-content h3:not(:first-child) {
+                                    border-top: 1px solid #f1f5f9;
+                                    padding-top: 18px;
+                                    margin-top: 18px;
+                                }
+                                .service-guide-content p {
+                                    color: #475569;
+                                    font-size: 13.5px;
+                                    line-height: 1.55;
+                                    margin-bottom: 0;
+                                }
+                                .service-guide-content p + p {
+                                    margin-top: 8px;
+                                }
+                            </style>
+                            <div class="service-guide-box">
+                                @php
+                                    $bizGuideFallback = 'Which ' . ($business->translations->first()->name ?? $business->name ?? '') . ' service fits your needs?';
+                                    $resolvedGuide = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_service_guide',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalGuideH2 = !empty($resolvedGuide['headline']) 
+                                        ? $resolvedGuide['headline'] 
+                                        : $bizGuideFallback;
+                                @endphp
+                                <h2 class="service-guide-title mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                <div class="service-guide-content">
+                                    {!! \App\Services\ContentTemplateService::formatServiceGuide($serviceGuideHtml) !!}
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -1115,9 +1185,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         $afterImageDesc = $business->translations->first()?->after_image_description ?? ($offering->bottom_text ?? null);
                         @endphp
                         @if (!empty($afterImageDesc))
-                        <div class="col-lg-12 mt-2 after-image-desc">
-                            <div class="is_text">
-                                {!! $afterImageDesc !!}
+                        <div class="col-lg-12 mt-4 after-image-desc">
+                            <div class="is-asana-lft">
+                                @php
+                                    $bizDetailedServicesFallback = 'Detailed services';
+                                    $resolvedDetailedServices = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_detailed_services',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalDetailedServicesH2 = !empty($resolvedDetailedServices['headline']) 
+                                        ? $resolvedDetailedServices['headline'] 
+                                        : $bizDetailedServicesFallback;
+                                @endphp
+                                <h2 class="mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
+                                <div class="is_text">
+                                    {!! \App\Services\ContentTemplateService::formatServiceText($afterImageDesc) !!}
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -1191,20 +1275,150 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
 
                             @if($business->features->count() > 0)
-                            <div class="features-chips-container mt-3">
-                                <div class="fw-bold mb-2" style="font-size: 14px; color: #1e3050;">Key features</div>
+                            @php
+                                $bizFeatures = $business->features;
+                                $featuresByGroup = [];
+                                $allFeatList = [];
+
+                                foreach ($bizFeatures as $feat) {
+                                    $priority = intval($feat->key_priority ?? ($feat->translations->first()?->key_priority ?? 0));
+                                    $grp = trim($feat->group_key ?? ($feat->translations->first()?->group_key ?? ''));
+                                    
+                                    $item = [
+                                        'model'    => $feat,
+                                        'name'     => optional($feat->translations->first())->name ?? $feat->name,
+                                        'priority' => $priority,
+                                        'group'    => $grp,
+                                    ];
+                                    
+                                    if ($grp !== '') {
+                                        $featuresByGroup[$grp][] = $item;
+                                    }
+                                    $allFeatList[] = $item;
+                                }
+
+                                // Sort each group's features by priority DESC, then name
+                                foreach ($featuresByGroup as $grp => &$gItems) {
+                                    usort($gItems, function($a, $b) {
+                                        if ($b['priority'] === $a['priority']) {
+                                            return strcmp($a['name'], $b['name']);
+                                        }
+                                        return $b['priority'] <=> $a['priority'];
+                                    });
+                                }
+                                unset($gItems);
+
+                                // Compute top ~10 Key Features with a balanced mix across groups
+                                $keyFeatures = [];
+                                $selectedIds = [];
+                                $maxKeyFeatures = 10;
+
+                                if (count($allFeatList) <= $maxKeyFeatures) {
+                                    usort($allFeatList, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                    $keyFeatures = $allFeatList;
+                                } else {
+                                    // Step 1: Pick top feature from each group first to guarantee representation
+                                    foreach ($featuresByGroup as $grp => $gItems) {
+                                        if (!empty($gItems)) {
+                                            $top = $gItems[0];
+                                            $keyFeatures[] = $top;
+                                            $selectedIds[$top['model']->id] = true;
+                                            if (count($keyFeatures) >= $maxKeyFeatures) break;
+                                        }
+                                    }
+
+                                    // Step 2: Fill remaining slots up to 10 by overall priority
+                                    if (count($keyFeatures) < $maxKeyFeatures) {
+                                        $rem = [];
+                                        foreach ($allFeatList as $item) {
+                                            if (!isset($selectedIds[$item['model']->id])) {
+                                                $rem[] = $item;
+                                            }
+                                        }
+                                        usort($rem, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                        foreach ($rem as $item) {
+                                            $keyFeatures[] = $item;
+                                            $selectedIds[$item['model']->id] = true;
+                                            if (count($keyFeatures) >= $maxKeyFeatures) break;
+                                        }
+                                    }
+
+                                    // Sort key features by priority DESC
+                                    usort($keyFeatures, fn($a, $b) => $b['priority'] <=> $a['priority']);
+                                }
+                            @endphp
+
+                            <div class="features-tabs-wrapper mt-3">
+                                @if(count($featuresByGroup) > 0)
+                                <ul class="nav feature-nav-tabs mb-3 border-bottom d-flex flex-wrap" id="featureTabList" role="tablist" style="border-bottom: 2px solid #edf2f7 !important; gap: 20px;">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active feature-tab-link" id="tab-feat-key" data-bs-toggle="tab" data-bs-target="#pane-feat-key" type="button" role="tab" aria-selected="true">
+                                            Key features
+                                        </button>
+                                    </li>
+                                    @foreach($featuresByGroup as $grpName => $grpItems)
+                                    @php $grpSlug = 'feat-grp-' . Str::slug($grpName); @endphp
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link feature-tab-link" id="tab-{{ $grpSlug }}" data-bs-toggle="tab" data-bs-target="#pane-{{ $grpSlug }}" type="button" role="tab" aria-selected="false">
+                                            {{ $grpName }}
+                                        </button>
+                                    </li>
+                                    @endforeach
+                                </ul>
+
+                                <div class="tab-content" id="featureTabContent">
+                                    {{-- Key Features Pane --}}
+                                    <div class="tab-pane fade show active" id="pane-feat-key" role="tabpanel" aria-labelledby="tab-feat-key">
+                                        <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
+                                            @foreach($keyFeatures as $kf)
+                                            @php
+                                            $featModel = $kf['model'];
+                                            $featName = $kf['name'];
+                                            $featSlug = Str::slug($featName);
+                                            $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                            @endphp
+                                            <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
+                                                {{ $featName }}
+                                            </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Group Panes --}}
+                                    @foreach($featuresByGroup as $grpName => $grpItems)
+                                    @php $grpSlug = 'feat-grp-' . Str::slug($grpName); @endphp
+                                    <div class="tab-pane fade" id="pane-{{ $grpSlug }}" role="tabpanel" aria-labelledby="tab-{{ $grpSlug }}">
+                                        <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
+                                            @foreach($grpItems as $gf)
+                                            @php
+                                            $featModel = $gf['model'];
+                                            $featName = $gf['name'];
+                                            $featSlug = Str::slug($featName);
+                                            $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                            @endphp
+                                            <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
+                                                {{ $featName }}
+                                            </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
                                 <div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
-                                    @foreach($business->features as $feat)
+                                    @foreach($allFeatList as $kf)
                                     @php
-                                    $featName = optional($feat->translations->first())->name ?? $feat->name;
+                                    $featModel = $kf['model'];
+                                    $featName = $kf['name'];
                                     $featSlug = Str::slug($featName);
                                     $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
                                     @endphp
-                                    <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px; ">
+                                    <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px;">
                                         {{ $featName }}
                                     </a>
                                     @endforeach
                                 </div>
+                                @endif
                             </div>
                             @endif
                         </div>
@@ -1428,10 +1642,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             @if ($altbusiness->id == $business->id)
                                                             @continue
                                                             @endif
+                                                            @php
+                                                                $altSlug = !empty($altbusiness->translations->first()->slug) ? $altbusiness->translations->first()->slug : (!empty($altbusiness->slug) ? $altbusiness->slug : (string)$altbusiness->id);
+                                                            @endphp
                                                             <div class="sftware-alternative-pck" data-aos="fade-up"
                                                                 data-aos-duration="1000"
-                                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}'; }"
-                                                                style="cursor: pointer; padding: 25px 20px;">
+                                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}'; }"
+                                                                style="cursor: pointer; padding: 25px 20px; display: flex; flex-direction: column;">
                                                                 @php
                                                                 $altStartingPrice = 'N/A';
                                                                 $altCurrency = '$';
@@ -1532,6 +1749,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 </div>
 
+                                                                @if($count >= 10)
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                                     <div class="fw_700 mb-3" style="color: #002347; font-size:14px; font-weight: 700;">User rating</div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -1575,6 +1793,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                @endif
 
                                                                 @php
                                                                     $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
@@ -1593,8 +1812,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 @endif
 
-                                                                <div class="sftwre-alt-btn pt-2">
-                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
+                                                                <div class="sftwre-alt-btn pt-2 mt-auto">
+                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}"
                                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                         style=" padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                                         {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
@@ -1612,7 +1831,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     $languageObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                                     $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
                                                     @endphp
-                                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug ?? $business->slug ?? '', 'alternatives_slug' => $expectedAlternativesSlug]) }}"
+                                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => !empty($business->translations->first()->slug) ? $business->translations->first()->slug : (!empty($business->slug) ? $business->slug : (string)$business->id), 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                                         class="view-more-link"
                                                         style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                         View more alternatives
@@ -2569,6 +2788,95 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
 
                             @php
+                                $glanceResolved = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_at_a_glance', $lang_id ?? 1);
+                                $glanceHeadline = !empty($glanceResolved['headline']) 
+                                    ? $glanceResolved['headline'] 
+                                    : (($business->translations->first()->name ?? $business->name ?? '') . ' at a glance');
+                                $glanceLabels = $business->getGlanceLabels($lang_id ?? 1);
+                                $mainOfferingLabel = static_text('main_offering') ?: 'Main offering';
+                                $suitableForLabel = static_text('suitable_for') ?: 'Suitable for';
+                                $opt3Label = $glanceLabels['option_3'] ?: 'Option 3';
+                                $opt4Label = $glanceLabels['option_4'] ?: 'Option 4';
+
+                                $bTransGlance = $business->translations->where('lang_id', $lang_id ?? 1)->first() ?? $business->translations->first();
+                                $mainOfferingVal = $bTransGlance->main_offering ?? null;
+                                $suitableForVal = $bTransGlance->suitable_for ?? null;
+                                $opt3Val = $bTransGlance->glance_option_3 ?? null;
+                                $opt4Val = $bTransGlance->glance_option_4 ?? null;
+                                $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || !empty($opt3Val) || !empty($opt4Val);
+                            @endphp
+
+                            @if($hasGlanceData)
+                            <div class="main_feature_lg not-on-mobile d-none d-md-block business-glance-card-wrapper" style="margin-top: 20px;">
+                                <style>
+                                    .business-glance-list .glance-item {
+                                        display: flex;
+                                        align-items: flex-start;
+                                        justify-content: space-between;
+                                        gap: 16px;
+                                        padding: 11px 0;
+                                        border-bottom: 1px solid #f0f0f0;
+                                    }
+                                    .business-glance-list .glance-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
+                                    .business-glance-list .glance-item:first-child {
+                                        padding-top: 4px;
+                                    }
+                                    .business-glance-list .glance-label {
+                                        font-weight: 600;
+                                        font-size: 13.5px;
+                                        color: #1e3050;
+                                        flex: 0 0 35%;
+                                        min-width: 110px;
+                                        line-height: 1.4;
+                                    }
+                                    .business-glance-list .glance-value {
+                                        font-size: 13px;
+                                        color: #475569;
+                                        line-height: 1.45;
+                                        flex: 1;
+                                        text-align: left;
+                                    }
+                                </style>
+                                <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
+                                    <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
+                                        <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
+                                            {{ $glanceHeadline }}
+                                        </h3>
+                                    </div>
+                                    <div class="business-glance-list">
+                                        @if(!empty($mainOfferingVal))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $mainOfferingLabel }}</span>
+                                            <span class="glance-value">{{ $mainOfferingVal }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($suitableForVal))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $suitableForLabel }}</span>
+                                            <span class="glance-value">{{ $suitableForVal }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($opt3Val))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $opt3Label }}</span>
+                                            <span class="glance-value">{{ $opt3Val }}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($opt4Val))
+                                        <div class="glance-item">
+                                            <span class="glance-label">{{ $opt4Label }}</span>
+                                            <span class="glance-value">{{ $opt4Val }}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            @php
                             $hasFreeTrial = false;
                             if ($business->relationLoaded('products')) {
                             $hasFreeTrial = $business->products->flatMap->pricingOptions->contains('slug', 'free-trial');
@@ -2718,6 +3026,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     }
                                     }
                                     @endphp
+                                    @if($hasUserRatings && isset($topReviews) && $topReviews->count() > 0)
                                     <div class="main_feature_lg">
                                         <div class="feture_box review-breakdown-box not-on-mobile">
 
@@ -2807,6 +3116,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         </div>
                                     </div>
+                                    @endif
                                     @php
                                         $sidebarDiscussions = $business->discussions()->with(['user'])->latest()->take(2)->get();
                                     @endphp

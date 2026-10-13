@@ -279,6 +279,8 @@ class StaticContentController extends Controller
             'product_detail_page' => [
                 'title' => 'Product Profile & Listing Cards Text',
                 'keys' => [
+                    'main_offering',
+                    'suitable_for',
                     'review_breakdown_heading',
                     'recommended_by_users',
                     'pros_label',

@@ -193,6 +193,9 @@ class FeatureController extends Controller
                 $featureTc     = $item['features_tc'] ?? ($item['feature_tc'] ?? ($item['category_tc'] ?? ''));
                 $featureLc     = $item['feature_lc'] ?? ($item['category_lc'] ?? '');
                 $featureWithLc = $item['feature_with_lc'] ?? '';
+                $groupKey      = !empty($item['group_key']) ? trim((string)$item['group_key']) : (!empty($item['category']) ? trim((string)$item['category']) : null);
+                $keyPriority   = isset($item['key_priority']) ? intval($item['key_priority']) : (isset($item['priority']) ? intval($item['priority']) : 0);
+                $keyPriority   = max(0, min(10, $keyPriority));
 
                 // Fallbacks if any field is empty
                 if (empty($featureCap) && !empty($featureTc)) {
@@ -235,7 +238,15 @@ class FeatureController extends Controller
                 if ($existingTranslation) {
                     $feature = Feature::find($existingTranslation->feature_id);
                     if ($feature) {
-                        $feature->update(['category_id' => $request->category_id]);
+                        $featUpdate = ['category_id' => $request->category_id];
+                        if ($groupKey !== null) {
+                            $featUpdate['group_key'] = $groupKey;
+                        }
+                        if (isset($item['key_priority']) || isset($item['priority'])) {
+                            $featUpdate['key_priority'] = $keyPriority;
+                        }
+                        $feature->update($featUpdate);
+
                         $updateData = [
                             'name'            => $name,
                             'feature_cap'     => $featureCap,
@@ -248,6 +259,12 @@ class FeatureController extends Controller
                             'category_lc'     => $featureLc,
                             'updated_at'      => now(),
                         ];
+                        if ($groupKey !== null) {
+                            $updateData['group_key'] = $groupKey;
+                        }
+                        if (isset($item['key_priority']) || isset($item['priority'])) {
+                            $updateData['key_priority'] = $keyPriority;
+                        }
                         if (!empty($description)) {
                             $updateData['description'] = $description;
                         }
@@ -255,8 +272,10 @@ class FeatureController extends Controller
                     }
                 } else {
                     $feature = Feature::create([
-                        'category_id' => $request->category_id,
-                        'status'      => 'active',
+                        'category_id'  => $request->category_id,
+                        'status'       => 'active',
+                        'group_key'    => $groupKey,
+                        'key_priority' => $keyPriority,
                     ]);
 
                     $insertData = [
@@ -270,6 +289,8 @@ class FeatureController extends Controller
                         'category_cap'    => $featureCap,
                         'category_tc'     => $featureTc,
                         'category_lc'     => $featureLc,
+                        'group_key'       => $groupKey,
+                        'key_priority'    => $keyPriority,
                     ];
                     if (!empty($description)) {
                         $insertData['description'] = $description;

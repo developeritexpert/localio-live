@@ -3630,7 +3630,7 @@ header .sec_head {
             <div class="category-sidebar-panels-container" id="sidebar-panels-container">
                 <!-- Main Panel -->
                 <div class="category-sidebar-panel active" id="main-panel">
-                    <div class="sidebar-menu-section">
+                    <div class="sidebar-menu-section d-none">
                         <h3 class="sidebar-section-title">Trending</h3>
                         <ul class="sidebar-menu-list">
                             <li>
