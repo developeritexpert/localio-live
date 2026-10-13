@@ -1566,7 +1566,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <div class="sftware-alternative-pck" data-aos="fade-up"
                                                                 data-aos-duration="1000"
                                                                 onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}'; }"
-                                                                style="cursor: pointer; padding: 25px 20px;">
+                                                                style="cursor: pointer; padding: 25px 20px; display: flex; flex-direction: column;">
                                                                 @php
                                                                 $altStartingPrice = 'N/A';
                                                                 $altCurrency = '$';
@@ -1667,6 +1667,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 </div>
 
+                                                                @if($count >= 10)
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                                     <div class="fw_700 mb-3" style="color: #002347; font-size:14px; font-weight: 700;">User rating</div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -1710,6 +1711,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                @endif
 
                                                                 @php
                                                                     $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
@@ -1728,7 +1730,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 @endif
 
-                                                                <div class="sftwre-alt-btn pt-2">
+                                                                <div class="sftwre-alt-btn pt-2 mt-auto">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altSlug]) }}"
                                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                         style=" padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
