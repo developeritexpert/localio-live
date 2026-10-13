@@ -975,6 +975,76 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endif
 
                         @php
+                            $bTransGuide = $business->translations->where('lang_id', getCurrentLanguageID())->first() ?? $business->translations->first();
+                            $serviceGuideHtml = $bTransGuide->service_guide_html ?? null;
+                        @endphp
+                        @if(!empty($serviceGuideHtml))
+                        <div class="col-lg-12 mt-4 mb-4 service-guide-section">
+                            <style>
+                                .service-guide-box {
+                                    border: 1px solid #eef2f6;
+                                    border-radius: 12px;
+                                    background-color: #ffffff;
+                                    box-shadow: 0 2px 10px rgba(0, 35, 71, 0.04);
+                                    padding: 24px 28px;
+                                }
+                                .service-guide-box .service-guide-title {
+                                    color: #002347;
+                                    font-weight: 700;
+                                    font-size: 20px;
+                                    line-height: 1.35;
+                                    margin-bottom: 20px;
+                                }
+                                .service-guide-content h3 {
+                                    color: #002347;
+                                    font-size: 15px;
+                                    font-weight: 700;
+                                    line-height: 1.4;
+                                    margin-top: 18px;
+                                    margin-bottom: 6px;
+                                }
+                                .service-guide-content > *:first-child,
+                                .service-guide-content > h3:first-child {
+                                    margin-top: 0 !important;
+                                    border-top: none !important;
+                                    padding-top: 0 !important;
+                                }
+                                .service-guide-content h3:not(:first-child) {
+                                    border-top: 1px solid #f1f5f9;
+                                    padding-top: 18px;
+                                    margin-top: 18px;
+                                }
+                                .service-guide-content p {
+                                    color: #475569;
+                                    font-size: 13.5px;
+                                    line-height: 1.55;
+                                    margin-bottom: 0;
+                                }
+                                .service-guide-content p + p {
+                                    margin-top: 8px;
+                                }
+                            </style>
+                            <div class="service-guide-box">
+                                @php
+                                    $bizGuideFallback = 'Which ' . ($business->translations->first()->name ?? $business->name ?? '') . ' service fits your needs?';
+                                    $resolvedGuide = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_service_guide',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalGuideH2 = !empty($resolvedGuide['headline']) 
+                                        ? $resolvedGuide['headline'] 
+                                        : $bizGuideFallback;
+                                @endphp
+                                <h2 class="service-guide-title mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                <div class="service-guide-content">
+                                    {!! \App\Services\ContentTemplateService::formatServiceGuide($serviceGuideHtml) !!}
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @php
                         // Safely decode the business_images
                         $images = [];
                         $matchedCategory = null;
@@ -1115,8 +1185,20 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         $afterImageDesc = $business->translations->first()?->after_image_description ?? ($offering->bottom_text ?? null);
                         @endphp
                         @if (!empty($afterImageDesc))
-                        <div class="col-lg-12 mt-2 after-image-desc">
+                        <div class="col-lg-12 mt-4 after-image-desc">
                             <div class="is-asana-lft">
+                                @php
+                                    $bizDetailedServicesFallback = 'Detailed services';
+                                    $resolvedDetailedServices = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                        $business,
+                                        'profile_detailed_services',
+                                        getCurrentLanguageID()
+                                    );
+                                    $finalDetailedServicesH2 = !empty($resolvedDetailedServices['headline']) 
+                                        ? $resolvedDetailedServices['headline'] 
+                                        : $bizDetailedServicesFallback;
+                                @endphp
+                                <h2 class="mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
                                 <div class="is_text">
                                     {!! \App\Services\ContentTemplateService::formatServiceText($afterImageDesc) !!}
                                 </div>

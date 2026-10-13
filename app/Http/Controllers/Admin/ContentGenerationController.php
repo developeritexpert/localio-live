@@ -714,13 +714,25 @@ class ContentGenerationController extends Controller
             $headline = $item['services']['headline'] ?? null;
             $topText = $item['services']['top_text'] ?? null;
             $bottomText = $item['services']['bottom_text'] ?? null;
+            $serviceGuideHtml = $item['services']['service_guide_html'] ?? ($item['services']['service_guide'] ?? null);
+            $comparisonFitSummary = $item['services']['comparison_fit_summary'] ?? ($item['services']['fit_summary'] ?? null);
             $offering = \App\Models\BusinessOffering::firstOrNew(['business_id' => $businessId]);
             if ($headline !== null && trim($headline) !== '') $offering->headline = $headline;
             if ($topText !== null) $offering->top_text = $topText;
             if ($bottomText !== null) $offering->bottom_text = $bottomText;
             $offering->save();
+            $transUpdates = [];
             if ($bottomText !== null) {
-                BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['after_image_description' => $bottomText]);
+                $transUpdates['after_image_description'] = $bottomText;
+            }
+            if ($serviceGuideHtml !== null) {
+                $transUpdates['service_guide_html'] = $serviceGuideHtml;
+            }
+            if ($comparisonFitSummary !== null) {
+                $transUpdates['comparison_fit_summary'] = $comparisonFitSummary;
+            }
+            if (!empty($transUpdates)) {
+                BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update($transUpdates);
             }
             $appliedCount++;
         }
@@ -2701,6 +2713,22 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ->update($glanceUpdates);
             }
 
+            // Ingest service guide & comparison fit summary
+            $serviceGuideUpdates = [];
+            $sGuideVal = $bData['services']['service_guide_html'] ?? ($bData['services']['service_guide'] ?? ($bData['service_guide_html'] ?? ($bData['service_guide'] ?? null)));
+            if ($sGuideVal !== null) {
+                $serviceGuideUpdates['service_guide_html'] = is_string($sGuideVal) ? trim($sGuideVal) : null;
+            }
+            $cFitVal = $bData['services']['comparison_fit_summary'] ?? ($bData['services']['fit_summary'] ?? ($bData['comparison_fit_summary'] ?? ($bData['fit_summary'] ?? null)));
+            if ($cFitVal !== null) {
+                $serviceGuideUpdates['comparison_fit_summary'] = is_string($cFitVal) ? trim($cFitVal) : null;
+            }
+            if (!empty($serviceGuideUpdates)) {
+                BusinessTranslation::where('business_id', $bizId)
+                    ->where('lang_id', 1)
+                    ->update($serviceGuideUpdates);
+            }
+
             // Also ingest affiliate link / websites from batch result if provided
             $affLink = trim($bData['affiliate_link'] ?? ($bData['affiliate_url'] ?? ($bData['affiliate'] ?? '')));
             if (!empty($affLink)) {
@@ -2782,8 +2810,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ],
                     "features"            => [1007, 1008, 1012],
                     "services"            => [
-                        "top_text"    => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
-                        "bottom_text" => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
+                        "top_text"               => "Whether launching your first site or scaling enterprise operations, HostGator delivers flexible cloud servers and management.",
+                        "service_guide_html"     => "<h3>Managing WordPress websites or PHP applications?</h3><p>Cloudways Flexible provides managed hosting with infrastructure choices and tools for managing multiple applications.</p><h3>Running a WordPress store with changing traffic?</h3><p>Cloudways Autonomous adjusts hosting resources automatically as demand changes.</p><h3>Developing Node.js applications?</h3><p>Cloudways Velocity provides a managed environment for deploying and updating applications.</p>",
+                        "comparison_fit_summary" => "Suitable for website owners, agencies, and developers seeking managed cloud hosting, application management tools, and flexible infrastructure options.",
+                        "bottom_text"            => "Includes automated SSL certificates, email accounts, control panel administration, and daily website backups."
                     ],
                     "faqs"                => [
                         [

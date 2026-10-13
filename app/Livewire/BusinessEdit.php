@@ -75,6 +75,8 @@ class BusinessEdit extends Component
     public $suitable_for = '';
     public $glance_option_3 = '';
     public $glance_option_4 = '';
+    public $service_guide_html = '';
+    public $comparison_fit_summary = '';
     public $long_preview_description = '';
     public $alternatives_title = '';
     public $alternatives_description = '';
@@ -1313,6 +1315,8 @@ class BusinessEdit extends Component
         $this->glance_option_3 = $translation->glance_option_3 ?? '';
         $this->glance_option_4 = $translation->glance_option_4 ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
+        $this->service_guide_html = $translation->service_guide_html ?? '';
+        $this->comparison_fit_summary = $translation->comparison_fit_summary ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->slug = $translation->slug ?? '';
         $this->isSlugCustomized = !empty($this->slug) && !empty($this->name) && $this->slug !== Str::slug($this->name);
@@ -1937,6 +1941,8 @@ class BusinessEdit extends Component
         $this->glance_option_3           = $translation->glance_option_3 ?? '';
         $this->glance_option_4           = $translation->glance_option_4 ?? '';
         $this->after_image_description   = $translation->after_image_description ?? '';
+        $this->service_guide_html        = $translation->service_guide_html ?? '';
+        $this->comparison_fit_summary    = $translation->comparison_fit_summary ?? '';
         $this->primary_keywords          = $translation->primary_keywords ?? '';
         $this->secondary_keywords        = $translation->secondary_keywords ?? '';
         $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
@@ -2017,6 +2023,8 @@ class BusinessEdit extends Component
             'glance_option_3' => 'nullable|string',
             'glance_option_4' => 'nullable|string',
             'after_image_description' => 'nullable|string',
+            'service_guide_html' => 'nullable|string',
+            'comparison_fit_summary' => 'nullable|string',
             'slug' => [
                 'required',
                 'string',
@@ -2160,6 +2168,8 @@ class BusinessEdit extends Component
                 'glance_option_3' => $this->glance_option_3,
                 'glance_option_4' => $this->glance_option_4,
             'after_image_description' => $this->after_image_description,
+            'service_guide_html' => $this->service_guide_html,
+            'comparison_fit_summary' => $this->comparison_fit_summary,
             'primary_keywords' => $this->primary_keywords,
             'secondary_keywords' => $this->secondary_keywords,
             'long_tail_keywords' => $this->long_tail_keywords,
@@ -2288,6 +2298,8 @@ class BusinessEdit extends Component
                 'glance_option_3' => $this->glance_option_3,
                 'glance_option_4' => $this->glance_option_4,
                 'after_image_description' => $this->after_image_description,
+                'service_guide_html' => $this->service_guide_html,
+                'comparison_fit_summary' => $this->comparison_fit_summary,
                 'primary_keywords' => $this->primary_keywords,
                 'secondary_keywords' => $this->secondary_keywords,
                 'long_tail_keywords' => $this->long_tail_keywords,
@@ -2467,6 +2479,11 @@ class BusinessEdit extends Component
             'pro_cons_intro'             => 'pro_cons_intro',
             'pro_cons_summary'           => 'pro_cons_summary',
             'after_image_description'    => 'after_image_description',
+            'service_guide_html'         => 'service_guide_html',
+            'service_guide'              => 'service_guide_html',
+            'service_guide_text'         => 'service_guide_html',
+            'comparison_fit_summary'     => 'comparison_fit_summary',
+            'fit_summary'                => 'comparison_fit_summary',
             'alternatives_title'         => 'alternatives_title',
             'alternatives_description'   => 'alternatives_description',
             'alternatives_title_2'       => 'alternatives_title_2',
@@ -2690,6 +2707,8 @@ class BusinessEdit extends Component
             'suitable_for',
             'glance_option_3',
             'glance_option_4',
+            'service_guide_html',
+            'comparison_fit_summary',
         ]);
         $this->is_affiliate_partner = true;
         $this->affiliate_link = '';

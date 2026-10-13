@@ -23,6 +23,8 @@ class BusinessTranslation extends Model
         'meta_title',
         'meta_description',
         'after_image_description',
+        'service_guide_html',
+        'comparison_fit_summary',
         'business_id',
         'headquarters',
         'support_options',

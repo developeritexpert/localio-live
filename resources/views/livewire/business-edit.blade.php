@@ -772,6 +772,74 @@
                                 </div>
                             </div>
 
+                            <div class="form-group mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-semibold mb-0">Service Guide ("Which service fits your needs?")</label>
+                                    <span class="text-muted" style="font-size:0.78rem;">Shown in a structured box above screenshots. Use H3 / headings for each option.</span>
+                                </div>
+                                <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                if (this.editor) return;
+                                                if (!this.$refs.editor_service_guide) return;
+                                                if (typeof ClassicEditor !== 'undefined') {
+                                                    ClassicEditor
+                                                        .create(this.$refs.editor_service_guide)
+                                                        .then(editor => {
+                                                            this.editor = editor;
+                                                            if (this.$wire.service_guide_html && !editor.getData()) {
+                                                                editor.setData(this.$wire.service_guide_html);
+                                                            }
+                                                            editor.model.document.on('change:data', () => {
+                                                                const data = editor.getData();
+                                                                this.$wire.service_guide_html = data;
+                                                                this.$wire.set('service_guide_html', data);
+                                                            });
+                                                            window.addEventListener('ai-content-applied', function(e) {
+                                                                if (e.detail && e.detail.fields && e.detail.fields.service_guide_html !== undefined) {
+                                                                    editor.setData(e.detail.fields.service_guide_html);
+                                                                }
+                                                            });
+                                                            window.addEventListener('languageSwitched', () => {
+                                                                editor.setData(this.$wire.service_guide_html || '');
+                                                            });
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('CKEditor error on service_guide_html:', error);
+                                                        });
+                                                }
+                                            });
+                                        }
+                                    }">
+                                    <div class="form-group">
+                                        <textarea
+                                            x-ref="editor_service_guide"
+                                            class="form-control @error('service_guide_html') is-invalid @enderror"
+                                            wire:model.live="service_guide_html"
+                                            rows="5">{!! $service_guide_html !!}</textarea>
+                                        @error('service_guide_html')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-semibold mb-0">Comparison Fit Summary</label>
+                                    <span class="text-muted" style="font-size:0.78rem;">Used on X vs Y comparison pages</span>
+                                </div>
+                                <textarea
+                                    class="form-control @error('comparison_fit_summary') is-invalid @enderror"
+                                    wire:model.live="comparison_fit_summary"
+                                    rows="2"
+                                    placeholder="e.g. Suitable for website owners, agencies, and developers seeking managed cloud hosting..."></textarea>
+                                @error('comparison_fit_summary')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="form-group mb-2">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <label class="form-label fw-semibold mb-0">Products / Services Ending Text (After Screenshots / Images)</label>
