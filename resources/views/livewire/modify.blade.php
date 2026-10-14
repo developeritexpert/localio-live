@@ -473,10 +473,7 @@
                             </div>
                             
                             <div class="border p-3 mb-3 rounded">
-                                <div class="form-group mb-3 mt-3">
-                                    <label class="form-label">Products/services headline</label>
-                                    <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does Bluehost offer?">
-                                </div>
+
                                 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Products/services introduction</label>

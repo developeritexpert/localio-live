@@ -26,7 +26,15 @@
         'front/img/big-asana.png',
         'front/img/sftare-img1.svg',
         'front/img/poplr-zero.svg',
-        'front/img/lyt-rd-grey.svg'
+        'front/img/lyt-rd-grey.svg',
+        'front/img/slider1_img.svg',
+        'front/img/slider2_img.svg',
+        'front/img/slider3_img.svg',
+        'business_icon/1746103824_3H8UUe4f7h.png',
+        'business_icon/1746103787_c7J7kSWbJN.png',
+        'business_icon/1746103760_rpmXVNYcF2.png',
+        'business_icon/1746103678_aBqoscEoLL.png',
+        'business_icon/1748244192_NT3NodH2Zg.png',
     ]);
 
     $hasLogo = !$isDefaultLogo && !empty($logoSrc);

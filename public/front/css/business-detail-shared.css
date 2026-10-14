@@ -28,7 +28,7 @@
 .rich-text-content br {
     content: "";
     display: block;
-    margin-top: 14px;
+    margin-bottom: 14px;
 }
 
 .is_text br + br,

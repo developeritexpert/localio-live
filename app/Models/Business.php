@@ -355,7 +355,15 @@ class Business extends Model
             'front/img/big-asana.png',
             'front/img/sftare-img1.svg',
             'front/img/poplr-zero.svg',
-            'front/img/lyt-rd-grey.svg'
+            'front/img/lyt-rd-grey.svg',
+            'front/img/slider1_img.svg',
+            'front/img/slider2_img.svg',
+            'front/img/slider3_img.svg',
+            'business_icon/1746103824_3H8UUe4f7h.png',
+            'business_icon/1746103787_c7J7kSWbJN.png',
+            'business_icon/1746103760_rpmXVNYcF2.png',
+            'business_icon/1746103678_aBqoscEoLL.png',
+            'business_icon/1748244192_NT3NodH2Zg.png',
         ];
         return !in_array($raw, $defaults, true);
     }
@@ -392,7 +400,20 @@ class Business extends Model
             'front/img/default_business_logo.svg',
             'front/img/logo.svg',
             'front/img/default.png',
-            'images/default.png'
+            'images/default.png',
+            'front/img/top-rate-img2.svg',
+            'front/img/big-asana.png',
+            'front/img/sftare-img1.svg',
+            'front/img/poplr-zero.svg',
+            'front/img/lyt-rd-grey.svg',
+            'front/img/slider1_img.svg',
+            'front/img/slider2_img.svg',
+            'front/img/slider3_img.svg',
+            'business_icon/1746103824_3H8UUe4f7h.png',
+            'business_icon/1746103787_c7J7kSWbJN.png',
+            'business_icon/1746103760_rpmXVNYcF2.png',
+            'business_icon/1746103678_aBqoscEoLL.png',
+            'business_icon/1748244192_NT3NodH2Zg.png',
         ], true)) {
             return $value;
         }
@@ -418,53 +439,47 @@ class Business extends Model
         $option3 = null;
         $option4 = null;
 
-        // 1. Check subcategories
-        $subCat = null;
-        if ($this->category && $this->category->parent_id) {
-            $subCat = $this->category;
-        } elseif ($this->relationLoaded('subCategories') ? $this->subCategories->isNotEmpty() : $this->subCategories()->exists()) {
-            $subCat = $this->relationLoaded('subCategories') ? $this->subCategories->first() : $this->subCategories()->first();
+        // 1. Check primary category or subcategory
+        $primaryCat = $this->relationLoaded('category') ? $this->category : ($this->category_id ? \App\Models\Category::find($this->category_id) : null);
+
+        // 2. Check attached subcategories
+        $subCategories = $this->relationLoaded('subCategories') ? $this->subCategories : $this->subCategories()->get();
+
+        // Priority 1: If primary category is a subcategory, check it first
+        if ($primaryCat && $primaryCat->parent_id) {
+            $labels = $primaryCat->getGlanceLabels($langId);
+            $option3 = $labels['option_3'];
+            $option4 = $labels['option_4'];
         }
 
-        if ($subCat) {
-            $subTrans = \App\Models\CategoryTranslation::where('category_id', $subCat->id)
-                ->where('lang_id', $langId)
-                ->first() 
-                ?? \App\Models\CategoryTranslation::where('category_id', $subCat->id)->first();
-            if ($subTrans) {
-                if (!empty($subTrans->glance_option_3_label)) {
-                    $option3 = $subTrans->glance_option_3_label;
+        // Priority 2: Check attached subcategories (they overwrite parent category if defined)
+        if (($option3 === null || $option4 === null) && $subCategories->isNotEmpty()) {
+            foreach ($subCategories as $subCat) {
+                $subLabels = $subCat->getGlanceLabels($langId);
+                if ($option3 === null && !empty($subLabels['option_3'])) {
+                    $option3 = $subLabels['option_3'];
                 }
-                if (!empty($subTrans->glance_option_4_label)) {
-                    $option4 = $subTrans->glance_option_4_label;
+                if ($option4 === null && !empty($subLabels['option_4'])) {
+                    $option4 = $subLabels['option_4'];
                 }
+                if ($option3 !== null && $option4 !== null) break;
             }
         }
 
-        // 2. Fall back to parent category if not set on subcategory
-        $parentCat = null;
-        if ($this->category) {
-            $parentCat = $this->category->parent_id ? $this->category->parent : $this->category;
-        }
-
-        if ($parentCat) {
-            $parentTrans = \App\Models\CategoryTranslation::where('category_id', $parentCat->id)
-                ->where('lang_id', $langId)
-                ->first() 
-                ?? \App\Models\CategoryTranslation::where('category_id', $parentCat->id)->first();
-            if ($parentTrans) {
-                if (empty($option3) && !empty($parentTrans->glance_option_3_label)) {
-                    $option3 = $parentTrans->glance_option_3_label;
-                }
-                if (empty($option4) && !empty($parentTrans->glance_option_4_label)) {
-                    $option4 = $parentTrans->glance_option_4_label;
-                }
+        // Priority 3: Fall back to parent category
+        if (($option3 === null || $option4 === null) && $primaryCat) {
+            $parentLabels = $primaryCat->getGlanceLabels($langId);
+            if ($option3 === null && !empty($parentLabels['option_3'])) {
+                $option3 = $parentLabels['option_3'];
+            }
+            if ($option4 === null && !empty($parentLabels['option_4'])) {
+                $option4 = $parentLabels['option_4'];
             }
         }
 
         return [
-            'option_3' => $option3 ?: 'Option 3',
-            'option_4' => $option4 ?: 'Option 4',
+            'option_3' => $option3 ?: null,
+            'option_4' => $option4 ?: null,
         ];
     }
 

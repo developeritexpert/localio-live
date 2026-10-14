@@ -126,8 +126,8 @@ class CategoriesController extends Controller
             $categoryId = $category_data ? ($category_data['category_id'] ?? null) : null;
             $category = $categoryId ? Category::where('id', $categoryId)->first() : null;
             if ($category) {
-                $hasSubcategories = $category->subCategories()->exists();
-                $hasItems = $category->businesses()->exists() || $category->products()->exists();
+                $hasSubcategories = ($category->parent_id === null) && $category->subCategories()->exists();
+                $hasItems = ($category->parent_id !== null) && ($category->businesses()->exists() || $category->products()->exists());
                 $category_image = Media::where('id', $category->image)->first();
                 $category_icon = Media::where('id', $category->category_icon)->first();
                 $category_image_url = $category_image ? asset($category_image->dir_path . '/' . $category_image->file_name) : null;
@@ -166,13 +166,21 @@ class CategoriesController extends Controller
             }
         }
 
+        $parentGlanceLabels = null;
+        if ($category && $category->parent_id) {
+            $parentCat = Category::find($category->parent_id);
+            if ($parentCat) {
+                $parentGlanceLabels = $parentCat->getGlanceLabels($lang_id);
+            }
+        }
+
         $parentCategories = Category::onlyParents()
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->where('id', '!=', $categoryId);
             })
             ->with(['translation' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
-            }])
+            }, 'categoryTranslations'])
             ->get();
 
         return view('Admin.categories.add', compact(
@@ -187,7 +195,8 @@ class CategoriesController extends Controller
             'hasItems',
             'default_criteria',
             'inherited_criteria',
-            'custom_criteria'
+            'custom_criteria',
+            'parentGlanceLabels'
         ));
     }
 
@@ -384,6 +393,10 @@ class CategoriesController extends Controller
                 'category_cap' => $categoryName,
             ]);
         }
+
+        $is_parent = $request->has('is_parent')
+            ? $request->boolean('is_parent')
+            : ($request->input('category_type') === 'subcategory' ? false : true);
         
         $rules = [
             'name' => [
@@ -426,17 +439,14 @@ class CategoriesController extends Controller
             'image' => 'nullable',
             'category_icon' => 'nullable',
             'is_parent' => 'nullable',
-            'parent_id' => 'nullable|required_without:is_parent|exists:categories,id',
+            'parent_id' => $is_parent ? 'nullable' : 'required|exists:categories,id',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
-        $validator->after(function ($validator) use ($request) {
-            $is_parent = $request->has('is_parent');
+        $validator->after(function ($validator) use ($request, $is_parent) {
             $parent_id = $request->parent_id;
             $category_id = null;
-
-
 
             if ($request->category_id) {
                 $categoryTranslation = CategoryTranslation::find($request->category_id);
@@ -448,7 +458,11 @@ class CategoriesController extends Controller
                 }
             }
 
-            if (!$is_parent) {               
+            if (!$is_parent) {
+                if (empty($parent_id)) {
+                    $validator->errors()->add('parent_id', 'Please select a parent category for this subcategory.');
+                    return;
+                }
 
                 if ($category_id && $parent_id == $category_id) {
                     $validator->errors()->add('parent_id', 'A category cannot be its own parent.');
@@ -468,6 +482,17 @@ class CategoriesController extends Controller
                         }
                         if ($category->subCategories()->exists()) {
                             $validator->errors()->add('is_parent', 'This category cannot be converted to a sub-category because it contains active sub-categories.');
+                        }
+                    }
+                }
+            } else {
+                if ($category_id) {
+                    $category = Category::find($category_id);
+                    if ($category && $category->parent_id !== null) {
+                        $hasBusinesses = $category->businesses()->exists();
+                        $hasProducts = $category->products()->exists();
+                        if ($hasBusinesses || $hasProducts) {
+                            $validator->errors()->add('is_parent', 'This category cannot be converted to a parent category because it contains active businesses or products.');
                         }
                     }
                 }
@@ -504,7 +529,11 @@ class CategoriesController extends Controller
             $category = new Category();
         }
 
-        $category->parent_id = $request->parent_id ?? null;
+        if ($is_parent) {
+            $category->parent_id = null;
+        } else {
+            $category->parent_id = $request->filled('parent_id') ? (int) $request->parent_id : null;
+        }
         $category->page_title_addition = $request->page_title_addition;
         if ($request->has('top_rated_listing_headline_addition')) {
             $category->top_rated_listing_headline_addition = $request->top_rated_listing_headline_addition;

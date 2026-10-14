@@ -120,11 +120,14 @@
                             </div>
                         </div>
                         @endforeach
-                        <div class="col-auto ms-auto">
+                        <div class="col-auto ms-auto d-flex align-items-center gap-1">
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAll()">Select All</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary ms-1" onclick="deselectAll()">Clear</button>
-                            <button type="submit" class="btn btn-sm btn-primary ms-2" id="submitBatchBtn" disabled>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">Clear</button>
+                            <button type="submit" class="btn btn-sm btn-primary ms-1" id="submitBatchBtn" disabled>
                                 <em class="icon ni ni-send"></em> Submit Batch (<span id="selectedCount">0</span>)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" id="deleteSelectedBtn" onclick="deleteSelectedBusinesses()" disabled title="Delete selected businesses">
+                                <em class="icon ni ni-trash"></em> Delete Selected (<span id="selectedCountDelete">0</span>)
                             </button>
                         </div>
                     </div>
@@ -158,7 +161,7 @@
                                         @endif
                                     </th>
                                 @endforeach
-                                <th class="text-center" style="min-width:150px">Actions</th>
+                                <th class="text-center" style="min-width:200px">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -280,15 +283,18 @@
                                         </td>
                                     @endforeach
                                     <td class="text-center">
-                                        <div class="d-inline-flex">
-                                            <button type="button" class="btn btn-xs text-white fw-bold me-1" style="background-color: #ff6a00; border-color: #ff6a00;" onclick="generateAll({{ $business->id }})">
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-xs text-white fw-bold" style="background-color: #ff6a00; border-color: #ff6a00; white-space: nowrap;" onclick="generateAll({{ $business->id }})">
                                                 Generate all
                                             </button>
                                             @if($hasCompleted)
-                                                <button type="button" class="btn btn-xs btn-primary" title="Apply all completed fields to this business" onclick="applyAllCompleted({{ $business->id }})">
+                                                <button type="button" class="btn btn-xs btn-primary" title="Apply all completed fields to this business" onclick="applyAllCompleted({{ $business->id }})" style="white-space: nowrap;">
                                                     <em class="icon ni ni-save me-1"></em> Apply
                                                 </button>
                                             @endif
+                                            <button type="button" class="btn btn-xs btn-outline-danger" title="Delete this business entry" onclick="deleteBusiness({{ $business->id }}, '{{ addslashes($name) }}')" style="white-space: nowrap;">
+                                                <em class="icon ni ni-trash"></em> Delete
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -325,6 +331,19 @@
             <input type="hidden" name="business_id" id="apply_business_id">
         </form>
 
+        {{-- Single Delete hidden form --}}
+        <form id="deleteBusinessForm" action="" method="POST" class="d-none">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        {{-- Bulk Delete hidden form --}}
+        <form id="deleteBulkForm" action="{{ route('content-gen.delete-bulk-businesses') }}" method="POST" class="d-none">
+            @csrf
+            @method('DELETE')
+            <div id="bulkDeleteInputs"></div>
+        </form>
+
     </div>
 </div>
 
@@ -343,6 +362,12 @@ function updateCount() {
     const count = document.querySelectorAll('.business-check:checked').length;
     document.getElementById('selectedCount').textContent = count;
     document.getElementById('submitBatchBtn').disabled = count === 0;
+    const delBtn = document.getElementById('deleteSelectedBtn');
+    if (delBtn) {
+        delBtn.disabled = count === 0;
+        const countDeleteSpan = document.getElementById('selectedCountDelete');
+        if (countDeleteSpan) countDeleteSpan.textContent = count;
+    }
 }
 
 function selectAll() {
@@ -427,6 +452,35 @@ function applyAllCompleted(businessId) {
     }
 }
 
+function deleteBusiness(businessId, businessName) {
+    const label = businessName ? `"${businessName}"` : `Business #${businessId}`;
+    if (confirm(`Are you sure you want to delete ${label}?\n\nThis will permanently delete the business and all its content generation queues.`)) {
+        const form = document.getElementById('deleteBusinessForm');
+        form.action = '{{ url("/admin-dashboard/content-generation/businesses") }}/' + businessId;
+        form.submit();
+    }
+}
+
+function deleteSelectedBusinesses() {
+    const checked = document.querySelectorAll('.business-check:checked');
+    if (checked.length === 0) {
+        alert('Please select at least one business to delete.');
+        return;
+    }
+    if (confirm(`Are you sure you want to delete ${checked.length} selected business(es)?\n\nThis will permanently delete the businesses and all their content generation queues.`)) {
+        const container = document.getElementById('bulkDeleteInputs');
+        container.innerHTML = '';
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'business_ids[]';
+            input.value = cb.value;
+            container.appendChild(input);
+        });
+        document.getElementById('deleteBulkForm').submit();
+    }
+}
+
 function insertSampleJson() {
     const sample = JSON.stringify([
         {
@@ -497,7 +551,7 @@ function insertSampleJson() {
 
                     {{-- Deduplication Toggle --}}
                     <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="update_existing" value="1" id="updateExistingCheck" checked>
+                        <input class="form-check-input" type="checkbox" name="update_existing" value="1" id="updateExistingCheck">
                         <label class="form-check-label small fw-semibold text-dark" for="updateExistingCheck">
                             Update existing businesses if already in directory (matched by name or URL)
                         </label>

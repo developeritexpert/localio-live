@@ -255,11 +255,11 @@
                                                                 <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                     <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
                                                                         <i class="far fa-thumbs-up"></i>
-                                                                        <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
+                                                                        <!-- <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span> -->
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
                                                                         <i class="far fa-thumbs-down"></i>
-                                                                        <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
+                                                                        <!-- <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span> -->
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -314,11 +314,11 @@
                                                             <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                 <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
                                                                     <i class="far fa-thumbs-up"></i>
-                                                                    <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
+                                                                    <!-- <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span> -->
                                                                 </button>
                                                                 <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
                                                                     <i class="far fa-thumbs-down"></i>
-                                                                    <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
+                                                                    <!-- <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span> -->
                                                                 </button>
                                                             </div>
                                                         </div>

@@ -335,9 +335,53 @@ class BusinessEdit extends Component
     public function render()
     {
         $bizForLabels = $this->businessId ? Business::with(['category.translations', 'subCategories.translations'])->find($this->businessId) : null;
-        $glanceLabels = $bizForLabels ? $bizForLabels->getGlanceLabels((int)($this->languages_supported ?: 1)) : ['option_3' => 'Option 3', 'option_4' => 'Option 4'];
-        $glanceOption3Label = $glanceLabels['option_3'];
-        $glanceOption4Label = $glanceLabels['option_4'];
+        
+        $glanceLabels = ['option_3' => null, 'option_4' => null];
+        $langId = (int)($this->languages_supported ?: 1);
+
+        // Check currently selected subcategories first
+        $selectedSubCatIds = is_array($this->selected_sub_categories) ? $this->selected_sub_categories : [];
+        if (!empty($selectedSubCatIds)) {
+            $subCats = \App\Models\Category::with(['translations', 'parent.translations'])->whereIn('id', $selectedSubCatIds)->get();
+            foreach ($subCats as $subCat) {
+                $subLabels = $subCat->getGlanceLabels($langId);
+                if (empty($glanceLabels['option_3']) && !empty($subLabels['option_3'])) {
+                    $glanceLabels['option_3'] = $subLabels['option_3'];
+                }
+                if (empty($glanceLabels['option_4']) && !empty($subLabels['option_4'])) {
+                    $glanceLabels['option_4'] = $subLabels['option_4'];
+                }
+                if (!empty($glanceLabels['option_3']) && !empty($glanceLabels['option_4'])) break;
+            }
+        }
+
+        // Fallback to selected primary category
+        if ((empty($glanceLabels['option_3']) || empty($glanceLabels['option_4'])) && !empty($this->selected_category)) {
+            $cat = \App\Models\Category::with(['translations', 'parent.translations'])->find($this->selected_category);
+            if ($cat) {
+                $catLabels = $cat->getGlanceLabels($langId);
+                if (empty($glanceLabels['option_3']) && !empty($catLabels['option_3'])) {
+                    $glanceLabels['option_3'] = $catLabels['option_3'];
+                }
+                if (empty($glanceLabels['option_4']) && !empty($catLabels['option_4'])) {
+                    $glanceLabels['option_4'] = $catLabels['option_4'];
+                }
+            }
+        }
+
+        // Fallback to saved business labels
+        if ((empty($glanceLabels['option_3']) || empty($glanceLabels['option_4'])) && $bizForLabels) {
+            $bLabels = $bizForLabels->getGlanceLabels($langId);
+            if (empty($glanceLabels['option_3']) && !empty($bLabels['option_3'])) {
+                $glanceLabels['option_3'] = $bLabels['option_3'];
+            }
+            if (empty($glanceLabels['option_4']) && !empty($bLabels['option_4'])) {
+                $glanceLabels['option_4'] = $bLabels['option_4'];
+            }
+        }
+
+        $glanceOption3Label = !empty($glanceLabels['option_3']) ? $glanceLabels['option_3'] : null;
+        $glanceOption4Label = !empty($glanceLabels['option_4']) ? $glanceLabels['option_4'] : null;
 
         return view('livewire.business-edit', [
             'glanceOption3Label' => $glanceOption3Label,
@@ -2165,8 +2209,8 @@ class BusinessEdit extends Component
             'short_description' => $this->short_description,
                 'main_offering' => $this->main_offering,
                 'suitable_for' => $this->suitable_for,
-                'glance_option_3' => $this->glance_option_3,
-                'glance_option_4' => $this->glance_option_4,
+                'glance_option_3' => !empty($glanceOption3Label) ? $this->glance_option_3 : null,
+                'glance_option_4' => !empty($glanceOption4Label) ? $this->glance_option_4 : null,
             'after_image_description' => $this->after_image_description,
             'service_guide_html' => $this->service_guide_html,
             'comparison_fit_summary' => $this->comparison_fit_summary,
@@ -2295,8 +2339,8 @@ class BusinessEdit extends Component
                 'short_description' => $this->short_description,
                 'main_offering' => $this->main_offering,
                 'suitable_for' => $this->suitable_for,
-                'glance_option_3' => $this->glance_option_3,
-                'glance_option_4' => $this->glance_option_4,
+                'glance_option_3' => !empty($glanceOption3Label) ? $this->glance_option_3 : null,
+                'glance_option_4' => !empty($glanceOption4Label) ? $this->glance_option_4 : null,
                 'after_image_description' => $this->after_image_description,
                 'service_guide_html' => $this->service_guide_html,
                 'comparison_fit_summary' => $this->comparison_fit_summary,
@@ -3006,8 +3050,13 @@ class BusinessEdit extends Component
         $addedCount = 0;
 
         DB::transaction(function () use ($items, &$addedCount) {
-            $currentPosition = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
-                ->max('position') ?? 0;
+            // Delete old FAQs and FAQ categories on new upload to cleanly replace them
+            $oldFaqIds = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)->pluck('id');
+            BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
+            BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)->delete();
+            BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->delete();
+
+            $currentPosition = 0;
 
             foreach ($items as $item) {
                 if (!is_array($item)) continue;

@@ -2142,7 +2142,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
 .rich-text-content br {
     content: "";
     display: block;
-    margin-top: 14px;
+    margin-bottom: 14px;
 }
 
 .is_text br + br,

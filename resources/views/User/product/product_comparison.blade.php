@@ -602,7 +602,7 @@
                                             <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalWhatIsHeadline) !!}</h6>
                                             <div style="font-size: 14px;">
                                                 @if(!empty($bDesc))
-                                                    {!! $bDesc !!}
+                                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($bDesc) !!}
                                                 @else
                                                     <p class="text-muted mb-0">{{ static_text('no_description_available') ?: 'No description available.' }}</p>
                                                 @endif

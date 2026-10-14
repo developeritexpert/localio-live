@@ -450,11 +450,12 @@ class ContentGenerationController extends Controller
             $decoded = [$decoded];
         }
 
-        $updateExisting = $request->boolean('update_existing', true);
-        $createdCount   = 0;
-        $updatedCount   = 0;
-        $skippedCount   = 0;
-        $errors         = [];
+        $updateExisting     = $request->boolean('update_existing', false);
+        $createdCount       = 0;
+        $updatedCount       = 0;
+        $skippedCount       = 0;
+        $skippedBusinesses  = [];
+        $errors             = [];
 
         DB::beginTransaction();
         try {
@@ -465,31 +466,64 @@ class ContentGenerationController extends Controller
                 }
 
                 // Flexible name and URL resolution
-                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? '');
-                $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? '');
+                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
+                $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? $item['domain'] ?? $item['link'] ?? '');
 
-                if (empty($name)) {
-                    $skippedCount++;
-                    $errors[] = "Item #" . ($index + 1) . " skipped: missing Business Name.";
-                    continue;
-                }
-
-                if (!empty($url) && !preg_match('/^https?:\/\//i', $url)) {
-                    $url = 'https://' . $url;
-                }
-
-                // Check for existing business by normalized URL or by Name
-                $existingBiz = null;
-                if (!empty($url)) {
-                    $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $url), '/');
-                    if (!empty($normalizedUrl)) {
-                        $existingBiz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                            ->first();
+                // If name is omitted but URL is provided, derive name cleanly from domain
+                if (empty($name) && !empty($url)) {
+                    $parsedHost = parse_url(preg_match('#^https?://#i', $url) ? $url : ('https://' . $url), PHP_URL_HOST);
+                    if (!empty($parsedHost)) {
+                        $cleanHost = preg_replace('#^www\.#i', '', $parsedHost);
+                        $hostParts = explode('.', $cleanHost);
+                        $name = ucfirst($hostParts[0] ?: $cleanHost);
+                    } else {
+                        $name = ucfirst($url);
                     }
                 }
 
+                if (empty($name)) {
+                    $skippedCount++;
+                    $skippedBusinesses[] = "Item #" . ($index + 1) . " (missing business name and URL)";
+                    continue;
+                }
+
+                if (!empty($url) && !preg_match('#^https?://#i', $url)) {
+                    $url = 'https://' . $url;
+                }
+
+                // Check for existing business by exact normalized URL or by exact Name
+                $existingBiz = null;
+                if (!empty($url)) {
+                    $cleanNormUrl = preg_replace('#^https?://#i', '', $url);
+                    $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                    $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+
+                    if (!empty($cleanNormUrl)) {
+                        // 1. Exact match on normalized permanent_url (avoids fuzzy false positives on similar domains)
+                        $existingBiz = Business::whereRaw(
+                            "LOWER(TRIM(TRAILING '/' FROM REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', ''))) = ?",
+                            [$cleanNormUrl]
+                        )->first();
+
+                        // 2. Exact URL variations fallback
+                        if (!$existingBiz) {
+                            $existingBiz = Business::whereIn('permanent_url', [
+                                $url,
+                                'https://' . $cleanNormUrl,
+                                'http://' . $cleanNormUrl,
+                                'https://www.' . $cleanNormUrl,
+                                'http://www.' . $cleanNormUrl,
+                                'https://' . $cleanNormUrl . '/',
+                                'https://www.' . $cleanNormUrl . '/',
+                                $cleanNormUrl,
+                            ])->first();
+                        }
+                    }
+                }
+
+                // If not matched by URL, check exact name in BusinessTranslation for default language (lang_id = 1)
                 if (!$existingBiz && !empty($name)) {
-                    $bizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($name)])
+                    $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
                         ->where('lang_id', 1)
                         ->value('business_id');
                     if ($bizId) {
@@ -500,14 +534,24 @@ class ContentGenerationController extends Controller
                 $business = null;
 
                 if ($existingBiz) {
+                    $existingName = optional($existingBiz->translations->first())->name ?: $name;
+                    $bizLabel = $existingName . (!empty($url) ? " (" . preg_replace('#^https?://(www\.)?#i', '', $url) . ")" : "");
+
                     if (!$updateExisting) {
                         $skippedCount++;
+                        $skippedBusinesses[] = $bizLabel;
                         continue;
                     }
+
                     $business = $existingBiz;
-                    if (!empty($url) && empty($business->permanent_url)) {
+                    if (!empty($url)) {
                         $business->permanent_url = $url;
                         $business->save();
+                    }
+                    if (!empty($name)) {
+                        BusinessTranslation::where('business_id', $business->id)
+                            ->where('lang_id', 1)
+                            ->update(['name' => $name]);
                     }
                     $updatedCount++;
                 } else {
@@ -559,11 +603,31 @@ class ContentGenerationController extends Controller
         }
 
         $msgParts = [];
-        if ($createdCount > 0) $msgParts[] = "{$createdCount} new business(es) created";
-        if ($updatedCount > 0) $msgParts[] = "{$updatedCount} existing business(es) updated";
-        if ($skippedCount > 0) $msgParts[] = "{$skippedCount} skipped";
+        if ($createdCount > 0) $msgParts[] = "<strong>{$createdCount}</strong> new business(es) created";
+        if ($updatedCount > 0) $msgParts[] = "<strong>{$updatedCount}</strong> existing business(es) updated";
 
-        $finalMsg = !empty($msgParts) ? "Import complete: " . implode(', ', $msgParts) . "." : "No businesses were imported.";
+        $summaryText = implode(', ', $msgParts);
+        if (empty($summaryText)) {
+            $summaryText = "0 new businesses created";
+        }
+
+        $skippedHtml = "";
+        if (!empty($skippedBusinesses)) {
+            $skippedHtml .= '<div class="mt-2">';
+            $skippedHtml .= '<strong>Skipped ' . count($skippedBusinesses) . ' business(es) (already exist in directory):</strong>';
+            $skippedHtml .= '<ul class="mb-0 mt-1 ps-3" style="font-size: 12px; line-height: 1.6;">';
+            foreach ($skippedBusinesses as $sb) {
+                $skippedHtml .= '<li>' . e($sb) . '</li>';
+            }
+            $skippedHtml .= '</ul>';
+            $skippedHtml .= '</div>';
+        }
+
+        $finalMsg = "Import summary: " . $summaryText . "." . $skippedHtml;
+
+        if ($createdCount === 0 && $updatedCount === 0 && !empty($skippedBusinesses)) {
+            return redirect()->route('content-gen.businesses')->with('warning', $finalMsg);
+        }
 
         return redirect()->route('content-gen.businesses')->with('success', $finalMsg);
     }
@@ -578,7 +642,7 @@ class ContentGenerationController extends Controller
 
         // 1. Categories
         $catData = $item['categories'] ?? null;
-        if (!$catData && (isset($item['category_id']) || isset($item['category']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
+        if ($catData === null && (isset($item['category_id']) || isset($item['category']) || isset($item['category_name']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
             $catData = [
                 'primary_category_id'    => $item['primary_category_id'] ?? null,
                 'primary_subcategory_id' => $item['primary_subcategory_id'] ?? null,
@@ -593,6 +657,61 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
+        // Basic Business Information ("At a glance")
+        $glanceLabels = $business->getGlanceLabels(1);
+        $opt3Label = $glanceLabels['option_3'] ?? null;
+        $opt4Label = $glanceLabels['option_4'] ?? null;
+
+        $glanceUpdates = [];
+        if (isset($item['main_offering'])) {
+            $glanceUpdates['main_offering'] = is_string($item['main_offering']) ? trim($item['main_offering']) : null;
+        }
+        if (isset($item['suitable_for'])) {
+            $glanceUpdates['suitable_for'] = is_string($item['suitable_for']) ? trim($item['suitable_for']) : null;
+        }
+        if (!empty($opt3Label)) {
+            $opt3Val = $item['glance_option_3'] ?? ($item['option_3'] ?? ($item[$opt3Label] ?? null));
+            if ($opt3Val !== null) {
+                $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+            }
+        } else {
+            $glanceUpdates['glance_option_3'] = null;
+        }
+        if (!empty($opt4Label)) {
+            $opt4Val = $item['glance_option_4'] ?? ($item['option_4'] ?? ($item[$opt4Label] ?? null));
+            if ($opt4Val !== null) {
+                $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+            }
+        } else {
+            $glanceUpdates['glance_option_4'] = null;
+        }
+        if (!empty($glanceUpdates)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update($glanceUpdates);
+        }
+
+        // Meta & Additional Info
+        $metaTitle = $item['meta_title'] ?? null;
+        $metaDesc  = $item['meta_description'] ?? ($item['meta_desc'] ?? null);
+        $priKey    = $item['primary_keywords'] ?? ($item['primary_keyword'] ?? null);
+        $secKey    = $item['secondary_keywords'] ?? ($item['secondary_keyword'] ?? null);
+        $hq        = $item['headquarters'] ?? ($item['headquarter'] ?? null);
+        $transUpdates = [];
+        if ($metaTitle !== null) $transUpdates['meta_title'] = $metaTitle;
+        if ($metaDesc !== null)  $transUpdates['meta_description'] = $metaDesc;
+        if ($priKey !== null)    $transUpdates['primary_keywords'] = is_array($priKey) ? implode(', ', $priKey) : $priKey;
+        if ($secKey !== null)    $transUpdates['secondary_keywords'] = is_array($secKey) ? implode(', ', $secKey) : $secKey;
+        if ($hq !== null)        $transUpdates['headquarters'] = $hq;
+        if (!empty($transUpdates)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update($transUpdates);
+            $appliedCount++;
+        }
+
+        $yearFound = $item['year_found'] ?? ($item['year_founded'] ?? ($item['founded'] ?? null));
+        if ($yearFound !== null && is_numeric($yearFound)) {
+            $business->year_found = (int)$yearFound;
+            $business->save();
+        }
+
         // 2. Short description
         $shortDesc = $item['short_description'] ?? null;
         if (!empty($shortDesc)) {
@@ -603,21 +722,24 @@ class ContentGenerationController extends Controller
         // 3. Long description
         $longDesc = $item['long_description'] ?? ($item['long_preview_description'] ?? null);
         if (!empty($longDesc)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['long_preview_description' => $longDesc]);
+            $formattedLongDesc = \App\Services\ContentTemplateService::formatDescriptionText($longDesc);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['long_preview_description' => $formattedLongDesc]);
             $appliedCount++;
         }
 
         // 4. What is / Description
         $whatIs = $item['what_is'] ?? ($item['description'] ?? null);
         if (!empty($whatIs)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['description' => $whatIs]);
+            $formattedWhatIs = \App\Services\ContentTemplateService::formatDescriptionText($whatIs);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['description' => $formattedWhatIs]);
             $appliedCount++;
         }
 
         // 5. Reviews description
         $revDesc = $item['reviews_description'] ?? ($item['short_business_description_reviews'] ?? null);
         if (!empty($revDesc)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['reviews_description' => $revDesc]);
+            $formattedRevDesc = \App\Services\ContentTemplateService::formatDescriptionText($revDesc);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['reviews_description' => $formattedRevDesc]);
             $appliedCount++;
         }
 
@@ -669,7 +791,10 @@ class ContentGenerationController extends Controller
         // 9. FAQs
         $faqs = $item['faqs'] ?? [];
         if (!empty($faqs) && is_array($faqs)) {
+            $oldFaqIds = BusinessFaq::where('business_id', $businessId)->pluck('id');
+            BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
             BusinessFaq::where('business_id', $businessId)->delete();
+            BusinessFaqCategory::where('business_id', $businessId)->delete();
             foreach ($faqs as $fIndex => $faq) {
                 $q = $faq['question'] ?? ($faq['q'] ?? null);
                 $a = $faq['answer'] ?? ($faq['a'] ?? null);
@@ -1201,6 +1326,123 @@ class ContentGenerationController extends Controller
         return back()->with('success', "Batch job {$batchId} and all associated queue items have been deleted successfully.");
     }
 
+    /**
+     * Delete a single business entry and all its associated child data and queues.
+     */
+    public function deleteBusiness($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $business = Business::findOrFail($id);
+            $name = optional($business->translations->first())->name ?: "Business #{$business->id}";
+
+            $this->performDeleteBusiness($business);
+
+            DB::commit();
+
+            return back()->with('success', "Business '{$name}' was deleted successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete business: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete multiple selected business entries.
+     */
+    public function deleteBulkBusinesses(Request $request)
+    {
+        $ids = $request->input('business_ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return back()->with('warning', 'Please select at least one business to delete.');
+        }
+
+        $count = 0;
+        DB::beginTransaction();
+        try {
+            foreach ($ids as $id) {
+                $business = Business::find($id);
+                if ($business) {
+                    $this->performDeleteBusiness($business);
+                    $count++;
+                }
+            }
+
+            DB::commit();
+
+            return back()->with('success', "{$count} business(es) deleted successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete selected businesses: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper to perform comprehensive business deletion and cleanup.
+     */
+    private function performDeleteBusiness(Business $business): void
+    {
+        // 1. Delete associated AI content queues
+        AiContentQueue::where('resource_type', 'business')
+            ->where('resource_id', $business->id)
+            ->delete();
+
+        // 2. Detach many-to-many relationships
+        $business->countries()->detach();
+        $business->languages()->detach();
+        $business->features()->detach();
+        $business->pricingOptions()->detach();
+        $business->products()->detach();
+        $business->subCategories()->detach();
+
+        // 3. Delete direct child records
+        $business->translations()->delete();
+        $business->websites()->delete();
+        $business->wishlists()->delete();
+        $business->reviews()->delete();
+        $business->proCons()->delete();
+        $business->offerings()->delete();
+        $business->usps()->delete();
+        $business->topicDescriptions()->delete();
+
+        // 4. Delete FAQs and feedback
+        foreach ($business->faqs as $faq) {
+            $faq->translations()->delete();
+            $faq->feedbacks()->delete();
+            $faq->delete();
+        }
+        $business->faqCategories()->delete();
+
+        // 5. Delete custom icon / logo if exists and not default
+        $rawIcon = $business->getRawOriginal('icon_id');
+        if ($rawIcon && \File::exists(public_path($rawIcon)) && !in_array($rawIcon, [
+            'front/img/default_business_logo.svg', 'front/img/logo.svg', 'front/img/default.png', 'images/default.png'
+        ])) {
+            @unlink(public_path($rawIcon));
+        }
+        if ($business->icon_id && \Illuminate\Support\Facades\Storage::disk('public')->exists($business->icon_id)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($business->icon_id);
+        }
+        if ($business->image_id && \Illuminate\Support\Facades\Storage::disk('public')->exists($business->image_id)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($business->image_id);
+        }
+
+        // 6. Delete other relations / foreign keys
+        DB::table('affiliate_clicks')->where('business_id', $business->id)->delete();
+        DB::table('user_activities')->where('business_id', $business->id)->delete();
+        DB::table('feature_business_reviews')->where('business_id', $business->id)->delete();
+        DB::table('business_rating_texts')->where('business_id', $business->id)->delete();
+        DB::table('business_change_requests')->where('business_id', $business->id)->delete();
+        DB::table('business_discussions')->where('business_id', $business->id)->delete();
+        DB::table('moderation_cases')->where('business_id', $business->id)->delete();
+        DB::table('vendor_register_lists')->where('business_id', $business->id)->delete();
+        DB::table('users')->where('business_id', $business->id)->update(['business_id' => null]);
+
+        // 7. Delete the business record
+        $business->delete();
+    }
+
     // -------------------------------------------------------------------------
     // VIEW SINGLE RESULT
     // -------------------------------------------------------------------------
@@ -1412,9 +1654,10 @@ class ContentGenerationController extends Controller
             case 'what_is':
                 $whatIs = $data['description'] ?? ($data['what_is'] ?? ($data['content'] ?? null));
                 if ($whatIs !== null) {
+                    $formattedWhatIs = \App\Services\ContentTemplateService::formatDescriptionText($whatIs);
                     BusinessTranslation::where('business_id', $businessId)
                         ->where('lang_id', 1)
-                        ->update(['description' => $whatIs]);
+                        ->update(['description' => $formattedWhatIs]);
                 }
                 break;
 
@@ -1460,7 +1703,10 @@ class ContentGenerationController extends Controller
             case 'faqs':
                 $faqs = $data['faqs'] ?? [];
                 if (!empty($faqs) && is_array($faqs)) {
+                    $oldFaqIds = BusinessFaq::where('business_id', $businessId)->pluck('id');
+                    BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
                     BusinessFaq::where('business_id', $businessId)->delete();
+                    BusinessFaqCategory::where('business_id', $businessId)->delete();
                     foreach ($faqs as $index => $faq) {
                         $question = $faq['question'] ?? null;
                         $answer   = $faq['answer']   ?? null;
@@ -2692,6 +2938,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
 
             // Ingest basic business information ("At a glance" fields)
+            $bGlanceLabels = $biz->getGlanceLabels(1);
+            $bOpt3Label = $bGlanceLabels['option_3'] ?? null;
+            $bOpt4Label = $bGlanceLabels['option_4'] ?? null;
+
             $glanceUpdates = [];
             if (isset($bData['main_offering'])) {
                 $glanceUpdates['main_offering'] = is_string($bData['main_offering']) ? trim($bData['main_offering']) : null;
@@ -2699,13 +2949,21 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             if (isset($bData['suitable_for'])) {
                 $glanceUpdates['suitable_for'] = is_string($bData['suitable_for']) ? trim($bData['suitable_for']) : null;
             }
-            $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
-            if ($opt3Val !== null) {
-                $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+            if (!empty($bOpt3Label)) {
+                $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
+                if ($opt3Val !== null) {
+                    $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+                }
+            } else {
+                $glanceUpdates['glance_option_3'] = null;
             }
-            $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
-            if ($opt4Val !== null) {
-                $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+            if (!empty($bOpt4Label)) {
+                $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
+                if ($opt4Val !== null) {
+                    $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+                }
+            } else {
+                $glanceUpdates['glance_option_4'] = null;
             }
             if (!empty($glanceUpdates)) {
                 BusinessTranslation::where('business_id', $bizId)
@@ -2919,95 +3177,106 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $secondaryCatIds = [];
         $subCatIds = [];
 
-        if (is_string($catData)) {
-            $catData = ['category_name' => $catData];
-        } elseif (is_numeric($catData)) {
-            $catData = ['category_id' => (int)$catData];
-        }
+        // Helper to resolve category ID from ID or name
+        $resolveCatId = function ($val) {
+            if (empty($val)) return null;
+            if (is_numeric($val) && Category::where('id', (int)$val)->exists()) {
+                return (int)$val;
+            }
+            if (is_string($val) && trim($val) !== '') {
+                $clean = trim($val);
+                $found = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                    ->orWhere('name', 'like', '%' . $clean . '%')
+                    ->value('category_id');
+                if ($found) return (int)$found;
+            }
+            return null;
+        };
 
-        if (is_array($catData)) {
-            // Check primary category vs subcategory as defined by user:
-            // "primary_category_id": 11, "primary_subcategory_id": null
-            // OR "primary_category_id": null, "primary_subcategory_id": 23
+        if (is_string($catData) || is_numeric($catData)) {
+            $resolved = $resolveCatId($catData);
+            if ($resolved) {
+                $primaryCatId = $resolved;
+            }
+        } elseif (is_array($catData)) {
+            // Check primary category vs subcategory
             $rawPrimaryCat = $catData['primary_category_id'] ?? null;
             $rawPrimarySub = $catData['primary_subcategory_id'] ?? null;
 
-            if (!empty($rawPrimaryCat) && Category::where('id', $rawPrimaryCat)->exists()) {
-                $primaryCatId = (int)$rawPrimaryCat;
-            } elseif (!empty($rawPrimarySub) && Category::where('id', $rawPrimarySub)->exists()) {
-                $primaryCatId = (int)$rawPrimarySub;
+            if ($rawPrimaryCat && ($cid = $resolveCatId($rawPrimaryCat))) {
+                $primaryCatId = $cid;
+            } elseif ($rawPrimarySub && ($cid = $resolveCatId($rawPrimarySub))) {
+                $primaryCatId = $cid;
             }
 
-            // category_ids: [11, 30]
+            // category_ids
             $cIds = $catData['category_ids'] ?? [];
             if (!empty($cIds)) {
                 if (!is_array($cIds)) $cIds = [$cIds];
                 foreach ($cIds as $cid) {
-                    if (is_numeric($cid) && Category::where('id', $cid)->exists()) {
+                    $resolved = $resolveCatId($cid);
+                    if ($resolved) {
                         if ($primaryCatId === null) {
-                            $primaryCatId = (int)$cid;
+                            $primaryCatId = $resolved;
                         } else {
-                            $secondaryCatIds[] = (int)$cid;
+                            $secondaryCatIds[] = $resolved;
                         }
                     }
                 }
             }
 
-            // subcategory_ids: [19, 20, 23, ...]
+            // subcategory_ids / subcategories
             $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
-            if (!is_array($subs)) $subs = [$subs];
-            foreach ($subs as $sub) {
-                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                    if ($primaryCatId === null && !empty($rawPrimarySub)) {
-                        $primaryCatId = (int)$sub;
-                    } else {
-                        $subCatIds[] = (int)$sub;
+            if (!empty($subs)) {
+                if (!is_array($subs)) $subs = [$subs];
+                foreach ($subs as $sub) {
+                    $resolved = $resolveCatId($sub);
+                    if ($resolved) {
+                        if ($primaryCatId === null && !empty($rawPrimarySub)) {
+                            $primaryCatId = $resolved;
+                        } else {
+                            $subCatIds[] = $resolved;
+                        }
                     }
-                } elseif (is_string($sub) && trim($sub) !== '') {
-                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                        ->value('category_id');
-                    if ($matchedSub) $subCatIds[] = $matchedSub;
                 }
             }
 
-            // Fallback for previous formats: category_id or category_name
+            // Single category_id or category_name fallback
             if ($primaryCatId === null) {
                 $rawCid = $catData['category_id'] ?? null;
                 $catName = $catData['category_name'] ?? ($catData['category'] ?? null);
-
-                if ($rawCid && Category::where('id', $rawCid)->exists()) {
-                    $primaryCatId = (int)$rawCid;
-                } elseif ($catName) {
-                    $clean = trim($catName);
-                    $matched = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
-                        ->orWhere('name', 'like', '%' . $clean . '%')
-                        ->value('category_id');
-                    if ($matched) {
-                        $primaryCatId = (int)$matched;
-                    }
+                if ($rawCid && ($resolved = $resolveCatId($rawCid))) {
+                    $primaryCatId = $resolved;
+                } elseif ($catName && ($resolved = $resolveCatId($catName))) {
+                    $primaryCatId = $resolved;
                 }
             }
 
-            // Format: Array of category objects: [ {"category_id": 11, "subcategory_ids": [19, 20]}, ... ]
+            // If it's a list: ["Web hosting", "Cloud hosting"] or [11, 23] or [{"name": "..."}, ...]
             if (array_is_list($catData)) {
                 foreach ($catData as $entry) {
-                    if (!is_array($entry)) {
-                        if (is_numeric($entry) && Category::where('id', $entry)->exists()) {
-                            if ($primaryCatId === null) $primaryCatId = (int)$entry;
-                            else $secondaryCatIds[] = (int)$entry;
+                    if (is_string($entry) || is_numeric($entry)) {
+                        $resolved = $resolveCatId($entry);
+                        if ($resolved) {
+                            if ($primaryCatId === null) $primaryCatId = $resolved;
+                            else $secondaryCatIds[] = $resolved;
                         }
                         continue;
                     }
-                    $cId = $entry['category_id'] ?? ($entry['id'] ?? null);
-                    if ($cId && Category::where('id', $cId)->exists()) {
-                        if ($primaryCatId === null) $primaryCatId = (int)$cId;
-                        else $secondaryCatIds[] = (int)$cId;
-                    }
-                    $eSubs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? []);
-                    if (!is_array($eSubs)) $eSubs = [$eSubs];
-                    foreach ($eSubs as $s) {
-                        if (is_numeric($s) && Category::where('id', $s)->exists()) {
-                            $subCatIds[] = (int)$s;
+                    if (is_array($entry)) {
+                        $cId = $entry['category_id'] ?? ($entry['id'] ?? ($entry['name'] ?? ($entry['category_name'] ?? null)));
+                        $resolved = $resolveCatId($cId);
+                        if ($resolved) {
+                            if ($primaryCatId === null) $primaryCatId = $resolved;
+                            else $secondaryCatIds[] = $resolved;
+                        }
+                        $eSubs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? []);
+                        if (!is_array($eSubs)) $eSubs = [$eSubs];
+                        foreach ($eSubs as $s) {
+                            $resolvedS = $resolveCatId($s);
+                            if ($resolvedS) {
+                                $subCatIds[] = $resolvedS;
+                            }
                         }
                     }
                 }
@@ -3018,7 +3287,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $business->update(['category_id' => $primaryCatId]);
         }
 
+        // Clean sync without accumulating old categories!
         $allPivotIds = array_values(array_unique(array_filter(array_merge($secondaryCatIds, $subCatIds))));
+        if ($primaryCatId) {
+            $allPivotIds = array_values(array_diff($allPivotIds, [$primaryCatId]));
+        }
         $business->subCategories()->sync($allPivotIds);
     }
 

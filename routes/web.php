@@ -255,6 +255,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/content-generation/batch-jobs/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-global-result');
     Route::post('/admin-dashboard/content-generation/batch-jobs/{job}/upload-result', [ContentGenerationController::class, 'uploadBatchResult'])->name('content-gen.batch-jobs.upload-result');
     Route::delete('/admin-dashboard/content-generation/batch-jobs/{job}', [ContentGenerationController::class, 'deleteBatchJob'])->name('content-gen.batch-jobs.delete');
+    Route::match(['DELETE', 'POST'], '/admin-dashboard/content-generation/businesses/bulk-delete', [ContentGenerationController::class, 'deleteBulkBusinesses'])->name('content-gen.delete-bulk-businesses');
+    Route::match(['DELETE', 'POST'], '/admin-dashboard/content-generation/businesses/{id}', [ContentGenerationController::class, 'deleteBusiness'])->name('content-gen.delete-business');
 
 
 

@@ -95,9 +95,7 @@
                                 <div class="inn_sl_hed mst_hdn {{ $isBestValue ? 'mt-4 image-above' : '' }}">
                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                         <div class="sli_img">
-                                            <img class="slider_img"
-                                                src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}"
-                                                alt="">
+                                            <x-business-logo :business="$business" class="slider_img" />
                                         </div>
                                     </a>
                                     <div class="sl_h">

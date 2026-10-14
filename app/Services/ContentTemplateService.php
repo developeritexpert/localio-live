@@ -216,16 +216,18 @@ class ContentTemplateService
             'description' => 'Headline for the basic business information / at a glance section (e.g. [business] at a glance).',
         ],
         'profile_service_guide' => [
-            'label' => 'SERVICE GUIDE HEADLINE',
-            'type' => 'single',
-            'field1_label' => 'Headline',
-            'description' => 'Headline for the service guide / which service fits your needs section (e.g. Which [business] service fits your needs?).',
+            'label' => 'SERVICE GUIDE',
+            'type' => 'combined',
+            'field1_label' => 'Service Guide Headline (H2)',
+            'field2_label' => 'Service Guide Subtext',
+            'description' => 'Headline and subtext for the service guide / which service fits your needs section (placed directly below the headline, before the h3 headlines).',
         ],
         'profile_detailed_services' => [
-            'label' => 'DETAILED SERVICES HEADLINE',
-            'type' => 'single',
-            'field1_label' => 'Headline',
-            'description' => 'Headline on the top of the second part of the services text (after screenshots).',
+            'label' => 'DETAILED SERVICES',
+            'type' => 'combined',
+            'field1_label' => 'Detailed Services Headline (H2)',
+            'field2_label' => 'Detailed Services Subtext',
+            'description' => 'Headline and subtext on the top of the second part of the services text (placed directly below the headline, before the h3 headlines).',
         ],
         'profile_pros_cons' => [
             'label' => 'PROS & CONS',
@@ -1646,14 +1648,32 @@ class ContentTemplateService
                 2 => 'What does [business] offer?',
             ],
             'profile_service_guide' => [
-                1 => 'Which [business] service fits your needs?',
-                2 => 'Find the right [business] service for your needs',
-                3 => 'Which [business] solution is right for you?',
+                1 => [
+                    'headline' => 'Which [business] service fits your needs?',
+                    'subtext' => '<p>Compare the core services and solutions offered by [business] to find the option that best matches your goals.</p>',
+                ],
+                2 => [
+                    'headline' => 'Find the right [business] service for your needs',
+                    'subtext' => '<p>Explore available [business] service plans and features designed for different project requirements and skill levels.</p>',
+                ],
+                3 => [
+                    'headline' => 'Which [business] solution is right for you?',
+                    'subtext' => '<p>Review key services from [business] to select the ideal tier and infrastructure for your setup.</p>',
+                ],
             ],
             'profile_detailed_services' => [
-                1 => 'Detailed services',
-                2 => '[business] detailed services',
-                3 => 'Detailed services & features',
+                1 => [
+                    'headline' => 'Detailed services',
+                    'subtext' => '<p>In-depth breakdown of features, specifications, and tools included with [business] services.</p>',
+                ],
+                2 => [
+                    'headline' => '[business] detailed services',
+                    'subtext' => '<p>Comprehensive overview of key capabilities and architecture supported by [business].</p>',
+                ],
+                3 => [
+                    'headline' => 'Detailed services & features',
+                    'subtext' => '<p>A closer look at the advanced functionality, performance features, and options available from [business].</p>',
+                ],
             ],
             'profile_reviews' => [
                 1 => [
@@ -2520,6 +2540,82 @@ class ContentTemplateService
 
         // 4. Remove empty paragraphs
         $text = preg_replace('/<p>\s*(?:<br\s*\/?>|&nbsp;|\s)*<\/p>/i', '', $text);
+
+        return trim($text);
+    }
+
+    /**
+     * Formats business overview / description text.
+     * Converts single or multiple <br> tags and newlines into semantic <p>...</p> paragraphs,
+     * ensuring proper visual paragraph spacing across all devices and browsers.
+     */
+    public static function formatDescriptionText(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        $text = trim($text);
+
+        // If input has no HTML tags at all:
+        if (!preg_match('/<[a-z][\s\S]*>/i', $text)) {
+            $hasDoubleNewline = (bool) preg_match('/(
+|
+|
+){2,}/', $text);
+            $paragraphs = $hasDoubleNewline
+                ? preg_split('/(
+|
+|
+){2,}/', $text)
+                : preg_split('/(
+|
+|
+)/', $text);
+
+            $html = '';
+            foreach ($paragraphs as $p) {
+                $p = trim($p);
+                if ($p !== '') {
+                    $html .= '<p>' . $p . '</p>';
+                }
+            }
+            return $html ?: '<p>' . $text . '</p>';
+        }
+
+        // 1. Replace 1 or more <br> tags (with optional whitespace) with paragraph boundary </p><p>
+        $text = preg_replace('/(?:<br\s*\/?>\s*)+/i', '</p><p>', $text);
+
+        // 2. If there were double newlines inside or around HTML
+        $text = preg_replace('/(?:
+|
+|
+){2,}/', '</p><p>', $text);
+
+        // 3. Clean up empty paragraphs
+        $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
+
+        // 4. Ensure balanced wrapping
+        $text = preg_replace('/^\s*<\/p>/i', '', trim($text));
+        $text = preg_replace('/<p>\s*$/i', '', trim($text));
+
+        if (!preg_match('/^\s*<(?:p|div|h[1-6]|ul|ol|blockquote|table)/i', $text)) {
+            $text = '<p>' . $text;
+        }
+        if (!preg_match('/<\/(?:p|div|h[1-6]|ul|ol|blockquote|table)>\s*$/i', $text)) {
+            $text = $text . '</p>';
+        }
+
+        // 5. Clean up accidental nested or duplicate adjacent paragraph tags
+        $text = preg_replace('/<p>\s*<p>/i', '<p>', $text);
+        $text = preg_replace('/<\/p>\s*<\/p>/i', '</p>', $text);
+
+        // 6. Fix block-level elements wrapped inside or adjacent to invalid <p>
+        $text = preg_replace('/<p>\s*(<(?:ul|ol|h[1-6]|div|table|blockquote)[^>]*>)/i', '$1', $text);
+        $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*<\/p>/i', '$1', $text);
+
+        // 7. Clean up empty paragraphs once more
+        $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
 
         return trim($text);
     }

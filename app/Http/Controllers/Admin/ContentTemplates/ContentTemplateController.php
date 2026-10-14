@@ -499,7 +499,7 @@ class ContentTemplateController extends Controller
                         'category', 'category_faqs', 'category_discussions',
                         'business_profile', 'business_alternatives', 'business_faqs',
                         'business_compare', 'business_reviews', 'business_discussions',
-                        'features', 'criteria_ratings'
+                        'features', 'criteria_ratings', 'comparison'
                     ];
                     if (in_array($value, $standard) || str_starts_with($value, 'criteria_ratings_')) {
                         return true;
