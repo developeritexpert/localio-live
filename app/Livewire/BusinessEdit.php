@@ -3006,8 +3006,13 @@ class BusinessEdit extends Component
         $addedCount = 0;
 
         DB::transaction(function () use ($items, &$addedCount) {
-            $currentPosition = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
-                ->max('position') ?? 0;
+            // Delete old FAQs and FAQ categories on new upload to cleanly replace them
+            $oldFaqIds = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)->pluck('id');
+            BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
+            BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)->delete();
+            BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->delete();
+
+            $currentPosition = 0;
 
             foreach ($items as $item) {
                 if (!is_array($item)) continue;

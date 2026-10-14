@@ -505,9 +505,14 @@ class ContentGenerationController extends Controller
                         continue;
                     }
                     $business = $existingBiz;
-                    if (!empty($url) && empty($business->permanent_url)) {
+                    if (!empty($url)) {
                         $business->permanent_url = $url;
                         $business->save();
+                    }
+                    if (!empty($name)) {
+                        BusinessTranslation::where('business_id', $business->id)
+                            ->where('lang_id', 1)
+                            ->update(['name' => $name]);
                     }
                     $updatedCount++;
                 } else {
@@ -578,7 +583,7 @@ class ContentGenerationController extends Controller
 
         // 1. Categories
         $catData = $item['categories'] ?? null;
-        if (!$catData && (isset($item['category_id']) || isset($item['category']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
+        if ($catData === null && (isset($item['category_id']) || isset($item['category']) || isset($item['category_name']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
             $catData = [
                 'primary_category_id'    => $item['primary_category_id'] ?? null,
                 'primary_subcategory_id' => $item['primary_subcategory_id'] ?? null,
@@ -591,6 +596,29 @@ class ContentGenerationController extends Controller
         if ($catData) {
             self::applyCategoriesToBusiness($business, $catData);
             $appliedCount++;
+        }
+
+        // Meta & Additional Info
+        $metaTitle = $item['meta_title'] ?? null;
+        $metaDesc  = $item['meta_description'] ?? ($item['meta_desc'] ?? null);
+        $priKey    = $item['primary_keywords'] ?? ($item['primary_keyword'] ?? null);
+        $secKey    = $item['secondary_keywords'] ?? ($item['secondary_keyword'] ?? null);
+        $hq        = $item['headquarters'] ?? ($item['headquarter'] ?? null);
+        $transUpdates = [];
+        if ($metaTitle !== null) $transUpdates['meta_title'] = $metaTitle;
+        if ($metaDesc !== null)  $transUpdates['meta_description'] = $metaDesc;
+        if ($priKey !== null)    $transUpdates['primary_keywords'] = is_array($priKey) ? implode(', ', $priKey) : $priKey;
+        if ($secKey !== null)    $transUpdates['secondary_keywords'] = is_array($secKey) ? implode(', ', $secKey) : $secKey;
+        if ($hq !== null)        $transUpdates['headquarters'] = $hq;
+        if (!empty($transUpdates)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update($transUpdates);
+            $appliedCount++;
+        }
+
+        $yearFound = $item['year_found'] ?? ($item['year_founded'] ?? ($item['founded'] ?? null));
+        if ($yearFound !== null && is_numeric($yearFound)) {
+            $business->year_found = (int)$yearFound;
+            $business->save();
         }
 
         // 2. Short description
@@ -669,7 +697,10 @@ class ContentGenerationController extends Controller
         // 9. FAQs
         $faqs = $item['faqs'] ?? [];
         if (!empty($faqs) && is_array($faqs)) {
+            $oldFaqIds = BusinessFaq::where('business_id', $businessId)->pluck('id');
+            BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
             BusinessFaq::where('business_id', $businessId)->delete();
+            BusinessFaqCategory::where('business_id', $businessId)->delete();
             foreach ($faqs as $fIndex => $faq) {
                 $q = $faq['question'] ?? ($faq['q'] ?? null);
                 $a = $faq['answer'] ?? ($faq['a'] ?? null);
@@ -1460,7 +1491,10 @@ class ContentGenerationController extends Controller
             case 'faqs':
                 $faqs = $data['faqs'] ?? [];
                 if (!empty($faqs) && is_array($faqs)) {
+                    $oldFaqIds = BusinessFaq::where('business_id', $businessId)->pluck('id');
+                    BusinessFaqTranslation::whereIn('business_faq_id', $oldFaqIds)->delete();
                     BusinessFaq::where('business_id', $businessId)->delete();
+                    BusinessFaqCategory::where('business_id', $businessId)->delete();
                     foreach ($faqs as $index => $faq) {
                         $question = $faq['question'] ?? null;
                         $answer   = $faq['answer']   ?? null;
@@ -2919,95 +2953,106 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $secondaryCatIds = [];
         $subCatIds = [];
 
-        if (is_string($catData)) {
-            $catData = ['category_name' => $catData];
-        } elseif (is_numeric($catData)) {
-            $catData = ['category_id' => (int)$catData];
-        }
+        // Helper to resolve category ID from ID or name
+        $resolveCatId = function ($val) {
+            if (empty($val)) return null;
+            if (is_numeric($val) && Category::where('id', (int)$val)->exists()) {
+                return (int)$val;
+            }
+            if (is_string($val) && trim($val) !== '') {
+                $clean = trim($val);
+                $found = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                    ->orWhere('name', 'like', '%' . $clean . '%')
+                    ->value('category_id');
+                if ($found) return (int)$found;
+            }
+            return null;
+        };
 
-        if (is_array($catData)) {
-            // Check primary category vs subcategory as defined by user:
-            // "primary_category_id": 11, "primary_subcategory_id": null
-            // OR "primary_category_id": null, "primary_subcategory_id": 23
+        if (is_string($catData) || is_numeric($catData)) {
+            $resolved = $resolveCatId($catData);
+            if ($resolved) {
+                $primaryCatId = $resolved;
+            }
+        } elseif (is_array($catData)) {
+            // Check primary category vs subcategory
             $rawPrimaryCat = $catData['primary_category_id'] ?? null;
             $rawPrimarySub = $catData['primary_subcategory_id'] ?? null;
 
-            if (!empty($rawPrimaryCat) && Category::where('id', $rawPrimaryCat)->exists()) {
-                $primaryCatId = (int)$rawPrimaryCat;
-            } elseif (!empty($rawPrimarySub) && Category::where('id', $rawPrimarySub)->exists()) {
-                $primaryCatId = (int)$rawPrimarySub;
+            if ($rawPrimaryCat && ($cid = $resolveCatId($rawPrimaryCat))) {
+                $primaryCatId = $cid;
+            } elseif ($rawPrimarySub && ($cid = $resolveCatId($rawPrimarySub))) {
+                $primaryCatId = $cid;
             }
 
-            // category_ids: [11, 30]
+            // category_ids
             $cIds = $catData['category_ids'] ?? [];
             if (!empty($cIds)) {
                 if (!is_array($cIds)) $cIds = [$cIds];
                 foreach ($cIds as $cid) {
-                    if (is_numeric($cid) && Category::where('id', $cid)->exists()) {
+                    $resolved = $resolveCatId($cid);
+                    if ($resolved) {
                         if ($primaryCatId === null) {
-                            $primaryCatId = (int)$cid;
+                            $primaryCatId = $resolved;
                         } else {
-                            $secondaryCatIds[] = (int)$cid;
+                            $secondaryCatIds[] = $resolved;
                         }
                     }
                 }
             }
 
-            // subcategory_ids: [19, 20, 23, ...]
+            // subcategory_ids / subcategories
             $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
-            if (!is_array($subs)) $subs = [$subs];
-            foreach ($subs as $sub) {
-                if (is_numeric($sub) && Category::where('id', $sub)->exists()) {
-                    if ($primaryCatId === null && !empty($rawPrimarySub)) {
-                        $primaryCatId = (int)$sub;
-                    } else {
-                        $subCatIds[] = (int)$sub;
+            if (!empty($subs)) {
+                if (!is_array($subs)) $subs = [$subs];
+                foreach ($subs as $sub) {
+                    $resolved = $resolveCatId($sub);
+                    if ($resolved) {
+                        if ($primaryCatId === null && !empty($rawPrimarySub)) {
+                            $primaryCatId = $resolved;
+                        } else {
+                            $subCatIds[] = $resolved;
+                        }
                     }
-                } elseif (is_string($sub) && trim($sub) !== '') {
-                    $matchedSub = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower(trim($sub))])
-                        ->value('category_id');
-                    if ($matchedSub) $subCatIds[] = $matchedSub;
                 }
             }
 
-            // Fallback for previous formats: category_id or category_name
+            // Single category_id or category_name fallback
             if ($primaryCatId === null) {
                 $rawCid = $catData['category_id'] ?? null;
                 $catName = $catData['category_name'] ?? ($catData['category'] ?? null);
-
-                if ($rawCid && Category::where('id', $rawCid)->exists()) {
-                    $primaryCatId = (int)$rawCid;
-                } elseif ($catName) {
-                    $clean = trim($catName);
-                    $matched = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
-                        ->orWhere('name', 'like', '%' . $clean . '%')
-                        ->value('category_id');
-                    if ($matched) {
-                        $primaryCatId = (int)$matched;
-                    }
+                if ($rawCid && ($resolved = $resolveCatId($rawCid))) {
+                    $primaryCatId = $resolved;
+                } elseif ($catName && ($resolved = $resolveCatId($catName))) {
+                    $primaryCatId = $resolved;
                 }
             }
 
-            // Format: Array of category objects: [ {"category_id": 11, "subcategory_ids": [19, 20]}, ... ]
+            // If it's a list: ["Web hosting", "Cloud hosting"] or [11, 23] or [{"name": "..."}, ...]
             if (array_is_list($catData)) {
                 foreach ($catData as $entry) {
-                    if (!is_array($entry)) {
-                        if (is_numeric($entry) && Category::where('id', $entry)->exists()) {
-                            if ($primaryCatId === null) $primaryCatId = (int)$entry;
-                            else $secondaryCatIds[] = (int)$entry;
+                    if (is_string($entry) || is_numeric($entry)) {
+                        $resolved = $resolveCatId($entry);
+                        if ($resolved) {
+                            if ($primaryCatId === null) $primaryCatId = $resolved;
+                            else $secondaryCatIds[] = $resolved;
                         }
                         continue;
                     }
-                    $cId = $entry['category_id'] ?? ($entry['id'] ?? null);
-                    if ($cId && Category::where('id', $cId)->exists()) {
-                        if ($primaryCatId === null) $primaryCatId = (int)$cId;
-                        else $secondaryCatIds[] = (int)$cId;
-                    }
-                    $eSubs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? []);
-                    if (!is_array($eSubs)) $eSubs = [$eSubs];
-                    foreach ($eSubs as $s) {
-                        if (is_numeric($s) && Category::where('id', $s)->exists()) {
-                            $subCatIds[] = (int)$s;
+                    if (is_array($entry)) {
+                        $cId = $entry['category_id'] ?? ($entry['id'] ?? ($entry['name'] ?? ($entry['category_name'] ?? null)));
+                        $resolved = $resolveCatId($cId);
+                        if ($resolved) {
+                            if ($primaryCatId === null) $primaryCatId = $resolved;
+                            else $secondaryCatIds[] = $resolved;
+                        }
+                        $eSubs = $entry['subcategory_ids'] ?? ($entry['subcategories'] ?? []);
+                        if (!is_array($eSubs)) $eSubs = [$eSubs];
+                        foreach ($eSubs as $s) {
+                            $resolvedS = $resolveCatId($s);
+                            if ($resolvedS) {
+                                $subCatIds[] = $resolvedS;
+                            }
                         }
                     }
                 }
@@ -3018,7 +3063,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $business->update(['category_id' => $primaryCatId]);
         }
 
+        // Clean sync without accumulating old categories!
         $allPivotIds = array_values(array_unique(array_filter(array_merge($secondaryCatIds, $subCatIds))));
+        if ($primaryCatId) {
+            $allPivotIds = array_values(array_diff($allPivotIds, [$primaryCatId]));
+        }
         $business->subCategories()->sync($allPivotIds);
     }
 
