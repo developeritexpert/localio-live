@@ -450,11 +450,12 @@ class ContentGenerationController extends Controller
             $decoded = [$decoded];
         }
 
-        $updateExisting = $request->boolean('update_existing', true);
-        $createdCount   = 0;
-        $updatedCount   = 0;
-        $skippedCount   = 0;
-        $errors         = [];
+        $updateExisting     = $request->boolean('update_existing', false);
+        $createdCount       = 0;
+        $updatedCount       = 0;
+        $skippedCount       = 0;
+        $skippedBusinesses  = [];
+        $errors             = [];
 
         DB::beginTransaction();
         try {
@@ -465,31 +466,64 @@ class ContentGenerationController extends Controller
                 }
 
                 // Flexible name and URL resolution
-                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? '');
-                $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? '');
+                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
+                $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? $item['domain'] ?? $item['link'] ?? '');
 
-                if (empty($name)) {
-                    $skippedCount++;
-                    $errors[] = "Item #" . ($index + 1) . " skipped: missing Business Name.";
-                    continue;
-                }
-
-                if (!empty($url) && !preg_match('/^https?:\/\//i', $url)) {
-                    $url = 'https://' . $url;
-                }
-
-                // Check for existing business by normalized URL or by Name
-                $existingBiz = null;
-                if (!empty($url)) {
-                    $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $url), '/');
-                    if (!empty($normalizedUrl)) {
-                        $existingBiz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                            ->first();
+                // If name is omitted but URL is provided, derive name cleanly from domain
+                if (empty($name) && !empty($url)) {
+                    $parsedHost = parse_url(preg_match('#^https?://#i', $url) ? $url : ('https://' . $url), PHP_URL_HOST);
+                    if (!empty($parsedHost)) {
+                        $cleanHost = preg_replace('#^www\.#i', '', $parsedHost);
+                        $hostParts = explode('.', $cleanHost);
+                        $name = ucfirst($hostParts[0] ?: $cleanHost);
+                    } else {
+                        $name = ucfirst($url);
                     }
                 }
 
+                if (empty($name)) {
+                    $skippedCount++;
+                    $skippedBusinesses[] = "Item #" . ($index + 1) . " (missing business name and URL)";
+                    continue;
+                }
+
+                if (!empty($url) && !preg_match('#^https?://#i', $url)) {
+                    $url = 'https://' . $url;
+                }
+
+                // Check for existing business by exact normalized URL or by exact Name
+                $existingBiz = null;
+                if (!empty($url)) {
+                    $cleanNormUrl = preg_replace('#^https?://#i', '', $url);
+                    $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                    $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+
+                    if (!empty($cleanNormUrl)) {
+                        // 1. Exact match on normalized permanent_url (avoids fuzzy false positives on similar domains)
+                        $existingBiz = Business::whereRaw(
+                            "LOWER(TRIM(TRAILING '/' FROM REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', ''))) = ?",
+                            [$cleanNormUrl]
+                        )->first();
+
+                        // 2. Exact URL variations fallback
+                        if (!$existingBiz) {
+                            $existingBiz = Business::whereIn('permanent_url', [
+                                $url,
+                                'https://' . $cleanNormUrl,
+                                'http://' . $cleanNormUrl,
+                                'https://www.' . $cleanNormUrl,
+                                'http://www.' . $cleanNormUrl,
+                                'https://' . $cleanNormUrl . '/',
+                                'https://www.' . $cleanNormUrl . '/',
+                                $cleanNormUrl,
+                            ])->first();
+                        }
+                    }
+                }
+
+                // If not matched by URL, check exact name in BusinessTranslation for default language (lang_id = 1)
                 if (!$existingBiz && !empty($name)) {
-                    $bizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($name)])
+                    $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
                         ->where('lang_id', 1)
                         ->value('business_id');
                     if ($bizId) {
@@ -500,10 +534,15 @@ class ContentGenerationController extends Controller
                 $business = null;
 
                 if ($existingBiz) {
+                    $existingName = optional($existingBiz->translations->first())->name ?: $name;
+                    $bizLabel = $existingName . (!empty($url) ? " (" . preg_replace('#^https?://(www\.)?#i', '', $url) . ")" : "");
+
                     if (!$updateExisting) {
                         $skippedCount++;
+                        $skippedBusinesses[] = $bizLabel;
                         continue;
                     }
+
                     $business = $existingBiz;
                     if (!empty($url)) {
                         $business->permanent_url = $url;
@@ -564,11 +603,31 @@ class ContentGenerationController extends Controller
         }
 
         $msgParts = [];
-        if ($createdCount > 0) $msgParts[] = "{$createdCount} new business(es) created";
-        if ($updatedCount > 0) $msgParts[] = "{$updatedCount} existing business(es) updated";
-        if ($skippedCount > 0) $msgParts[] = "{$skippedCount} skipped";
+        if ($createdCount > 0) $msgParts[] = "<strong>{$createdCount}</strong> new business(es) created";
+        if ($updatedCount > 0) $msgParts[] = "<strong>{$updatedCount}</strong> existing business(es) updated";
 
-        $finalMsg = !empty($msgParts) ? "Import complete: " . implode(', ', $msgParts) . "." : "No businesses were imported.";
+        $summaryText = implode(', ', $msgParts);
+        if (empty($summaryText)) {
+            $summaryText = "0 new businesses created";
+        }
+
+        $skippedHtml = "";
+        if (!empty($skippedBusinesses)) {
+            $skippedHtml .= '<div class="mt-2">';
+            $skippedHtml .= '<strong>Skipped ' . count($skippedBusinesses) . ' business(es) (already exist in directory):</strong>';
+            $skippedHtml .= '<ul class="mb-0 mt-1 ps-3" style="font-size: 12px; line-height: 1.6;">';
+            foreach ($skippedBusinesses as $sb) {
+                $skippedHtml .= '<li>' . e($sb) . '</li>';
+            }
+            $skippedHtml .= '</ul>';
+            $skippedHtml .= '</div>';
+        }
+
+        $finalMsg = "Import summary: " . $summaryText . "." . $skippedHtml;
+
+        if ($createdCount === 0 && $updatedCount === 0 && !empty($skippedBusinesses)) {
+            return redirect()->route('content-gen.businesses')->with('warning', $finalMsg);
+        }
 
         return redirect()->route('content-gen.businesses')->with('success', $finalMsg);
     }

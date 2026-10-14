@@ -551,7 +551,7 @@ function insertSampleJson() {
 
                     {{-- Deduplication Toggle --}}
                     <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="update_existing" value="1" id="updateExistingCheck" checked>
+                        <input class="form-check-input" type="checkbox" name="update_existing" value="1" id="updateExistingCheck">
                         <label class="form-check-label small fw-semibold text-dark" for="updateExistingCheck">
                             Update existing businesses if already in directory (matched by name or URL)
                         </label>

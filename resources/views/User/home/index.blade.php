@@ -177,7 +177,7 @@
                                                             <div class="inn_sl_hed mst_hdn">
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                                                     <div class="top-product-logo">
-                                                                        <img class="" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
+                                                                        <x-business-logo :business="$business" />
                                                                     </div>
                                                                 </a>
                                                                 <div class="sl_h">
@@ -408,8 +408,7 @@
                                             <div class="inn_sl_hed">
                                                 <div class="sli_img">
                                                 <a   href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
-                                                    <img src="{{ asset($business->icon_id) }}" class="header_img"
-                                                        alt="{{ $business->translations->first()->name ?? 'Business' }}">
+                                                    <x-business-logo :business="$business" class="header_img" />
                                                     </a>
                                                 </div>
 

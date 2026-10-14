@@ -721,10 +721,7 @@
                         </div>
 
                         <div class="border p-3 mb-3 rounded bg-white">
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-semibold">Products / Services Headline</label>
-                                <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does this service offer?">
-                            </div>
+
 
                             <div class="form-group mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
