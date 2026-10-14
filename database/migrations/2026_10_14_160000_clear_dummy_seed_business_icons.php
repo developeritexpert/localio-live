@@ -13,11 +13,6 @@ return new class extends Migration
     public function up(): void
     {
         $dummyIcons = [
-            'business_icon/1746103824_3H8UUe4f7h.png',
-            'business_icon/1746103787_c7J7kSWbJN.png',
-            'business_icon/1746103760_rpmXVNYcF2.png',
-            'business_icon/1746103678_aBqoscEoLL.png',
-            'business_icon/1748244192_NT3NodH2Zg.png',
             'front/img/default_business_logo.svg',
             'front/img/logo.svg',
             'front/img/default.png',
