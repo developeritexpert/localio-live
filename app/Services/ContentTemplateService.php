@@ -2524,6 +2524,78 @@ class ContentTemplateService
         return trim($text);
     }
 
+    /**
+     * Formats business overview / description text.
+     * Converts single or multiple <br> tags and newlines into semantic <p>...</p> paragraphs,
+     * ensuring proper visual paragraph spacing across all devices and browsers.
+     */
+    public static function formatDescriptionText(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        $text = trim($text);
+
+        // If input has no HTML tags at all:
+        if (!preg_match('/<[a-z][\s\S]*>/i', $text)) {
+            $hasDoubleNewline = (bool) preg_match('/(
+|
+|){2,}/', $text);
+            $paragraphs = $hasDoubleNewline
+                ? preg_split('/(
+|
+|){2,}/', $text)
+                : preg_split('/(
+|
+|)/', $text);
+
+            $html = '';
+            foreach ($paragraphs as $p) {
+                $p = trim($p);
+                if ($p !== '') {
+                    $html .= '<p>' . $p . '</p>';
+                }
+            }
+            return $html ?: '<p>' . $text . '</p>';
+        }
+
+        // 1. Replace 1 or more <br> tags (with optional whitespace) with paragraph boundary </p><p>
+        $text = preg_replace('/(?:<br\s*\/?>\s*)+/i', '</p><p>', $text);
+
+        // 2. If there were double newlines inside or around HTML
+        $text = preg_replace('/(?:
+|
+|){2,}/', '</p><p>', $text);
+
+        // 3. Clean up empty paragraphs
+        $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
+
+        // 4. Ensure balanced wrapping
+        $text = preg_replace('/^\s*<\/p>/i', '', trim($text));
+        $text = preg_replace('/<p>\s*$/i', '', trim($text));
+
+        if (!preg_match('/^\s*<(?:p|div|h[1-6]|ul|ol|blockquote|table)/i', $text)) {
+            $text = '<p>' . $text;
+        }
+        if (!preg_match('/<\/(?:p|div|h[1-6]|ul|ol|blockquote|table)>\s*$/i', $text)) {
+            $text = $text . '</p>';
+        }
+
+        // 5. Clean up accidental nested or duplicate adjacent paragraph tags
+        $text = preg_replace('/<p>\s*<p>/i', '<p>', $text);
+        $text = preg_replace('/<\/p>\s*<\/p>/i', '</p>', $text);
+
+        // 6. Fix block-level elements wrapped inside or adjacent to invalid <p>
+        $text = preg_replace('/<p>\s*(<(?:ul|ol|h[1-6]|div|table|blockquote)[^>]*>)/i', '$1', $text);
+        $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*<\/p>/i', '$1', $text);
+
+        // 7. Clean up empty paragraphs once more
+        $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
+
+        return trim($text);
+    }
+
     public static function cleanHeading(?string $text): string
     {
         if (empty($text)) {

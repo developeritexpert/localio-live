@@ -722,21 +722,24 @@ class ContentGenerationController extends Controller
         // 3. Long description
         $longDesc = $item['long_description'] ?? ($item['long_preview_description'] ?? null);
         if (!empty($longDesc)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['long_preview_description' => $longDesc]);
+            $formattedLongDesc = \App\Services\ContentTemplateService::formatDescriptionText($longDesc);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['long_preview_description' => $formattedLongDesc]);
             $appliedCount++;
         }
 
         // 4. What is / Description
         $whatIs = $item['what_is'] ?? ($item['description'] ?? null);
         if (!empty($whatIs)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['description' => $whatIs]);
+            $formattedWhatIs = \App\Services\ContentTemplateService::formatDescriptionText($whatIs);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['description' => $formattedWhatIs]);
             $appliedCount++;
         }
 
         // 5. Reviews description
         $revDesc = $item['reviews_description'] ?? ($item['short_business_description_reviews'] ?? null);
         if (!empty($revDesc)) {
-            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['reviews_description' => $revDesc]);
+            $formattedRevDesc = \App\Services\ContentTemplateService::formatDescriptionText($revDesc);
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update(['reviews_description' => $formattedRevDesc]);
             $appliedCount++;
         }
 
@@ -1651,9 +1654,10 @@ class ContentGenerationController extends Controller
             case 'what_is':
                 $whatIs = $data['description'] ?? ($data['what_is'] ?? ($data['content'] ?? null));
                 if ($whatIs !== null) {
+                    $formattedWhatIs = \App\Services\ContentTemplateService::formatDescriptionText($whatIs);
                     BusinessTranslation::where('business_id', $businessId)
                         ->where('lang_id', 1)
-                        ->update(['description' => $whatIs]);
+                        ->update(['description' => $formattedWhatIs]);
                 }
                 break;
 

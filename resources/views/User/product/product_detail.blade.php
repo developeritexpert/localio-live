@@ -658,7 +658,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 @endphp
                                 <h2>{!! \App\Services\ContentTemplateService::cleanHeading($finalBizWhatIs) !!}</h2>
                                 <div class="is_text">
-                                    {!! $business->translations->first()?->description ?? "" !!}
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($business->translations->first()?->description ?? "") !!}
                                 </div>
                             </div>
                         </div>
