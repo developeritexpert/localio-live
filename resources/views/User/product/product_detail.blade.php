@@ -1035,8 +1035,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     $finalGuideH2 = !empty($resolvedGuide['headline']) 
                                         ? $resolvedGuide['headline'] 
                                         : $bizGuideFallback;
+                                    $finalGuideSubtext = !empty($resolvedGuide['subtext']) ? $resolvedGuide['subtext'] : '';
                                 @endphp
-                                <h2 class="service-guide-title mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                <h2 class="service-guide-title mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                @if(!empty($finalGuideSubtext))
+                                <div class="service-guide-subtext mb-3" style="color: #475569; font-size: 14.5px; line-height: 1.6;">
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($finalGuideSubtext) !!}
+                                </div>
+                                @endif
                                 <div class="service-guide-content">
                                     {!! \App\Services\ContentTemplateService::formatServiceGuide($serviceGuideHtml) !!}
                                 </div>
@@ -1197,8 +1203,14 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     $finalDetailedServicesH2 = !empty($resolvedDetailedServices['headline']) 
                                         ? $resolvedDetailedServices['headline'] 
                                         : $bizDetailedServicesFallback;
+                                    $finalDetailedServicesSubtext = !empty($resolvedDetailedServices['subtext']) ? $resolvedDetailedServices['subtext'] : '';
                                 @endphp
-                                <h2 class="mb-3">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
+                                <h2 class="mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
+                                @if(!empty($finalDetailedServicesSubtext))
+                                <div class="detailed-services-subtext mb-3" style="color: var(--color-dark-blue-text); font-size: 15px; line-height: 1.6;">
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($finalDetailedServicesSubtext) !!}
+                                </div>
+                                @endif
                                 <div class="is_text">
                                     {!! \App\Services\ContentTemplateService::formatServiceText($afterImageDesc) !!}
                                 </div>
@@ -2237,6 +2249,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         {!! $finalBizReviewsSubtext !!}
                                                                     </div>
                                                                 @endif
+                                                                @if($hasUserReviews)
                                                                 <div class="review-filter-sec" style="display: block;">
                                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                                         <div class="row align-items-start g-4">
@@ -2272,8 +2285,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                         <span class="overall-rating-number" style="font-size: 20px; font-weight: 600; color: #64748b; line-height: 1.3; margin-bottom: 8px;">{{ static_text('not_rated_yet') ?: 'Not rated yet' }}</span>
                                                                                     @endif
                                                                                     @if($hasUserRatings)
-                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
-                                                    @endif
+                                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                    @endif
 
                                                                                     
 
@@ -2313,6 +2326,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                @endif
                                                             </div>
                                                         </div>
 
