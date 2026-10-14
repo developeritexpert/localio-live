@@ -1041,11 +1041,7 @@ class CategoryPage extends Component
     {
         $featId = $this->locked_feature_id;
         if (!$featId && !empty($this->feature_slug) && $this->category) {
-            $slugToMatch = $this->feature_slug;
-            $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
-                $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
-                  ->orWhere('name', 'LIKE', $slugToMatch);
-            })->first();
+            $matched = \App\Models\Feature::findBySlug($this->feature_slug, $this->category->id, $this->lang_id);
             $featId = $matched?->id;
         }
 
@@ -1071,11 +1067,7 @@ public function getFeatureDescriptionProperty()
         if (!empty($this->feature_slug) && $this->category) {
             $activeFeatId = $this->locked_feature_id;
             if (!$activeFeatId) {
-                $slugToMatch = $this->feature_slug;
-                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
-                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
-                      ->orWhere('name', 'LIKE', $slugToMatch);
-                })->first();
+                $matched = \App\Models\Feature::findBySlug($this->feature_slug, $this->category->id, $this->lang_id);
                 $activeFeatId = $matched?->id;
             }
 
@@ -1368,7 +1360,12 @@ public function getFeatureDescriptionProperty()
                 ? array_column($this->subCategories, 'id')
                 : (method_exists($this->subCategories, 'pluck') ? $this->subCategories->pluck('id')->toArray() : []);
         }
-        $catIds = array_values(array_filter(array_unique(array_merge([(int)$this->category->id], array_map('intval', $subCatIds)))));
+        $parentCatIds = $this->category->parent_id ? [(int)$this->category->parent_id] : [];
+        $catIds = array_values(array_filter(array_unique(array_merge(
+            [(int)$this->category->id],
+            $parentCatIds,
+            array_map('intval', $subCatIds)
+        ))));
 
         $this->availableFeatures = \App\Models\Feature::whereIn('category_id', $catIds)
             ->orWhereHas('businesses', function($bq) use ($catIds) {
@@ -1382,21 +1379,14 @@ public function getFeatureDescriptionProperty()
             ->values();
 
         if (!empty($this->feature_slug)) {
-            $slugToMatch = $this->feature_slug;
-            $matched = $this->availableFeatures->first(function($f) use ($slugToMatch) {
-                $fSlug = $f->translations->first()?->slug ?? \Illuminate\Support\Str::slug($f->name);
-                $fName = $f->translations->first()?->name ?? $f->name;
-                return \Illuminate\Support\Str::slug($fSlug) === \Illuminate\Support\Str::slug($slugToMatch) || \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($slugToMatch);
-            });
-
-            if (!$matched) {
-                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
-                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
-                      ->orWhere('name', 'LIKE', $slugToMatch);
-                })->first();
-            }
+            $matched = \App\Models\Feature::findBySlug($this->feature_slug, $this->category->id, $this->lang_id);
 
             if ($matched) {
+                if (!$matched->relationLoaded('translations')) {
+                    $matched->load(['translations' => function($q) {
+                        $q->where('lang_id', $this->lang_id)->orWhereRaw('1=1');
+                    }]);
+                }
                 $this->locked_feature_id = $matched->id;
                 $this->locked_feature_obj = $matched;
                 $fTrans = $matched->translations->firstWhere('lang_id', $this->lang_id) ?? $matched->translations->first();
@@ -1532,6 +1522,12 @@ public function getFeatureDescriptionProperty()
         ->orderByDesc('average_rating')
         ->take(10)
         ->get();
+
+        if ($this->locked_feature_id && (!$this->locked_feature_obj || !$this->locked_feature_obj->relationLoaded('translations'))) {
+            $this->locked_feature_obj = \App\Models\Feature::with(['translations' => function($q) {
+                $q->where('lang_id', $this->lang_id)->orWhereRaw('1=1');
+            }])->find($this->locked_feature_id);
+        }
 
         $viewName = (!empty($this->feature_slug) || !empty($this->locked_feature_id)) ? 'livewire.feature-page' : 'livewire.category-page';
 

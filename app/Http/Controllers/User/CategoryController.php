@@ -147,11 +147,7 @@ class CategoryController extends Controller
 
                // Check Feature Meta Tags (Cascade or Custom Override)
                if (!empty($feature_slug)) {
-                   $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
-                       $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
-                         ->orWhere('name', 'LIKE', $feature_slug)
-                         ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$feature_slug]);
-                   })->first();
+                   $matchedFeat = \App\Models\Feature::findBySlug($feature_slug, $category?->id, $lang_id);
 
                    if ($matchedFeat) {
                        $resolvedFeatMeta = \App\Services\MetaTagService::resolveFeatureMeta($matchedFeat, $category, $lang_id);

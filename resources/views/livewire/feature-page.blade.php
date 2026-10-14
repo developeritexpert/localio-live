@@ -116,8 +116,9 @@
                                 $c2 = $c2Obj ? $c2Obj->getTranslation($currentLangId) : '';
                                 $currentYear = date('Y');
 
-                                $applyDynamicVars = function($text) use ($c1, $c2, $currentYear) {
+                                $applyDynamicVars = function($text) use ($c1, $c2, $currentYear, $category, $lockedFeatureObj, $currentLangId) {
                                     if(!$text) return $text;
+                                    $text = \App\Services\ContentTemplateService::replacePlaceholders($text, $category, $lockedFeatureObj, $currentLangId);
                                     $text = str_replace('[year]', $currentYear, $text);
                                     $text = str_replace('[country1]', $c1, $text);
                                     $text = str_replace('[country2]', $c2, $text);
@@ -192,7 +193,7 @@
                                     .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
                                 <div class="top-rated-subtext-container ck-content">
-                                    {!! $topRatedSubtext !!}
+                                    {!! $applyDynamicVars($topRatedSubtext) !!}
                                 </div>
                             @endif
                         </div>
@@ -1509,7 +1510,7 @@
                                 .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                             </style>
                             <div class="compare-alternatives-subtext ck-content mb-3">
-                                {!! $compAlternativesSubtext !!}
+                                {!! $applyDynamicVars($compAlternativesSubtext) !!}
                             </div>
                         @else
                             <div style="margin-bottom: 16px;"></div>
@@ -1653,7 +1654,7 @@
                                         .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                                     </style>
                                     <div style="font-size: 16px; color: #64748b; margin: 0;" class="community-says-subtext ck-content">
-                                        {!! $commFeedbackSubtext !!}
+                                        {!! $applyDynamicVars($commFeedbackSubtext) !!}
                                     </div>
                                 @else
                                     <p style="font-size: 16px; color: #64748b; margin: 0;">{{ static_text('most_mentioned_pros_cons_subtext') ?: 'Most mentioned pros and cons shared by real users.' }}</p>
@@ -1794,7 +1795,7 @@
                     </h2>
                     @if(!empty($popCompSubtext))
                         <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
-                            {!! $popCompSubtext !!}
+                            {!! $applyDynamicVars($popCompSubtext) !!}
                         </div>
                     @else
                         <p style="color: #002347; margin: 0;">
@@ -1874,7 +1875,7 @@
                         </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #5b6b7a; margin: 0;">
-                                {!! $compToolSubtext !!}
+                                {!! $applyDynamicVars($compToolSubtext) !!}
                             </div>
                         @else
                             <p style="color: #5b6b7a; margin: 0;">
@@ -2332,7 +2333,7 @@
                     </h2>
                     @if(!empty($exploreSubtext))
                         <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
-                            {!! $exploreSubtext !!}
+                            {!! $applyDynamicVars($exploreSubtext) !!}
                         </div>
                     @else
                         <p style="color: #002347; margin: 0;">

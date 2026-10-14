@@ -805,11 +805,8 @@ class ViewController extends Controller
             }
 
             // Check if second_segment is a Feature for this category
-            $featureExists = Feature::whereHas('translations', function ($query) use ($second_segment) {
-                $query->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                    ->orWhere('name', 'LIKE', $second_segment)
-                    ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
-            })->exists();
+            $matchedFeat = Feature::findBySlug($second_segment, $category->id, $lang_id);
+            $featureExists = (bool)$matchedFeat;
 
             if (!$featureExists) {
                 $featureExists = CategoryFeatureContent::where('category_id', $category->id)
@@ -836,11 +833,6 @@ class ViewController extends Controller
 
                 // Check Feature Meta Tags (Cascade or Custom Override)
                 if (!empty($second_segment) && $category) {
-                    $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
-                        $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                          ->orWhere('name', 'LIKE', $second_segment)
-                          ->orWhereRaw("REPLACE(LOWER(name), ' ', '-') = ?", [$second_segment]);
-                    })->first();
 
                     if ($matchedFeat) {
                         $resolvedFeatMeta = \App\Services\MetaTagService::resolveFeatureMeta($matchedFeat, $category, $lang_id);
