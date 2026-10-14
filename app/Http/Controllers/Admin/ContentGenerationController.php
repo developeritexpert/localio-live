@@ -1264,6 +1264,123 @@ class ContentGenerationController extends Controller
         return back()->with('success', "Batch job {$batchId} and all associated queue items have been deleted successfully.");
     }
 
+    /**
+     * Delete a single business entry and all its associated child data and queues.
+     */
+    public function deleteBusiness($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $business = Business::findOrFail($id);
+            $name = optional($business->translations->first())->name ?: "Business #{$business->id}";
+
+            $this->performDeleteBusiness($business);
+
+            DB::commit();
+
+            return back()->with('success', "Business '{$name}' was deleted successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete business: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete multiple selected business entries.
+     */
+    public function deleteBulkBusinesses(Request $request)
+    {
+        $ids = $request->input('business_ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return back()->with('warning', 'Please select at least one business to delete.');
+        }
+
+        $count = 0;
+        DB::beginTransaction();
+        try {
+            foreach ($ids as $id) {
+                $business = Business::find($id);
+                if ($business) {
+                    $this->performDeleteBusiness($business);
+                    $count++;
+                }
+            }
+
+            DB::commit();
+
+            return back()->with('success', "{$count} business(es) deleted successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete selected businesses: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper to perform comprehensive business deletion and cleanup.
+     */
+    private function performDeleteBusiness(Business $business): void
+    {
+        // 1. Delete associated AI content queues
+        AiContentQueue::where('resource_type', 'business')
+            ->where('resource_id', $business->id)
+            ->delete();
+
+        // 2. Detach many-to-many relationships
+        $business->countries()->detach();
+        $business->languages()->detach();
+        $business->features()->detach();
+        $business->pricingOptions()->detach();
+        $business->products()->detach();
+        $business->subCategories()->detach();
+
+        // 3. Delete direct child records
+        $business->translations()->delete();
+        $business->websites()->delete();
+        $business->wishlists()->delete();
+        $business->reviews()->delete();
+        $business->proCons()->delete();
+        $business->offerings()->delete();
+        $business->usps()->delete();
+        $business->topicDescriptions()->delete();
+
+        // 4. Delete FAQs and feedback
+        foreach ($business->faqs as $faq) {
+            $faq->translations()->delete();
+            $faq->feedbacks()->delete();
+            $faq->delete();
+        }
+        $business->faqCategories()->delete();
+
+        // 5. Delete custom icon / logo if exists and not default
+        $rawIcon = $business->getRawOriginal('icon_id');
+        if ($rawIcon && \File::exists(public_path($rawIcon)) && !in_array($rawIcon, [
+            'front/img/default_business_logo.svg', 'front/img/logo.svg', 'front/img/default.png', 'images/default.png'
+        ])) {
+            @unlink(public_path($rawIcon));
+        }
+        if ($business->icon_id && \Illuminate\Support\Facades\Storage::disk('public')->exists($business->icon_id)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($business->icon_id);
+        }
+        if ($business->image_id && \Illuminate\Support\Facades\Storage::disk('public')->exists($business->image_id)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($business->image_id);
+        }
+
+        // 6. Delete other relations / foreign keys
+        DB::table('affiliate_clicks')->where('business_id', $business->id)->delete();
+        DB::table('user_activities')->where('business_id', $business->id)->delete();
+        DB::table('feature_business_reviews')->where('business_id', $business->id)->delete();
+        DB::table('business_rating_texts')->where('business_id', $business->id)->delete();
+        DB::table('business_change_requests')->where('business_id', $business->id)->delete();
+        DB::table('business_discussions')->where('business_id', $business->id)->delete();
+        DB::table('moderation_cases')->where('business_id', $business->id)->delete();
+        DB::table('vendor_register_lists')->where('business_id', $business->id)->delete();
+        DB::table('users')->where('business_id', $business->id)->update(['business_id' => null]);
+
+        // 7. Delete the business record
+        $business->delete();
+    }
+
     // -------------------------------------------------------------------------
     // VIEW SINGLE RESULT
     // -------------------------------------------------------------------------
