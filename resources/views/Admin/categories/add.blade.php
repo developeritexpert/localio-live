@@ -432,7 +432,7 @@
                                         placeholder="e.g. Hosting options"
                                         value="{{ isset($category_data) ? ($category_data['glance_option_3_label'] ?? '') : old('glance_option_3_label') }}" />
                                 </div>
-                                <small class="text-muted d-block mt-1">Example: Hosting options (leave blank on subcategory to inherit from parent)</small>
+                                <small class="text-muted d-block mt-1">Example: Hosting options (leave blank on subcategory to inherit from parent @if(!empty($parentGlanceLabels['option_3'])) &mdash; currently inherits: <strong class="text-dark">{{ $parentGlanceLabels['option_3'] }}</strong> @endif)</small>
                             </div>
                         </div>
 
@@ -444,7 +444,7 @@
                                         placeholder="e.g. Website tools"
                                         value="{{ isset($category_data) ? ($category_data['glance_option_4_label'] ?? '') : old('glance_option_4_label') }}" />
                                 </div>
-                                <small class="text-muted d-block mt-1">Example: Website tools (leave blank on subcategory to inherit from parent)</small>
+                                <small class="text-muted d-block mt-1">Example: Website tools (leave blank on subcategory to inherit from parent @if(!empty($parentGlanceLabels['option_4'])) &mdash; currently inherits: <strong class="text-dark">{{ $parentGlanceLabels['option_4'] }}</strong> @endif)</small>
                             </div>
                         </div>
 

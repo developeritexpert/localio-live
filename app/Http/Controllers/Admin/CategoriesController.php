@@ -166,6 +166,14 @@ class CategoriesController extends Controller
             }
         }
 
+        $parentGlanceLabels = null;
+        if ($category && $category->parent_id) {
+            $parentCat = Category::find($category->parent_id);
+            if ($parentCat) {
+                $parentGlanceLabels = $parentCat->getGlanceLabels($lang_id);
+            }
+        }
+
         $parentCategories = Category::onlyParents()
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->where('id', '!=', $categoryId);
@@ -187,7 +195,8 @@ class CategoriesController extends Controller
             'hasItems',
             'default_criteria',
             'inherited_criteria',
-            'custom_criteria'
+            'custom_criteria',
+            'parentGlanceLabels'
         ));
     }
 

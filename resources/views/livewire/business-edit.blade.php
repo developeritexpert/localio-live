@@ -268,30 +268,34 @@
                                     @enderror
                                 </div>
                             </div>
+                            @if(!empty($glanceOption3Label))
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="glance_option_3">{{ $glanceOption3Label ?? 'Option 3' }}</label>
+                                    <label class="form-label" for="glance_option_3">{{ $glanceOption3Label }}</label>
                                     <input type="text" class="form-control @error('glance_option_3') is-invalid @enderror"
                                         id="glance_option_3"
-                                        placeholder="Value for {{ $glanceOption3Label ?? 'Option 3' }}"
+                                        placeholder="Value for {{ $glanceOption3Label }}"
                                         wire:model.live="glance_option_3" />
                                     @error('glance_option_3')
                                     <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                            @endif
+                            @if(!empty($glanceOption4Label))
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="glance_option_4">{{ $glanceOption4Label ?? 'Option 4' }}</label>
+                                    <label class="form-label" for="glance_option_4">{{ $glanceOption4Label }}</label>
                                     <input type="text" class="form-control @error('glance_option_4') is-invalid @enderror"
                                         id="glance_option_4"
-                                        placeholder="Value for {{ $glanceOption4Label ?? 'Option 4' }}"
+                                        placeholder="Value for {{ $glanceOption4Label }}"
                                         wire:model.live="glance_option_4" />
                                     @error('glance_option_4')
                                     <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

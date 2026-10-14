@@ -598,6 +598,38 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
+        // Basic Business Information ("At a glance")
+        $glanceLabels = $business->getGlanceLabels(1);
+        $opt3Label = $glanceLabels['option_3'] ?? null;
+        $opt4Label = $glanceLabels['option_4'] ?? null;
+
+        $glanceUpdates = [];
+        if (isset($item['main_offering'])) {
+            $glanceUpdates['main_offering'] = is_string($item['main_offering']) ? trim($item['main_offering']) : null;
+        }
+        if (isset($item['suitable_for'])) {
+            $glanceUpdates['suitable_for'] = is_string($item['suitable_for']) ? trim($item['suitable_for']) : null;
+        }
+        if (!empty($opt3Label)) {
+            $opt3Val = $item['glance_option_3'] ?? ($item['option_3'] ?? ($item[$opt3Label] ?? null));
+            if ($opt3Val !== null) {
+                $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+            }
+        } else {
+            $glanceUpdates['glance_option_3'] = null;
+        }
+        if (!empty($opt4Label)) {
+            $opt4Val = $item['glance_option_4'] ?? ($item['option_4'] ?? ($item[$opt4Label] ?? null));
+            if ($opt4Val !== null) {
+                $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+            }
+        } else {
+            $glanceUpdates['glance_option_4'] = null;
+        }
+        if (!empty($glanceUpdates)) {
+            BusinessTranslation::where('business_id', $businessId)->where('lang_id', 1)->update($glanceUpdates);
+        }
+
         // Meta & Additional Info
         $metaTitle = $item['meta_title'] ?? null;
         $metaDesc  = $item['meta_description'] ?? ($item['meta_desc'] ?? null);
@@ -2726,6 +2758,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
 
             // Ingest basic business information ("At a glance" fields)
+            $bGlanceLabels = $biz->getGlanceLabels(1);
+            $bOpt3Label = $bGlanceLabels['option_3'] ?? null;
+            $bOpt4Label = $bGlanceLabels['option_4'] ?? null;
+
             $glanceUpdates = [];
             if (isset($bData['main_offering'])) {
                 $glanceUpdates['main_offering'] = is_string($bData['main_offering']) ? trim($bData['main_offering']) : null;
@@ -2733,13 +2769,21 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             if (isset($bData['suitable_for'])) {
                 $glanceUpdates['suitable_for'] = is_string($bData['suitable_for']) ? trim($bData['suitable_for']) : null;
             }
-            $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
-            if ($opt3Val !== null) {
-                $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+            if (!empty($bOpt3Label)) {
+                $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
+                if ($opt3Val !== null) {
+                    $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
+                }
+            } else {
+                $glanceUpdates['glance_option_3'] = null;
             }
-            $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
-            if ($opt4Val !== null) {
-                $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+            if (!empty($bOpt4Label)) {
+                $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
+                if ($opt4Val !== null) {
+                    $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
+                }
+            } else {
+                $glanceUpdates['glance_option_4'] = null;
             }
             if (!empty($glanceUpdates)) {
                 BusinessTranslation::where('business_id', $bizId)

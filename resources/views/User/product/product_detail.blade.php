@@ -2795,15 +2795,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 $glanceLabels = $business->getGlanceLabels($lang_id ?? 1);
                                 $mainOfferingLabel = static_text('main_offering') ?: 'Main offering';
                                 $suitableForLabel = static_text('suitable_for') ?: 'Suitable for';
-                                $opt3Label = $glanceLabels['option_3'] ?: 'Option 3';
-                                $opt4Label = $glanceLabels['option_4'] ?: 'Option 4';
+                                $opt3Label = !empty($glanceLabels['option_3']) ? $glanceLabels['option_3'] : null;
+                                $opt4Label = !empty($glanceLabels['option_4']) ? $glanceLabels['option_4'] : null;
 
                                 $bTransGlance = $business->translations->where('lang_id', $lang_id ?? 1)->first() ?? $business->translations->first();
                                 $mainOfferingVal = $bTransGlance->main_offering ?? null;
                                 $suitableForVal = $bTransGlance->suitable_for ?? null;
                                 $opt3Val = $bTransGlance->glance_option_3 ?? null;
                                 $opt4Val = $bTransGlance->glance_option_4 ?? null;
-                                $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || !empty($opt3Val) || !empty($opt4Val);
+                                $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || (!empty($opt3Label) && !empty($opt3Val)) || (!empty($opt4Label) && !empty($opt4Val));
                             @endphp
 
                             @if($hasGlanceData)
@@ -2859,13 +2859,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <span class="glance-value">{{ $suitableForVal }}</span>
                                         </div>
                                         @endif
-                                        @if(!empty($opt3Val))
+                                        @if(!empty($opt3Label) && !empty($opt3Val))
                                         <div class="glance-item">
                                             <span class="glance-label">{{ $opt3Label }}</span>
                                             <span class="glance-value">{{ $opt3Val }}</span>
                                         </div>
                                         @endif
-                                        @if(!empty($opt4Val))
+                                        @if(!empty($opt4Label) && !empty($opt4Val))
                                         <div class="glance-item">
                                             <span class="glance-label">{{ $opt4Label }}</span>
                                             <span class="glance-value">{{ $opt4Val }}</span>

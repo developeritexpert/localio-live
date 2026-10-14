@@ -352,4 +352,59 @@ public function imageMedia()
         }
         return $this->getListingsCount();
     }
+    public function getGlanceLabels(?int $langId = null): array
+    {
+        $langId = $langId ?? (function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : 1);
+
+        $trans = \App\Models\CategoryTranslation::where('category_id', $this->id)
+            ->where('lang_id', $langId)
+            ->first();
+        if (!$trans && $langId !== 1) {
+            $trans = \App\Models\CategoryTranslation::where('category_id', $this->id)
+                ->where('lang_id', 1)
+                ->first();
+        }
+        if (!$trans) {
+            $trans = \App\Models\CategoryTranslation::where('category_id', $this->id)->first();
+        }
+
+        $option3 = (!empty($trans->glance_option_3_label) && trim($trans->glance_option_3_label) !== '')
+            ? trim($trans->glance_option_3_label)
+            : null;
+        $option4 = (!empty($trans->glance_option_4_label) && trim($trans->glance_option_4_label) !== '')
+            ? trim($trans->glance_option_4_label)
+            : null;
+
+        // If subcategory and either option is missing, inherit from parent category
+        if (($option3 === null || $option4 === null) && $this->parent_id) {
+            $parent = $this->relationLoaded('parent') ? $this->parent : \App\Models\Category::find($this->parent_id);
+            if ($parent) {
+                $parentTrans = \App\Models\CategoryTranslation::where('category_id', $parent->id)
+                    ->where('lang_id', $langId)
+                    ->first();
+                if (!$parentTrans && $langId !== 1) {
+                    $parentTrans = \App\Models\CategoryTranslation::where('category_id', $parent->id)
+                        ->where('lang_id', 1)
+                        ->first();
+                }
+                if (!$parentTrans) {
+                    $parentTrans = \App\Models\CategoryTranslation::where('category_id', $parent->id)->first();
+                }
+
+                if ($parentTrans) {
+                    if ($option3 === null && !empty($parentTrans->glance_option_3_label) && trim($parentTrans->glance_option_3_label) !== '') {
+                        $option3 = trim($parentTrans->glance_option_3_label);
+                    }
+                    if ($option4 === null && !empty($parentTrans->glance_option_4_label) && trim($parentTrans->glance_option_4_label) !== '') {
+                        $option4 = trim($parentTrans->glance_option_4_label);
+                    }
+                }
+            }
+        }
+
+        return [
+            'option_3' => $option3,
+            'option_4' => $option4,
+        ];
+    }
 }
