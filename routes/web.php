@@ -563,6 +563,16 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/reviews/settings', [ReviewController::class, 'settings'])->name('admin.reviews.settings');
     Route::post('/admin-dashboard/reviews/settings', [ReviewController::class, 'updateSettings'])->name('admin.reviews.settings.update');
 
+    // Review Batch Management (Layer 3 GPT-5.6-Luna)
+    Route::get('/admin-dashboard/reviews/batches', [ReviewController::class, 'batches'])->name('admin.reviews.batches');
+    Route::post('/admin-dashboard/reviews/batches/dispatch-now', [ReviewController::class, 'dispatchBatchNow'])->name('admin.reviews.batches.dispatch-now');
+    Route::get('/admin-dashboard/reviews/batches/poll-now', [ReviewController::class, 'pollBatchNow'])->name('admin.reviews.batches.poll-now');
+    Route::get('/admin-dashboard/reviews/batches/{job}/download', [ReviewController::class, 'downloadBatchJson'])->name('admin.reviews.batches.download');
+    Route::get('/admin-dashboard/reviews/batches/{job}/items', [ReviewController::class, 'batchItems'])->name('admin.reviews.batches.items');
+    Route::post('/admin-dashboard/reviews/batches/upload-result', [ReviewController::class, 'uploadBatchResult'])->name('admin.reviews.batches.upload-global-result');
+    Route::post('/admin-dashboard/reviews/batches/{job}/upload-result', [ReviewController::class, 'uploadBatchResult'])->name('admin.reviews.batches.upload-result');
+    Route::delete('/admin-dashboard/reviews/batches/{job}', [ReviewController::class, 'deleteBatchJob'])->name('admin.reviews.batches.delete');
+
     // Moderator Action Endpoints
     Route::post('/admin-dashboard/reviews/{id}/approve', [ReviewController::class, 'approve'])->name('admin.reviews.approve');
     Route::post('/admin-dashboard/reviews/{id}/reject', [ReviewController::class, 'reject'])->name('admin.reviews.reject');

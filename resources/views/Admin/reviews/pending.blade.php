@@ -13,7 +13,10 @@
                 </h3>
                 <p class="text-soft">Reviews requiring human moderation. Ordered by Priority (Risk Level) and Age.</p>
             </div>
-            <div class="nk-block-head-content">
+            <div class="nk-block-head-content d-flex gap-2">
+                <a href="{{ route('admin.reviews.batches') }}" class="btn btn-outline-primary btn-sm">
+                    <em class="icon ni ni-layers me-1"></em> Review Batches
+                </a>
                 <a href="{{ route('reviews') }}" class="btn btn-outline-secondary btn-sm">
                     <em class="icon ni ni-arrow-left"></em> All Reviews
                 </a>

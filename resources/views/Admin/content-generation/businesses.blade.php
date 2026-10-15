@@ -53,10 +53,36 @@
             </div>
         @endif
 
+        {{-- Status Tabs: Pending (Default) / Completed / All --}}
+        <ul class="nav nav-tabs nav-tabs-mb-icon mb-3">
+            <li class="nav-item">
+                <a class="nav-link {{ $activeTab === 'pending' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'pending'])) }}">
+                    <em class="icon ni ni-clock me-1 text-warning"></em>
+                    <span class="fw-semibold">Pending</span>
+                    <span class="badge rounded-pill bg-warning text-dark ms-1" style="font-size: 11px;">{{ $pendingCount }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ $activeTab === 'completed' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'completed'])) }}">
+                    <em class="icon ni ni-check-circle me-1 text-success"></em>
+                    <span class="fw-semibold">Completed</span>
+                    <span class="badge rounded-pill bg-success ms-1" style="font-size: 11px;">{{ $completedCount }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ $activeTab === 'all' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'all'])) }}">
+                    <em class="icon ni ni-list me-1 text-primary"></em>
+                    <span>All</span>
+                    <span class="badge rounded-pill bg-light text-dark border ms-1" style="font-size: 11px;">{{ $allCount }}</span>
+                </a>
+            </li>
+        </ul>
+
         {{-- Filters --}}
         <div class="card card-bordered mb-3">
             <div class="card-inner py-2">
                 <form method="GET" action="{{ route('content-gen.businesses') }}" class="row g-2 align-items-end">
+                    <input type="hidden" name="tab" value="{{ $activeTab }}">
                     <div class="col-md-3">
                         <label class="form-label mb-1 small">Category</label>
                         <select name="category_id" class="form-select form-select-sm">
@@ -80,7 +106,7 @@
                     </div>
                     <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-sm btn-primary">Filter</button>
-                        <a href="{{ route('content-gen.businesses') }}" class="btn btn-sm btn-light">Reset</a>
+                        <a href="{{ route('content-gen.businesses', ['tab' => $activeTab]) }}" class="btn btn-sm btn-light">Reset</a>
                     </div>
                 </form>
             </div>
@@ -89,6 +115,7 @@
         {{-- Bulk Batch Submit Form --}}
         <form id="batchForm" action="{{ route('content-gen.submit-batch') }}" method="POST">
             @csrf
+            <input type="hidden" name="tab" value="{{ $activeTab }}">
 
             {{-- Batch Controls Bar --}}
             <div class="card card-bordered mb-3">
@@ -301,7 +328,17 @@
                             @empty
                                 <tr>
                                     <td colspan="{{ 6 + count($fields) }}" class="text-center text-muted py-5">
-                                        No businesses found.
+                                        @if($activeTab === 'pending')
+                                            <em class="icon ni ni-check-circle text-success fs-3 d-block mb-1"></em>
+                                            <span class="fw-medium text-dark">No pending businesses found.</span>
+                                            <p class="text-soft small mb-0 mt-1">All businesses currently have completed content generation!</p>
+                                        @elseif($activeTab === 'completed')
+                                            <em class="icon ni ni-info text-info fs-3 d-block mb-1"></em>
+                                            <span class="fw-medium text-dark">No completed businesses found.</span>
+                                            <p class="text-soft small mb-0 mt-1">Submit batch generation for pending businesses to see results here.</p>
+                                        @else
+                                            No businesses found.
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse
@@ -510,10 +547,27 @@ function insertSampleJson() {
             </div>
             <form id="importJsonForm" action="{{ route('content-gen.import-json') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="tab" value="{{ $activeTab }}">
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
                         Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Each entry only requires the business <strong>Name</strong> and <strong>URL</strong> (which identifies the business exactly). Once imported, they will appear in the table below ready to be selected for AI batch jobs to get all missing information.
                     </p>
+
+                    {{-- Category Selection (Defaults to current page filter) --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small mb-1">
+                            <em class="icon ni ni-folder me-1 text-primary"></em> Primary Category
+                        </label>
+                        <select name="category_id" id="importJsonCategoryId" class="form-select form-select-sm">
+                            <option value="">— Uncategorized / Detect from JSON —</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ (string)request('category_id') === (string)$cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="text-muted small">Imported businesses will be assigned to this category so they appear directly in your active view.</span>
+                    </div>
 
                     {{-- Option 1: File Upload --}}
                     <div class="mb-3">

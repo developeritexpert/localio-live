@@ -9,7 +9,10 @@
                 </h3>
                 <p class="text-soft">Configure OpenAI Moderation and GPT-5.6-Luna Batch processing parameters.</p>
             </div>
-            <div class="nk-block-head-content">
+            <div class="nk-block-head-content d-flex gap-2">
+                <a href="{{ route('admin.reviews.batches') }}" class="btn btn-outline-primary btn-sm">
+                    <em class="icon ni ni-layers me-1"></em> Review Batches
+                </a>
                 <a href="{{ route('reviews') }}" class="btn btn-outline-secondary btn-sm">
                     <em class="icon ni ni-arrow-left"></em> All Reviews
                 </a>
@@ -28,7 +31,7 @@
         <div class="col-md-6">
             <div class="card card-bordered h-100">
                 <div class="card-header bg-white py-3">
-                    <h6 class="mb-0 text-dark"><em class="icon ni ni-shield-check text-success me-1"></em> Layer 2 — OpenAI Moderation API</h6>
+                    <h6 class="mb-0 text-dark"><em class="icon ni ni-shield-check text-success me-1"></em> Layer 2 ï¿½ OpenAI Moderation API</h6>
                 </div>
                 <div class="card-inner">
                     <p class="text-soft fs-13px mb-3">
@@ -50,7 +53,7 @@
         <div class="col-md-6">
             <div class="card card-bordered h-100">
                 <div class="card-header bg-white py-3">
-                    <h6 class="mb-0 text-dark"><em class="icon ni ni-cpu text-primary me-1"></em> Layer 3 — Localio Review Integrity & Locale AI</h6>
+                    <h6 class="mb-0 text-dark"><em class="icon ni ni-cpu text-primary me-1"></em> Layer 3 ï¿½ Localio Review Integrity & Locale AI</h6>
                 </div>
                 <div class="card-inner">
                     <form action="{{ route('admin.reviews.settings.update') }}" method="POST">

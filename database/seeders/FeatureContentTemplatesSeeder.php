@@ -240,6 +240,14 @@ class FeatureContentTemplatesSeeder extends Seeder
                 'subtext'       => 'Find tailored [category_lc] categories and related toolsets.',
             ],
 
+            // 9. View All Link
+            [
+                'field_key'     => 'view_all_link',
+                'option_number' => 1,
+                'headline'      => 'View all [entities1_lc]',
+                'subtext'       => null,
+            ],
+
 
         ];
 

@@ -673,6 +673,12 @@ class ContentTemplateService
             'field2_label' => 'Explore Subcategories Subtext',
             'description' => 'Headline and subtext for explore subcategories/categories section on feature page.',
         ],
+        'view_all_link' => [
+            'label' => 'VIEW ALL LINK',
+            'type' => 'single',
+            'field1_label' => 'Link Text',
+            'description' => 'Link text to view all category entities on feature pages (e.g. View all [entities1_lc]).',
+        ],
     ];
 
     /**
@@ -748,18 +754,30 @@ class ContentTemplateService
             ->with('template')
             ->first();
 
-        // Fallback for business entity: if no assignment under 'business', check category assignment for business's subcategories / category
+        // Fallback for business entity: if no assignment under 'business', check category assignment for business's primary category / subcategories
         if (!$assignment && $entityType === 'business') {
             $biz = Business::find($entityId);
             if ($biz) {
                 $candidateCatIds = [];
-                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                // 1. Subcategories belonging to the primary category
+                if ($biz->category_id && $biz->subCategories && $biz->subCategories->isNotEmpty()) {
                     foreach ($biz->subCategories as $sc) {
-                        $candidateCatIds[] = $sc->id;
+                        if ((int)$sc->parent_id === (int)$biz->category_id) {
+                            $candidateCatIds[] = $sc->id;
+                        }
                     }
                 }
+                // 2. The primary category itself
                 if ($biz->category_id) {
                     $candidateCatIds[] = $biz->category_id;
+                }
+                // 3. Any other attached subcategories
+                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                    foreach ($biz->subCategories as $sc) {
+                        if (!in_array($sc->id, $candidateCatIds)) {
+                            $candidateCatIds[] = $sc->id;
+                        }
+                    }
                 }
 
                 foreach ($candidateCatIds as $cId) {
@@ -2317,6 +2335,12 @@ class ContentTemplateService
     public static function seedDefaultFeaturesOptionsIfMissing(): void
     {
         $defaults = [
+            'view_all_link' => [
+                1 => [
+                    'headline' => 'View all [entities1_lc]',
+                    'subtext'  => null,
+                ],
+            ],
             'top_10_under_10' => [
                 1 => [
                     'headline' => 'Top 10 [category_cap] with [feature_cap] Comparison',
@@ -2510,11 +2534,12 @@ class ContentTemplateService
         // 2. Convert markdown ### Heading to <h3>Heading</h3>
         $text = preg_replace('/(?:^|<br\s*\/?>|\n)\s*###\s*(.*?)(?=<br\s*\/?>|\n|$)/im', '<h3 class="service-subheading">$1</h3>', $text);
 
-        // 3. Remove redundant <br> tags immediately before or after <h2|h3> tags
-        $text = preg_replace('/(?:<br\s*\/?>\s*)+(<h[23][^>]*>)/i', '$1', $text);
-        $text = preg_replace('/(<\/h[23]>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $text);
+        // 3. Ensure line breaks around <h3> tags so they split paragraphs cleanly
+        $text = preg_replace('/(<\/h[1-6]>)\s*(?:<br\s*\/?>)*/i', "$1\n\n", $text);
+        $text = preg_replace('/(?:<br\s*\/?>)*\s*(<h[1-6][^>]*>)/i', "\n\n$1", $text);
 
-        return $text;
+        // 4. Format into semantic <p>...</p> paragraphs and convert <br> tags to paragraph boundaries
+        return self::formatDescriptionText($text);
     }
 
     public static function formatServiceGuide(?string $text): string
@@ -2613,6 +2638,7 @@ class ContentTemplateService
         // 6. Fix block-level elements wrapped inside or adjacent to invalid <p>
         $text = preg_replace('/<p>\s*(<(?:ul|ol|h[1-6]|div|table|blockquote)[^>]*>)/i', '$1', $text);
         $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*<\/p>/i', '$1', $text);
+        $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*([^<\s][^<]*)(?=<\/p>)/i', '$1<p>$2', $text);
 
         // 7. Clean up empty paragraphs once more
         $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
@@ -3070,6 +3096,10 @@ class ContentTemplateService
             $optionNumber = $template->option_number;
         }
 
+        if ($fieldKey === 'view_all_link' && empty(trim($headline))) {
+            $headline = self::replacePlaceholders('View all [entities1_lc]', $category, $feature, $langId);
+        }
+
         return [
             'headline' => $headline,
             'subtext' => $subtext,
@@ -3088,8 +3118,14 @@ class ContentTemplateService
         $defaultCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order', 'asc')->get();
         $existingManualTexts = \App\Models\BusinessRatingText::where('business_id', $business->id)->get()->keyBy('criteria_key');
 
-        $primarySubcat = $business->subCategories->first();
         $parentCat = $business->category;
+        $primarySubcat = null;
+        if ($parentCat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first(fn($sc) => (int)$sc->parent_id === (int)$parentCat->id);
+        }
+        if (!$primarySubcat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first();
+        }
         if (!$parentCat && $primarySubcat?->parent_id) {
             $parentCat = $primarySubcat->parent;
         }
@@ -3192,8 +3228,8 @@ class ContentTemplateService
                 }
             }
 
-            // 5. Replace placeholders
-            $activeCategory = $primarySubcat ?? $parentCat;
+            // 5. Replace placeholders (prioritize primary business category)
+            $activeCategory = $business->category ?? $primarySubcat;
             $headline = '';
             $subtext = '';
             if ($template) {
@@ -3220,8 +3256,14 @@ class ContentTemplateService
      */
     public static function resolveCriteriaUnder10Text(\App\Models\Business $business, int $criteriaId = 1, int $langId = 1): string
     {
-        $primarySubcat = $business->subCategories->first();
         $parentCat = $business->category;
+        $primarySubcat = null;
+        if ($parentCat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first(fn($sc) => (int)$sc->parent_id === (int)$parentCat->id);
+        }
+        if (!$primarySubcat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first();
+        }
         if (!$parentCat && $primarySubcat?->parent_id) {
             $parentCat = $primarySubcat->parent;
         }
@@ -3229,8 +3271,8 @@ class ContentTemplateService
         $fieldKey = "criteria_{$criteriaId}_under_10";
         $templates = collect();
 
-        // 1. Subcategory override
-        if ($primarySubcat) {
+        // 1. Subcategory override (only if subcategory belongs to parentCat or if business has no parentCat)
+        if ($primarySubcat && (!$parentCat || (int)$primarySubcat->parent_id === (int)$parentCat->id)) {
             $subcatSection = "criteria_ratings_{$criteriaId}_cat_{$primarySubcat->id}";
             $templates = ContentTemplate::where('section_group', $subcatSection)
                 ->where('field_key', $fieldKey)
@@ -3294,7 +3336,8 @@ class ContentTemplateService
         $count = $templates->count();
         $template = $count > 1 ? $templates[$business->id % $count] : $templates->first();
 
-        $activeCategory = $primarySubcat ?? $parentCat;
+        // Prioritize the business primary category for placeholder replacement (e.g. web hosting providers)
+        $activeCategory = $business->category ?? $primarySubcat;
         $rawText = !empty($template->subtext) ? $template->subtext : ($template->headline ?? '');
         return self::replacePlaceholders($rawText, $activeCategory, null, $langId, $business);
     }

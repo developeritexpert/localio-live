@@ -167,7 +167,7 @@ class ReviewModerationService
      */
     public static function runLayer2Moderation(Review $review): array
     {
-        $apiKey = config('openai.api_key');
+        $apiKey = config('openai.api_key') ?: optional(\App\Models\WebSetting::where('key', 'openai_api_key')->first())->value;
 
         if (!$apiKey) {
             Log::warning("ReviewModerationService: No OPENAI_API_KEY set. Skipping Layer 2 for review #{$review->id}.");
@@ -330,7 +330,7 @@ class ReviewModerationService
                 $review->source_locale = $detectedLocale;
                 $review->status        = Review::STATUS_PUBLISHED;
             } else {
-                // HUMAN_REVIEW on locale — cannot publish without moderator locale assignment
+                // HUMAN_REVIEW on locale ï¿½ cannot publish without moderator locale assignment
                 $review->status            = Review::STATUS_PENDING_REVIEW;
                 $review->escalation_source = Review::ESCALATION_LOCALIO_AI;
             }
@@ -377,7 +377,7 @@ class ReviewModerationService
         $layer2Result = static::runLayer2Moderation($review);
 
         if (!empty($layer2Result['flagged'])) {
-            // Flagged by moderation API — send to human review
+            // Flagged by moderation API ï¿½ send to human review
             $fromStatus = $review->status;
             $review->moderation_api_passed     = false;
             $review->moderation_api_result     = $layer2Result['raw'] ?? [];
@@ -398,7 +398,7 @@ class ReviewModerationService
                 ['triggered_by' => 'report_id_' . $report->id, 'categories' => $layer2Result['categories']]
             );
         } else {
-            // Not flagged by Layer 2 — queue for next GPT batch
+            // Not flagged by Layer 2 ï¿½ queue for next GPT batch
             $review->moderation_api_passed     = true;
             $review->moderation_api_result     = $layer2Result['raw'] ?? [];
             $review->moderation_api_checked_at = now();

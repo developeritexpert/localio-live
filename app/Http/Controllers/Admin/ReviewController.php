@@ -17,6 +17,12 @@ use App\Services\MailService;
 use App\Services\ReviewModerationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\AiBatchJob;
+use App\Console\Commands\PollReviewModerationBatch;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
 
 class ReviewController extends Controller
 {
@@ -509,5 +515,202 @@ class ReviewController extends Controller
         );
 
         return redirect()->back()->with(['success' => 'Review removed successfully']);
+    }
+
+    // --- 8. BATCH JOBS MANAGEMENT (Layer 3 GPT-5.6-Luna Batches) ----------------
+    public function batches(Request $request)
+    {
+        $jobs = AiBatchJob::where('prompt_type', 'review_moderation')
+            ->orderBy('id', 'desc')
+            ->paginate(20);
+
+        $waitingForBatchCount   = Review::readyForBatch()->count();
+        $processingBatchesCount = AiBatchJob::where('prompt_type', 'review_moderation')->where('status', 'processing')->count();
+        $completedBatchesCount  = AiBatchJob::where('prompt_type', 'review_moderation')->where('status', 'completed')->count();
+        $failedBatchesCount     = AiBatchJob::where('prompt_type', 'review_moderation')->where('status', 'failed')->count();
+        $lastPollAt             = Cache::get('review_batch_last_poll');
+
+        return view('Admin.reviews.batches', compact(
+            'jobs',
+            'waitingForBatchCount',
+            'processingBatchesCount',
+            'completedBatchesCount',
+            'failedBatchesCount',
+            'lastPollAt'
+        ));
+    }
+
+    public function dispatchBatchNow(Request $request)
+    {
+        $waitingCount = Review::readyForBatch()->count();
+
+        if ($waitingCount === 0) {
+            return back()->with('error', 'No reviews are currently waiting in PROCESSING queue for Layer 3 moderation.');
+        }
+
+        try {
+            Artisan::call('moderation:dispatch-batch');
+            $output = trim(Artisan::output());
+            return back()->with('success', 'Batch dispatch triggered successfully: ' . ($output ?: "Dispatched {$waitingCount} reviews."));
+        } catch (\Throwable $e) {
+            Log::error('dispatchBatchNow error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to dispatch batch: ' . $e->getMessage());
+        }
+    }
+
+    public function pollBatchNow(Request $request)
+    {
+        try {
+            Artisan::call('moderation:poll-batch');
+            $output = trim(Artisan::output());
+            return back()->with('success', 'Batch status polled successfully. ' . $output);
+        } catch (\Throwable $e) {
+            Log::error('pollBatchNow error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to poll batch status: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadBatchJson(AiBatchJob $job)
+    {
+        $payload = null;
+        if (!empty($job->input_payload)) {
+            $payload = json_decode($job->input_payload, true);
+        }
+
+        if (!$payload) {
+            $reviews = Review::where('localio_ai_batch_id', $job->batch_id)
+                ->with(['translations', 'business.translations', 'user'])
+                ->get();
+
+            $payload = [
+                'batch_id'    => $job->batch_id,
+                'prompt_type' => 'review_moderation',
+                'count'       => $reviews->count(),
+                'reviews'     => $reviews->map(function ($r) {
+                    $t = $r->translations->first();
+                    return [
+                        'review_id'     => $r->id,
+                        'business_name' => $r->business?->translations?->first()?->name ?? 'Unknown',
+                        'rating'        => $r->rating,
+                        'title'         => $t?->title ?? '',
+                        'text'          => $t?->description ?? '',
+                        'submitted_locale' => $r->submitted_locale,
+                    ];
+                })->toArray(),
+            ];
+        }
+
+        $content = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $filename = 'review_batch_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
+
+        return response($content, 200, [
+            'Content-Type'        => 'application/json; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function batchItems(AiBatchJob $job)
+    {
+        $reviews = Review::where('localio_ai_batch_id', $job->batch_id)
+            ->with(['translations', 'business.translations', 'user'])
+            ->paginate(50);
+
+        return view('Admin.reviews.batch_items', compact('job', 'reviews'));
+    }
+
+    public function uploadBatchResult(Request $request, ?AiBatchJob $job = null)
+    {
+        $request->validate([
+            'result_file' => 'nullable|file|max:10240',
+            'result_text' => 'nullable|string',
+        ]);
+
+        $rawJson = null;
+        if ($request->hasFile('result_file')) {
+            $rawJson = file_get_contents($request->file('result_file')->getRealPath());
+        } elseif ($request->filled('result_text')) {
+            $rawJson = trim($request->result_text);
+        }
+
+        if (empty($rawJson)) {
+            return back()->with('error', 'Please upload a JSON file or paste the result JSON text.');
+        }
+
+        // Clean markdown code blocks
+        $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
+        $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
+        $cleanJson = trim($cleanJson);
+
+        // Check if JSON Lines or JSON array
+        $lines = explode("\n", $cleanJson);
+        $firstLine = trim($lines[0] ?? '');
+
+        // If JSON array or single object
+        if (str_starts_with($cleanJson, '[') || (str_starts_with($cleanJson, '{') && !str_contains($cleanJson, '"custom_id"'))) {
+            $parsed = json_decode($cleanJson, true);
+            if (!is_array($parsed)) {
+                return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+            }
+
+            // Convert items array to JSONL-like format
+            $items = isset($parsed['reviews']) ? $parsed['reviews'] : (isset($parsed['items']) ? $parsed['items'] : $parsed);
+            $lines = [];
+            foreach ($items as $item) {
+                if (isset($item['review_id'])) {
+                    $item['custom_id'] = 'review-' . $item['review_id'];
+                }
+                $lines[] = json_encode($item);
+            }
+        }
+
+        $model     = config('openai.review_ai_model', 'gpt-5.6-luna');
+        $promptId  = config('openai.review_prompt_id', '');
+        $promptVer = config('openai.review_prompt_version', '1');
+
+        if (!$job || !$job->exists) {
+            // Find batch from first item if possible
+            $firstParsed = json_decode($lines[0] ?? '{}', true);
+            $batchId = $firstParsed['batch_id'] ?? null;
+            if ($batchId) {
+                $job = AiBatchJob::where('batch_id', $batchId)->first();
+            }
+        }
+
+        if (!$job) {
+            $job = AiBatchJob::create([
+                'provider'     => 'openai',
+                'batch_id'     => 'batch_manual_' . strtoupper(bin2hex(random_bytes(6))),
+                'prompt_type'  => 'review_moderation',
+                'status'       => 'completed',
+                'submitted_at' => now(),
+                'completed_at' => now(),
+            ]);
+        }
+
+        $result = PollReviewModerationBatch::processBatchResultLines($job, $lines, $model, $promptId, $promptVer);
+
+        $job->update([
+            'status'          => 'completed',
+            'completed_at'    => now(),
+            'completed_items' => $result['processed'],
+            'failed_items'    => $result['failed'],
+        ]);
+
+        return back()->with('success', "Batch results processed successfully: {$result['processed']} reviews updated, {$result['failed']} failed.");
+    }
+
+    public function deleteBatchJob(AiBatchJob $job)
+    {
+        // If reviews are still processing for this batch, reset them to waiting
+        Review::where('localio_ai_batch_id', $job->batch_id)
+            ->where('localio_ai_status', Review::AI_STATUS_PROCESSING)
+            ->update([
+                'localio_ai_status' => Review::AI_STATUS_WAITING,
+                'localio_ai_batch_id' => null,
+            ]);
+
+        $job->delete();
+
+        return back()->with('success', 'Batch job removed successfully.');
     }
 }

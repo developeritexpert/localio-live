@@ -664,7 +664,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
 
                         @if(isset($aggregatedPros) && isset($aggregatedCons) && count($aggregatedPros) > 0 && count($aggregatedCons) > 0)
-                        <div class="col-lg-12 mt-2 mb-4">
+                        <div class="col-lg-12 mt-2 mb-4" id="section-pros-cons">
                             @php
                                 $bizProsConsFallbackH2 = ($business->translations->first()->name ?? $business->name ?? 'Business') . ' pros and cons';
                                 $publishedReviewCount = $ratingCount ?? ($business->reviews ? $business->reviews->whereIn('status', ['published', 'active'])->count() : 0);
@@ -948,7 +948,16 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         </div>
                         @endif
 
-                        @php $offering = $business->offerings->first(); @endphp
+                        @php
+                            $offering = $business->offerings->first();
+                            $bTransGuide = $business->translations->where('lang_id', getCurrentLanguageID())->first() ?? $business->translations->first();
+                            $serviceGuideHtml = $bTransGuide->service_guide_html ?? null;
+                            $afterImageDesc = $business->translations->first()?->after_image_description ?? ($offering->bottom_text ?? null);
+                            $hasServicesSection = ($offering && (!empty($offering->headline) || !empty($offering->top_text))) || !empty($serviceGuideHtml) || !empty($afterImageDesc);
+                        @endphp
+                        @if($hasServicesSection)
+                        <div id="section-services" class="col-12 p-0" style="scroll-margin-top: 100px;"></div>
+                        @endif
                         @if($offering && (!empty($offering->headline) || !empty($offering->top_text)))
                         <div class="col-lg-12 mt-4 mb-2">
                             <div class="is-asana-lft offering-section">
@@ -994,6 +1003,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     font-size: 20px;
                                     line-height: 1.35;
                                     margin-bottom: 20px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                }
+                                .service-guide-box .service-guide-title .service-guide-compass-icon {
+                                    width: 22px;
+                                    height: 22px;
+                                    flex-shrink: 0;
+                                    color: var(--color-primary-blue, #214787);
+                                }
+                                @media (max-width: 576px) {
+                                    .service-guide-box .service-guide-title {
+                                        align-items: flex-start;
+                                    }
+                                    .service-guide-box .service-guide-title .service-guide-compass-icon {
+                                        margin-top: 3px;
+                                    }
                                 }
                                 .service-guide-content h3 {
                                     color: #002347;
@@ -1037,7 +1063,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         : $bizGuideFallback;
                                     $finalGuideSubtext = !empty($resolvedGuide['subtext']) ? $resolvedGuide['subtext'] : '';
                                 @endphp
-                                <h2 class="service-guide-title mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                <h2 class="service-guide-title mb-2">
+                                    <svg class="service-guide-compass-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#214787" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="10" stroke="#214787" stroke-width="2.2" fill="none"></circle>
+                                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#214787" stroke="#214787" stroke-width="1"></polygon>
+                                    </svg>
+                                    <span>{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</span>
+                                </h2>
                                 @if(!empty($finalGuideSubtext))
                                 <div class="service-guide-subtext mb-3" style="color: #475569; font-size: 14.5px; line-height: 1.6;">
                                     {!! \App\Services\ContentTemplateService::formatDescriptionText($finalGuideSubtext) !!}
@@ -1207,7 +1239,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 @endphp
                                 <h2 class="mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
                                 @if(!empty($finalDetailedServicesSubtext))
-                                <div class="detailed-services-subtext mb-3" style="color: var(--color-dark-blue-text); font-size: 15px; line-height: 1.6;">
+                                <div class="detailed-services-subtext mb-3" style="color: var(--color-dark-blue-text); font-size: 16px; line-height: 1.6;">
                                     {!! \App\Services\ContentTemplateService::formatDescriptionText($finalDetailedServicesSubtext) !!}
                                 </div>
                                 @endif
@@ -1252,7 +1284,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         $featPercent = min(100, max(0, ($featRatingVal / 5) * 100));
                         @endphp
                         @if($hasUserRatings || $business->features->count() > 0)
-                        <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
+                        <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border" id="section-features">
                             <div class="mb-3">
                                 <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>
                             </div>
@@ -1360,18 +1392,65 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 }
                             @endphp
 
+                            <style>
+                                #featureTabList {
+                                    display: flex !important;
+                                    align-items: center !important;
+                                    gap: 24px !important;
+                                    border-bottom: 1px solid #e2e8f0 !important;
+                                    padding-bottom: 0 !important;
+                                    margin-bottom: 20px !important;
+                                }
+                                #featureTabList .nav-item {
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                }
+                                #featureTabList .feature-tab-link {
+                                    font-size: 14px !important;
+                                    font-weight: 500 !important;
+                                    padding: 10px 0 !important;
+                                    border: none !important;
+                                    border-radius: 0 !important;
+                                    background: transparent !important;
+                                    position: relative !important;
+                                    color: #64748b !important;
+                                    border-bottom: 2px solid transparent !important;
+                                    margin-bottom: -1px !important;
+                                    cursor: pointer !important;
+                                    text-decoration: none !important;
+                                    box-shadow: none !important;
+                                    outline: none !important;
+                                    width: auto !important;
+                                    line-height: normal !important;
+                                }
+                                #featureTabList .feature-tab-link:hover {
+                                    color: #002347 !important;
+                                    background: transparent !important;
+                                    border-bottom: 2px solid transparent !important;
+                                }
+                                #featureTabList .feature-tab-link.active {
+                                    background: transparent !important;
+                                    color: #002347 !important;
+                                    font-weight: 600 !important;
+                                    border: none !important;
+                                    border-radius: 0 !important;
+                                    border-bottom: 2px solid #002347 !important;
+                                    box-shadow: none !important;
+                                    outline: none !important;
+                                }
+                            </style>
                             <div class="features-tabs-wrapper mt-3">
                                 @if(count($featuresByGroup) > 0)
-                                <ul class="nav feature-nav-tabs mb-3 border-bottom d-flex flex-wrap" id="featureTabList" role="tablist" style="border-bottom: 2px solid #edf2f7 !important; gap: 20px;">
+                                <ul class="nav feature-nav-tabs mb-3 d-flex flex-wrap" id="featureTabList" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active feature-tab-link" id="tab-feat-key" data-bs-toggle="tab" data-bs-target="#pane-feat-key" type="button" role="tab" aria-selected="true">
+                                        <button class="feature-tab-link active" id="tab-feat-key" data-bs-toggle="tab" data-bs-target="#pane-feat-key" type="button" role="tab" aria-selected="true">
                                             Key features
                                         </button>
                                     </li>
                                     @foreach($featuresByGroup as $grpName => $grpItems)
                                     @php $grpSlug = 'feat-grp-' . Str::slug($grpName); @endphp
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link feature-tab-link" id="tab-{{ $grpSlug }}" data-bs-toggle="tab" data-bs-target="#pane-{{ $grpSlug }}" type="button" role="tab" aria-selected="false">
+                                        <button class="feature-tab-link" id="tab-{{ $grpSlug }}" data-bs-toggle="tab" data-bs-target="#pane-{{ $grpSlug }}" type="button" role="tab" aria-selected="false">
                                             {{ $grpName }}
                                         </button>
                                     </li>
@@ -2206,6 +2285,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         </div>
                                                     </div>
 
+                                                    @if($hasUserReviews)
                                                     <div class="row review-row-prod-inr">
 
                                                         <div class="col-lg-12">
@@ -2445,6 +2525,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
                                                 <script>
                                                     document.addEventListener('DOMContentLoaded', function() {
@@ -3278,8 +3359,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                             <div class="sticky-nav-links">
                                                 <a href="#top" class="sticky-nav-item active" data-target="top">
-                                                    <span>Description</span>
+                                                    <span>Overview</span>
                                                 </a>
+                                                @if (isset($aggregatedPros) && isset($aggregatedCons) && count($aggregatedPros) > 0 && count($aggregatedCons) > 0)
+                                                <a href="#section-pros-cons" class="sticky-nav-item" data-target="section-pros-cons">
+                                                    <span>Pros & cons</span>
+                                                </a>
+                                                @endif
+                                                @if (!empty($hasServicesSection))
+                                                <a href="#section-services" class="sticky-nav-item" data-target="section-services">
+                                                    <span>Services</span>
+                                                </a>
+                                                @endif
+                                                @if ($hasUserRatings || (isset($business->features) && $business->features->count() > 0))
+                                                <a href="#section-features" class="sticky-nav-item" data-target="section-features">
+                                                    <span>Features</span>
+                                                </a>
+                                                @endif
                                                 @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                 <a href="#section9" class="sticky-nav-item" data-target="section9">
                                                     <span>Alternatives</span>
@@ -3295,9 +3391,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <span>Compare</span>
                                                 </a>
                                                 @endif
+                                                @if ($hasUserReviews)
                                                 <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                     <span>Reviews</span>
                                                 </a>
+                                                @endif
                                                 <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
                                                     <span>Discussions</span>
                                                 </a>
@@ -3329,10 +3427,19 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         <!-- Left side: Dropdown for current section -->
                                         <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
                                             <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
-                                                <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
+                                                <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ static_text('tab_overview') ?: 'Overview' }}</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
-                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">{{ static_text('tab_description') ?: 'Description' }}</a></li>
+                                                <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">{{ static_text('tab_overview') ?: 'Overview' }}</a></li>
+                                                @if (isset($aggregatedPros) && isset($aggregatedCons) && count($aggregatedPros) > 0 && count($aggregatedCons) > 0)
+                                                <li><a class="dropdown-item msbn-item" href="#section-pros-cons" data-target="section-pros-cons">{{ static_text('tab_pros_cons') ?: 'Pros & cons' }}</a></li>
+                                                @endif
+                                                @if (!empty($hasServicesSection))
+                                                <li><a class="dropdown-item msbn-item" href="#section-services" data-target="section-services">{{ static_text('tab_services') ?: 'Services' }}</a></li>
+                                                @endif
+                                                @if ($hasUserRatings || (isset($business->features) && $business->features->count() > 0))
+                                                <li><a class="dropdown-item msbn-item" href="#section-features" data-target="section-features">{{ static_text('tab_features') ?: 'Features' }}</a></li>
+                                                @endif
                                                 @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                 <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">{{ static_text('tab_alternatives') ?: 'Alternatives' }}</a></li>
                                                 @endif
@@ -3342,8 +3449,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 @if (isset($peerComparisons) && count($peerComparisons) > 0)
                                                 <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">{{ static_text('tab_compare') ?: 'Compare' }}</a></li>
                                                 @endif
+                                                @if ($hasUserReviews)
                                                 <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">{{ static_text('tab_reviews') ?: 'Reviews' }}</a></li>
-                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">{{ static_text('tab_discussions') ?: 'Community' }}</a></li>
+                                                @endif
+                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">{{ static_text('tab_discussions') ?: 'Discussions' }}</a></li>
                                             </ul>
                                         </div>
 
@@ -4190,6 +4299,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
         const navSectionTargets = [
             { id: 'section1', target: 'section1' },
+            { id: 'section-pros-cons', target: 'section-pros-cons' },
+            { id: 'section-services', target: 'section-services' },
+            { id: 'section-features', target: 'section-features' },
             { id: 'section9', target: 'section9' },
             { id: 'section15', target: 'section15' },
             { id: 'section-compare', target: 'section-compare' },
@@ -4245,7 +4357,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             const visibleSections = [];
             navSectionTargets.forEach(item => {
                 const el = document.getElementById(item.id);
-                if (el && el.offsetParent !== null) {
+                const hasMatchingLink = Array.from(desktopLinks).some(link => isTargetMatch(link, item.target));
+                if (el && el.offsetParent !== null && hasMatchingLink) {
                     visibleSections.push({
                         id: item.id,
                         target: item.target,

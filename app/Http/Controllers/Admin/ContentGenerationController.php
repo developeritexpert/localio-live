@@ -450,6 +450,7 @@ class ContentGenerationController extends Controller
             $decoded = [$decoded];
         }
 
+        $defaultCategoryId  = $request->filled('category_id') ? (int)$request->category_id : null;
         $updateExisting     = $request->boolean('update_existing', false);
         $createdCount       = 0;
         $updatedCount       = 0;
@@ -466,7 +467,7 @@ class ContentGenerationController extends Controller
                 }
 
                 // Flexible name and URL resolution
-                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
+                $name = trim($item['business'] ?? $item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
                 $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? $item['domain'] ?? $item['link'] ?? '');
 
                 // If name is omitted but URL is provided, derive name cleanly from domain
@@ -491,28 +492,46 @@ class ContentGenerationController extends Controller
                     $url = 'https://' . $url;
                 }
 
-                // Check for existing business by exact normalized URL or by exact Name
-                $existingBiz = null;
+                // Extract exact normalized host and URL (strictly avoid substring/fuzzy false matches)
+                $existingBiz   = null;
+                $cleanNormHost = null;
+                $cleanNormUrl  = null;
+
                 if (!empty($url)) {
+                    $parsedHost = parse_url($url, PHP_URL_HOST);
+                    if ($parsedHost) {
+                        $cleanNormHost = strtolower(preg_replace('#^www\.#i', '', trim($parsedHost)));
+                    }
                     $cleanNormUrl = preg_replace('#^https?://#i', '', $url);
                     $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
                     $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
 
-                    if (!empty($cleanNormUrl)) {
-                        // 1. Exact match on normalized permanent_url (avoids fuzzy false positives on similar domains)
+                    if (!empty($cleanNormHost)) {
+                        // 1. Exact match on normalized permanent_url domain host (e.g. hosting.com will NEVER match inmotionhosting.com)
                         $existingBiz = Business::whereRaw(
-                            "LOWER(TRIM(TRAILING '/' FROM REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', ''))) = ?",
-                            [$cleanNormUrl]
+                            "SUBSTRING_INDEX(LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))), '/', 1) = ?",
+                            [$cleanNormHost]
                         )->first();
 
-                        // 2. Exact URL variations fallback
+                        // 2. Exact match in business_websites table by domain host
                         if (!$existingBiz) {
+                            $bwBizId = \App\Models\BusinessWebsite::whereRaw(
+                                "SUBSTRING_INDEX(LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(website_url, 'https://', ''), 'http://', ''), 'www.', '')))), '/', 1) = ?",
+                                [$cleanNormHost]
+                            )->value('business_id');
+                            if ($bwBizId) {
+                                $existingBiz = Business::find($bwBizId);
+                            }
+                        }
+
+                        // 3. Fallback check for exact permanent_url list
+                        if (!$existingBiz && !empty($cleanNormUrl)) {
                             $existingBiz = Business::whereIn('permanent_url', [
                                 $url,
                                 'https://' . $cleanNormUrl,
                                 'http://' . $cleanNormUrl,
                                 'https://www.' . $cleanNormUrl,
-                                'http://www.' . $cleanNormUrl,
+                                'http://' . $cleanNormUrl,
                                 'https://' . $cleanNormUrl . '/',
                                 'https://www.' . $cleanNormUrl . '/',
                                 $cleanNormUrl,
@@ -521,13 +540,28 @@ class ContentGenerationController extends Controller
                     }
                 }
 
-                // If not matched by URL, check exact name in BusinessTranslation for default language (lang_id = 1)
+                // Name match fallback:
+                // Only match by name if the candidate business in directory has NO URL set.
+                // Two businesses with different URLs (e.g. Hosting.com vs Inmotion Hosting) are NEVER duplicates!
                 if (!$existingBiz && !empty($name)) {
-                    $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
-                        ->where('lang_id', 1)
-                        ->value('business_id');
-                    if ($bizId) {
-                        $existingBiz = Business::find($bizId);
+                    if (empty($url)) {
+                        $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
+                            ->where('lang_id', 1)
+                            ->value('business_id');
+                        if ($bizId) {
+                            $existingBiz = Business::find($bizId);
+                        }
+                    } else {
+                        // Candidate in directory must have empty URL to match by name
+                        $candidateBizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
+                            ->where('lang_id', 1)
+                            ->value('business_id');
+                        if ($candidateBizId) {
+                            $candidateBiz = Business::find($candidateBizId);
+                            if ($candidateBiz && empty(trim($candidateBiz->permanent_url ?? ''))) {
+                                $existingBiz = $candidateBiz;
+                            }
+                        }
                     }
                 }
 
@@ -546,8 +580,13 @@ class ContentGenerationController extends Controller
                     $business = $existingBiz;
                     if (!empty($url)) {
                         $business->permanent_url = $url;
-                        $business->save();
                     }
+                    // Update category if provided and business currently has none
+                    if ($defaultCategoryId && empty($business->category_id)) {
+                        $business->category_id = $defaultCategoryId;
+                    }
+                    $business->save();
+
                     if (!empty($name)) {
                         BusinessTranslation::where('business_id', $business->id)
                             ->where('lang_id', 1)
@@ -555,7 +594,7 @@ class ContentGenerationController extends Controller
                     }
                     $updatedCount++;
                 } else {
-                    $baseSlug = Str::slug($name);
+                    $baseSlug = Str::slug(str_replace('.', '-', $name));
                     if (empty($baseSlug)) {
                         $baseSlug = 'business-' . time() . '-' . rand(100, 999);
                     }
@@ -569,6 +608,16 @@ class ContentGenerationController extends Controller
                     $affLinkInitial = trim($item['affiliate_link'] ?? ($item['affiliate_url'] ?? ''));
                     $isAffInitial = (!empty($affLinkInitial) || !empty($item['is_affiliate'])) ? 1 : 0;
 
+                    // Resolve category: item category takes precedence, then modal selected category
+                    $assignedCategory = null;
+                    if (!empty($item['category_id'])) {
+                        $assignedCategory = (int) $item['category_id'];
+                    } elseif (!empty($item['primary_category_id'])) {
+                        $assignedCategory = (int) $item['primary_category_id'];
+                    } elseif (!empty($defaultCategoryId)) {
+                        $assignedCategory = (int) $defaultCategoryId;
+                    }
+
                     $business = Business::create([
                         'permanent_url'        => $url ?: null,
                         'affiliate_link'       => $affLinkInitial ?: null,
@@ -576,7 +625,7 @@ class ContentGenerationController extends Controller
                         'created_by'           => auth()->id() ?? 1,
                         'is_affiliate'         => $isAffInitial,
                         'active_all_countries' => 1,
-                        'category_id'          => null,
+                        'category_id'          => $assignedCategory,
                     ]);
 
                     BusinessTranslation::create([
@@ -625,11 +674,19 @@ class ContentGenerationController extends Controller
 
         $finalMsg = "Import summary: " . $summaryText . "." . $skippedHtml;
 
-        if ($createdCount === 0 && $updatedCount === 0 && !empty($skippedBusinesses)) {
-            return redirect()->route('content-gen.businesses')->with('warning', $finalMsg);
+        $redirectParams = [];
+        if ($request->filled('category_id')) {
+            $redirectParams['category_id'] = $request->category_id;
+        }
+        if ($request->filled('tab')) {
+            $redirectParams['tab'] = $request->tab;
         }
 
-        return redirect()->route('content-gen.businesses')->with('success', $finalMsg);
+        if ($createdCount === 0 && $updatedCount === 0 && !empty($skippedBusinesses)) {
+            return redirect()->route('content-gen.businesses', $redirectParams)->with('warning', $finalMsg);
+        }
+
+        return redirect()->route('content-gen.businesses', $redirectParams)->with('success', $finalMsg);
     }
 
     /**
@@ -650,6 +707,11 @@ class ContentGenerationController extends Controller
                 'category_name'          => $item['category_name'] ?? ($item['category'] ?? null),
                 'category_ids'           => $item['category_ids'] ?? [],
                 'subcategory_ids'        => $item['subcategory_ids'] ?? ($item['subcategories'] ?? []),
+            ];
+        } elseif ($catData === null && !empty($business->category_id)) {
+            $catData = [
+                'primary_category_id' => $business->category_id,
+                'category_id'         => $business->category_id,
             ];
         }
         if ($catData) {
@@ -927,23 +989,51 @@ class ContentGenerationController extends Controller
 
     public function businesses(Request $request)
     {
-        $query = Business::with([
+        $fields     = self::CONTENT_FIELDS;
+        $fieldCount = count($fields);
+
+        // Subquery for businesses where all content fields are completed in AiContentQueue
+        $completedSubquery = AiContentQueue::select('resource_id')
+            ->where('resource_type', 'business')
+            ->whereIn('content_field', $fields)
+            ->where('status', 'completed')
+            ->groupBy('resource_id')
+            ->havingRaw('COUNT(DISTINCT content_field) >= ?', [$fieldCount]);
+
+        $baseQuery = Business::query();
+
+        if ($request->filled('category_id')) {
+            $baseQuery->where('category_id', $request->category_id);
+        }
+        if ($request->filled('status')) {
+            $baseQuery->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $baseQuery->whereHas('translations', function ($q) use ($request) {
+                $q->where('lang_id', 1)->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $pendingCount   = (clone $baseQuery)->whereNotIn('id', $completedSubquery)->count();
+        $completedCount = (clone $baseQuery)->whereIn('id', $completedSubquery)->count();
+        $allCount       = (clone $baseQuery)->count();
+
+        $activeTab = $request->get('tab', 'pending');
+        if (!in_array($activeTab, ['pending', 'completed', 'all'])) {
+            $activeTab = 'pending';
+        }
+
+        $query = (clone $baseQuery)->with([
             'category',
             'translations' => function ($q) {
                 $q->where('lang_id', 1)->select('business_id', 'name', 'lang_id');
             },
         ]);
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('search')) {
-            $query->whereHas('translations', function ($q) use ($request) {
-                $q->where('lang_id', 1)->where('name', 'like', '%' . $request->search . '%');
-            });
+        if ($activeTab === 'pending') {
+            $query->whereNotIn('id', $completedSubquery);
+        } elseif ($activeTab === 'completed') {
+            $query->whereIn('id', $completedSubquery);
         }
 
         $businesses = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
@@ -971,12 +1061,12 @@ class ContentGenerationController extends Controller
 
         $lastPollAt = Cache::get('ai_batch_last_poll');
         $categories = Category::whereNull('parent_id')->orderBy('id')->get();
-        $fields     = self::CONTENT_FIELDS;
 
         $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
 
         return view('Admin.content-generation.businesses', compact(
-            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize'
+            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize',
+            'activeTab', 'pendingCount', 'completedCount', 'allCount'
         ));
     }
 
@@ -2321,13 +2411,22 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             ->orderBy('id')
             ->get()
             ->map(function($parent) {
+                $parentLabels = $parent->getGlanceLabels(1);
                 return [
                     'category_id'   => $parent->id,
                     'category_name' => optional($parent->translation)->name ?? ('Category #' . $parent->id),
-                    'subcategories' => $parent->children->map(fn($child) => [
-                        'subcategory_id'   => $child->id,
-                        'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
-                    ])->values(),
+                    'option_3'      => $parentLabels['option_3'] ?? null,
+                    'option_4'      => $parentLabels['option_4'] ?? null,
+                    'subcategories' => $parent->children->map(function($child) use ($parent) {
+                        $child->setRelation('parent', $parent);
+                        $childLabels = $child->getGlanceLabels(1);
+                        return [
+                            'subcategory_id'   => $child->id,
+                            'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
+                            'option_3'         => $childLabels['option_3'] ?? null,
+                            'option_4'         => $childLabels['option_4'] ?? null,
+                        ];
+                    })->values(),
                 ];
             });
 
@@ -2711,11 +2810,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             // 2b. Try matching by URL against businesses in this batch job
             if (!$biz && !empty($bizUrl) && $job) {
                 $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique();
-                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
-                if (!empty($normalizedUrl)) {
+                $cleanNormUrl = preg_replace('#^https?://#i', '', $bizUrl);
+                $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+                if (!empty($cleanNormUrl)) {
                     $biz = Business::whereIn('id', $jobBizIds)
-                        ->whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                        ->first();
+                        ->whereRaw(
+                            "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
+                            [$cleanNormUrl]
+                        )->first();
                 }
             }
 
@@ -2735,20 +2838,23 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             // 5. Try matching globally by business name in translations (exact, case-insensitive, or cleaned)
             if (!$biz && !empty($bizName)) {
                 $cleanName = trim(preg_replace('/\s*\([^)]*\)/', '', $bizName)); // remove trailing (Web Hosting)
-                $matchedBizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($bizName)])->value('business_id')
-                    ?? BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanName)])->value('business_id')
-                    ?? BusinessTranslation::where('name', 'like', "%{$cleanName}%")->value('business_id');
+                $matchedBizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($bizName))])->value('business_id')
+                    ?? BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($cleanName))])->value('business_id');
                 if ($matchedBizId) {
                     $biz = Business::find($matchedBizId);
                 }
             }
 
-            // 5b. Try matching globally by permanent URL
+            // 5b. Try matching globally by permanent URL (exact normalized match)
             if (!$biz && !empty($bizUrl)) {
-                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
-                if (!empty($normalizedUrl)) {
-                    $biz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                        ->first();
+                $cleanNormUrl = preg_replace('#^https?://#i', '', $bizUrl);
+                $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+                if (!empty($cleanNormUrl)) {
+                    $biz = Business::whereRaw(
+                        "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
+                        [$cleanNormUrl]
+                    )->first();
                 }
             }
 

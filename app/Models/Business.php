@@ -452,7 +452,34 @@ class Business extends Model
             $option4 = $labels['option_4'];
         }
 
-        // Priority 2: Check attached subcategories (they overwrite parent category if defined)
+        // Priority 2: Check attached subcategories that belong to primary category (child subcategories)
+        if (($option3 === null || $option4 === null) && $primaryCat && $subCategories->isNotEmpty()) {
+            foreach ($subCategories as $subCat) {
+                if ((int)$subCat->parent_id === (int)$primaryCat->id) {
+                    $subLabels = $subCat->getGlanceLabels($langId);
+                    if ($option3 === null && !empty($subLabels['option_3'])) {
+                        $option3 = $subLabels['option_3'];
+                    }
+                    if ($option4 === null && !empty($subLabels['option_4'])) {
+                        $option4 = $subLabels['option_4'];
+                    }
+                    if ($option3 !== null && $option4 !== null) break;
+                }
+            }
+        }
+
+        // Priority 3: Primary category itself (e.g. Web hosting or Website builders)
+        if (($option3 === null || $option4 === null) && $primaryCat) {
+            $parentLabels = $primaryCat->getGlanceLabels($langId);
+            if ($option3 === null && !empty($parentLabels['option_3'])) {
+                $option3 = $parentLabels['option_3'];
+            }
+            if ($option4 === null && !empty($parentLabels['option_4'])) {
+                $option4 = $parentLabels['option_4'];
+            }
+        }
+
+        // Priority 4: Any other attached subcategories (last resort fallback)
         if (($option3 === null || $option4 === null) && $subCategories->isNotEmpty()) {
             foreach ($subCategories as $subCat) {
                 $subLabels = $subCat->getGlanceLabels($langId);
@@ -463,17 +490,6 @@ class Business extends Model
                     $option4 = $subLabels['option_4'];
                 }
                 if ($option3 !== null && $option4 !== null) break;
-            }
-        }
-
-        // Priority 3: Fall back to parent category
-        if (($option3 === null || $option4 === null) && $primaryCat) {
-            $parentLabels = $primaryCat->getGlanceLabels($langId);
-            if ($option3 === null && !empty($parentLabels['option_3'])) {
-                $option3 = $parentLabels['option_3'];
-            }
-            if ($option4 === null && !empty($parentLabels['option_4'])) {
-                $option4 = $parentLabels['option_4'];
             }
         }
 

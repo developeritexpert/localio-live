@@ -40,13 +40,15 @@
     @if ($businesses && $businesses->isNotEmpty())
         <div class="card card-bordered card-preview">
             <div class="card-inner">
-                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-order='[[5, "desc"]]'>
                     <thead>
                         <tr class="nk-tb-item nk-tb-head">
                             <th class="nk-tb-col"><span class="sub-text">Name</span></th>
                             <th class="nk-tb-col"><span class="sub-text">Status</span></th>
-                            <th class="nk-tb-col"><span class="sub-text">Business Category</span></th>
+                            <th class="nk-tb-col"><span class="sub-text">Primary Category</span></th>
+                            <th class="nk-tb-col"><span class="sub-text">Secondary Categories</span></th>
                             <th class="nk-tb-col"><span class="sub-text">Affiliate</span></th>
+                            <th class="nk-tb-col"><span class="sub-text">Last Updated</span></th>
                             <th class="nk-tb-col tb-tnx-action">
                                 <span>Action</span>
                             </th>
@@ -77,7 +79,19 @@
                                     <div class="user-card">
                                         <div class="user-info">
                                             <span
-                                                class="tb-lead">{{ $business->category->translations?->name ?? 'N/A' }}</span>
+                                                class="tb-lead">{{ $business->category?->translations?->name ?? $business->category?->name ?? 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="nk-tb-col" style="white-space: normal; min-width: 180px; max-width: 320px;">
+                                    <div class="user-card">
+                                        <div class="user-info">
+                                            @php
+                                                $secondaryCats = $business->subCategories->map(fn($sc) => $sc->translations?->name ?? $sc->name)->filter()->values();
+                                            @endphp
+                                            <span class="tb-lead" style="font-weight: 500; font-size: 13px;">
+                                                {{ $secondaryCats->isNotEmpty() ? $secondaryCats->join(', ') : 'N/A' }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
@@ -91,6 +105,15 @@
                                     <em class=" ni ni-cross-circle text-danger fs-5"></em>
                                 @endif
                              </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="nk-tb-col" data-order="{{ $business->updated_at?->timestamp ?? 0 }}">
+                                    <div class="user-card">
+                                        <div class="user-info">
+                                            <span class="tb-lead" title="{{ $business->updated_at }}">
+                                                {{ $business->updated_at ? $business->updated_at->format('M d, Y') : 'N/A' }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>

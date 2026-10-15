@@ -150,9 +150,13 @@ class BusinessListing extends Component
 
         $this->businesses = Business::whereHas('translations', function ($query) {
             $query->where([['lang_id', $this->lang_id], ['status', 1]]);
-        })->with(['translations' => function ($query) {
-            $query->where('lang_id', $this->lang_id);
-        }])->get();
+        })->with([
+            'translations' => function ($query) {
+                $query->where('lang_id', $this->lang_id);
+            },
+            'category.translations',
+            'subCategories.translations'
+        ])->orderBy('updated_at', 'desc')->get();
 
     }
 
