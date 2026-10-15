@@ -42,7 +42,7 @@
                             <!-- Background Top Image -->
                             {{-- <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="bg_top_img">Background Top Image</label>
-                                <input type="file" class="form-control" id="bg_top_img" name="bg_top_img" />
+                                <input type="file" class="form-control" id="bg_top_img" name="bg_top_img" accept="image/*,.webp" />
                                 @if (isset($whoWeAre->bg_top_img))
                                     <img src="{{ asset($whoWeAre->bg_top_img) }}" alt="Background Top Image" class="mt-2"
                                         style="width: 100px; height: auto;">
@@ -51,7 +51,7 @@
                            <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="top_left_section_img">Top  Section Image</label>
                                 <input type="file" class="form-control" id="top_left_section_img"
-                                    name="top_left_section_img" />
+                                    name="top_left_section_img" accept="image/*,.webp" />
                                 @if (isset($whoWeAre->top_left_section_img))
                                     <img src="{{ asset($whoWeAre->top_left_section_img) }}" alt="Top left Section Image"
                                         class="mt-2" style="width: 100px; height: auto;">
@@ -62,7 +62,7 @@
                             {{-- <div class="col-md-12">
                                 <label class="form-label" for="top_right_section_img">Top Right Section Image</label>
                                 <input type="file" class="form-control" id="top_right_section_img"
-                                    name="top_right_section_img" />
+                                    name="top_right_section_img" accept="image/*,.webp" />
                                 @if (isset($whoWeAre->top_right_section_img))
                                     <img src="{{ asset($whoWeAre->top_right_section_img) }}" alt="Top Right Section Image"
                                         class="mt-2" style="width: 100px; height: auto;">
@@ -92,7 +92,7 @@
                             <!-- Top Card Image -->
                             <div class="col-md-12">
                                 <label class="form-label" for="top_card_image">Top Card Image</label>
-                                <input type="file" class="form-control" id="top_card_image" name="top_card_image" />
+                                <input type="file" class="form-control" id="top_card_image" name="top_card_image" accept="image/*,.webp" />
                                 @if (isset($whoWeAre->top_card_image))
                                     <img src="{{ asset($whoWeAre->top_card_image) }}" alt="Top Card Image" class="mt-2"
                                         style="width: 100px; height: auto;">
@@ -118,7 +118,7 @@
                                         <div class="form-group col-lg-12">
                                             <label class="form-label" for="image">Image</label>
                                             <div class="form-control-wrap">
-                                                <input type="file" class="form-control" id="image" />
+                                                <input type="file" class="form-control" id="image" accept="image/*,.webp" />
 
                                             </div>
                                         </div>
@@ -224,7 +224,7 @@
 
                                     <p><strong>Image:</strong></p>
                                     <img id="updated-image" style="width: 100px; height: auto;" />
-                                    <input type="file" id="update-image-input" name="MPS[image]" />
+                                    <input type="file" id="update-image-input" name="MPS[image]" accept="image/*,.webp" />
 
                                     <button type="button" id="save-mps-button" style="display: none;">Save</button>
                                 </div>
@@ -262,7 +262,7 @@
                                     <div class="form-group col-lg-12">
                                         <label class="form-label" for="specialists_img">Image</label>
                                         <input type="file" class="form-control" id="specialists_img"
-                                            name="specialists_img[]">
+                                            name="specialists_img[]" accept="image/*,.webp">
                                     </div>
 
 
@@ -356,7 +356,7 @@
                                     <div class="form-group mt-3">
                                         <label class="form-label"><strong>Image:</strong></label><br>
                                         <img id="updated-s-image" style="width: 100px; height: auto;" class="mb-2" />
-                                        <input type="file" id="update-special-image-input" name="SS[img]" class="form-control" />
+                                        <input type="file" id="update-special-image-input" name="SS[img]" class="form-control" accept="image/*,.webp" />
                                     </div>
 
 
@@ -560,11 +560,11 @@
                 if (field.attr('type') === 'file' && value) {
                     const file = field[0].files[0];
                     if (file) {
-                        const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                        const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                         const extension = file.name.split('.').pop().toLowerCase();
 
                         if (!validExtensions.includes(extension)) {
-                            return 'Only image files (jpeg, jpg, png, gif, svg) are allowed';
+                            return 'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed';
                         }
 
                         if (file.size > 2048 * 1024) { // 2MB in bytes
@@ -599,10 +599,10 @@
                     '#ss_heading': 'nullable|string|max:255',
                     '#ss_sub_desc': 'nullable|string',
                     '#protfolio_btn': 'nullable|string|max:255',
-                    '#bg_top_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    '#top_left_section_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    '#top_right_section_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    '#top_card_image': 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+                    '#bg_top_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                    '#top_left_section_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                    '#top_right_section_img': 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                    '#top_card_image': 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
                 };
 
                 // Validate required fields
@@ -664,12 +664,12 @@
                     isValid = false;
                 } else {
                     // Validate image file
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                     const extension = imageFile.name.split('.').pop().toLowerCase();
 
                     if (!validExtensions.includes(extension)) {
                         showValidationError('#image',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
+                            'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed');
                         isValid = false;
                     } else if (imageFile.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#image', 'Image size should not exceed 2MB');
@@ -764,12 +764,12 @@
 
                 if (imageFile) {
                     // Validate image file
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                     const extension = imageFile.name.split('.').pop().toLowerCase();
 
                     if (!validExtensions.includes(extension)) {
                         showValidationError('#update-image-input',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
+                            'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed');
                         isValid = false;
                     } else if (imageFile.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#update-image-input', 'Image size should not exceed 2MB');
@@ -891,12 +891,12 @@
                     isValid = false;
                 } else {
                     // Validate image file
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                     const extension = imgFile.name.split('.').pop().toLowerCase();
 
                     if (!validExtensions.includes(extension)) {
                         showValidationError('#specialists_img',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
+                            'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed');
                         isValid = false;
                     } else if (imgFile.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#specialists_img', 'Image size should not exceed 2MB');
@@ -1007,12 +1007,12 @@ let imageFile2 = $('#update-small-image-input')[0]?.files[0] || null;
 
                 // Validate image files if provided
                 if (imageFile1) {
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                     const extension = imageFile1.name.split('.').pop().toLowerCase();
 
                     if (!validExtensions.includes(extension)) {
                         showValidationError('#update-special-image-input',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
+                            'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed');
                         isValid = false;
                     } else if (imageFile1.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#update-special-image-input',
@@ -1022,12 +1022,12 @@ let imageFile2 = $('#update-small-image-input')[0]?.files[0] || null;
                 }
 
                 if (imageFile2) {
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
+                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'];
                     const extension = imageFile2.name.split('.').pop().toLowerCase();
 
                     if (!validExtensions.includes(extension)) {
                         showValidationError('#update-small-image-input',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
+                            'Only image files (jpeg, jpg, png, gif, svg, webp) are allowed');
                         isValid = false;
                     } else if (imageFile2.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#update-small-image-input',
