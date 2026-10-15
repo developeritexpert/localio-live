@@ -1003,6 +1003,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     font-size: 20px;
                                     line-height: 1.35;
                                     margin-bottom: 20px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                }
+                                .service-guide-box .service-guide-title .service-guide-compass-icon {
+                                    width: 22px;
+                                    height: 22px;
+                                    flex-shrink: 0;
+                                    color: var(--color-primary-blue, #214787);
+                                }
+                                @media (max-width: 576px) {
+                                    .service-guide-box .service-guide-title {
+                                        align-items: flex-start;
+                                    }
+                                    .service-guide-box .service-guide-title .service-guide-compass-icon {
+                                        margin-top: 3px;
+                                    }
                                 }
                                 .service-guide-content h3 {
                                     color: #002347;
@@ -1046,7 +1063,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         : $bizGuideFallback;
                                     $finalGuideSubtext = !empty($resolvedGuide['subtext']) ? $resolvedGuide['subtext'] : '';
                                 @endphp
-                                <h2 class="service-guide-title mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</h2>
+                                <h2 class="service-guide-title mb-2">
+                                    <svg class="service-guide-compass-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#214787" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="10" stroke="#214787" stroke-width="2.2" fill="none"></circle>
+                                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#214787" stroke="#214787" stroke-width="1"></polygon>
+                                    </svg>
+                                    <span>{!! \App\Services\ContentTemplateService::cleanHeading($finalGuideH2) !!}</span>
+                                </h2>
                                 @if(!empty($finalGuideSubtext))
                                 <div class="service-guide-subtext mb-3" style="color: #475569; font-size: 14.5px; line-height: 1.6;">
                                     {!! \App\Services\ContentTemplateService::formatDescriptionText($finalGuideSubtext) !!}
@@ -1216,7 +1239,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 @endphp
                                 <h2 class="mb-2">{!! \App\Services\ContentTemplateService::cleanHeading($finalDetailedServicesH2) !!}</h2>
                                 @if(!empty($finalDetailedServicesSubtext))
-                                <div class="detailed-services-subtext mb-3" style="color: var(--color-dark-blue-text); font-size: 15px; line-height: 1.6;">
+                                <div class="detailed-services-subtext mb-3" style="color: var(--color-dark-blue-text); font-size: 16px; line-height: 1.6;">
                                     {!! \App\Services\ContentTemplateService::formatDescriptionText($finalDetailedServicesSubtext) !!}
                                 </div>
                                 @endif
