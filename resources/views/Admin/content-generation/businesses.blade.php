@@ -547,10 +547,27 @@ function insertSampleJson() {
             </div>
             <form id="importJsonForm" action="{{ route('content-gen.import-json') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="tab" value="{{ $activeTab }}">
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
                         Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Each entry only requires the business <strong>Name</strong> and <strong>URL</strong> (which identifies the business exactly). Once imported, they will appear in the table below ready to be selected for AI batch jobs to get all missing information.
                     </p>
+
+                    {{-- Category Selection (Defaults to current page filter) --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small mb-1">
+                            <em class="icon ni ni-folder me-1 text-primary"></em> Primary Category
+                        </label>
+                        <select name="category_id" id="importJsonCategoryId" class="form-select form-select-sm">
+                            <option value="">— Uncategorized / Detect from JSON —</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ (string)request('category_id') === (string)$cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="text-muted small">Imported businesses will be assigned to this category so they appear directly in your active view.</span>
+                    </div>
 
                     {{-- Option 1: File Upload --}}
                     <div class="mb-3">
