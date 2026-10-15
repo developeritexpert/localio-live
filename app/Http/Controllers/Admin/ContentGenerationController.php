@@ -952,23 +952,51 @@ class ContentGenerationController extends Controller
 
     public function businesses(Request $request)
     {
-        $query = Business::with([
+        $fields     = self::CONTENT_FIELDS;
+        $fieldCount = count($fields);
+
+        // Subquery for businesses where all content fields are completed in AiContentQueue
+        $completedSubquery = AiContentQueue::select('resource_id')
+            ->where('resource_type', 'business')
+            ->whereIn('content_field', $fields)
+            ->where('status', 'completed')
+            ->groupBy('resource_id')
+            ->havingRaw('COUNT(DISTINCT content_field) >= ?', [$fieldCount]);
+
+        $baseQuery = Business::query();
+
+        if ($request->filled('category_id')) {
+            $baseQuery->where('category_id', $request->category_id);
+        }
+        if ($request->filled('status')) {
+            $baseQuery->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $baseQuery->whereHas('translations', function ($q) use ($request) {
+                $q->where('lang_id', 1)->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $pendingCount   = (clone $baseQuery)->whereNotIn('id', $completedSubquery)->count();
+        $completedCount = (clone $baseQuery)->whereIn('id', $completedSubquery)->count();
+        $allCount       = (clone $baseQuery)->count();
+
+        $activeTab = $request->get('tab', 'pending');
+        if (!in_array($activeTab, ['pending', 'completed', 'all'])) {
+            $activeTab = 'pending';
+        }
+
+        $query = (clone $baseQuery)->with([
             'category',
             'translations' => function ($q) {
                 $q->where('lang_id', 1)->select('business_id', 'name', 'lang_id');
             },
         ]);
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('search')) {
-            $query->whereHas('translations', function ($q) use ($request) {
-                $q->where('lang_id', 1)->where('name', 'like', '%' . $request->search . '%');
-            });
+        if ($activeTab === 'pending') {
+            $query->whereNotIn('id', $completedSubquery);
+        } elseif ($activeTab === 'completed') {
+            $query->whereIn('id', $completedSubquery);
         }
 
         $businesses = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
@@ -996,12 +1024,12 @@ class ContentGenerationController extends Controller
 
         $lastPollAt = Cache::get('ai_batch_last_poll');
         $categories = Category::whereNull('parent_id')->orderBy('id')->get();
-        $fields     = self::CONTENT_FIELDS;
 
         $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
 
         return view('Admin.content-generation.businesses', compact(
-            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize'
+            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize',
+            'activeTab', 'pendingCount', 'completedCount', 'allCount'
         ));
     }
 
