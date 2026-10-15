@@ -12,6 +12,15 @@
             </div>
             <div class="nk-block-head-content">
                 <div class="d-flex gap-2">
+                    <a href="{{ route('admin.reviews.batches') }}" class="btn btn-outline-primary btn-sm">
+                        <em class="icon ni ni-layers me-1"></em> Batches
+                        @php
+                            $waitingBatchCount = \App\Models\Review::readyForBatch()->count();
+                        @endphp
+                        @if($waitingBatchCount > 0)
+                            <span class="badge bg-primary ms-1">{{ $waitingBatchCount }}</span>
+                        @endif
+                    </a>
                     <a href="{{ route('admin.reviews.pending') }}" class="btn btn-warning btn-sm">
                         <em class="icon ni ni-shield-alert me-1"></em> Pending Queue
                         @php
@@ -212,7 +221,7 @@
                                         {{ $escalationBadge['label'] }}
                                     </span>
                                 @else
-                                    <span class="text-soft fs-11px">—</span>
+                                    <span class="text-soft fs-11px">ï¿½</span>
                                 @endif
                             </td>
                             <td>
@@ -226,10 +235,10 @@
                                             @if(count($flags) > 1) +{{ count($flags) - 1 }} @endif
                                         </span>
                                     @else
-                                        <span class="text-soft fs-11px">—</span>
+                                        <span class="text-soft fs-11px">ï¿½</span>
                                     @endif
                                 @else
-                                    <span class="text-soft fs-11px">—</span>
+                                    <span class="text-soft fs-11px">ï¿½</span>
                                 @endif
                             </td>
                             <td>

@@ -4,8 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\AiBatchJob;
 use App\Models\Review;
+use App\Models\WebSetting;
 use App\Services\ReviewModerationService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -16,25 +18,31 @@ class PollReviewModerationBatch extends Command
 
     public function handle(): int
     {
-        $apiKey    = config('openai.api_key');
+        $apiKey    = config('openai.api_key') ?: optional(WebSetting::where('key', 'openai_api_key')->first())->value;
         $model     = config('openai.review_ai_model', 'gpt-5.6-luna');
         $promptId  = config('openai.review_prompt_id', '');
         $promptVer = config('openai.review_prompt_version', '1');
 
+        // Record last poll time
+        Cache::put('review_batch_last_poll', now()->toDateTimeString(), now()->addDays(7));
+
         if (!$apiKey) {
-            $this->warn('OPENAI_API_KEY not set. Skipping batch poll.');
+            $this->warn('OPENAI_API_KEY is not set. Skipping live batch polling.');
             return self::SUCCESS;
         }
 
-        // Find all in-progress review moderation batch jobs
+        // Find all review moderation batch jobs still in processing status
         $pendingJobs = AiBatchJob::where('prompt_type', 'review_moderation')
             ->where('status', 'processing')
+            ->where('batch_id', 'not like', 'batch_local_%')
             ->get();
 
         if ($pendingJobs->isEmpty()) {
-            $this->info('No in-progress review moderation batch jobs found.');
+            $this->info('No active review moderation batch jobs to poll.');
             return self::SUCCESS;
         }
+
+        $this->info("Found {$pendingJobs->count()} active batch job(s) to poll.");
 
         foreach ($pendingJobs as $job) {
             $this->info("Polling batch: {$job->batch_id}");
@@ -61,10 +69,15 @@ class PollReviewModerationBatch extends Command
                         'completed_at'    => now(),
                         'completed_items' => $data['request_counts']['completed'] ?? 0,
                         'failed_items'    => $data['request_counts']['failed'] ?? 0,
+                        'raw_response'    => json_encode($data),
                     ]);
                 } elseif (in_array($status, ['failed', 'expired', 'cancelled'])) {
                     $this->warn("Batch {$job->batch_id} has status: {$status}. Marking failed.");
-                    $job->update(['status' => 'failed', 'error_message' => "Batch status: {$status}"]);
+                    $job->update([
+                        'status'        => 'failed',
+                        'error_message' => "Batch status: {$status}",
+                        'raw_response'  => json_encode($data),
+                    ]);
 
                     // Reviews stuck in AI_STATUS_PROCESSING should safely go to human review
                     Review::where('localio_ai_batch_id', $job->batch_id)
@@ -119,6 +132,22 @@ class PollReviewModerationBatch extends Command
             return;
         }
 
+        $res = self::processBatchResultLines($job, $lines, $model, $promptId, $promptVer);
+        $this->info("Batch {$job->batch_id} processed: {$res['processed']} OK, {$res['failed']} failed.");
+        Log::info("moderation:poll-batch: Batch {$job->batch_id} done. {$res['processed']} processed, {$res['failed']} failed.");
+    }
+
+    /**
+     * Process parsed JSONL result lines into reviews.
+     * Can also be called directly by manual upload in ReviewController.
+     */
+    public static function processBatchResultLines(
+        AiBatchJob $job,
+        array $lines,
+        string $model,
+        string $promptId,
+        string $promptVer
+    ): array {
         $processed = 0;
         $failed    = 0;
 
@@ -133,32 +162,18 @@ class PollReviewModerationBatch extends Command
             $reviewId = (int) str_replace('review-', '', $customId);
 
             if (!$reviewId) {
-                $this->warn("Could not parse review ID from custom_id: {$customId}");
                 $failed++;
                 continue;
             }
 
             $review = Review::find($reviewId);
             if (!$review) {
-                $this->warn("Review #{$reviewId} not found in database.");
                 $failed++;
                 continue;
             }
 
             // Extract response
-            $responseBody = $item['response']['body'] ?? null;
-
-            if (!$responseBody) {
-                $this->warn("No response body for review #{$reviewId}. Sending to human review.");
-                $review->update([
-                    'localio_ai_status' => Review::AI_STATUS_DONE,
-                    'status'            => Review::STATUS_PENDING_REVIEW,
-                    'escalation_source' => Review::ESCALATION_LOCALIO_AI,
-                    'localio_ai_reason' => 'Empty response from AI batch.',
-                ]);
-                $failed++;
-                continue;
-            }
+            $responseBody = $item['response']['body'] ?? ($item['body'] ?? $item);
 
             // Parse text output from both /v1/responses and /v1/chat/completions
             $outputText = null;
@@ -179,10 +194,12 @@ class PollReviewModerationBatch extends Command
                         }
                     }
                 }
+            } elseif (isset($item['decision'])) {
+                // Direct result format
+                $outputText = json_encode($item);
             }
 
             if (!$outputText) {
-                $this->warn("No output text for review #{$reviewId}.");
                 $review->update([
                     'localio_ai_status' => Review::AI_STATUS_DONE,
                     'status'            => Review::STATUS_PENDING_REVIEW,
@@ -204,7 +221,6 @@ class PollReviewModerationBatch extends Command
             $gptResult = json_decode($trimmed, true);
 
             if (!$gptResult || !isset($gptResult['decision'])) {
-                $this->warn("Invalid JSON from GPT for review #{$reviewId}: {$outputText}");
                 $review->update([
                     'localio_ai_status' => Review::AI_STATUS_DONE,
                     'status'            => Review::STATUS_PENDING_REVIEW,
@@ -225,11 +241,9 @@ class PollReviewModerationBatch extends Command
                 $promptVer
             );
 
-            $this->line("  ? Review #{$reviewId}: decision={$gptResult['decision']}, status={$review->fresh()->status}");
             $processed++;
         }
 
-        $this->info("Batch {$job->batch_id} processed: {$processed} OK, {$failed} failed.");
-        Log::info("moderation:poll-batch: Batch {$job->batch_id} done. {$processed} processed, {$failed} failed.");
+        return ['processed' => $processed, 'failed' => $failed];
     }
 }

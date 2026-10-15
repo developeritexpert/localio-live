@@ -494,6 +494,17 @@
                                                 <span class="nk-menu-text">Moderation Cases</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.batches*') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.batches') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Batch Jobs</span>
+                                                @php
+                                                    $waitingBatchCount = \App\Models\Review::readyForBatch()->count();
+                                                @endphp
+                                                @if($waitingBatchCount > 0)
+                                                    <span class="badge bg-primary ms-auto">{{ $waitingBatchCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.reviews.settings') ? 'active' : '' }}">
                                             <a href="{{ route('admin.reviews.settings') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Moderation Settings</span>
