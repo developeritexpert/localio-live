@@ -748,18 +748,30 @@ class ContentTemplateService
             ->with('template')
             ->first();
 
-        // Fallback for business entity: if no assignment under 'business', check category assignment for business's subcategories / category
+        // Fallback for business entity: if no assignment under 'business', check category assignment for business's primary category / subcategories
         if (!$assignment && $entityType === 'business') {
             $biz = Business::find($entityId);
             if ($biz) {
                 $candidateCatIds = [];
-                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                // 1. Subcategories belonging to the primary category
+                if ($biz->category_id && $biz->subCategories && $biz->subCategories->isNotEmpty()) {
                     foreach ($biz->subCategories as $sc) {
-                        $candidateCatIds[] = $sc->id;
+                        if ((int)$sc->parent_id === (int)$biz->category_id) {
+                            $candidateCatIds[] = $sc->id;
+                        }
                     }
                 }
+                // 2. The primary category itself
                 if ($biz->category_id) {
                     $candidateCatIds[] = $biz->category_id;
+                }
+                // 3. Any other attached subcategories
+                if ($biz->subCategories && $biz->subCategories->isNotEmpty()) {
+                    foreach ($biz->subCategories as $sc) {
+                        if (!in_array($sc->id, $candidateCatIds)) {
+                            $candidateCatIds[] = $sc->id;
+                        }
+                    }
                 }
 
                 foreach ($candidateCatIds as $cId) {
@@ -3088,8 +3100,14 @@ class ContentTemplateService
         $defaultCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order', 'asc')->get();
         $existingManualTexts = \App\Models\BusinessRatingText::where('business_id', $business->id)->get()->keyBy('criteria_key');
 
-        $primarySubcat = $business->subCategories->first();
         $parentCat = $business->category;
+        $primarySubcat = null;
+        if ($parentCat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first(fn($sc) => (int)$sc->parent_id === (int)$parentCat->id);
+        }
+        if (!$primarySubcat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first();
+        }
         if (!$parentCat && $primarySubcat?->parent_id) {
             $parentCat = $primarySubcat->parent;
         }
@@ -3192,8 +3210,8 @@ class ContentTemplateService
                 }
             }
 
-            // 5. Replace placeholders
-            $activeCategory = $primarySubcat ?? $parentCat;
+            // 5. Replace placeholders (prioritize primary business category)
+            $activeCategory = $business->category ?? $primarySubcat;
             $headline = '';
             $subtext = '';
             if ($template) {
@@ -3220,8 +3238,14 @@ class ContentTemplateService
      */
     public static function resolveCriteriaUnder10Text(\App\Models\Business $business, int $criteriaId = 1, int $langId = 1): string
     {
-        $primarySubcat = $business->subCategories->first();
         $parentCat = $business->category;
+        $primarySubcat = null;
+        if ($parentCat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first(fn($sc) => (int)$sc->parent_id === (int)$parentCat->id);
+        }
+        if (!$primarySubcat && $business->subCategories) {
+            $primarySubcat = $business->subCategories->first();
+        }
         if (!$parentCat && $primarySubcat?->parent_id) {
             $parentCat = $primarySubcat->parent;
         }
@@ -3229,8 +3253,8 @@ class ContentTemplateService
         $fieldKey = "criteria_{$criteriaId}_under_10";
         $templates = collect();
 
-        // 1. Subcategory override
-        if ($primarySubcat) {
+        // 1. Subcategory override (only if subcategory belongs to parentCat or if business has no parentCat)
+        if ($primarySubcat && (!$parentCat || (int)$primarySubcat->parent_id === (int)$parentCat->id)) {
             $subcatSection = "criteria_ratings_{$criteriaId}_cat_{$primarySubcat->id}";
             $templates = ContentTemplate::where('section_group', $subcatSection)
                 ->where('field_key', $fieldKey)
@@ -3294,7 +3318,8 @@ class ContentTemplateService
         $count = $templates->count();
         $template = $count > 1 ? $templates[$business->id % $count] : $templates->first();
 
-        $activeCategory = $primarySubcat ?? $parentCat;
+        // Prioritize the business primary category for placeholder replacement (e.g. web hosting providers)
+        $activeCategory = $business->category ?? $primarySubcat;
         $rawText = !empty($template->subtext) ? $template->subtext : ($template->headline ?? '');
         return self::replacePlaceholders($rawText, $activeCategory, null, $langId, $business);
     }

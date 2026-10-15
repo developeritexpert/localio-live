@@ -78,29 +78,59 @@
     list-style: none;
 }
 
-.feature-nav-tabs .feature-tab-link {
-    font-size: 15px;
-    font-weight: 500;
-    padding: 8px 4px 10px 4px;
+.features-tabs-wrapper .feature-nav-tabs,
+#featureTabList {
+    display: flex !important;
+    align-items: center !important;
+    gap: 24px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+.features-tabs-wrapper .feature-nav-tabs .nav-item,
+#featureTabList .nav-item {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.features-tabs-wrapper .feature-nav-tabs .feature-tab-link,
+#featureTabList .feature-tab-link {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 10px 0 !important;
     border: none !important;
+    border-radius: 0 !important;
     background: transparent !important;
-    position: relative;
-    color: #718096 !important;
+    position: relative !important;
+    color: #64748b !important;
     border-bottom: 2px solid transparent !important;
-    margin-bottom: -2px;
+    margin-bottom: -1px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: auto !important;
     transition: color 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
-    text-decoration: none;
 }
 
-.feature-nav-tabs .feature-tab-link:hover {
-    color: #1e3050 !important;
+.features-tabs-wrapper .feature-nav-tabs .feature-tab-link:hover,
+#featureTabList .feature-tab-link:hover {
+    color: var(--color-dark-blue-text, #002347) !important;
+    background: transparent !important;
+    border-bottom: 2px solid transparent !important;
 }
 
-.feature-nav-tabs .feature-tab-link.active {
-    color: #1e3050 !important;
+.features-tabs-wrapper .feature-nav-tabs .feature-tab-link.active,
+#featureTabList .feature-tab-link.active {
+    background: transparent !important;
+    color: var(--color-dark-blue-text, #002347) !important;
     font-weight: 600 !important;
-    border-bottom: 2px solid #1e3050 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    border-bottom: 2px solid var(--color-dark-blue-text, #002347) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 .feature-pill {

@@ -339,11 +339,16 @@ class BusinessEdit extends Component
         $glanceLabels = ['option_3' => null, 'option_4' => null];
         $langId = (int)($this->languages_supported ?: 1);
 
-        // Check currently selected subcategories first
+        $selectedCatId = $this->selected_category;
         $selectedSubCatIds = is_array($this->selected_sub_categories) ? $this->selected_sub_categories : [];
-        if (!empty($selectedSubCatIds)) {
-            $subCats = \App\Models\Category::with(['translations', 'parent.translations'])->whereIn('id', $selectedSubCatIds)->get();
-            foreach ($subCats as $subCat) {
+
+        // 1. Check selected subcategories that belong to the selected primary category
+        if (!empty($selectedCatId) && !empty($selectedSubCatIds)) {
+            $matchingSubCats = \App\Models\Category::with(['translations', 'parent.translations'])
+                ->whereIn('id', $selectedSubCatIds)
+                ->where('parent_id', $selectedCatId)
+                ->get();
+            foreach ($matchingSubCats as $subCat) {
                 $subLabels = $subCat->getGlanceLabels($langId);
                 if (empty($glanceLabels['option_3']) && !empty($subLabels['option_3'])) {
                     $glanceLabels['option_3'] = $subLabels['option_3'];
@@ -355,9 +360,9 @@ class BusinessEdit extends Component
             }
         }
 
-        // Fallback to selected primary category
-        if ((empty($glanceLabels['option_3']) || empty($glanceLabels['option_4'])) && !empty($this->selected_category)) {
-            $cat = \App\Models\Category::with(['translations', 'parent.translations'])->find($this->selected_category);
+        // 2. Primary selected category
+        if ((empty($glanceLabels['option_3']) || empty($glanceLabels['option_4'])) && !empty($selectedCatId)) {
+            $cat = \App\Models\Category::with(['translations', 'parent.translations'])->find($selectedCatId);
             if ($cat) {
                 $catLabels = $cat->getGlanceLabels($langId);
                 if (empty($glanceLabels['option_3']) && !empty($catLabels['option_3'])) {
@@ -366,6 +371,23 @@ class BusinessEdit extends Component
                 if (empty($glanceLabels['option_4']) && !empty($catLabels['option_4'])) {
                     $glanceLabels['option_4'] = $catLabels['option_4'];
                 }
+            }
+        }
+
+        // 3. Fallback to any other selected subcategories
+        if ((empty($glanceLabels['option_3']) || empty($glanceLabels['option_4'])) && !empty($selectedSubCatIds)) {
+            $otherSubCats = \App\Models\Category::with(['translations', 'parent.translations'])
+                ->whereIn('id', $selectedSubCatIds)
+                ->get();
+            foreach ($otherSubCats as $subCat) {
+                $subLabels = $subCat->getGlanceLabels($langId);
+                if (empty($glanceLabels['option_3']) && !empty($subLabels['option_3'])) {
+                    $glanceLabels['option_3'] = $subLabels['option_3'];
+                }
+                if (empty($glanceLabels['option_4']) && !empty($subLabels['option_4'])) {
+                    $glanceLabels['option_4'] = $subLabels['option_4'];
+                }
+                if (!empty($glanceLabels['option_3']) && !empty($glanceLabels['option_4'])) break;
             }
         }
 
