@@ -466,7 +466,7 @@ class ContentGenerationController extends Controller
                 }
 
                 // Flexible name and URL resolution
-                $name = trim($item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
+                $name = trim($item['business'] ?? $item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
                 $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? $item['domain'] ?? $item['link'] ?? '');
 
                 // If name is omitted but URL is provided, derive name cleanly from domain
@@ -499,9 +499,9 @@ class ContentGenerationController extends Controller
                     $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
 
                     if (!empty($cleanNormUrl)) {
-                        // 1. Exact match on normalized permanent_url (avoids fuzzy false positives on similar domains)
+                        // 1. Exact match on normalized permanent_url (avoids false positives on similar domains)
                         $existingBiz = Business::whereRaw(
-                            "LOWER(TRIM(TRAILING '/' FROM REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', ''))) = ?",
+                            "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
                             [$cleanNormUrl]
                         )->first();
 
@@ -512,22 +512,47 @@ class ContentGenerationController extends Controller
                                 'https://' . $cleanNormUrl,
                                 'http://' . $cleanNormUrl,
                                 'https://www.' . $cleanNormUrl,
-                                'http://www.' . $cleanNormUrl,
+                                'http://' . $cleanNormUrl,
                                 'https://' . $cleanNormUrl . '/',
                                 'https://www.' . $cleanNormUrl . '/',
                                 $cleanNormUrl,
                             ])->first();
                         }
+
+                        // 3. Exact URL match in business_websites table fallback
+                        if (!$existingBiz) {
+                            $bwBizId = \App\Models\BusinessWebsite::whereRaw(
+                                "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(website_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
+                                [$cleanNormUrl]
+                            )->value('business_id');
+                            if ($bwBizId) {
+                                $existingBiz = Business::find($bwBizId);
+                            }
+                        }
                     }
                 }
 
-                // If not matched by URL, check exact name in BusinessTranslation for default language (lang_id = 1)
+                // Name match fallback:
+                // If URL was provided, ONLY match by name if the candidate business in directory has NO URL set.
+                // Never treat two businesses with different URLs as duplicates simply because they have similar/same names.
                 if (!$existingBiz && !empty($name)) {
-                    $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
-                        ->where('lang_id', 1)
-                        ->value('business_id');
-                    if ($bizId) {
-                        $existingBiz = Business::find($bizId);
+                    if (empty($url)) {
+                        $bizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
+                            ->where('lang_id', 1)
+                            ->value('business_id');
+                        if ($bizId) {
+                            $existingBiz = Business::find($bizId);
+                        }
+                    } else {
+                        $candidateBizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])
+                            ->where('lang_id', 1)
+                            ->value('business_id');
+                        if ($candidateBizId) {
+                            $candidateBiz = Business::find($candidateBizId);
+                            if ($candidateBiz && empty(trim($candidateBiz->permanent_url ?? ''))) {
+                                $existingBiz = $candidateBiz;
+                            }
+                        }
                     }
                 }
 
@@ -555,7 +580,7 @@ class ContentGenerationController extends Controller
                     }
                     $updatedCount++;
                 } else {
-                    $baseSlug = Str::slug($name);
+                    $baseSlug = Str::slug(str_replace('.', '-', $name));
                     if (empty($baseSlug)) {
                         $baseSlug = 'business-' . time() . '-' . rand(100, 999);
                     }
@@ -2321,13 +2346,22 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             ->orderBy('id')
             ->get()
             ->map(function($parent) {
+                $parentLabels = $parent->getGlanceLabels(1);
                 return [
                     'category_id'   => $parent->id,
                     'category_name' => optional($parent->translation)->name ?? ('Category #' . $parent->id),
-                    'subcategories' => $parent->children->map(fn($child) => [
-                        'subcategory_id'   => $child->id,
-                        'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
-                    ])->values(),
+                    'option_3'      => $parentLabels['option_3'] ?? null,
+                    'option_4'      => $parentLabels['option_4'] ?? null,
+                    'subcategories' => $parent->children->map(function($child) use ($parent) {
+                        $child->setRelation('parent', $parent);
+                        $childLabels = $child->getGlanceLabels(1);
+                        return [
+                            'subcategory_id'   => $child->id,
+                            'subcategory_name' => optional($child->translation)->name ?? ('Subcategory #' . $child->id),
+                            'option_3'         => $childLabels['option_3'] ?? null,
+                            'option_4'         => $childLabels['option_4'] ?? null,
+                        ];
+                    })->values(),
                 ];
             });
 
@@ -2711,11 +2745,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             // 2b. Try matching by URL against businesses in this batch job
             if (!$biz && !empty($bizUrl) && $job) {
                 $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique();
-                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
-                if (!empty($normalizedUrl)) {
+                $cleanNormUrl = preg_replace('#^https?://#i', '', $bizUrl);
+                $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+                if (!empty($cleanNormUrl)) {
                     $biz = Business::whereIn('id', $jobBizIds)
-                        ->whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                        ->first();
+                        ->whereRaw(
+                            "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
+                            [$cleanNormUrl]
+                        )->first();
                 }
             }
 
@@ -2735,20 +2773,23 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             // 5. Try matching globally by business name in translations (exact, case-insensitive, or cleaned)
             if (!$biz && !empty($bizName)) {
                 $cleanName = trim(preg_replace('/\s*\([^)]*\)/', '', $bizName)); // remove trailing (Web Hosting)
-                $matchedBizId = BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($bizName)])->value('business_id')
-                    ?? BusinessTranslation::whereRaw('LOWER(name) = ?', [strtolower($cleanName)])->value('business_id')
-                    ?? BusinessTranslation::where('name', 'like', "%{$cleanName}%")->value('business_id');
+                $matchedBizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($bizName))])->value('business_id')
+                    ?? BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($cleanName))])->value('business_id');
                 if ($matchedBizId) {
                     $biz = Business::find($matchedBizId);
                 }
             }
 
-            // 5b. Try matching globally by permanent URL
+            // 5b. Try matching globally by permanent URL (exact normalized match)
             if (!$biz && !empty($bizUrl)) {
-                $normalizedUrl = rtrim(preg_replace('/^https?:\/\/(www\.)?/i', '', $bizUrl), '/');
-                if (!empty($normalizedUrl)) {
-                    $biz = Business::whereRaw("TRIM(TRAILING '/' FROM REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', '')) LIKE ?", ['%' . $normalizedUrl . '%'])
-                        ->first();
+                $cleanNormUrl = preg_replace('#^https?://#i', '', $bizUrl);
+                $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
+                $cleanNormUrl = strtolower(rtrim($cleanNormUrl, '/'));
+                if (!empty($cleanNormUrl)) {
+                    $biz = Business::whereRaw(
+                        "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
+                        [$cleanNormUrl]
+                    )->first();
                 }
             }
 
