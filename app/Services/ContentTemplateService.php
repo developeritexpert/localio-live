@@ -2522,11 +2522,12 @@ class ContentTemplateService
         // 2. Convert markdown ### Heading to <h3>Heading</h3>
         $text = preg_replace('/(?:^|<br\s*\/?>|\n)\s*###\s*(.*?)(?=<br\s*\/?>|\n|$)/im', '<h3 class="service-subheading">$1</h3>', $text);
 
-        // 3. Remove redundant <br> tags immediately before or after <h2|h3> tags
-        $text = preg_replace('/(?:<br\s*\/?>\s*)+(<h[23][^>]*>)/i', '$1', $text);
-        $text = preg_replace('/(<\/h[23]>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $text);
+        // 3. Ensure line breaks around <h3> tags so they split paragraphs cleanly
+        $text = preg_replace('/(<\/h[1-6]>)\s*(?:<br\s*\/?>)*/i', "$1\n\n", $text);
+        $text = preg_replace('/(?:<br\s*\/?>)*\s*(<h[1-6][^>]*>)/i', "\n\n$1", $text);
 
-        return $text;
+        // 4. Format into semantic <p>...</p> paragraphs and convert <br> tags to paragraph boundaries
+        return self::formatDescriptionText($text);
     }
 
     public static function formatServiceGuide(?string $text): string
@@ -2625,6 +2626,7 @@ class ContentTemplateService
         // 6. Fix block-level elements wrapped inside or adjacent to invalid <p>
         $text = preg_replace('/<p>\s*(<(?:ul|ol|h[1-6]|div|table|blockquote)[^>]*>)/i', '$1', $text);
         $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*<\/p>/i', '$1', $text);
+        $text = preg_replace('/(<\/(?:ul|ol|h[1-6]|div|table|blockquote)>)\s*([^<\s][^<]*)(?=<\/p>)/i', '$1<p>$2', $text);
 
         // 7. Clean up empty paragraphs once more
         $text = preg_replace('/<p>\s*<\/p>/i', '', $text);
