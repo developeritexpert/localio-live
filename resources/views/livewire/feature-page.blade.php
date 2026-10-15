@@ -677,8 +677,19 @@
                                             <span style="font-weight: 500; color: #1e293b;">{{ $lockedFeatureName }}</span>
                                         </span>
 
+                                        @php
+                                            $resolvedViewAll = $lockedFeatureObj 
+                                                ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'view_all_link', $currentLangId ?? 1) 
+                                                : [];
+                                            $viewAllText = !empty($resolvedViewAll['headline']) 
+                                                ? trim(strip_tags($resolvedViewAll['headline'])) 
+                                                : \App\Services\ContentTemplateService::replacePlaceholders('View all [entities1_lc]', $category, $lockedFeatureObj, $currentLangId ?? 1);
+                                            if (empty($viewAllText) || trim($viewAllText) === 'View all' || str_contains($viewAllText, '[entities1_lc]')) {
+                                                $viewAllText = 'View all ' . $formattedCatName;
+                                            }
+                                        @endphp
                                         <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="margin-left: 4px;">
-                                            View all {{ $formattedCatName }}
+                                            {{ trim($viewAllText) }}
                                         </a>
                                     </div>
                                     @endif

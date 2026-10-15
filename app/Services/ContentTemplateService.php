@@ -673,6 +673,12 @@ class ContentTemplateService
             'field2_label' => 'Explore Subcategories Subtext',
             'description' => 'Headline and subtext for explore subcategories/categories section on feature page.',
         ],
+        'view_all_link' => [
+            'label' => 'VIEW ALL LINK',
+            'type' => 'single',
+            'field1_label' => 'Link Text',
+            'description' => 'Link text to view all category entities on feature pages (e.g. View all [entities1_lc]).',
+        ],
     ];
 
     /**
@@ -2329,6 +2335,12 @@ class ContentTemplateService
     public static function seedDefaultFeaturesOptionsIfMissing(): void
     {
         $defaults = [
+            'view_all_link' => [
+                1 => [
+                    'headline' => 'View all [entities1_lc]',
+                    'subtext'  => null,
+                ],
+            ],
             'top_10_under_10' => [
                 1 => [
                     'headline' => 'Top 10 [category_cap] with [feature_cap] Comparison',
@@ -3082,6 +3094,10 @@ class ContentTemplateService
             $headline = self::replacePlaceholders($template->headline, $category, $feature, $langId);
             $subtext = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
             $optionNumber = $template->option_number;
+        }
+
+        if ($fieldKey === 'view_all_link' && empty(trim($headline))) {
+            $headline = self::replacePlaceholders('View all [entities1_lc]', $category, $feature, $langId);
         }
 
         return [
