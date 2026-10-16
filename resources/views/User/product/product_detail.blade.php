@@ -1013,6 +1013,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     flex-shrink: 0;
                                     color: var(--color-primary-blue, #214787);
                                 }
+                                .service-guide-content h3{
+                                    font-size:18px !important;
+                                    }
                                 @media (max-width: 576px) {
                                     .service-guide-box .service-guide-title {
                                         align-items: flex-start;
@@ -1020,7 +1023,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     .service-guide-box .service-guide-title .service-guide-compass-icon {
                                         margin-top: 3px;
                                     }
+                                    .service-guide-content h3{
+                                    font-size:16px !important;
+                                    }
                                 }
+                                
                                 .service-guide-content h3 {
                                     color: #002347;
                                     font-size: 15px;
@@ -1041,14 +1048,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     margin-top: 18px;
                                 }
                                 .service-guide-content p {
-                                    color: #475569;
-                                    font-size: 13.5px;
+                                    color: #002347;
+                                    font-size: 16px;
                                     line-height: 1.55;
                                     margin-bottom: 0;
                                 }
                                 .service-guide-content p + p {
                                     margin-top: 8px;
                                 }
+                                
                             </style>
                             <div class="service-guide-box">
                                 @php
@@ -2336,7 +2344,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     {!! \App\Services\ContentTemplateService::cleanHeading($finalBizReviewsHeadline) !!}
                                                                 </h2>
                                                                 @if(!empty($finalBizReviewsSubtext))
-                                                                    <div class="reviews-section-subtext mb-3" style="color: #475569; font-size: 14.5px;">
+                                                                    <div class="reviews-section-subtext mb-3 size-16" style="color: #475569;">
                                                                         {!! $finalBizReviewsSubtext !!}
                                                                     </div>
                                                                 @endif
