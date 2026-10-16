@@ -656,7 +656,7 @@
                                                     {!! \App\Services\ContentTemplateService::cleanHeading($finalBizReviewsHeadline) !!}
                                                 </h2>
                                                 @if(!empty($finalBizReviewsSubtext))
-                                                    <div class="reviews-section-subtext mb-3" style="color: #475569; font-size: 14.5px;">
+                                                    <div class="reviews-section-subtext mb-3 size-16" style="color: #475569; ">
                                                         {!! $finalBizReviewsSubtext !!}
                                                     </div>
                                                 @endif
