@@ -539,7 +539,7 @@
 
         <!-- SECTION 3: Bottom Pricing FAQs Accordion -->
         @if($pricingFaqs && $pricingFaqs->count() > 0)
-        <div class="bg-white rounded-4 p-4 p-md-5 shadow-sm border" style="border-color: #e2e8f0 !important;">
+        <div class="faq-pricing">
             <div class="mb-4">
                 <h2 style="font-weight: 700; font-size: 24px; color: #002347; margin-bottom: 8px;">
                     Frequently asked questions
