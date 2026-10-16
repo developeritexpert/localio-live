@@ -655,6 +655,11 @@ class MetaTagService
         return self::resolveBusinessSubpageMeta($business, 'business_reviews', 'reviews_meta_title', 'reviews_meta_description', $langId, $rule);
     }
 
+    public static function resolveBusinessPricingMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_pricing', 'pricing_meta_title', 'pricing_meta_description', $langId, $rule);
+    }
+
     public static function resolveBusinessDiscussionsMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
     {
         return self::resolveBusinessSubpageMeta($business, 'business_discussions', 'discussions_meta_title', 'discussions_meta_description', $langId, $rule);

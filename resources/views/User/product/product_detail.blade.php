@@ -1219,6 +1219,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             });
                         </script>
 
+                        {{-- Products & Pricing Plans Section --}}
+                        @include('User.product.partials.pricing_plans_boxes')
+
                         @php
                         $afterImageDesc = $business->translations->first()?->after_image_description ?? ($offering->bottom_text ?? null);
                         @endphp
@@ -1283,7 +1286,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         $featRatingVal = $featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0);
                         $featPercent = min(100, max(0, ($featRatingVal / 5) * 100));
                         @endphp
-                        @if($hasUserRatings || $business->features->count() > 0)
+                        @php
+                            $hasMappedOfferFeatures = $business->offerProducts()
+                                ->where('status', 'public')
+                                ->whereHas('plans.planFeatures')
+                                ->exists();
+                        @endphp
+                        @if($hasMappedOfferFeatures)
+                            @include('User.product.partials.business_feature_box')
+                        @elseif($hasUserRatings || $business->features->count() > 0)
                         <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border" id="section-features">
                             <div class="mb-3">
                                 <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>

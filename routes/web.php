@@ -142,6 +142,16 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
 
 
+        // Products & Prices Category for Admin
+    Route::prefix('admin-dashboard/products-prices')->name('admin.products-prices.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'index'])->name('index');
+        Route::get('/manage/{businessId}', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'manage'])->name('manage');
+        Route::post('/store/{businessId}', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'storeProduct'])->name('store');
+        Route::delete('/delete/{businessId}/{productId}', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'deleteProduct'])->name('delete');
+        Route::post('/batch-import', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'batchImport'])->name('batch-import');
+        Route::post('/add-faq/{businessId}', [\App\Http\Controllers\Admin\ProductPriceAdminController::class, 'addPriceFaq'])->name('add-faq');
+    });
+
     Route::get('admin-dashboard/businesses/pricing-options', [AdminBusinessController::class, 'priceoptions'])->name('priceoptions');
     Route::get('admin-dashboard/businesses/pricing-options/add/{id?}', [AdminBusinessController::class, 'priceoptionsAdd'])->name('priceoptionsAdd');
     Route::post('admin-dashboard/businesses/pricing-options/addprocess', [AdminBusinessController::class, 'priceoptionsAddprocess'])->name('priceoptionsAddprocess');
@@ -855,6 +865,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
         ->where('comparison_businesses', '.*-.*-.*')
         ->name('product-comparison.seo');
 
+    Route::get('/{business_slug}/pricing', [ViewController::class, 'businessPricing'])->name('business.pricing');
+    Route::get('/{business_slug}/plans-pricing', [ViewController::class, 'businessPricing'])->name('business.plans_pricing');
     Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');

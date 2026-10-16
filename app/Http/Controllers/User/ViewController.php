@@ -686,6 +686,34 @@ class ViewController extends Controller
             }])
             ->get();
 
+        // Dynamic Pricing Category ordering & labeling:
+        // "For businesses with plans you use this category: Plans & Pricing"
+        // "For businesses without plans you use this category: Pricing"
+        // "So in the business faq categories, you may show that directly as second category and then the other categories."
+        $hasOfferPlans = $business->hasOfferPlans();
+        $targetPricingCatName = $hasOfferPlans ? 'Plans & Pricing' : 'Pricing';
+
+        $pricingCat = $faqCategories->first(function ($cat) {
+            $norm = strtolower(trim($cat->name));
+            return $norm === 'plans & pricing' || $norm === 'pricing';
+        });
+
+        if ($pricingCat) {
+            $pricingCat->name = $targetPricingCatName;
+            $reordered = collect();
+            $first = $faqCategories->first(fn($c) => $c->id !== $pricingCat->id);
+            if ($first) {
+                $reordered->push($first);
+            }
+            $reordered->push($pricingCat);
+            foreach ($faqCategories as $cat) {
+                if ($cat->id !== $pricingCat->id && (!$first || $cat->id !== $first->id)) {
+                    $reordered->push($cat);
+                }
+            }
+            $faqCategories = $reordered;
+        }
+
         $uncategorizedFaqs = BusinessFaq::where('business_id', $business->id)
             ->whereNull('business_faq_category_id')
             ->where('status', 1)
@@ -861,6 +889,10 @@ class ViewController extends Controller
         }
 
         // 2. Business Subpages
+        if ($second_segment === 'pricing' || $second_segment === 'plans-pricing' || $second_segment === 'plans') {
+            return $this->businessPricing($request, $locale, $business_slug);
+        }
+
         if ($second_segment === $expectedAlternativesSlug || $second_segment === 'alternatives') {
             return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
         }
@@ -882,6 +914,83 @@ class ViewController extends Controller
         }
 
         abort(404);
+    }
+
+    public function businessPricing(Request $request, $locale, $business_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        // 1. Find business by slug
+        $businessTranslation = BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            $businessTranslation = BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'offerProducts' => fn($q) => $q->where('status', 'public')
+                    ->orderBy('sort_order', 'asc')
+                    ->with([
+                        'plans' => fn($pq) => $pq->where('status', 'public')->orderBy('sort_order', 'asc')->with([
+                            'prices' => fn($prq) => $prq->where('is_active', true),
+                            'planFeatures.feature.translations' => fn($fq) => $fq->where('lang_id', $lang_id),
+                            'specifications',
+                        ]),
+                    ]),
+                'faqCategories' => fn($q) => $q->where('status', 1)->ordered()->with([
+                    'faqs' => fn($fq) => $fq->where('status', 1)->orderedByHelpful()->with([
+                        'translations' => fn($t) => $t->where('lang_id', $lang_id)
+                    ])
+                ]),
+                'faqs' => fn($q) => $q->where('status', 1)->orderedByHelpful()->with([
+                    'translations' => fn($t) => $t->where('lang_id', $lang_id)
+                ]),
+            ])->firstOrFail();
+
+        $bName = $businessTranslation->name ?? $business->translations->first()?->name ?? $business->title ?? 'Business';
+
+        // 2. Resolve Content Templates
+        $resolvedH1 = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'pricing_h1', $lang_id);
+        $pricingH1 = !empty($resolvedH1['headline']) ? $resolvedH1['headline'] : ($bName . ' plans & pricing');
+        $pricingSubtext = !empty($resolvedH1['subtext']) ? $resolvedH1['subtext'] : 'Explore available plans, compare their features, and find the best option for your needs.';
+
+        // 3. Resolve Meta Tags
+        $metaResolved = \App\Services\MetaTagService::resolveBusinessPricingMeta($business, $lang_id);
+        $metaTitle = !empty($metaResolved['title']) ? $metaResolved['title'] : "{$bName} Plans & Pricing - Compare Features & Options";
+        $metaDescription = !empty($metaResolved['description']) ? $metaResolved['description'] : "Explore {$bName} plans, pricing, key features, and compare tiers to choose the best fit for your needs.";
+
+        // 4. Retrieve Pricing FAQs
+        $pricingCategory = $business->faqCategories->first(function($cat) {
+            $norm = strtolower(trim($cat->name));
+            return $norm === 'plans & pricing' || $norm === 'pricing' || stripos($norm, 'pric') !== false || stripos($norm, 'plan') !== false;
+        });
+
+        $pricingFaqs = collect();
+        if ($pricingCategory && $pricingCategory->faqs->count() > 0) {
+            $pricingFaqs = $pricingCategory->faqs;
+        } else {
+            $pricingFaqs = $business->faqs->take(6);
+        }
+
+        return view('User.product.business_pricing', compact(
+            'business',
+            'bName',
+            'pricingH1',
+            'pricingSubtext',
+            'metaTitle',
+            'metaDescription',
+            'pricingFaqs'
+        ));
     }
 
     public function businessAlternatives(Request $request, $locale, $business_slug, $alternatives_slug)
