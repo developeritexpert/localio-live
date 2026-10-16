@@ -15767,7 +15767,7 @@ button.action-icon-btn.share-trigger-btn:hover {
     font-size: 16px;
 }
 
-/* ====style.css updated by-Kashish(09-oct-26)===== */
+/* ==== updated by-Kashish(09-oct-26)===== */
 
 /* ======Reddit-Style Discussions & Threaded Comments===== */
 .discussion-title {
@@ -15878,6 +15878,7 @@ button.action-icon-btn.share-trigger-btn:hover {
 }
 
 /* product_comparison,product_detail,user_review2 */
+
 .report-review-option-card:hover {
     border-color: var(--color-primary-grey-text) !important;
     background: var(--color-bg-light-grey);
@@ -15897,6 +15898,6 @@ button.action-icon-btn.share-trigger-btn:hover {
     color: var(--color-white) !important;
 }
 
-.txt-gry {
+.txt-gry{
     color: #5b6b7a;
 }

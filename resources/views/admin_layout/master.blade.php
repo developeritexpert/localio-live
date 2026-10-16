@@ -111,6 +111,16 @@
                                     </ul>
                                 </li>
 
+                                <!-- Products & Prices -->
+                                <li class="nk-menu-item {{ request()->routeIs('admin.products-prices.*') ? 'active current-page' : '' }}">
+                                    <a href="{{ route('admin.products-prices.index') }}" class="nk-menu-link">
+                                        <span class="nk-menu-icon">
+                                            <em class="icon ni ni-layers-fill"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Products & Prices</span>
+                                    </a>
+                                </li>
+
                                 <!-- Products -->
                                 <li class="nk-menu-item has-sub">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">

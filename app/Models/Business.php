@@ -108,6 +108,16 @@ class Business extends Model
     {
         return $this->belongsToMany(Feature::class, 'business_feature');
     }
+
+    public function offerProducts()
+    {
+        return $this->hasMany('App\\Models\\BusinessOfferProduct', 'business_id')->orderBy('sort_order', 'asc');
+    }
+
+    public function hasOfferPlans(): bool
+    {
+        return $this->offerProducts()->where('has_plans', true)->whereHas('plans')->exists();
+    }
     public function proCons()
     {
         return $this->hasMany(BusinessProCon::class);
