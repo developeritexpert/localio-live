@@ -15,7 +15,11 @@
                                 <p>Manage products, pricing plans, feature mappings, and price-specific FAQs for all businesses.</p>
                             </div>
                         </div>
-                        <div class="nk-block-head-content">
+                        <div class="nk-block-head-content d-flex gap-2">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#jsonExampleModal">
+                                <em class="icon ni ni-file-code"></em>
+                                <span>View Example JSON</span>
+                            </button>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jsonBatchModal">
                                 <em class="icon ni ni-upload-cloud"></em>
                                 <span>Batch JSON Upload</span>
@@ -83,10 +87,11 @@
                         <table class="table table-tranx is-compact">
                             <thead>
                                 <tr class="tb-tnx-head">
-                                    <th class="tb-tnx-id" style="width: 32%;"><span>Business</span></th>
+                                    <th class="tb-tnx-id" style="width: 28%;"><span>Business</span></th>
                                     <th><span>Category</span></th>
                                     <th><span>Products & Plans</span></th>
                                     <th><span>Currencies</span></th>
+                                    <th><span>FAQ</span></th>
                                     <th style="min-width: 170px;"><span>Last Updated</span></th>
                                     <th class="tb-tnx-action text-end"><span>Actions</span></th>
                                 </tr>
@@ -96,7 +101,7 @@
                                 @php
                                     $bizTrans = $biz->translations->first();
                                     $bizName = $bizTrans->name ?? ('Business #' . $biz->id);
-                                    $catName = $biz->category?->translations?->first()?->name ?? '—';
+                                    $catName = $biz->category?->translations?->name ?? $biz->category?->name ?? '—';
                                     
                                     $productCount = $biz->offerProducts->count();
                                     $planCount = $biz->offerProducts->sum(fn($p) => $p->plans->count());
@@ -113,6 +118,9 @@
                                             if ($pr->currency) $currencies[$pr->currency] = true;
                                         }
                                     }
+
+                                    // Product / Price FAQs count
+                                    $faqCount = $biz->faqCategories->sum('faqs_count');
 
                                     // Last Updated Column calculation
                                     $lastUpdatedTime = $biz->pricing_updated_at ?: $biz->updated_at;
@@ -162,6 +170,15 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if($faqCount > 0)
+                                            <span class="badge bg-info-dim text-info">
+                                                <em class="icon ni ni-help me-1"></em>{{ $faqCount }} {{ Str::plural('FAQ', $faqCount) }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted small">—</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         @if($lastUpdatedTime)
                                             <div class="d-flex flex-column">
                                                 <span class="font-weight-bold text-dark" style="font-size: 13px;">
@@ -184,7 +201,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">
+                                    <td colspan="7" class="text-center py-4 text-muted">
                                         No businesses found matching your criteria.
                                     </td>
                                 </tr>
@@ -213,47 +230,272 @@
     </div>
 </div>
 
-{{-- Batch JSON Modal --}}
+{{-- Batch JSON Upload Modal --}}
 <div class="modal fade" id="jsonBatchModal" tabindex="-1" aria-labelledby="jsonBatchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form action="{{ route('admin.products-prices.batch-import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="jsonBatchModalLabel">Batch JSON Upload (Products & Prices)</h5>
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title" id="jsonBatchModalLabel">
+                        <em class="icon ni ni-upload-cloud text-primary me-2"></em>Batch JSON Upload (Products, Prices & FAQs)
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
-                        Upload a <code>.json</code> file or paste a JSON structure containing businesses, products, plans, specifications, prices, and feature mappings.
+                        Upload a <code>.json</code> or <code>.jsonl</code> file or paste a JSON structure containing businesses, products, plans, specifications, prices, features, and pricing FAQs.
                     </p>
 
                     <div class="mb-3">
-                        <label for="json_file" class="form-label font-weight-bold">Upload JSON file</label>
-                        <input class="form-control" type="file" id="json_file" name="json_file" accept=".json">
+                        <label for="json_file" class="form-label font-weight-bold small">Upload JSON file (.json or .jsonl)</label>
+                        <input class="form-control" type="file" id="json_file" name="json_file" accept=".json,.jsonl,application/json,text/plain">
                     </div>
 
-                    <div class="text-center my-2 text-muted">— OR —</div>
+                    <div class="text-center my-3 position-relative">
+                        <hr class="m-0">
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small fw-bold">OR PASTE JSON BELOW</span>
+                    </div>
 
                     <div class="mb-3">
-                        <label for="json_content" class="form-label font-weight-bold">Paste JSON payload</label>
-                        <textarea class="form-control font-monospace" id="json_content" name="json_content" rows="12" placeholder='{
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="json_content" class="form-label font-weight-bold small mb-0">Paste JSON payload</label>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-xs btn-outline-primary" onclick="openExampleModal()">
+                                    <em class="icon ni ni-eye me-1"></em> View Example JSON
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary" onclick="insertSampleJson()">
+                                    <em class="icon ni ni-copy me-1"></em> Insert Sample JSON
+                                </button>
+                            </div>
+                        </div>
+                        <textarea class="form-control font-monospace" id="json_content" name="json_content" rows="12" style="font-size: 12.5px; line-height: 1.5; background: #f8fafc;" placeholder='{
   "batch_id": "IMPORT-2026",
   "businesses": [
     {
       "business_id": 44,
-      "products": [ ... ]
+      "products": [ ... ],
+      "pricing_faqs": [ ... ]
     }
   ]
 }'></textarea>
                     </div>
+
+                    <div class="alert alert-light border py-2 px-3 small text-muted">
+                        <em class="icon ni ni-info-fill text-info me-1"></em>
+                        <strong>Flexible Business Matching:</strong> Businesses are matched by <code>business_id</code> / <code>id</code>, <code>name</code> (or <code>business_name</code>), or <code>url</code> / <code>website</code>. Pricing FAQs are automatically placed under the <strong>Plans & Pricing</strong> category.
+                    </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-top bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Process Import</button>
+                    <button type="submit" class="btn btn-primary">
+                        <em class="icon ni ni-check me-1"></em> Process Import
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+{{-- Example Format Modal --}}
+<div class="modal fade" id="jsonExampleModal" tabindex="-1" aria-labelledby="jsonExampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="jsonExampleModalLabel">
+                    <em class="icon ni ni-file-code text-primary me-2"></em>Products, Prices & FAQs JSON Format Example
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-primary py-2 px-3 mb-3 small">
+                    <div class="fw-bold mb-1"><em class="icon ni ni-layers me-1"></em> Supported JSON Structure:</div>
+                    <ul class="mb-0 ps-3">
+                        <li><strong>Businesses:</strong> Match businesses using <code>business_id</code> (recommended), <code>name</code>, or <code>url</code>.</li>
+                        <li><strong>Products:</strong> Contain product details, optional <code>categories</code> (with <code>primary_category_id</code>), and plans.</li>
+                        <li><strong>Plans:</strong> Support <code>specifications</code> (e.g. storage, websites), <code>features</code> (array of feature IDs), and multiple currency <code>prices</code> (USD, EUR, GBP).</li>
+                        <li><strong>Pricing FAQs:</strong> Provide an array under <code>pricing_faqs</code> with <code>question</code> and <code>answer</code>; they are automatically linked to the business.</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-semibold">Example Payload (Ready to copy or insert):</span>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-xs btn-primary" onclick="copyExampleJson(this)">
+                            <em class="icon ni ni-copy me-1"></em> Copy Example JSON
+                        </button>
+                        <button type="button" class="btn btn-xs btn-success" onclick="insertExampleAndOpenUpload()">
+                            <em class="icon ni ni-plus-circle me-1"></em> Insert to Upload Form
+                        </button>
+                    </div>
+                </div>
+
+                <pre class="bg-dark text-light p-3 rounded" style="max-height: 460px; overflow-y: auto; font-size: 12px; line-height: 1.5;"><code id="exampleJsonCode"></code></pre>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="copyExampleJson(this)">
+                    <em class="icon ni ni-copy me-1"></em> Copy JSON
+                </button>
+                <button type="button" class="btn btn-success" onclick="insertExampleAndOpenUpload()">
+                    <em class="icon ni ni-plus-circle me-1"></em> Insert to Upload Form
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const sampleProductsPricesJson = `{
+  "batch_id": "IMPORT-2026",
+  "businesses": [
+    {
+      "business_id": 44,
+      "name": "One.com",
+      "products": [
+        {
+          "name": "Web Hosting",
+          "description": "Fast and reliable web hosting with daily backups, free SSL, and custom email.",
+          "categories": {
+            "primary_category_id": 11,
+            "primary_subcategory_id": 20,
+            "category_ids": [11],
+            "subcategory_ids": [20, 23]
+          },
+          "plans": [
+            {
+              "name": "Beginner",
+              "short_description": "Great for small personal websites and simple blogs.",
+              "badge": "Popular",
+              "is_featured": false,
+              "specifications": [
+                { "code": "storage", "value": "50 GB", "unit": "GB" },
+                { "code": "websites", "value": "1", "unit": "site" },
+                { "code": "ram", "value": "512 MB", "unit": "MB" }
+              ],
+              "features": [2095, 2097, 2102],
+              "featured_feature_ids": [2095],
+              "prices": [
+                {
+                  "country_region": "all",
+                  "currency": "USD",
+                  "billing_period": "1m",
+                  "regular_price": 3.99,
+                  "renewal_price": 9.99,
+                  "intro_price": 1.99,
+                  "intro_duration": "3 months"
+                },
+                {
+                  "country_region": "all",
+                  "currency": "EUR",
+                  "billing_period": "1m",
+                  "regular_price": 3.49,
+                  "renewal_price": 8.99
+                }
+              ]
+            },
+            {
+              "name": "Explorer",
+              "short_description": "For growing websites with higher traffic and more storage.",
+              "badge": "Best Value",
+              "is_featured": true,
+              "specifications": [
+                { "code": "storage", "value": "100 GB", "unit": "GB" },
+                { "code": "websites", "value": "5", "unit": "sites" },
+                { "code": "ram", "value": "1 GB", "unit": "GB" }
+              ],
+              "features": [2095, 2097, 2101, 2102],
+              "featured_feature_ids": [2095, 2101],
+              "prices": [
+                {
+                  "country_region": "all",
+                  "currency": "USD",
+                  "billing_period": "1m",
+                  "regular_price": 7.99,
+                  "renewal_price": 14.99
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "pricing_faqs": [
+        {
+          "question": "Can I upgrade or downgrade my plan at any time?",
+          "answer": "Yes, you can upgrade your plan or change billing cycles directly from your account control panel."
+        },
+        {
+          "question": "Is there a money-back guarantee?",
+          "answer": "Yes, we offer a 30-day money-back guarantee on all hosting plans."
+        }
+      ]
+    }
+  ]
+}`;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const codeEl = document.getElementById('exampleJsonCode');
+    if (codeEl) {
+        codeEl.textContent = sampleProductsPricesJson;
+    }
+});
+
+function insertSampleJson() {
+    const textarea = document.getElementById('json_content');
+    if (textarea) {
+        textarea.value = sampleProductsPricesJson;
+        textarea.focus();
+        textarea.classList.add('border-primary');
+        setTimeout(() => textarea.classList.remove('border-primary'), 1000);
+    }
+}
+
+function copyExampleJson(btn) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(sampleProductsPricesJson).then(() => {
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<em class="icon ni ni-check me-1"></em> Copied!';
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('btn-success');
+                }, 2000);
+            }
+        });
+    }
+}
+
+function openExampleModal() {
+    // Hide upload modal if open, then show example modal
+    const batchModalEl = document.getElementById('jsonBatchModal');
+    const exampleModalEl = document.getElementById('jsonExampleModal');
+    
+    if (batchModalEl) {
+        const batchModal = bootstrap.Modal.getInstance(batchModalEl);
+        if (batchModal) batchModal.hide();
+    }
+    
+    if (exampleModalEl) {
+        const exampleModal = new bootstrap.Modal(exampleModalEl);
+        exampleModal.show();
+    }
+}
+
+function insertExampleAndOpenUpload() {
+    insertSampleJson();
+    const exampleModalEl = document.getElementById('jsonExampleModal');
+    const batchModalEl = document.getElementById('jsonBatchModal');
+    
+    if (exampleModalEl) {
+        const exampleModal = bootstrap.Modal.getInstance(exampleModalEl);
+        if (exampleModal) exampleModal.hide();
+    }
+    
+    if (batchModalEl) {
+        const batchModal = bootstrap.Modal.getOrCreateInstance(batchModalEl);
+        setTimeout(() => batchModal.show(), 300);
+    }
+}
+</script>
 @endsection
