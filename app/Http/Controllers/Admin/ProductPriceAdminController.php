@@ -248,6 +248,21 @@ class ProductPriceAdminController extends Controller
                 }
             }
 
+            // Keep pricing FAQ category name in sync (Plans & Pricing vs Pricing)
+            $hasPlans = $business->hasOfferPlans();
+            $targetPricingCatName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
+            $existingPricingCat = BusinessFaqCategory::where('business_id', $business->id)
+                ->where(function($q) {
+                    $q->where('name', 'Plans & Pricing')
+                      ->orWhere('name', 'Pricing')
+                      ->orWhere('name', 'Products & Pricing')
+                      ->orWhere('name', 'Pricing & Billing');
+                })->first();
+            if ($existingPricingCat && $existingPricingCat->name !== $targetPricingCatName) {
+                $existingPricingCat->name = $targetPricingCatName;
+                $existingPricingCat->save();
+            }
+
             $business->pricing_updated_at = now();
             $business->save();
 
@@ -264,6 +279,21 @@ class ProductPriceAdminController extends Controller
         $business = Business::findOrFail($businessId);
         $product = BusinessOfferProduct::where('business_id', $businessId)->findOrFail($productId);
         $product->delete();
+
+        // Keep pricing FAQ category name in sync (Plans & Pricing vs Pricing)
+        $hasPlans = $business->hasOfferPlans();
+        $targetPricingCatName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
+        $existingPricingCat = BusinessFaqCategory::where('business_id', $business->id)
+            ->where(function($q) {
+                $q->where('name', 'Plans & Pricing')
+                  ->orWhere('name', 'Pricing')
+                  ->orWhere('name', 'Products & Pricing')
+                  ->orWhere('name', 'Pricing & Billing');
+            })->first();
+        if ($existingPricingCat && $existingPricingCat->name !== $targetPricingCatName) {
+            $existingPricingCat->name = $targetPricingCatName;
+            $existingPricingCat->save();
+        }
 
         $business->pricing_updated_at = now();
         $business->save();
@@ -528,16 +558,27 @@ class ProductPriceAdminController extends Controller
                 if (!empty($faqs) && is_array($faqs)) {
                     $hasPlans = $business->hasOfferPlans();
                     $faqCategoryName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
-                    $faqCat = BusinessFaqCategory::firstOrCreate(
-                        [
+                    $faqCat = BusinessFaqCategory::where('business_id', $business->id)
+                        ->where(function($q) {
+                            $q->where('name', 'Plans & Pricing')
+                              ->orWhere('name', 'Pricing')
+                              ->orWhere('name', 'Products & Pricing')
+                              ->orWhere('name', 'Pricing & Billing');
+                        })->first();
+
+                    if ($faqCat) {
+                        if ($faqCat->name !== $faqCategoryName) {
+                            $faqCat->name = $faqCategoryName;
+                            $faqCat->save();
+                        }
+                    } else {
+                        $faqCat = BusinessFaqCategory::create([
                             'business_id' => $business->id,
                             'name' => $faqCategoryName,
-                        ],
-                        [
-                            'position' => 2,
+                            'position' => 1,
                             'status' => 1,
-                        ]
-                    );
+                        ]);
+                    }
 
                     $langId = getCurrentLanguageID() ?: 1;
 
@@ -626,24 +667,27 @@ class ProductPriceAdminController extends Controller
         $hasPlans = $business->hasOfferPlans();
         $categoryName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
 
-        $category = BusinessFaqCategory::firstOrCreate(
-            [
+        $category = BusinessFaqCategory::where('business_id', $business->id)
+            ->where(function($q) {
+                $q->where('name', 'Plans & Pricing')
+                  ->orWhere('name', 'Pricing')
+                  ->orWhere('name', 'Products & Pricing')
+                  ->orWhere('name', 'Pricing & Billing');
+            })->first();
+
+        if ($category) {
+            if ($category->name !== $categoryName) {
+                $category->name = $categoryName;
+                $category->save();
+            }
+        } else {
+            $category = BusinessFaqCategory::create([
                 'business_id' => $business->id,
                 'name' => $categoryName,
-            ],
-            [
-                'position' => 2,
+                'position' => 1,
                 'status' => 1,
-            ]
-        );
-
-        BusinessFaqCategory::where('business_id', $business->id)
-            ->where('id', '!=', $category->id)
-            ->where('position', '>=', 2)
-            ->increment('position');
-
-        $category->position = 2;
-        $category->save();
+            ]);
+        }
 
         $faq = BusinessFaq::create([
             'business_id' => $business->id,
