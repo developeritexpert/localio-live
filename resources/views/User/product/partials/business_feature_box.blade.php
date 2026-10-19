@@ -11,13 +11,16 @@
     $categorySlug = $business->category->parent->translation->slug ?? $business->category->parent->slug ?? 'hosting';
     $subcategorySlug = $catTrans->slug ?? $business->category->slug ?? 'web-hosting';
 
-    // Find the offer product that has plans with features
+    // Find the offer products that have plans with features
     $offerProductsWithPlans = $business->offerProducts()
         ->where('status', 'public')
         ->whereHas('plans.planFeatures')
-        ->with(['plans' => function($q) {
-            $q->where('status', 'public')->orderBy('sort_order', 'asc');
-        }, 'plans.planFeatures.feature.translations'])
+        ->with([
+            'plans' => function($q) {
+                $q->where('status', 'public')->orderBy('sort_order', 'asc');
+            }, 
+            'plans.planFeatures.feature.translations'
+        ])
         ->orderBy('sort_order', 'asc')
         ->get();
 
@@ -25,11 +28,14 @@
     $plans = $activeOfferProduct ? $activeOfferProduct->plans : collect();
     $totalPlansCount = $plans->count();
 
-    // Map features
+    // Map features across plans of the active product
     $mappedFeatures = [];
     $groupMap = [
         'Plans' => 'Key features',
         'Tools' => 'Management',
+        'Build' => 'Management',
+        'DNS'   => 'Management',
+        'Domains' => 'Management',
     ];
 
     if ($activeOfferProduct) {
@@ -62,8 +68,10 @@
                     $mappedFeatures[$fId]['is_highlight'] = true;
                 }
 
-                $mappedFeatures[$fId]['plans'][] = $plan->name;
-                $mappedFeatures[$fId]['plan_ids'][] = (string)$plan->id;
+                if (!in_array($plan->name, $mappedFeatures[$fId]['plans'])) {
+                    $mappedFeatures[$fId]['plans'][] = $plan->name;
+                    $mappedFeatures[$fId]['plan_ids'][] = (string)$plan->id;
+                }
                 $mappedFeatures[$fId]['plan_matrix'][$plan->id] = true;
             }
         }
@@ -79,7 +87,7 @@
     }
     unset($fData);
 
-    // Groups tabs calculation
+    // Filter tabs calculation
     $availableGroups = collect($mappedFeatures)->pluck('group')->unique()->values()->all();
     $defaultTabs = ['Key features', 'Performance', 'Security', 'Management', 'Support'];
     $tabsToShow = [];
@@ -95,17 +103,17 @@
     }
 @endphp
 
-<div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border" id="section-features">
-    <!-- Header -->
+<div class="rating-criteria-section mb-5" id="section-features">
+    <!-- Section Header -->
     <div class="mb-3">
-        <h2 class="m-0" style="font-weight: 700; font-size: 24px; color: #002347;">Features</h2>
+        <h2 class="m-0" style="font-weight: 700; font-size: 24px; color: #0f172a; letter-spacing: -0.01em;">Features</h2>
         <p class="mt-2 text-muted" style="font-size: 14.5px; line-height: 1.5; color: #475569;">
             Explore {{ $bName }} features and discover other {{ $catName }} providers offering the capabilities you’re looking for.
         </p>
     </div>
 
     <!-- Inner Interactive Feature Container -->
-    <div class="feature-box-card rounded-4 p-4 mt-3" style="background: #ffffff; border: 1px solid #e2e8f0;">
+    <div class="feature-box-card rounded-4 p-4" style="background: #ffffff; border: 1px solid #eaecf0; box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);">
         
         <!-- Filter Tabs Row -->
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4" id="featureGroupTabs">
@@ -114,7 +122,7 @@
                 <button type="button" 
                     class="btn btn-sm feat-tab-btn {{ $isActive ? 'active' : '' }}" 
                     data-tab-group="{{ $tabName }}"
-                    style="{{ $isActive ? 'background: #0f172a; color: #ffffff; border: 1px solid #0f172a;' : 'background: #ffffff; color: #475569; border: 1px solid #e2e8f0;' }} border-radius: 9999px; padding: 7px 18px; font-weight: 500; font-size: 13.5px; transition: all 0.2s ease;">
+                    style="{{ $isActive ? 'background: #0f172a; color: #ffffff; border: 1px solid #0f172a;' : 'background: #ffffff; color: #475569; border: 1px solid #e2e8f0;' }} border-radius: 9999px; padding: 7px 18px; font-weight: 500; font-size: 13.5px; transition: all 0.15s ease;">
                     {{ $tabName }}
                 </button>
             @endforeach
@@ -134,17 +142,17 @@
                         <line x1="6" y1="6" x2="6.01" y2="6"></line>
                         <line x1="6" y1="18" x2="6.01" y2="18"></line>
                     </svg>
-                    <span>{{ $activeOfferProduct->name ?? 'Web hosting' }}</span>
+                    <span>{{ $activeOfferProduct->localized_name ?: ($activeOfferProduct->name ?? 'Web hosting') }}</span>
                 </div>
             </div>
 
-            <!-- Right: Features Available In (Plan Filter) -->
-            <div class="d-flex align-items-center gap-2">
-                <span style="font-size: 13px; color: #64748b; font-weight: 500;">Features available in</span>
-                <select id="featPlanFilterSelect" class="form-select form-select-sm" style="border-radius: 9999px; border-color: #cbd5e1; font-size: 13px; font-weight: 500; padding-left: 14px; padding-right: 32px; width: auto; min-width: 130px; cursor: pointer;">
+            <!-- Right: Features Available In (Plan Filter Dropdown) -->
+            <div class="d-flex flex-column align-items-end">
+                <span style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px;">Features available in</span>
+                <select id="featPlanFilterSelect" class="form-select form-select-sm" style="border-radius: 9999px; border-color: #cbd5e1; font-size: 13px; font-weight: 500; padding-left: 14px; padding-right: 32px; width: auto; min-width: 130px; cursor: pointer; color: #0f172a;">
                     <option value="all">All plans</option>
                     @foreach($plans as $pl)
-                        <option value="{{ $pl->id }}">{{ $pl->name }}</option>
+                        <option value="{{ $pl->id }}">{{ $pl->localized_name ?: $pl->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -163,53 +171,54 @@
                          data-group="{{ $f['group'] }}"
                          data-is-highlight="{{ $isHighlight ? '1' : '0' }}"
                          data-plan-ids="{{ $planIdsStr }}">
-                        <div class="feature-single-card h-100 p-3 rounded-3 d-flex align-items-start justify-content-between position-relative"
-                             style="background: #ffffff; border: 1px solid #e2e8f0; transition: border-color 0.2s, box-shadow 0.2s;">
+                        <a href="{{ $f['url'] }}" 
+                           class="feature-single-card h-100 p-3 rounded-3 d-flex align-items-start justify-content-between position-relative text-decoration-none"
+                           style="background: #ffffff; border: 1px solid #eaecf0; transition: border-color 0.2s, box-shadow 0.2s; color: inherit;">
                             <div class="d-flex align-items-start gap-3">
-                                <!-- Circled Green Checkmark Icon -->
+                                <!-- Circled Green Checkmark Icon matching screenshot -->
                                 <span class="feat-check-icon d-inline-flex align-items-center justify-content-center" 
-                                      style="width: 22px; height: 22px; border-radius: 50%; background: #ecfdf5; color: #16a34a; border: 1.5px solid #16a34a; font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 2px;">
-                                    ✓
+                                      style="margin-top: 2px; flex-shrink: 0;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="1.8" fill="#ecfdf5"></circle>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
                                 </span>
                                 <div>
-                                    <div class="feat-name" style="font-weight: 600; font-size: 14.5px; color: #0f172a; line-height: 1.3;">
+                                    <div class="feat-card-title" style="font-weight: 700; font-size: 14.5px; color: #0f172a; line-height: 1.35; margin-bottom: 2px;">
                                         {{ $f['name'] }}
                                     </div>
-                                    <div class="feat-availability" style="font-size: 12.5px; color: #64748b; margin-top: 3px;">
+                                    <div class="feat-card-plans text-muted" style="font-size: 12.5px; color: #64748b !important; line-height: 1.3;">
                                         {{ $f['availability_text'] }}
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Small External Link Arrow -->
-                            <a href="{{ $f['url'] }}" 
-                               class="feat-link-arrow text-decoration-none text-muted" 
-                               title="Explore {{ $f['name'] }}"
-                               style="font-size: 13px; color: #94a3b8; transition: color 0.15s ease;">
-                                <i class="fas fa-arrow-up-right-from-square" style="font-size: 11px;"></i>
-                            </a>
-                        </div>
+                            <div class="feat-link-arrow text-muted" style="margin-top: 3px; flex-shrink: 0; color: #94a3b8; transition: color 0.15s ease;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 17L17 7M17 7H7M17 7V17"></path>
+                                </svg>
+                            </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
         </div>
 
-        <!-- VIEW B: Feature Comparison Matrix Table (Hidden by Default) -->
+        <!-- VIEW B: Feature Comparison Table View -->
         <div id="featTableView" class="mt-3 table-responsive" style="display: none;">
-            <table class="table align-middle" style="border-collapse: separate; border-spacing: 0; margin-bottom: 0;">
+            <table class="table mb-0" style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr style="border-bottom: 2px solid #e2e8f0;">
-                        <th scope="col" style="font-size: 13.5px; font-weight: 600; color: #0f172a; padding: 12px 14px; width: 45%;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <th style="padding: 12px 16px; font-size: 13px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; text-align: left;">
                             Feature
                         </th>
-                        @foreach($plans as $plan)
-                            <th scope="col" class="text-center" style="font-size: 13.5px; font-weight: 600; color: #0f172a; padding: 12px 14px;">
-                                {{ $plan->name }}
+                        @foreach($plans as $pl)
+                            <th class="text-center" style="padding: 12px 16px; font-size: 13px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; width: {{ round(60 / max(1, $plans->count())) }}%;">
+                                {{ $pl->localized_name ?: $pl->name }}
                             </th>
                         @endforeach
                     </tr>
                 </thead>
-                <tbody id="featTableBody">
+                <tbody>
                     @foreach($mappedFeatures as $f)
                         @php
                             $isHighlight = $f['is_highlight'];
@@ -220,17 +229,17 @@
                             data-group="{{ $f['group'] }}"
                             data-is-highlight="{{ $isHighlight ? '1' : '0' }}"
                             data-plan-ids="{{ $planIdsStr }}"
-                            style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="font-size: 14px; font-weight: 500; color: #1e293b; padding: 14px 14px;">
-                                <a href="{{ $f['url'] }}" class="text-decoration-none text-dark hover-primary" style="transition: color 0.15s;">
+                            style="border-bottom: 1px solid #f1f5f9; transition: background-color 0.15s ease;">
+                            <td style="padding: 13px 16px; font-size: 13.5px; font-weight: 500; color: #1e293b; vertical-align: middle;">
+                                <a href="{{ $f['url'] }}" class="text-decoration-none" style="color: inherit;">
                                     {{ $f['name'] }}
                                 </a>
                             </td>
-                            @foreach($plans as $plan)
-                                @php $isIncluded = !empty($f['plan_matrix'][$plan->id]); @endphp
-                                <td class="text-center" style="padding: 14px 14px;">
-                                    @if($isIncluded)
-                                        <span style="color: #16a34a; font-weight: 700; font-size: 16px;">✓</span>
+                            @foreach($plans as $pl)
+                                @php $hasFeature = !empty($f['plan_matrix'][$pl->id]); @endphp
+                                <td class="text-center" style="padding: 13px 16px; vertical-align: middle;">
+                                    @if($hasFeature)
+                                        <span style="color: #10b981; font-weight: 700; font-size: 16px;">✓</span>
                                     @else
                                         <span style="color: #94a3b8; font-size: 16px;">—</span>
                                     @endif
@@ -252,20 +261,19 @@
             <button type="button" 
                     id="btnToggleFeatView" 
                     class="btn btn-sm"
-                    style="border-radius: 9999px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 500; color: #0f172a; padding: 6px 18px; display: inline-flex; align-items: center; gap: 8px; background: #ffffff; transition: all 0.2s ease;">
+                    style="border-radius: 9999px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 500; color: #0f172a; padding: 7px 18px; display: inline-flex; align-items: center; gap: 8px; background: #ffffff; transition: all 0.15s ease;">
+                <!-- Table Icon (shown in Cards view) -->
                 <svg id="btnFeatViewIconTable" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                    <path d="M9 21V9"></path>
                 </svg>
+                <!-- Cards/Grid Icon (shown in Table view) -->
                 <svg id="btnFeatViewIconCards" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
                 </svg>
                 <span id="btnFeatViewLabel">Compare features by plan</span>
             </button>
@@ -273,7 +281,7 @@
 
         <!-- Disclaimer for Interactive Design -->
         <div id="featInteractiveDisclaimer" class="mt-3 pt-2 text-muted" style="font-size: 12px; color: #94a3b8 !important; line-height: 1.5; border-top: 1px dashed #e2e8f0; display: none;">
-            Interactive design example using verified plan assignments. Actual features and plan availability can also be compared directly on the <a href="{{ route('business.pricing', ['locale' => $langCode, 'business_slug' => $business->translations->first()->slug ?? $business->id]) }}" class="text-decoration-underline" style="color: #64748b;">plans & pricing</a> page.
+            Interactive design example using hypothetical plan assignments. Actual features and plan availability must be verified using Localio's feature IDs and product/plan data.
         </div>
 
     </div>
@@ -282,7 +290,7 @@
 <style>
 .feature-single-card:hover {
     border-color: #cbd5e1 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .feature-single-card:hover .feat-link-arrow {
     color: #2563eb !important;
@@ -377,11 +385,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 t.style.background = '#ffffff';
                 t.style.color = '#475569';
                 t.style.borderColor = '#e2e8f0';
+                t.style.fontWeight = '500';
             });
             this.classList.add('active');
             this.style.background = '#0f172a';
             this.style.color = '#ffffff';
             this.style.borderColor = '#0f172a';
+            this.style.fontWeight = '600';
 
             currentGroup = this.getAttribute('data-tab-group');
             applyFeatureFilters();
