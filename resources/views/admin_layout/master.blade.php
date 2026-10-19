@@ -303,6 +303,11 @@
                                                 <span class="nk-menu-text">Business Reviews</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-pricing') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.business-pricing') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Plans &amp; Pricing</span>
+                                            </a>
+                                        </li>
                                         <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.business-discussions') ? 'active' : '' }}">
                                             <a href="{{ route('admin.content-templates.business-discussions') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Business Discussions</span>
