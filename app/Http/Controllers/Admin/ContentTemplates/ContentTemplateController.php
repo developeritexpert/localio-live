@@ -218,6 +218,7 @@ class ContentTemplateController extends Controller
     public function businessFaqs(Request $request) { return $this->genericBusinessView($request, 'business_faqs', \App\Services\ContentTemplateService::BUSINESS_FAQS_FIELDS, 'Business FAQs'); }
     public function businessCompare(Request $request) { return $this->genericBusinessView($request, 'business_compare', \App\Services\ContentTemplateService::BUSINESS_COMPARE_FIELDS, 'Business Compare'); }
     public function businessReviews(Request $request) { return $this->genericBusinessView($request, 'business_reviews', \App\Services\ContentTemplateService::BUSINESS_REVIEWS_FIELDS, 'Business Reviews'); }
+    public function businessPricing(Request $request) { return $this->genericBusinessView($request, 'business_pricing', \App\Services\ContentTemplateService::BUSINESS_PRICING_FIELDS, 'Business Plans & Pricing'); }
     public function businessDiscussions(Request $request) { return $this->genericBusinessView($request, 'business_discussions', \App\Services\ContentTemplateService::BUSINESS_DISCUSSIONS_FIELDS, 'Business Discussions'); }
     public function comparison(Request $request) { return $this->genericCategoryView($request, 'comparison', \App\Services\ContentTemplateService::COMPARISON_FIELDS, 'A vs B Comparisons'); }
 

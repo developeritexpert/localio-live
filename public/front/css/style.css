@@ -12133,8 +12133,8 @@ section#section-compare {
 .table-business-link {
     display: inline-flex !important;
     align-items: center;
-    padding: 6px 12px;
-    margin: -6px -12px;
+    /* padding: 6px 12px; */
+    /* margin: -6px -12px; */
     border-radius: var(--radius-md);
     background-color: transparent;
     text-decoration: none !important;

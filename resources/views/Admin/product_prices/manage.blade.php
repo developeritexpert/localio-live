@@ -7,26 +7,28 @@
 @endphp
 
 <style>
+/* Clean scoped styling for Products & Prices catalog */
 .stat-box {
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 18px 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
 }
 .stat-box-label {
-    font-size: 12px;
-    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    color: #64748b;
+    letter-spacing: .04em;
+    margin-bottom: 4px;
 }
 .stat-box-num {
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 700;
     color: #0f172a;
-    line-height: 1.2;
-    margin-top: 4px;
+    line-height: 1.1;
 }
 .table-catalog {
     width: 100%;
@@ -35,45 +37,47 @@
 }
 .table-catalog th {
     background: #f8fafc;
-    color: #475569;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    font-weight: 700;
-    padding: 14px 20px;
     border-bottom: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
 }
 .table-catalog td {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 14px 16px;
     vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
 }
 .term-pill {
-    background: #eff6ff;
-    color: #1e40af;
-    border: 1px solid #dbeafe;
-    border-radius: 6px;
-    padding: 3px 8px;
+    display: inline-block;
+    background: #f1f5f9;
+    color: #334155;
+    border-radius: 4px;
     font-size: 11px;
     font-weight: 600;
-    display: inline-block;
-    margin: 2px 2px;
+    padding: 2px 7px;
+    margin: 2px 4px 2px 0;
 }
 .curr-pill {
-    background: #f8fafc;
-    color: #334155;
-    border: 1px solid #e2e8f0;
+    display: inline-block;
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
     border-radius: 4px;
-    padding: 2px 6px;
     font-size: 11px;
     font-weight: 600;
-    display: inline-block;
-    margin: 2px;
+    padding: 1px 6px;
+    margin-right: 4px;
 }
 .drawer-backdrop {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
     z-index: 1040;
     display: none;
 }
@@ -83,14 +87,15 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: min(850px, 100vw);
+    width: 760px;
+    max-width: 95vw;
     background: #fff;
     z-index: 1050;
-    box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-    transform: translateX(100%);
-    transition: transform 0.25s ease-in-out;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
     display: flex;
     flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .25s cubic-bezier(.4, 0, .2, 1);
 }
 .side-drawer.show { transform: translateX(0); }
 .drawer-header {
@@ -194,12 +199,10 @@
                             <div class="d-flex align-items-center gap-2">
                                 <label for="previewCountry" class="small text-muted mb-0 text-nowrap">Preview country:</label>
                                 <select id="previewCountry" class="form-select form-select-sm" style="width: auto;">
-                                    <option value="all">Default names</option>
-                                    <option value="en-us">United States (en-us)</option>
-                                    <option value="de">Germany (de)</option>
-                                    <option value="fr-be">Belgium - French (fr-be)</option>
-                                    <option value="gb">United Kingdom (gb)</option>
-                                    <option value="fr">France (fr)</option>
+                                    <option value="all">Default (All Markets)</option>
+                                    @foreach($countries as $c)
+                                        <option value="{{ $c['id'] }}">{{ $c['name'] }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-control-wrap" style="width: 260px;">
@@ -258,27 +261,19 @@
                     <div class="form-text small text-muted">Used when no country-specific name is set.</div>
                 </div>
 
+                {{-- Single line short description --}}
                 <div class="mb-3">
                     <label for="inputDesc" class="form-label font-weight-bold small">Short description <span class="text-muted">(optional)</span></label>
-                    <textarea class="form-control" id="inputDesc" rows="2" placeholder="Brief description of this product / plan."></textarea>
+                    <input type="text" class="form-control" id="inputDesc" placeholder="Brief description of this product / plan.">
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="inputPriceModel" class="form-label font-weight-bold small">Pricing Model <span class="text-danger">*</span></label>
-                        <select class="form-select" id="inputPriceModel">
-                            <option value="fixed" selected>Paid</option>
-                            <option value="free">Free</option>
-                            <option value="quote">Request a quote</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="inputHasPlans" class="form-label font-weight-bold small">Structure <span class="text-danger">*</span></label>
-                        <select class="form-select" id="inputHasPlans">
-                            <option value="1" selected>Product with Plan(s)</option>
-                            <option value="0">Standalone Product (Direct Pricing)</option>
-                        </select>
-                    </div>
+                {{-- Structure: Plan or Non-Plan (Pricing model dropdown removed) --}}
+                <div class="mb-3">
+                    <label for="inputHasPlans" class="form-label font-weight-bold small">Structure <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputHasPlans">
+                        <option value="1" selected>Plan</option>
+                        <option value="0">Non-Plan</option>
+                    </select>
                 </div>
             </div>
 
@@ -301,7 +296,7 @@
 
             <hr class="my-4">
 
-            {{-- Feature Mapping --}}
+            {{-- Feature Mapping with Search --}}
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <div>
@@ -310,6 +305,12 @@
                     </div>
                 </div>
                 <div class="mb-2">
+                    <div class="form-control-wrap mb-2">
+                        <div class="form-icon form-icon-left">
+                            <em class="icon ni ni-search"></em>
+                        </div>
+                        <input type="text" id="featureSearchFilter" class="form-control form-control-sm" placeholder="Type to filter features (e.g. SSL, Backup)...">
+                    </div>
                     <select id="featureSelector" class="form-select form-select-sm mb-2">
                         <option value="">-- Choose a feature to add --</option>
                         @foreach($features as $feat)
@@ -344,7 +345,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <div>
                         <h6 class="font-weight-bold mb-0">Pricing options</h6>
-                        <p class="text-muted small mb-0">Add prices for monthly, annual, or custom terms and available currencies.</p>
+                        <p class="text-muted small mb-0">Add prices for default and specific country markets (enter 0.00 for Free).</p>
                     </div>
                 </div>
 
@@ -355,7 +356,7 @@
 
                 <div id="priceCardsContainer"></div>
                 <div id="emptyPriceNotice" class="alert alert-light border small text-muted py-2 mb-0">
-                    No pricing options yet. Click <strong>+ Add billing period</strong> to start.
+                    No pricing options yet. Click <strong>+ Add price</strong> to start.
                 </div>
             </div>
 
@@ -408,33 +409,29 @@
             'product_id' => $prod->product_id,
             'name' => $prod->name,
             'description' => $prod->description,
+            'names_by_locale' => $prod->names_by_locale ?? [],
             'has_plans' => $prod->has_plans,
-            'names_by_locale' => $prod->names_by_locale ?: [],
-            'plans' => $prod->plans->map(function($pl) {
+            'status' => $prod->status,
+            'plans' => $prod->plans->map(function($plan) {
                 return [
-                    'id' => $pl->id,
-                    'plan_id' => $pl->plan_id,
-                    'name' => $pl->name,
-                    'short_description' => $pl->short_description,
-                    'names_by_locale' => $pl->names_by_locale ?: [],
-                    'is_featured' => (bool)$pl->is_featured,
-                    'features' => $pl->planFeatures->pluck('feature_id')->toArray(),
-                    'featured_feature_ids' => $pl->featuredHighlights->pluck('feature_id')->toArray(),
-                    'specifications' => $pl->specifications->map(fn($s) => ['code' => $s->code, 'value' => $s->value, 'unit' => $s->unit])->toArray(),
-                    'prices' => $pl->prices->map(function($pr) {
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'short_description' => $plan->short_description,
+                    'is_featured' => $plan->is_featured,
+                    'features' => $plan->planFeatures->pluck('feature_id')->toArray(),
+                    'featured_feature_ids' => $plan->planFeatures->where('is_featured_highlight', true)->pluck('feature_id')->toArray(),
+                    'specifications' => $plan->specifications->map(function($sp) {
+                        return ['code' => $sp->code, 'value' => $sp->value, 'unit' => $sp->unit];
+                    })->toArray(),
+                    'prices' => $plan->prices->map(function($pr) {
                         return [
                             'id' => $pr->id,
                             'market' => $pr->country_region,
                             'currency' => $pr->currency,
                             'term' => $pr->billing_period,
-                            'commitment_period' => $pr->commitment_period,
-                            'customMonths' => $pr->custom_months,
                             'unit' => $pr->unit,
-                            'customUnit' => $pr->custom_unit,
                             'amount' => $pr->regular_price,
                             'renewal_price' => $pr->renewal_price,
-                            'intro' => $pr->intro_price,
-                            'duration' => $pr->intro_duration,
                             'price_model' => $pr->price_model,
                         ];
                     })->toArray(),
@@ -449,6 +446,7 @@
                     'unit' => $pr->unit,
                     'amount' => $pr->regular_price,
                     'renewal_price' => $pr->renewal_price,
+                    'price_model' => $pr->price_model,
                 ];
             })->toArray(),
         ];
@@ -486,19 +484,13 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
     ];
 
     const currencies = ['USD', 'EUR', 'GBP', 'MXN', 'CAD', 'AUD', 'CHF', 'BRL', 'INR', 'JPY', 'SGD', 'NZD'];
+
+    // Real countries / regions from admin system, with Default as first option
     const markets = [
-        ['all', 'All applicable countries'],
-        ['en-us', 'United States'],
-        ['de', 'Germany'],
-        ['fr-be', 'Belgium (French)'],
-        ['gb', 'United Kingdom'],
-        ['fr', 'France'],
-        ['es', 'Spain'],
-        ['it', 'Italy'],
-        ['nl', 'Netherlands'],
-        ['in', 'India'],
-        ['au', 'Australia'],
-        ['ca', 'Canada']
+        ['all', 'Default (All Markets)'],
+        @foreach($countries as $c)
+            ['{{ $c["id"] }}', @json($c["name"])],
+        @endforeach
     ];
 
     const units = [
@@ -522,7 +514,11 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
     }
 
     function summarizePrice(p) {
-        if (!p.amount || isNaN(Number(p.amount))) return 'Enter price to see preview';
+        if (p.amount === '' || p.amount === null || isNaN(Number(p.amount))) return 'Enter price to see preview';
+        const num = Number(p.amount);
+        if (num === 0) {
+            return `${p.currency} 0.00 • Free`;
+        }
         const unit = p.unit ? ` / ${p.unit}` : '';
         const base = `${p.currency} ${fmt(p.amount)}${unit}`;
         
@@ -591,9 +587,9 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             const currenciesSet = [...new Set(allPrices.map(p => p.currency).filter(Boolean))];
             const termsSet = [...new Set(allPrices.map(p => p.term).filter(Boolean))];
 
-            const planBadge = (r.plans && r.plans.length > 0)
+            const planBadge = (r.has_plans !== false && r.plans && r.plans.length > 0)
                 ? `<span class="badge bg-primary-dim me-1">${r.plans.length} ${r.plans.length === 1 ? 'Plan' : 'Plans'}</span>`
-                : `<span class="badge bg-light text-muted me-1">Direct</span>`;
+                : `<span class="badge bg-light text-muted me-1">Non-Plan</span>`;
 
             const regionalNamesCount = Object.keys(r.names_by_locale || {}).length;
 
@@ -630,6 +626,21 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
                 </td>
             </tr>`;
         }).join('');
+    }
+
+    function updateStructureMode() {
+        const hasPlans = document.getElementById('inputHasPlans').value === '1';
+        const btnAddTerm = document.getElementById('btnAddTerm');
+        if (btnAddTerm) {
+            btnAddTerm.style.display = hasPlans ? 'inline-block' : 'none';
+        }
+        if (!hasPlans) {
+            currentPrices.forEach(p => {
+                p.term = 'once';
+                p.renewal_price = '';
+            });
+        }
+        renderPriceCards();
     }
 
     function openDrawer(id = null) {
@@ -670,7 +681,7 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             currentPrices.push({
                 market: 'all',
                 currency: 'USD',
-                term: '1m',
+                term: (item && !item.has_plans) ? 'once' : '1m',
                 customMonths: '',
                 unit: '',
                 customUnit: '',
@@ -680,7 +691,6 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
                 duration: ''
             });
         }
-        renderPriceCards();
 
         // Features
         currentFeatures = [];
@@ -706,13 +716,17 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
         }
         renderSpecs();
 
+        updateStructureMode();
+
         drawer.classList.add('show');
         backdrop.classList.add('show');
     }
 
     function closeDrawer() {
-        document.getElementById('sideDrawer').classList.remove('show');
-        document.getElementById('drawerBackdrop').classList.remove('show');
+        const drawer = document.getElementById('sideDrawer');
+        const backdrop = document.getElementById('drawerBackdrop');
+        drawer.classList.remove('show');
+        backdrop.classList.remove('show');
         editingId = null;
     }
 
@@ -732,14 +746,16 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
                 <div class="row g-2 align-items-center">
                     <div class="col-sm-5">
                         <select class="form-select form-select-sm" onchange="window.updateLocaleKey(${i}, this.value)">
-                            ${markets.filter(m => m[0] !== 'all').map(m => `<option value="${m[0]}" ${m[0] === n.market ? 'selected' : ''}>${esc(m[1])} (${m[0]})</option>`).join('')}
+                            ${markets.filter(m => m[0] !== 'all').map(m => `<option value="${m[0]}" ${m[0] === n.market ? 'selected' : ''}>${esc(m[1])}</option>`).join('')}
                         </select>
                     </div>
                     <div class="col-sm-5">
                         <input type="text" class="form-control form-control-sm" placeholder="Official localized name" value="${esc(n.name)}" oninput="window.updateLocaleVal(${i}, this.value)">
                     </div>
                     <div class="col-sm-2 text-end">
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.removeLocale(${i})">?</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.removeLocale(${i})" title="Delete country name">
+                            <em class="icon ni ni-trash"></em> Delete
+                        </button>
                     </div>
                 </div>
             </div>
@@ -758,15 +774,17 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
         emptyNotice.style.display = 'none';
 
         container.innerHTML = currentFeatures.map((f, i) => `
-            <div class="d-flex justify-content-between align-items-center p-2 rounded border bg-light mb-2">
+            <div class="d-flex justify-content-between align-items-center p-2 rounded border bg-light mb-1">
                 <div class="d-flex align-items-center gap-2">
                     <input type="checkbox" id="feat_high_${i}" class="form-check-input" ${f.is_highlight ? 'checked' : ''} onchange="window.toggleFeatureHighlight(${i}, this.checked)">
                     <label for="feat_high_${i}" class="form-check-label small font-weight-bold mb-0">
                         ${esc(f.name)}
-                        ${f.is_highlight ? '<span class="badge bg-success ms-1">? Key feature</span>' : ''}
+                        ${f.is_highlight ? '<span class="badge bg-success ms-1">Key feature</span>' : ''}
                     </label>
                 </div>
-                <button type="button" class="btn btn-sm text-danger" onclick="window.removeFeature(${i})">Remove</button>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="window.removeFeature(${i})">
+                    <em class="icon ni ni-trash"></em> Remove
+                </button>
             </div>
         `).join('');
     }
@@ -785,7 +803,7 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
                     <input type="text" class="form-control form-control-sm" placeholder="Unit (e.g. GB)" value="${esc(s.unit || '')}" oninput="window.updateSpec(${i}, 'unit', this.value)">
                 </div>
                 <div class="col-1 text-end">
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.removeSpec(${i})">?</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.removeSpec(${i})"><em class="icon ni ni-trash"></em></button>
                 </div>
             </div>
         `).join('');
@@ -794,6 +812,7 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
     function renderPriceCards() {
         const container = document.getElementById('priceCardsContainer');
         const emptyNotice = document.getElementById('emptyPriceNotice');
+        const hasPlans = document.getElementById('inputHasPlans') ? (document.getElementById('inputHasPlans').value === '1') : true;
 
         if (currentPrices.length === 0) {
             container.innerHTML = '';
@@ -805,49 +824,57 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
         container.innerHTML = currentPrices.map((p, i) => `
             <div class="price-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <strong class="small text-uppercase text-muted">Pricing option #${i + 1}</strong>
+                    <strong class="small text-uppercase text-muted">
+                        Pricing option #${i + 1} 
+                        ${p.market === 'all' ? '<span class="badge bg-primary-dim ms-1">Default (All Markets)</span>' : ''}
+                        ${(parseFloat(p.amount) === 0 && p.amount !== '') ? '<span class="badge bg-success-dim ms-1">Free</span>' : ''}
+                    </strong>
                     <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-lg btn-outline-secondary" onclick="window.duplicatePrice(${i})">Duplicate</button>
-                        <button type="button" class="btn btn-lg btn-outline-danger" onclick="window.removePrice(${i})">Remove</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.duplicatePrice(${i})">Duplicate</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="window.removePrice(${i})">Remove</button>
                     </div>
                 </div>
 
                 <div class="row g-2 mb-2">
-                    <div class="col-md-4">
+                    <div class="${hasPlans ? 'col-md-4' : 'col-md-6'}">
                         <label class="form-label small mb-1">Country / Market</label>
                         <select class="form-select form-select-sm" onchange="window.updatePriceField(${i}, 'market', this.value)">
                             ${markets.map(m => `<option value="${m[0]}" ${m[0] === (p.market || 'all') ? 'selected' : ''}>${esc(m[1])}</option>`).join('')}
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="${hasPlans ? 'col-md-4' : 'col-md-6'}">
                         <label class="form-label small mb-1">Currency <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm" onchange="window.updatePriceField(${i}, 'currency', this.value)">
                             ${currencies.map(c => `<option value="${c}" ${c === p.currency ? 'selected' : ''}>${c}</option>`).join('')}
                         </select>
                     </div>
+                    ${hasPlans ? `
                     <div class="col-md-4">
                         <label class="form-label small mb-1">Billing Period <span class="text-danger">*</span></label>
                         <select class="form-select form-select-sm" onchange="window.updatePriceField(${i}, 'term', this.value)">
                             ${terms.map(t => `<option value="${t[0]}" ${t[0] === p.term ? 'selected' : ''}>${t[1]}</option>`).join('')}
                         </select>
                     </div>
+                    ` : ''}
                 </div>
 
                 <div class="row g-2 mb-2">
-                    <div class="col-md-4">
+                    <div class="${hasPlans ? 'col-md-4' : 'col-md-6'}">
                         <label class="form-label small mb-1">Unit <span class="text-muted">(optional)</span></label>
                         <select class="form-select form-select-sm" onchange="window.updatePriceField(${i}, 'unit', this.value)">
                             ${units.map(u => `<option value="${u[0]}" ${u[0] === (p.unit || '') ? 'selected' : ''}>${u[1]}</option>`).join('')}
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label small mb-1">Regular Price <span class="text-danger">*</span></label>
-                        <input type="number" step="any" min="0" class="form-control form-control-sm" placeholder="0.00" value="${esc(p.amount)}" oninput="window.updatePriceField(${i}, 'amount', this.value)">
+                    <div class="${hasPlans ? 'col-md-4' : 'col-md-6'}">
+                        <label class="form-label small mb-1">Regular/Starting Price <span class="text-danger">*</span></label>
+                        <input type="number" step="any" min="0" class="form-control form-control-sm" placeholder="0.00 (Enter 0.00 for Free)" value="${esc(p.amount)}" oninput="window.updatePriceField(${i}, 'amount', this.value)">
                     </div>
+                    ${hasPlans ? `
                     <div class="col-md-4">
                         <label class="form-label small mb-1">Renewal Price <span class="text-muted">(optional)</span></label>
                         <input type="number" step="any" min="0" class="form-control form-control-sm" placeholder="e.g. 15.00" value="${esc(p.renewal_price || '')}" oninput="window.updatePriceField(${i}, 'renewal_price', this.value)">
                     </div>
+                    ` : ''}
                 </div>
 
                 <div class="period-preview">${esc(summarizePrice(p))}</div>
@@ -910,7 +937,6 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
 
         const name = document.getElementById('inputName').value.trim();
         const desc = document.getElementById('inputDesc').value.trim();
-        const priceModel = document.getElementById('inputPriceModel').value;
         const hasPlans = document.getElementById('inputHasPlans').value === '1';
 
         if (!name) {
@@ -926,6 +952,20 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             }
         });
 
+        // Automatically determine price_model: 'free' if 0.00, 'fixed' otherwise
+        const processedPrices = currentPrices.map(pr => {
+            const regPrice = parseFloat(pr.amount || 0);
+            return {
+                ...pr,
+                term: hasPlans ? pr.term : 'once',
+                renewal_price: hasPlans ? pr.renewal_price : null,
+                price_model: regPrice === 0 ? 'free' : 'fixed'
+            };
+        });
+
+        const isFreeProduct = processedPrices.length > 0 && processedPrices.every(p => parseFloat(p.amount || 0) === 0);
+        const overallPriceModel = isFreeProduct ? 'free' : 'fixed';
+
         const payloadPlans = [{
             name: name,
             short_description: desc,
@@ -934,7 +974,7 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             features: currentFeatures.map(f => f.id),
             featured_feature_ids: currentFeatures.filter(f => f.is_highlight).map(f => f.id),
             specifications: currentSpecs.filter(s => s.code && s.value),
-            prices: currentPrices
+            prices: processedPrices
         }];
 
         const payload = {
@@ -943,9 +983,9 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             description: desc,
             names_by_locale: namesByLocale,
             has_plans: hasPlans,
-            price_model: priceModel,
+            price_model: overallPriceModel,
             plans: hasPlans ? payloadPlans : [],
-            prices: !hasPlans ? currentPrices : []
+            prices: !hasPlans ? processedPrices : []
         };
 
         const btn = document.getElementById('btnSaveProductPlan');
@@ -1028,13 +1068,16 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
     document.getElementById('catalogSearch').oninput = renderCatalog;
     document.getElementById('previewCountry').onchange = renderCatalog;
 
+    document.getElementById('inputHasPlans').addEventListener('change', updateStructureMode);
+
     document.getElementById('btnAddLocaleName').onclick = () => {
-        currentNames.push({ market: 'de', name: '' });
+        const firstMkt = markets.find(m => m[0] !== 'all');
+        currentNames.push({ market: firstMkt ? firstMkt[0] : '1', name: '' });
         renderLocaleNames();
     };
 
-    document.getElementById('featureSelector').onchange = function() {
-        const fid = parseInt(this.value, 10);
+    function addFeatureById(fid) {
+        fid = parseInt(fid, 10);
         if (!fid) return;
         if (!currentFeatures.some(f => f.id === fid)) {
             const fObj = (window.ALL_FEATURES || []).find(x => x.id === fid);
@@ -1045,7 +1088,29 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
             });
             renderFeaturesList();
         }
-        this.value = '';
+    }
+
+    // Feature search filter input
+    const featSearchInput = document.getElementById('featureSearchFilter');
+    const featSelect = document.getElementById('featureSelector');
+    if (featSearchInput && featSelect) {
+        featSearchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            for (let i = 0; i < featSelect.options.length; i++) {
+                const opt = featSelect.options[i];
+                if (!opt.value) continue;
+                const match = opt.text.toLowerCase().includes(query);
+                opt.style.display = match ? '' : 'none';
+            }
+        });
+    }
+
+    featSelect.onchange = function() {
+        const fid = parseInt(this.value, 10);
+        if (fid) {
+            addFeatureById(fid);
+            this.value = '';
+        }
     };
 
     document.getElementById('btnAddSpec').onclick = () => {
@@ -1068,10 +1133,11 @@ window.CSRF_TOKEN = '{{ csrf_token() }}';
 
     document.getElementById('btnAddCurrency').onclick = () => {
         const p = currentPrices[0] || {};
+        const hasPlans = document.getElementById('inputHasPlans').value === '1';
         currentPrices.push({
-            market: 'de',
+            market: p.market || 'all',
             currency: 'EUR',
-            term: p.term || '1m',
+            term: hasPlans ? (p.term || '1m') : 'once',
             unit: p.unit || '',
             amount: '',
             renewal_price: ''

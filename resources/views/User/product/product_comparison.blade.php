@@ -745,7 +745,7 @@
                                                                 <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
                                                                     <i class="fas fa-plus-circle"></i>
                                                                 </span>
-                                                                <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                <span style="color: #202124; font-size: 16px; font-weight:500; line-height: 1.4;">
                                                                     {{ $pro->text }}
                                                                     @if(!empty($pro->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
@@ -778,7 +778,7 @@
                                                                 <span style="color: rgb(247, 40, 60); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
                                                                     <i class="fas fa-minus-circle"></i>
                                                                 </span>
-                                                                <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                <span style="color: #202124; font-size: 16px; font-weight:500; line-height: 1.4;">
                                                                     {{ $con->text }}
                                                                     @if(!empty($con->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">

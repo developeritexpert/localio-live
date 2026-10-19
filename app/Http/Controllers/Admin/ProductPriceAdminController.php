@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Business;
+use App\Models\BusinessTranslation;
 use App\Models\BusinessOfferProduct;
 use App\Models\BusinessOfferPlan;
 use App\Models\BusinessOfferPrice;
@@ -13,10 +14,11 @@ use App\Models\BusinessFaq;
 use App\Models\BusinessFaqCategory;
 use App\Models\BusinessFaqTranslation;
 use App\Models\Feature;
-use App\Models\FeatureTransalte;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ProductPriceAdminController extends Controller
 {
@@ -36,6 +38,11 @@ class ProductPriceAdminController extends Controller
             'category.translations' => fn($q) => $q->where('lang_id', getCurrentLanguageID()),
             'offerProducts.plans.prices',
             'offerProducts.directPrices',
+            'faqCategories' => fn($q) => $q->where(function($cq) {
+                $cq->where('name', 'like', '%pric%')
+                   ->orWhere('name', 'like', '%plan%')
+                   ->orWhere('name', 'like', '%product%');
+            })->withCount('faqs'),
         ])->withCount(['offerProducts']);
 
         if ($tab === 'with_products') {
@@ -76,6 +83,16 @@ class ProductPriceAdminController extends Controller
                 ];
             });
 
+        $countries = Country::where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get(['id', 'name'])
+            ->map(function ($c) {
+                return [
+                    'id' => (string)$c->id,
+                    'name' => $c->name,
+                ];
+            });
+
         $totalProducts = $business->offerProducts->count();
         $totalPlans = 0;
         $totalPriceEntries = 0;
@@ -104,7 +121,7 @@ class ProductPriceAdminController extends Controller
             'currencies_count' => count($currencies),
         ];
 
-        return view('Admin.product_prices.manage', compact('business', 'features', 'stats'));
+        return view('Admin.product_prices.manage', compact('business', 'features', 'stats', 'countries'));
     }
 
     public function storeProduct(Request $request, $businessId)
@@ -113,7 +130,6 @@ class ProductPriceAdminController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'price_model' => 'required|in:fixed,free,quote',
         ]);
 
         if ($validator->fails()) {
@@ -138,41 +154,47 @@ class ProductPriceAdminController extends Controller
             $product->save();
 
             $plansData = $request->input('plans', []);
-            
-            if (!empty($plansData)) {
-                $keepPlanIds = [];
+            $keepPlanIds = [];
+
+            if ($product->has_plans && !empty($plansData)) {
+                $product->directPrices()->delete();
+                $product->directFeatures()->delete();
+
                 foreach ($plansData as $idx => $pData) {
                     $planId = $pData['id'] ?? null;
                     $plan = $planId ? BusinessOfferPlan::where('business_product_id', $product->id)->find($planId) : new BusinessOfferPlan();
-                    if (!$plan) $plan = new BusinessOfferPlan();
+                    if (!$plan) {
+                        $plan = new BusinessOfferPlan();
+                    }
 
                     $plan->business_product_id = $product->id;
-                    $plan->name = $pData['name'] ?? $product->name;
+                    $plan->name = $pData['name'];
                     $plan->short_description = $pData['short_description'] ?? null;
                     $plan->names_by_locale = $pData['names_by_locale'] ?? [];
                     $plan->is_featured = !empty($pData['is_featured']);
                     $plan->sort_order = $idx;
                     $plan->status = 'public';
                     $plan->save();
+
                     $keepPlanIds[] = $plan->id;
 
                     $plan->prices()->delete();
                     $prices = $pData['prices'] ?? [];
                     foreach ($prices as $pr) {
+                        $regPrice = (float)($pr['amount'] ?? ($pr['regular_price'] ?? 0));
+                        $priceModel = ($regPrice == 0.0 && ($pr['term'] ?? '') !== 'custom') ? 'free' : ($pr['price_model'] ?? 'fixed');
+
                         BusinessOfferPrice::create([
                             'business_plan_id' => $plan->id,
                             'country_region' => $pr['market'] ?? ($pr['country_region'] ?? 'all'),
-                            'currency' => $pr['currency'] ?? 'USD',
+                            'currency' => strtoupper($pr['currency'] ?? 'USD'),
                             'billing_period' => $pr['term'] ?? ($pr['billing_period'] ?? '1m'),
-                            'commitment_period' => $pr['commitment_period'] ?? null,
-                            'custom_months' => !empty($pr['customMonths']) ? (int)$pr['customMonths'] : null,
-                            'unit' => $pr['unit'] ?? null,
                             'custom_unit' => $pr['customUnit'] ?? null,
-                            'regular_price' => (float)($pr['amount'] ?? ($pr['regular_price'] ?? 0)),
+                            'regular_price' => $regPrice,
                             'renewal_price' => (isset($pr['renewal_price']) && $pr['renewal_price'] !== '') ? (float)$pr['renewal_price'] : null,
                             'intro_price' => (isset($pr['intro']) && $pr['intro'] !== '') ? (float)$pr['intro'] : null,
                             'intro_duration' => $pr['duration'] ?? null,
-                            'price_model' => $request->input('price_model', 'fixed'),
+                            'price_model' => $priceModel,
                             'is_active' => true,
                         ]);
                     }
@@ -209,18 +231,36 @@ class ProductPriceAdminController extends Controller
                 $product->directPrices()->delete();
                 $directPrices = $request->input('prices', []);
                 foreach ($directPrices as $pr) {
+                    $regPrice = (float)($pr['amount'] ?? ($pr['regular_price'] ?? 0));
+                    $priceModel = ($regPrice == 0.0) ? 'free' : ($pr['price_model'] ?? 'fixed');
+
                     BusinessOfferPrice::create([
                         'business_product_id' => $product->id,
                         'country_region' => $pr['market'] ?? ($pr['country_region'] ?? 'all'),
-                        'currency' => $pr['currency'] ?? 'USD',
-                        'billing_period' => $pr['term'] ?? ($pr['billing_period'] ?? '1m'),
+                        'currency' => strtoupper($pr['currency'] ?? 'USD'),
+                        'billing_period' => 'once',
                         'unit' => $pr['unit'] ?? null,
-                        'regular_price' => (float)($pr['amount'] ?? ($pr['regular_price'] ?? 0)),
-                        'renewal_price' => (isset($pr['renewal_price']) && $pr['renewal_price'] !== '') ? (float)$pr['renewal_price'] : null,
-                        'price_model' => $request->input('price_model', 'fixed'),
+                        'regular_price' => $regPrice,
+                        'renewal_price' => null,
+                        'price_model' => $priceModel,
                         'is_active' => true,
                     ]);
                 }
+            }
+
+            // Keep pricing FAQ category name in sync (Plans & Pricing vs Pricing)
+            $hasPlans = $business->hasOfferPlans();
+            $targetPricingCatName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
+            $existingPricingCat = BusinessFaqCategory::where('business_id', $business->id)
+                ->where(function($q) {
+                    $q->where('name', 'Plans & Pricing')
+                      ->orWhere('name', 'Pricing')
+                      ->orWhere('name', 'Products & Pricing')
+                      ->orWhere('name', 'Pricing & Billing');
+                })->first();
+            if ($existingPricingCat && $existingPricingCat->name !== $targetPricingCatName) {
+                $existingPricingCat->name = $targetPricingCatName;
+                $existingPricingCat->save();
             }
 
             $business->pricing_updated_at = now();
@@ -240,6 +280,21 @@ class ProductPriceAdminController extends Controller
         $product = BusinessOfferProduct::where('business_id', $businessId)->findOrFail($productId);
         $product->delete();
 
+        // Keep pricing FAQ category name in sync (Plans & Pricing vs Pricing)
+        $hasPlans = $business->hasOfferPlans();
+        $targetPricingCatName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
+        $existingPricingCat = BusinessFaqCategory::where('business_id', $business->id)
+            ->where(function($q) {
+                $q->where('name', 'Plans & Pricing')
+                  ->orWhere('name', 'Pricing')
+                  ->orWhere('name', 'Products & Pricing')
+                  ->orWhere('name', 'Pricing & Billing');
+            })->first();
+        if ($existingPricingCat && $existingPricingCat->name !== $targetPricingCatName) {
+            $existingPricingCat->name = $targetPricingCatName;
+            $existingPricingCat->save();
+        }
+
         $business->pricing_updated_at = now();
         $business->save();
 
@@ -257,133 +312,319 @@ class ProductPriceAdminController extends Controller
             return back()->with('error', 'Please provide JSON content or upload a JSON file.');
         }
 
+        $jsonString = preg_replace('/^\xEF\xBB\xBF/', '', trim($jsonString));
+
         $data = json_decode($jsonString, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return back()->with('error', 'Invalid JSON format: ' . json_last_error_msg());
+            $lines = preg_split('/\r\n|\r|\n/', $jsonString);
+            $parsedLines = [];
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line === '') continue;
+                $decodedLine = json_decode($line, true);
+                if ($decodedLine && is_array($decodedLine)) {
+                    $parsedLines[] = $decodedLine;
+                }
+            }
+            if (!empty($parsedLines)) {
+                $data = $parsedLines;
+            } else {
+                return back()->with('error', 'Invalid JSON format: ' . json_last_error_msg());
+            }
         }
 
-        $businesses = $data['businesses'] ?? [];
-        if (empty($businesses) || !is_array($businesses)) {
-            return back()->with('error', 'JSON must contain a non-empty businesses array.');
+        $businesses = [];
+        if (isset($data['businesses']) && is_array($data['businesses'])) {
+            $businesses = $data['businesses'];
+        } elseif (isset($data['data']) && is_array($data['data'])) {
+            $businesses = $data['data'];
+        } elseif (is_array($data)) {
+            if (isset($data[0]) && is_array($data[0])) {
+                $businesses = $data;
+            } elseif (isset($data['business_id']) || isset($data['id']) || isset($data['name']) || isset($data['products'])) {
+                $businesses = [$data];
+            }
+        }
+
+        if (empty($businesses)) {
+            return back()->with('error', 'JSON does not contain any recognizable business records.');
         }
 
         DB::beginTransaction();
         try {
             $importedCount = 0;
-            foreach ($businesses as $bData) {
-                $businessId = $bData['business_id'] ?? null;
-                if (!$businessId) continue;
+            $importedProductsCount = 0;
+            $importedPlansCount = 0;
+            $importedFaqsCount = 0;
+            $skippedBusinesses = [];
 
-                $business = Business::find($businessId);
-                if (!$business) continue;
+            foreach ($businesses as $bData) {
+                if (!is_array($bData)) continue;
+
+                $business = null;
+                $businessId = $bData['business_id'] ?? ($bData['id'] ?? null);
+                if ($businessId && is_numeric($businessId)) {
+                    $business = Business::find($businessId);
+                }
+
+                if (!$business) {
+                    $name = trim($bData['name'] ?? ($bData['business_name'] ?? ''));
+                    if ($name !== '') {
+                        $transBizId = BusinessTranslation::where('name', $name)->value('business_id');
+                        if (!$transBizId) {
+                            $transBizId = BusinessTranslation::where('name', 'like', '%' . $name . '%')->value('business_id');
+                        }
+                        if ($transBizId) {
+                            $business = Business::find($transBizId);
+                        }
+                    }
+                }
+
+                if (!$business) {
+                    $url = trim($bData['url'] ?? ($bData['website'] ?? ($bData['permanent_url'] ?? '')));
+                    if ($url !== '') {
+                        $host = parse_url($url, PHP_URL_HOST) ?: $url;
+                        $hostClean = preg_replace('/^www\./i', '', strtolower($host));
+                        $business = Business::where('permanent_url', 'like', '%' . $hostClean . '%')
+                            ->orWhere('affiliate_link', 'like', '%' . $hostClean . '%')
+                            ->first();
+                    }
+                }
+
+                if (!$business) {
+                    $label = $bData['name'] ?? ($bData['business_name'] ?? ($bData['business_id'] ?? ($bData['id'] ?? 'Unknown')));
+                    $skippedBusinesses[] = "#" . $label;
+                    continue;
+                }
 
                 $products = $bData['products'] ?? [];
-                foreach ($products as $pIdx => $prodData) {
-                    $product = BusinessOfferProduct::updateOrCreate(
-                        [
-                            'business_id' => $business->id,
-                            'name' => $prodData['name'] ?? 'Product',
-                        ],
-                        [
-                            'product_id' => $prodData['product_id'] ?? null,
-                            'description' => $prodData['description'] ?? null,
-                            'primary_category_id' => $prodData['categories']['primary_category_id'] ?? null,
-                            'primary_subcategory_id' => $prodData['categories']['primary_subcategory_id'] ?? null,
-                            'category_ids' => $prodData['categories']['category_ids'] ?? [],
-                            'subcategory_ids' => $prodData['categories']['subcategory_ids'] ?? [],
-                            'has_plans' => !empty($prodData['plans']),
-                            'sort_order' => $pIdx,
-                            'status' => 'public',
-                        ]
-                    );
+                if (is_array($products)) {
+                    foreach ($products as $pIdx => $prodData) {
+                        if (!is_array($prodData)) continue;
 
-                    if (!empty($prodData['plans'])) {
-                        foreach ($prodData['plans'] as $plIdx => $plData) {
-                            $plan = BusinessOfferPlan::updateOrCreate(
-                                [
-                                    'business_product_id' => $product->id,
-                                    'name' => $plData['name'] ?? 'Plan',
-                                ],
-                                [
-                                    'plan_id' => $plData['plan_id'] ?? null,
-                                    'short_description' => $plData['short_description'] ?? null,
-                                    'names_by_locale' => $plData['names_by_locale'] ?? [],
-                                    'sort_order' => $plIdx,
-                                    'status' => 'public',
-                                ]
-                            );
+                        $prodName = trim($prodData['name'] ?? ($prodData['product_name'] ?? 'Product'));
+                        $primaryCatId = $prodData['primary_category_id'] ?? ($prodData['categories']['primary_category_id'] ?? null);
+                        $primarySubcatId = $prodData['primary_subcategory_id'] ?? ($prodData['categories']['primary_subcategory_id'] ?? null);
+                        $categoryIds = $prodData['category_ids'] ?? ($prodData['categories']['category_ids'] ?? []);
+                        $subcategoryIds = $prodData['subcategory_ids'] ?? ($prodData['categories']['subcategory_ids'] ?? []);
 
-                            $plan->prices()->delete();
-                            if (!empty($plData['prices'])) {
-                                foreach ($plData['prices'] as $pr) {
+                        $hasPlans = !empty($prodData['plans']);
+
+                        $product = BusinessOfferProduct::updateOrCreate(
+                            [
+                                'business_id' => $business->id,
+                                'name' => $prodName,
+                            ],
+                            [
+                                'product_id' => $prodData['product_id'] ?? null,
+                                'description' => $prodData['description'] ?? null,
+                                'primary_category_id' => $primaryCatId,
+                                'primary_subcategory_id' => $primarySubcatId,
+                                'category_ids' => is_array($categoryIds) ? $categoryIds : [],
+                                'subcategory_ids' => is_array($subcategoryIds) ? $subcategoryIds : [],
+                                'has_plans' => $hasPlans,
+                                'sort_order' => $pIdx,
+                                'status' => $prodData['status'] ?? 'public',
+                            ]
+                        );
+                        $importedProductsCount++;
+
+                        if ($hasPlans) {
+                            $product->directPrices()->delete();
+                            $product->directFeatures()->delete();
+
+                            foreach ($prodData['plans'] as $plIdx => $plData) {
+                                if (!is_array($plData)) continue;
+
+                                $planName = trim($plData['name'] ?? ($plData['plan_name'] ?? ('Plan #' . ($plIdx + 1))));
+                                $plan = BusinessOfferPlan::updateOrCreate(
+                                    [
+                                        'business_product_id' => $product->id,
+                                        'name' => $planName,
+                                    ],
+                                    [
+                                        'plan_id' => $plData['plan_id'] ?? null,
+                                        'short_description' => $plData['short_description'] ?? ($plData['description'] ?? null),
+                                        'names_by_locale' => $plData['names_by_locale'] ?? [],
+                                        'is_featured' => !empty($plData['is_featured']),
+                                        'sort_order' => $plIdx,
+                                        'status' => $plData['status'] ?? 'public',
+                                    ]
+                                );
+                                $importedPlansCount++;
+
+                                $plan->prices()->delete();
+                                $prices = $plData['prices'] ?? [];
+                                if (is_array($prices)) {
+                                    foreach ($prices as $pr) {
+                                        $regPrice = (float)($pr['regular_price'] ?? ($pr['amount'] ?? 0));
+                                        $renPrice = (isset($pr['renewal_price']) && $pr['renewal_price'] !== '') ? (float)$pr['renewal_price'] : null;
+                                        $introPrice = (isset($pr['intro_price']) && $pr['intro_price'] !== '') ? (float)$pr['intro_price'] : ((isset($pr['intro']) && $pr['intro'] !== '') ? (float)$pr['intro'] : null);
+                                        $billingPeriod = $pr['billing_period'] ?? ($pr['term'] ?? '1m');
+                                        $priceModel = ($regPrice == 0.0 && ($billingPeriod === 'none' || $billingPeriod === 'free')) ? 'free' : ($pr['price_model'] ?? 'fixed');
+
+                                        BusinessOfferPrice::create([
+                                            'business_plan_id' => $plan->id,
+                                            'country_region' => $pr['country_region'] ?? ($pr['market'] ?? 'all'),
+                                            'currency' => strtoupper($pr['currency'] ?? 'USD'),
+                                            'billing_period' => $billingPeriod,
+                                            'commitment_period' => $pr['commitment_period'] ?? null,
+                                            'unit' => $pr['unit'] ?? null,
+                                            'regular_price' => $regPrice,
+                                            'renewal_price' => $renPrice,
+                                            'intro_price' => $introPrice,
+                                            'intro_duration' => $pr['intro_duration'] ?? ($pr['duration'] ?? null),
+                                            'price_model' => $priceModel,
+                                            'is_active' => true,
+                                        ]);
+                                    }
+                                }
+
+                                $plan->planFeatures()->delete();
+                                $features = $plData['features'] ?? ($plData['feature_ids'] ?? []);
+                                $featuredIds = $plData['featured_feature_ids'] ?? ($plData['featured_highlights'] ?? []);
+                                if (is_array($features)) {
+                                    foreach ($features as $fIdx => $fId) {
+                                        $featureId = is_numeric($fId) ? (int)$fId : Feature::whereHas('translations', fn($t) => $t->where('name', $fId))->value('id');
+                                        if ($featureId) {
+                                            BusinessOfferPlanFeature::create([
+                                                'business_plan_id' => $plan->id,
+                                                'feature_id' => $featureId,
+                                                'is_featured_highlight' => in_array($fId, $featuredIds) || in_array($featureId, $featuredIds),
+                                                'sort_order' => $fIdx,
+                                            ]);
+                                        }
+                                    }
+                                }
+
+                                $plan->specifications()->delete();
+                                $specs = $plData['specifications'] ?? ($plData['specs'] ?? []);
+                                if (is_array($specs)) {
+                                    foreach ($specs as $sp) {
+                                        if (!empty($sp['code'])) {
+                                            BusinessOfferSpecification::create([
+                                                'business_plan_id' => $plan->id,
+                                                'code' => $sp['code'],
+                                                'value' => (string)($sp['value'] ?? ''),
+                                                'unit' => $sp['unit'] ?? null,
+                                            ]);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            $product->directPrices()->delete();
+                            $prices = $prodData['prices'] ?? [];
+                            if (is_array($prices)) {
+                                foreach ($prices as $pr) {
+                                    $regPrice = (float)($pr['regular_price'] ?? ($pr['amount'] ?? 0));
+                                    $priceModel = ($regPrice == 0.0) ? 'free' : ($pr['price_model'] ?? 'fixed');
+
                                     BusinessOfferPrice::create([
-                                        'business_plan_id' => $plan->id,
-                                        'country_region' => $pr['country_region'] ?? 'all',
-                                        'currency' => $pr['currency'] ?? 'USD',
-                                        'billing_period' => $pr['billing_period'] ?? '1m',
-                                        'commitment_period' => $pr['commitment_period'] ?? null,
+                                        'business_product_id' => $product->id,
+                                        'country_region' => $pr['country_region'] ?? ($pr['market'] ?? 'all'),
+                                        'currency' => strtoupper($pr['currency'] ?? 'USD'),
+                                        'billing_period' => 'once',
                                         'unit' => $pr['unit'] ?? null,
-                                        'regular_price' => (float)($pr['regular_price'] ?? 0),
-                                        'renewal_price' => isset($pr['renewal_price']) ? (float)$pr['renewal_price'] : null,
-                                        'price_model' => ((float)($pr['regular_price'] ?? 0) == 0 && ($pr['billing_period'] ?? '') === 'none') ? 'free' : 'fixed',
+                                        'regular_price' => $regPrice,
+                                        'renewal_price' => null,
+                                        'price_model' => $priceModel,
                                         'is_active' => true,
                                     ]);
                                 }
                             }
 
-                            $plan->planFeatures()->delete();
-                            $features = $plData['features'] ?? [];
-                            $featuredIds = $plData['featured_feature_ids'] ?? [];
-                            foreach ($features as $fIdx => $fId) {
-                                BusinessOfferPlanFeature::create([
-                                    'business_plan_id' => $plan->id,
-                                    'feature_id' => (int)$fId,
-                                    'is_featured_highlight' => in_array($fId, $featuredIds),
-                                    'sort_order' => $fIdx,
-                                ]);
-                            }
-
-                            $plan->specifications()->delete();
-                            if (!empty($plData['specifications'])) {
-                                foreach ($plData['specifications'] as $sp) {
-                                    if (!empty($sp['code'])) {
-                                        BusinessOfferSpecification::create([
-                                            'business_plan_id' => $plan->id,
-                                            'code' => $sp['code'],
-                                            'value' => (string)($sp['value'] ?? ''),
-                                            'unit' => $sp['unit'] ?? null,
+                            $product->directFeatures()->delete();
+                            $features = $prodData['features'] ?? ($prodData['feature_ids'] ?? []);
+                            $featuredIds = $prodData['featured_feature_ids'] ?? ($prodData['featured_highlights'] ?? []);
+                            if (is_array($features)) {
+                                foreach ($features as $fIdx => $fId) {
+                                    $featureId = is_numeric($fId) ? (int)$fId : Feature::whereHas('translations', fn($t) => $t->where('name', $fId))->value('id');
+                                    if ($featureId) {
+                                        BusinessOfferPlanFeature::create([
+                                            'business_product_id' => $product->id,
+                                            'feature_id' => $featureId,
+                                            'is_featured_highlight' => in_array($fId, $featuredIds) || in_array($featureId, $featuredIds),
+                                            'sort_order' => $fIdx,
                                         ]);
                                     }
                                 }
                             }
                         }
+                    }
+                }
+
+                $faqs = $bData['pricing_faqs'] ?? ($bData['faqs'] ?? []);
+                if (!empty($faqs) && is_array($faqs)) {
+                    $hasPlans = $business->hasOfferPlans();
+                    $faqCategoryName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
+                    $faqCat = BusinessFaqCategory::where('business_id', $business->id)
+                        ->where(function($q) {
+                            $q->where('name', 'Plans & Pricing')
+                              ->orWhere('name', 'Pricing')
+                              ->orWhere('name', 'Products & Pricing')
+                              ->orWhere('name', 'Pricing & Billing');
+                        })->first();
+
+                    if ($faqCat) {
+                        if ($faqCat->name !== $faqCategoryName) {
+                            $faqCat->name = $faqCategoryName;
+                            $faqCat->save();
+                        }
                     } else {
-                        $product->directPrices()->delete();
-                        if (!empty($prodData['prices'])) {
-                            foreach ($prodData['prices'] as $pr) {
-                                BusinessOfferPrice::create([
-                                    'business_product_id' => $product->id,
-                                    'country_region' => $pr['country_region'] ?? 'all',
-                                    'currency' => $pr['currency'] ?? 'USD',
-                                    'billing_period' => $pr['billing_period'] ?? 'once',
-                                    'unit' => $pr['unit'] ?? null,
-                                    'regular_price' => (float)($pr['regular_price'] ?? 0),
-                                    'is_active' => true,
+                        $faqCat = BusinessFaqCategory::create([
+                            'business_id' => $business->id,
+                            'name' => $faqCategoryName,
+                            'position' => 1,
+                            'status' => 1,
+                        ]);
+                    }
+
+                    $langId = getCurrentLanguageID() ?: 1;
+
+                    foreach ($faqs as $faqItem) {
+                        if (!is_array($faqItem)) continue;
+                        $qText = trim($faqItem['question'] ?? ($faqItem['q'] ?? ''));
+                        $aText = trim($faqItem['answer'] ?? ($faqItem['a'] ?? ''));
+                        if ($qText === '' || $aText === '') continue;
+
+                        $existingFaq = BusinessFaq::where('business_id', $business->id)
+                            ->where('business_faq_category_id', $faqCat->id)
+                            ->whereHas('translations', function($t) use ($qText) {
+                                $t->where('question', $qText);
+                            })->first();
+
+                        if ($existingFaq) {
+                            $trans = BusinessFaqTranslation::where('business_faq_id', $existingFaq->id)
+                                ->where('lang_id', $langId)
+                                ->first();
+                            if ($trans) {
+                                $trans->answer = $aText;
+                                $trans->save();
+                            } else {
+                                BusinessFaqTranslation::create([
+                                    'business_faq_id' => $existingFaq->id,
+                                    'lang_id' => $langId,
+                                    'question' => $qText,
+                                    'answer' => $aText,
                                 ]);
                             }
-                        }
+                        } else {
+                            $faq = BusinessFaq::create([
+                                'business_id' => $business->id,
+                                'business_faq_category_id' => $faqCat->id,
+                                'position' => BusinessFaq::where('business_faq_category_id', $faqCat->id)->count() + 1,
+                                'status' => 1,
+                            ]);
 
-                        $product->directFeatures()->delete();
-                        $features = $prodData['features'] ?? [];
-                        $featuredIds = $prodData['featured_feature_ids'] ?? [];
-                        foreach ($features as $fIdx => $fId) {
-                            BusinessOfferPlanFeature::create([
-                                'business_product_id' => $product->id,
-                                'feature_id' => (int)$fId,
-                                'is_featured_highlight' => in_array($fId, $featuredIds),
-                                'sort_order' => $fIdx,
+                            BusinessFaqTranslation::create([
+                                'business_faq_id' => $faq->id,
+                                'lang_id' => $langId,
+                                'question' => $qText,
+                                'answer' => $aText,
                             ]);
                         }
+                        $importedFaqsCount++;
                     }
                 }
 
@@ -393,7 +634,21 @@ class ProductPriceAdminController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Successfully imported products and prices for ' . $importedCount . ' businesses.');
+
+            if ($importedCount === 0) {
+                $msg = 'No businesses could be imported.';
+                if (!empty($skippedBusinesses)) {
+                    $msg .= ' The following business identifiers were not found in the directory: ' . implode(', ', $skippedBusinesses);
+                }
+                return back()->with('error', $msg);
+            }
+
+            $successMsg = "Successfully imported products and prices for {$importedCount} " . Str::plural('business', $importedCount) . " ({$importedProductsCount} " . Str::plural('product', $importedProductsCount) . ", {$importedPlansCount} " . Str::plural('plan', $importedPlansCount) . ($importedFaqsCount > 0 ? ", {$importedFaqsCount} FAQs" : "") . ").";
+            if (!empty($skippedBusinesses)) {
+                $successMsg .= " Skipped businesses not found: " . implode(', ', $skippedBusinesses);
+            }
+
+            return back()->with('success', $successMsg);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Import failed: ' . $e->getMessage());
@@ -412,24 +667,27 @@ class ProductPriceAdminController extends Controller
         $hasPlans = $business->hasOfferPlans();
         $categoryName = $hasPlans ? 'Plans & Pricing' : 'Pricing';
 
-        $category = BusinessFaqCategory::firstOrCreate(
-            [
+        $category = BusinessFaqCategory::where('business_id', $business->id)
+            ->where(function($q) {
+                $q->where('name', 'Plans & Pricing')
+                  ->orWhere('name', 'Pricing')
+                  ->orWhere('name', 'Products & Pricing')
+                  ->orWhere('name', 'Pricing & Billing');
+            })->first();
+
+        if ($category) {
+            if ($category->name !== $categoryName) {
+                $category->name = $categoryName;
+                $category->save();
+            }
+        } else {
+            $category = BusinessFaqCategory::create([
                 'business_id' => $business->id,
                 'name' => $categoryName,
-            ],
-            [
-                'position' => 2,
+                'position' => 1,
                 'status' => 1,
-            ]
-        );
-
-        BusinessFaqCategory::where('business_id', $business->id)
-            ->where('id', '!=', $category->id)
-            ->where('position', '>=', 2)
-            ->increment('position');
-
-        $category->position = 2;
-        $category->save();
+            ]);
+        }
 
         $faq = BusinessFaq::create([
             'business_id' => $business->id,

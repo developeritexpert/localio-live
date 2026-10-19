@@ -34,8 +34,8 @@ class BusinessOfferPrice extends Model
     {
         $symbol = match ($this->currency) {
             "USD" => "$",
-            "EUR" => "€",
-            "GBP" => "£",
+            "EUR" => "â‚¬",
+            "GBP" => "Â£",
             default => $this->currency . " ",
         };
 
@@ -75,8 +75,8 @@ class BusinessOfferPrice extends Model
         }
         $symbol = match ($this->currency) {
             "USD" => "$",
-            "EUR" => "€",
-            "GBP" => "£",
+            "EUR" => "â‚¬",
+            "GBP" => "Â£",
             default => $this->currency . " ",
         };
         return $symbol . number_format($this->renewal_price, 2) . " / " . $this->billing_period_label;

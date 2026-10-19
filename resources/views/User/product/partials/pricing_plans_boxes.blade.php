@@ -2,229 +2,300 @@
     $offerProducts = $business->offerProducts()
         ->with([
             'plans.prices',
-            'plans.featuredHighlights',
-            'plans.planFeatures',
+            'plans.featuredHighlights.feature',
+            'plans.planFeatures.feature',
             'plans.specifications',
             'directPrices',
-            'directFeatures'
+            'directFeatures.feature'
         ])
         ->where('status', 'public')
+        ->orderBy('sort_order', 'asc')
         ->get();
 @endphp
 
 @if($offerProducts->isNotEmpty())
 <style>
-.localio-pricing-wrapper {
-    margin-top: 2rem;
-    margin-bottom: 2.5rem;
+.localio-plans-container {
+    background: #ffffff;
+    border: 1px solid #eaecf0;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
 }
-.product-tabs-nav {
+.plans-category-tabs {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 }
-.product-tab-pill {
-    padding: 8px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 99px;
-    border: 1px solid #d1d5db;
+.plans-tab-pill {
+    padding: 7px 18px;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
     background: #ffffff;
-    color: #374151;
+    color: #475569;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
+    line-height: 1.4;
 }
-.product-tab-pill:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
+.plans-tab-pill:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
 }
-.product-tab-pill.active {
-    background: #111827;
+.plans-tab-pill.active {
+    background: #0f172a;
     color: #ffffff;
-    border-color: #111827;
+    border-color: #0f172a;
+    font-weight: 600;
 }
-.pricing-card-box {
+.plans-boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+@media (max-width: 991px) {
+    .plans-boxes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 640px) {
+    .plans-boxes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.plan-card-item {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #eaecf0;
     border-radius: 12px;
-    padding: 24px;
+    padding: 22px 20px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     height: 100%;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.pricing-card-box:hover {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+.plan-card-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
 }
-.plan-header-title {
-    font-size: 20px;
+.plan-name-title {
+    font-size: 18px;
     font-weight: 700;
-    color: #111827;
+    color: #0f172a;
     margin-bottom: 4px;
+    letter-spacing: -0.01em;
 }
 .plan-short-desc {
     font-size: 13px;
-    color: #4b5563;
-    line-height: 1.4;
+    color: #64748b;
+    line-height: 1.45;
     min-height: 38px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
-.plan-price-wrap {
-    margin: 14px 0;
+.plan-divider {
+    border-top: 1px solid #f1f5f9;
+    margin: 0;
 }
-.plan-price-main {
-    font-size: 26px;
-    font-weight: 800;
-    color: #111827;
+.plan-price-block {
+    padding: 14px 0;
+}
+.plan-price-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
     line-height: 1.2;
 }
 .plan-price-period {
-    font-size: 14px;
-    color: #6b7280;
+    font-size: 13px;
+    color: #64748b;
     font-weight: 500;
+    margin-top: 3px;
 }
-.plan-features-heading {
-    font-size: 12px;
+.plan-features-block {
+    padding: 14px 0;
+    flex-grow: 1;
+}
+.plan-features-title {
+    font-size: 12.5px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #4b5563;
+    color: #0f172a;
     margin-bottom: 12px;
 }
-.plan-feature-item {
-    font-size: 13.5px;
-    color: #374151;
+.plan-feature-row {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.45;
 }
-.plan-feature-check {
-    color: #10b981;
-    font-weight: 800;
-    font-size: 14px;
+.plan-feature-icon {
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
-    line-height: 1.4;
+    margin-top: 2.5px;
+    color: #10b981;
 }
-.plan-renewal-box {
-    border-top: 1px solid #f3f4f6;
-    padding-top: 12px;
-    margin-top: auto;
+.plan-renewal-block {
+    padding: 12px 0 14px 0;
 }
 .plan-renewal-label {
     font-size: 12px;
-    color: #6b7280;
+    color: #64748b;
 }
 .plan-renewal-val {
     font-size: 13px;
     font-weight: 600;
-    color: #1f2937;
+    color: #0f172a;
+    margin-top: 2px;
 }
-.btn-view-plan {
-    display: inline-flex;
+.plan-view-link {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    width: 100%;
-    padding: 10px 16px;
-    border-radius: 8px;
+    gap: 4px;
     font-weight: 600;
-    font-size: 14px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #111827;
+    font-size: 13.5px;
+    color: #0f172a;
     text-decoration: none;
-    margin-top: 14px;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    width: 100%;
 }
-.btn-view-plan:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
-    color: #111827;
+.plan-view-link:hover {
+    color: #2563eb;
+    background-color: #f8fafc;
 }
-.btn-compare-all {
+.compare-all-plans-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 6px;
+}
+.compare-all-plans-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #4b5563;
     font-weight: 600;
     font-size: 13.5px;
+    color: #475569;
     text-decoration: none;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 6px 12px;
-    margin-top: 20px;
     transition: color 0.15s ease;
+    padding: 4px 8px;
 }
-.btn-compare-all:hover {
-    color: #111827;
+.compare-all-plans-link:hover {
+    color: #0f172a;
 }
 </style>
 
-<div class="col-lg-12 localio-pricing-wrapper" id="section-pricing">
-    {{-- 1. Product Tabs (if more than 1 product) --}}
+<div class="col-lg-12 localio-plans-container" id="section-plans-pricing">
+    
+    {{-- 1. Product Category Tabs (shown when multiple products exist) --}}
     @if($offerProducts->count() > 1)
-    <div class="product-tabs-nav">
+    <div class="plans-category-tabs">
         @foreach($offerProducts as $idx => $prod)
-            <button type="button" class="product-tab-pill {{ $idx === 0 ? 'active' : '' }}" onclick="switchProductTab({{ $prod->id }}, this)">
-                {{ $prod->localized_name }}
+            <button type="button" 
+                    class="plans-tab-pill {{ $idx === 0 ? 'active' : '' }}" 
+                    onclick="switchProductPlansTab({{ $prod->id }}, this)">
+                {{ $prod->localized_name ?: $prod->name }}
             </button>
         @endforeach
     </div>
     @endif
 
     {{-- 2. Product Panes --}}
+    @php
+        $bizSlug = $business->translations->first()?->slug ?: ($business->id ?? '');
+        $compareAllUrl = url(app()->getLocale() . '/' . $bizSlug . '/pricing');
+        $viewPlanUrl = $business->is_affiliate ? $business->getTrackedUrl() : ($business->permanent_url ?: 'javascript:void(0)');
+        $localeShort = strtolower(explode('-', app()->getLocale())[0]);
+        $localeFull = strtolower(app()->getLocale());
+    @endphp
+
     @foreach($offerProducts as $idx => $prod)
-    <div class="product-pricing-pane {{ $idx === 0 ? '' : 'd-none' }}" id="product-pane-{{ $prod->id }}">
+    <div class="product-plans-pane {{ $idx === 0 ? '' : 'd-none' }}" id="plans-pane-{{ $prod->id }}">
         
         @if($prod->plans->isNotEmpty())
-        {{-- Plan Cards Grid (3-column responsive) --}}
-        <div class="row g-4">
-            @foreach($prod->plans as $plan)
-            @php
-                $primaryPrice = $plan->primaryPrice;
-                $highlights = $plan->featuredHighlights->isNotEmpty() ? $plan->featuredHighlights : $plan->planFeatures->take(5);
-                $targetUrl = $business->affiliate_link ?: ($business->permanent_url ?: '#');
-            @endphp
-            <div class="col-lg-4 col-md-6">
-                <div class="pricing-card-box">
-                    
+            {{-- Plan Boxes Grid --}}
+            <div class="plans-boxes-grid">
+                @foreach($prod->plans as $plan)
+                @php
+                    // Determine localized price matching current region, default/all, or first active
+                    $primaryPrice = $plan->prices->first(function($pr) use ($localeFull, $localeShort) {
+                        if (!$pr->is_active) return false;
+                        $mkt = strtolower($pr->country_region ?? '');
+                        return $mkt === $localeFull || $mkt === $localeShort;
+                    });
+                    if (!$primaryPrice) {
+                        $primaryPrice = $plan->prices->first(function($pr) {
+                            if (!$pr->is_active) return false;
+                            $mkt = strtolower($pr->country_region ?? '');
+                            return $mkt === 'all' || $mkt === 'default' || $mkt === '';
+                        });
+                    }
+                    if (!$primaryPrice) {
+                        $primaryPrice = $plan->prices->where('is_active', true)->first();
+                    }
+
+                    // Format Price & Billing Period
+                    $priceAmountDisplay = '—';
+                    $pricePeriodDisplay = 'Price / billing period';
+                    if ($primaryPrice) {
+                        if ($primaryPrice->price_model === 'free' || ((float)$primaryPrice->regular_price === 0.0 && $primaryPrice->regular_price !== null)) {
+                            $priceAmountDisplay = 'Free';
+                            $pricePeriodDisplay = $primaryPrice->billing_period_label ? ('/ ' . $primaryPrice->billing_period_label) : '';
+                        } elseif ($primaryPrice->price_model === 'quote') {
+                            $priceAmountDisplay = 'Contact for quote';
+                            $pricePeriodDisplay = '';
+                        } else {
+                            $priceAmountDisplay = $primaryPrice->formatted_price;
+                            $pricePeriodDisplay = '/ ' . ($primaryPrice->billing_period_label ?: 'month');
+                        }
+                    }
+
+                    // Format Renewal Price
+                    $renewalPriceDisplay = $primaryPrice?->formatted_renewal_price ?: '—';
+
+                    // Collect 4-6 Key Features
+                    $highlightFeatures = $plan->featuredHighlights;
+                    $highlightIds = $highlightFeatures->pluck('feature_id')->toArray();
+                    $remainingSlots = max(0, 6 - $highlightFeatures->count());
+                    $extraFeatures = $plan->planFeatures->whereNotIn('feature_id', $highlightIds)->take($remainingSlots);
+                    $displayFeatures = $highlightFeatures->concat($extraFeatures)->take(6);
+                @endphp
+
+                <div class="plan-card-item">
                     {{-- Plan Name & Short Description --}}
                     <div>
-                        <h3 class="plan-header-title">{{ $plan->localized_name }}</h3>
+                        <h3 class="plan-name-title">{{ $plan->localized_name ?: $plan->name }}</h3>
                         <p class="plan-short-desc">{{ $plan->short_description ?: '—' }}</p>
                     </div>
 
-                    <div style="height: 1px; background: #f3f4f6; margin-bottom: 12px;"></div>
+                    <div class="plan-divider"></div>
 
-                    {{-- Price & Billing Period --}}
-                    <div class="plan-price-wrap">
-                        @if($primaryPrice)
-                            @if($primaryPrice->price_model === 'free')
-                                <div class="plan-price-main">Free</div>
-                            @elseif($primaryPrice->price_model === 'quote')
-                                <div class="plan-price-main" style="font-size: 20px;">Contact for quote</div>
-                            @else
-                                <div class="d-flex align-items-baseline gap-1">
-                                    <span class="plan-price-main">{{ $primaryPrice->formatted_price }}</span>
-                                    <span class="plan-price-period">/ {{ $primaryPrice->billing_period_label }}</span>
-                                </div>
-                            @endif
-                        @else
-                            <div class="plan-price-main text-muted" style="font-size: 20px;">—</div>
-                            <div class="plan-price-period">Price / billing period</div>
-                        @endif
+                    {{-- Price / Billing Period --}}
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount">{{ $priceAmountDisplay }}</div>
+                        <div class="plan-price-period">{{ $pricePeriodDisplay }}</div>
                     </div>
 
-                    {{-- Key Features List (4-6 verified items with checkmarks) --}}
-                    <div class="mb-3">
-                        <div class="plan-features-heading">Key features</div>
-                        @if($highlights->isNotEmpty())
-                            @foreach($highlights as $feat)
-                            <div class="plan-feature-item">
-                                <span class="plan-feature-check">?</span>
+                    <div class="plan-divider"></div>
+
+                    {{-- Key Features (4-6 verified items with checkmarks) --}}
+                    <div class="plan-features-block">
+                        <div class="plan-features-title">Key features</div>
+                        @if($displayFeatures->isNotEmpty())
+                            @foreach($displayFeatures as $feat)
+                            <div class="plan-feature-row">
+                                <svg class="plan-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
                                 <span>{{ $feat->feature_name }}</span>
                             </div>
                             @endforeach
@@ -233,153 +304,119 @@
                         @endif
                     </div>
 
+                    <div class="plan-divider"></div>
+
                     {{-- Renewal Price --}}
-                    <div class="plan-renewal-box">
+                    <div class="plan-renewal-block">
                         <div class="plan-renewal-label">Renewal price</div>
-                        <div class="plan-renewal-val">
-                            {{ $primaryPrice?->formatted_renewal_price ?: '—' }}
+                        <div class="plan-renewal-val">{{ $renewalPriceDisplay }}</div>
+                    </div>
+
+                    {{-- View Plan Button --}}
+                    <div>
+                        <a href="{{ $viewPlanUrl }}" target="_blank" @if($business->is_affiliate) rel="sponsored noopener" @else rel="noopener noreferrer" @endif class="plan-view-link">
+                            <span>View plan</span>
+                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Compare All Plans Footer --}}
+            <div class="compare-all-plans-footer">
+                <a href="{{ $compareAllUrl }}" class="compare-all-plans-link">
+                    <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                    </svg>
+                    <span>Compare all plans →</span>
+                </a>
+            </div>
+
+        @elseif($prod->directPrices->isNotEmpty() || $prod->directFeatures->isNotEmpty())
+            {{-- Standalone Product (Non-Plan) --}}
+            @php
+                $dPrice = $prod->directPrices->first();
+                $dFeatures = $prod->directFeatures->take(6);
+            @endphp
+            <div class="plans-boxes-grid" style="grid-template-columns: minmax(280px, 420px);">
+                <div class="plan-card-item">
+                    <div>
+                        <h3 class="plan-name-title">{{ $prod->localized_name ?: $prod->name }}</h3>
+                        <p class="plan-short-desc">{{ $prod->description ?: 'Standalone product offering.' }}</p>
+                    </div>
+
+                    <div class="plan-divider"></div>
+
+                    <div class="plan-price-block">
+                        <div class="plan-price-amount">
+                            {{ $dPrice ? $dPrice->formatted_price : '—' }}
+                        </div>
+                        <div class="plan-price-period">
+                            {{ $dPrice ? ('/ ' . ($dPrice->billing_period_label ?: 'one-time')) : 'Price / billing period' }}
                         </div>
                     </div>
 
-                    {{-- CTA Button --}}
-                    <a href="{{ $targetUrl }}" target="_blank" rel="nofollow noopener" class="btn-view-plan">
-                        <span>View plan</span>
-                        <span>?</span>
-                    </a>
+                    <div class="plan-divider"></div>
 
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- Compare All Plans Button --}}
-        <div class="text-center">
-            <button type="button" class="btn-compare-all" data-bs-toggle="modal" data-bs-target="#compareModal-{{ $prod->id }}">
-                <span>?</span>
-                <span>Compare all plans ?</span>
-            </button>
-        </div>
-
-        {{-- Compare Modal --}}
-        <div class="modal fade" id="compareModal-{{ $prod->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title font-weight-bold">Compare all {{ $prod->localized_name }} plans</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="plan-features-block">
+                        <div class="plan-features-title">Key features</div>
+                        @if($dFeatures->isNotEmpty())
+                            @foreach($dFeatures as $feat)
+                            <div class="plan-feature-row">
+                                <svg class="plan-feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>{{ $feat->feature_name }}</span>
+                            </div>
+                            @endforeach
+                        @else
+                            <div class="text-muted small">Standard product features included</div>
+                        @endif
                     </div>
-                    <div class="modal-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered mb-0" style="min-width: 650px;">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 30%;">Feature / Specification</th>
-                                        @foreach($prod->plans as $p)
-                                            <th class="text-center">
-                                                <div class="font-weight-bold">{{ $p->localized_name }}</div>
-                                                <div class="small text-muted">{{ $p->primaryPrice?->formatted_price ?: '' }}</div>
-                                            </th>
-                                        @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- Specifications Rows --}}
-                                    @php
-                                        $allSpecCodes = $prod->plans->flatMap(fn($p) => $p->specifications->pluck('code'))->unique();
-                                    @endphp
-                                    @if($allSpecCodes->isNotEmpty())
-                                    <tr class="table-secondary">
-                                        <td colspan="{{ $prod->plans->count() + 1 }}" class="font-weight-bold small text-uppercase py-2">
-                                            Technical Specifications
-                                        </td>
-                                    </tr>
-                                    @foreach($allSpecCodes as $code)
-                                    <tr>
-                                        <td class="font-weight-bold text-capitalize">{{ str_replace('_', ' ', $code) }}</td>
-                                        @foreach($prod->plans as $p)
-                                            @php $sObj = $p->specifications->firstWhere('code', $code); @endphp
-                                            <td class="text-center">
-                                                {{ $sObj ? ($sObj->value . ' ' . ($sObj->unit ?: '')) : '—' }}
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                    @endforeach
-                                    @endif
 
-                                    {{-- Features Rows --}}
-                                    @php
-                                        $allFeatureIds = $prod->plans->flatMap(fn($p) => $p->planFeatures->pluck('feature_id'))->unique();
-                                    @endphp
-                                    @if($allFeatureIds->isNotEmpty())
-                                    <tr class="table-secondary">
-                                        <td colspan="{{ $prod->plans->count() + 1 }}" class="font-weight-bold small text-uppercase py-2">
-                                            Features & Services
-                                        </td>
-                                    </tr>
-                                    @foreach($allFeatureIds as $fId)
-                                    @php
-                                        $sampleFeat = $prod->plans->flatMap->planFeatures->firstWhere('feature_id', $fId);
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $sampleFeat?->feature_name ?: ('Feature #' . $fId) }}</td>
-                                        @foreach($prod->plans as $p)
-                                            @php $hasF = $p->planFeatures->contains('feature_id', $fId); @endphp
-                                            <td class="text-center">
-                                                @if($hasF)
-                                                    <span class="text-success font-weight-bold">?</span>
-                                                @else
-                                                    <span class="text-muted">—</span>
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                    @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="plan-divider"></div>
+
+                    <div class="plan-renewal-block">
+                        <div class="plan-renewal-label">Renewal price</div>
+                        <div class="plan-renewal-val">—</div>
+                    </div>
+
+                    <div>
+                        <a href="{{ $viewPlanUrl }}" target="_blank" @if($business->is_affiliate) rel="sponsored noopener" @else rel="noopener noreferrer" @endif class="plan-view-link">
+                            <span>Get product</span>
+                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <div class="compare-all-plans-footer">
+                <a href="{{ $compareAllUrl }}" class="compare-all-plans-link">
+                    <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                    </svg>
+                    <span>Compare all plans →</span>
+                </a>
+            </div>
 
         @else
-        {{-- Standalone Product without plans (Single card or service direct price) --}}
-        <div class="row g-4">
-            <div class="col-lg-6 col-md-8">
-                <div class="pricing-card-box">
-                    <h3 class="plan-header-title">{{ $prod->localized_name }}</h3>
-                    <p class="plan-short-desc">{{ $prod->description ?: 'Standalone product offering.' }}</p>
-
-                    @php $dPrice = $prod->directPrices->first(); @endphp
-                    @if($dPrice)
-                    <div class="plan-price-wrap">
-                        <div class="d-flex align-items-baseline gap-1">
-                            <span class="plan-price-main">{{ $dPrice->formatted_price }}</span>
-                            <span class="plan-price-period">/ {{ $dPrice->billing_period_label }}</span>
-                        </div>
-                    </div>
-                    @endif
-
-                    @if($prod->directFeatures->isNotEmpty())
-                    <div class="mb-3">
-                        <div class="plan-features-heading">Included features</div>
-                        @foreach($prod->directFeatures as $feat)
-                        <div class="plan-feature-item">
-                            <span class="plan-feature-check">?</span>
-                            <span>{{ $feat->feature_name }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endif
-
-                    <a href="{{ $business->affiliate_link ?: ($business->permanent_url ?: '#') }}" target="_blank" rel="nofollow noopener" class="btn-view-plan">
-                        <span>Get product</span>
-                        <span>?</span>
-                    </a>
-                </div>
+            {{-- Category with plans coming soon --}}
+            <div class="p-4 text-center" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
+                <p class="mb-1 font-weight-bold" style="font-size: 15px; color: #1e293b;">
+                    {{ $prod->localized_name ?: $prod->name }} plans
+                </p>
+                <p class="small text-muted mb-3">
+                    Plans and pricing for this category will be available soon.
+                </p>
+                <a href="{{ $viewPlanUrl }}" target="_blank" @if($business->is_affiliate) rel="sponsored noopener" @else rel="noopener noreferrer" @endif class="btn btn-sm btn-outline-dark" style="border-radius: 6px; font-weight: 500;">
+                    Visit official website ↗
+                </a>
             </div>
-        </div>
         @endif
 
     </div>
@@ -387,12 +424,12 @@
 </div>
 
 <script>
-function switchProductTab(productId, tabBtn) {
-    document.querySelectorAll('.product-tab-pill').forEach(btn => btn.classList.remove('active'));
+function switchProductPlansTab(productId, tabBtn) {
+    document.querySelectorAll('.plans-tab-pill').forEach(btn => btn.classList.remove('active'));
     tabBtn.classList.add('active');
 
-    document.querySelectorAll('.product-pricing-pane').forEach(pane => pane.classList.add('d-none'));
-    const targetPane = document.getElementById('product-pane-' + productId);
+    document.querySelectorAll('.product-plans-pane').forEach(pane => pane.classList.add('d-none'));
+    const targetPane = document.getElementById('plans-pane-' + productId);
     if (targetPane) {
         targetPane.classList.remove('d-none');
     }

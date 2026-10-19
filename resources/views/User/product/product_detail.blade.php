@@ -1031,7 +1031,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 .service-guide-content h3 {
                                     color: #002347;
                                     font-size: 15px;
-                                    font-weight: 700;
+                                    font-weight: 700 !important;
                                     line-height: 1.4;
                                     margin-top: 18px;
                                     margin-bottom: 6px;

@@ -146,7 +146,7 @@
                             </h1>
                         </div>
                         @if(!empty($finalReviewsSub))
-                        <div class="text-meta" style="margin-top: 4px;">
+                        <div class="text-meta" style="margin-botttom:0;">
                             {!! $finalReviewsSub !!}
                         </div>
                         @endif

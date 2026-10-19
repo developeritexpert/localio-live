@@ -603,6 +603,16 @@ class ContentTemplateService
         ],
     ];
 
+    public const BUSINESS_PRICING_FIELDS = [
+        'pricing_h1' => [
+            'label' => 'H1 Headline & Sub-headline',
+            'type' => 'combined',
+            'field1_label' => 'H1 Headline',
+            'field2_label' => 'Sub-headline',
+            'description' => 'Main H1 headline and descriptive subtext for the Business Plans & Pricing page.',
+        ],
+    ];
+
     public const FEATURE_FIELDS = [
         'feature_h1' => [
             'label' => 'H1',
@@ -715,6 +725,9 @@ class ContentTemplateService
             }
             if (array_key_exists($fieldKey, self::BUSINESS_REVIEWS_FIELDS)) {
                 return 'business_reviews';
+            }
+            if (array_key_exists($fieldKey, self::BUSINESS_PRICING_FIELDS)) {
+                return 'business_pricing';
             }
         }
 
@@ -977,6 +990,8 @@ class ContentTemplateService
             $allFieldKeys = array_keys(self::BUSINESS_REVIEWS_FIELDS);
         } elseif ($sectionGroup === 'business_discussions') {
             $allFieldKeys = array_keys(self::BUSINESS_DISCUSSIONS_FIELDS);
+        } elseif ($sectionGroup === 'business_pricing') {
+            $allFieldKeys = array_keys(self::BUSINESS_PRICING_FIELDS);
         } else {
             $allFieldKeys = array_merge(
                 array_keys(self::BUSINESS_PROFILE_FIELDS),
@@ -984,7 +999,8 @@ class ContentTemplateService
                 array_keys(self::BUSINESS_FAQS_FIELDS),
                 array_keys(self::BUSINESS_COMPARE_FIELDS),
                 array_keys(self::BUSINESS_REVIEWS_FIELDS),
-                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS)
+                array_keys(self::BUSINESS_DISCUSSIONS_FIELDS),
+                array_keys(self::BUSINESS_PRICING_FIELDS)
             );
         }
 
@@ -2093,6 +2109,26 @@ class ContentTemplateService
         }
     }
 
+    public static function seedDefaultBusinessPricingOptionsIfMissing(): void
+    {
+        $hasAny = ContentTemplate::where('section_group', 'business_pricing')
+            ->where('field_key', 'pricing_h1')
+            ->where('lang_id', 1)
+            ->exists();
+
+        if (!$hasAny) {
+            ContentTemplate::create([
+                'section_group' => 'business_pricing',
+                'field_key'     => 'pricing_h1',
+                'option_number' => 1,
+                'headline'      => '[business] plans & pricing',
+                'subtext'       => 'Explore available plans, compare their features, and find the best option for your needs.',
+                'is_active'     => true,
+                'lang_id'       => 1,
+            ]);
+        }
+    }
+
     public static function seedDefaultBusinessReviewsOptionsIfMissing(): void
     {
         $defaults = [
@@ -2418,6 +2454,8 @@ class ContentTemplateService
             self::seedDefaultBusinessAlternativesOptionsIfMissing();
         } elseif ($sectionGroup === 'business_reviews') {
             self::seedDefaultBusinessReviewsOptionsIfMissing();
+        } elseif ($sectionGroup === 'business_pricing') {
+            self::seedDefaultBusinessPricingOptionsIfMissing();
         } elseif ($sectionGroup === 'comparison') {
             self::seedDefaultComparisonOptionsIfMissing();
         } elseif ($sectionGroup === 'features') {
@@ -2445,6 +2483,8 @@ class ContentTemplateService
             $fieldDefs = self::BUSINESS_REVIEWS_FIELDS;
         } elseif ($sectionGroup === 'business_discussions') {
             $fieldDefs = self::BUSINESS_DISCUSSIONS_FIELDS;
+        } elseif ($sectionGroup === 'business_pricing') {
+            $fieldDefs = self::BUSINESS_PRICING_FIELDS;
         } elseif ($sectionGroup === 'features') {
             $fieldDefs = self::FEATURE_FIELDS;
         } elseif (str_starts_with($sectionGroup, 'criteria_ratings_')) {

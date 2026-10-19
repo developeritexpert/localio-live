@@ -1153,7 +1153,7 @@ foreach ($altCriteria as $criterion) {
                                                     <div class="card-compare-m">
                                                         @if($isRecommended)
                                                             <div style="margin-bottom: 25px;">
-                                                                <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ;">
+                                                                <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ">
                                                                     <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> {{ static_text('category_badge_label') ?: 'Top rated' }}
                                                                 </span>
                                                             </div>

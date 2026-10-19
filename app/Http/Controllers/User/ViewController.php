@@ -695,19 +695,21 @@ class ViewController extends Controller
 
         $pricingCat = $faqCategories->first(function ($cat) {
             $norm = strtolower(trim($cat->name));
-            return $norm === 'plans & pricing' || $norm === 'pricing';
+            return $norm === 'plans & pricing' || $norm === 'pricing' || $norm === 'products & pricing';
         });
+
+        if (!$pricingCat) {
+            $pricingCat = $faqCategories->first(function ($cat) {
+                $norm = strtolower(trim($cat->name));
+                return $norm === 'pricing & billing';
+            });
+        }
 
         if ($pricingCat) {
             $pricingCat->name = $targetPricingCatName;
-            $reordered = collect();
-            $first = $faqCategories->first(fn($c) => $c->id !== $pricingCat->id);
-            if ($first) {
-                $reordered->push($first);
-            }
-            $reordered->push($pricingCat);
+            $reordered = collect([$pricingCat]);
             foreach ($faqCategories as $cat) {
-                if ($cat->id !== $pricingCat->id && (!$first || $cat->id !== $first->id)) {
+                if ($cat->id !== $pricingCat->id) {
                     $reordered->push($cat);
                 }
             }
