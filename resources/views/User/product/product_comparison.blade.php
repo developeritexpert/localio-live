@@ -321,6 +321,10 @@
 .comp-feat-toggle-btn {
     cursor: pointer;
 }
+@keyframes compFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 .sticky-comparison-bar {
     position: fixed;
@@ -757,15 +761,28 @@
                                         $bTrans = $business->translations->first();
                                         $bName = $bTrans?->name ?? $business->name ?? 'Business';
                                         $subheadline = str_ireplace(['[business]', '[business_cap]', '[business_lc]'], [$bName, ucfirst($bName), strtolower($bName)], $finalFitSubtext);
-                                        $fitSummary = $bTrans?->comparison_fit_summary ?: ($bTrans?->short_description ?: $bTrans?->description);
+                                        if (!empty($bTrans?->comparison_fit_summary)) {
+                                            $fitSummary = trim(strip_tags($bTrans->comparison_fit_summary));
+                                        } else {
+                                            $rawFallback = trim(strip_tags($bTrans?->short_description ?: ($bTrans?->description ?? '')));
+                                            if (!empty($rawFallback)) {
+                                                $sentences = preg_split('/(?<=[.?!])\s+/', $rawFallback, 3);
+                                                $fitSummary = implode(' ', array_slice($sentences, 0, 2));
+                                            } else {
+                                                $fitSummary = null;
+                                            }
+                                        }
                                     @endphp
-                                    <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6">
+                                    <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 20px;">
-                                                <i class="far fa-check-circle" style="color: #10b981; font-size: 18px;"></i>
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <circle cx="10" cy="10" r="9" stroke="#10b981" stroke-width="1.8"/>
+                                                    <path d="M6 10.2L8.7 13L14 7.5" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
                                             </span>
                                             <h5 class="m-0" style="font-size: 16px; font-weight: 700; color: #002347;">
-                                                {{ $subheadline }}
+                                                {!! $subheadline !!}
                                             </h5>
                                         </div>
                                         @if(!empty($fitSummary))
@@ -897,12 +914,7 @@
                                         @if($bPros->isNotEmpty() || $bCons->isNotEmpty())
                                             {{-- Pros Section --}}
                                             <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
-                                                    <span style="color: rgb(33, 172, 33);" class="me-2">
-                                                        <!-- <i class="fas fa-plus-circle"></i> -->
-                                                    </span>
-                                                    Pros
-                                                </div>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #002347;">Pros</p>
                                                 @if($bPros->isNotEmpty())
                                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                         @foreach($bPros->take(6) as $pro)
@@ -910,7 +922,7 @@
                                                                 $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.';
                                                             @endphp
                                                             <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 16px; margin-top: 2px; line-height: 1;">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important; flex-shrink: 0; line-height: 1.3;">
                                                                     <i class="fas fa-plus-circle"></i>
                                                                 </span>
                                                                 <span style="color: #202124; font-size: 14.5px; font-weight: 400; line-height: 1.5;">
@@ -940,12 +952,7 @@
 
                                             {{-- Cons Section --}}
                                             <div class="mb-1">
-                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
-                                                    <span style="color: rgb(247, 40, 60);" class="me-2">
-                                                        <!-- <i class="fas fa-minus-circle"></i> -->
-                                                    </span>
-                                                    Cons
-                                                </div>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #002347;">Cons</p>
                                                 @if($bCons->isNotEmpty())
                                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                         @foreach($bCons->take(6) as $con)
@@ -953,7 +960,7 @@
                                                                 $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.';
                                                             @endphp
                                                             <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                <span style="color: #dc3545; flex-shrink: 0; font-size: 16px; margin-top: 2px; line-height: 1;">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important; flex-shrink: 0; line-height: 1.3;">
                                                                     <i class="fas fa-minus-circle"></i>
                                                                 </span>
                                                                 <span style="color: #202124; font-size: 14.5px; font-weight: 400; line-height: 1.5;">
@@ -989,6 +996,105 @@
                         </div>
                     </div>
                     @endif
+
+                    {{-- Compare Features Section --}}
+                    @if(!empty($featureTabs) && count($featureTabs) > 0)
+                    <div class="compare_features_sec my-4" id="section-compare-features" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="bg-white p-4 p-md-5" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);">
+                            <!-- Header -->
+                            <div class="mb-4">
+                                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalFeaturesHeadline) !!}
+                                </h2>
+                                @if(!empty($finalFeaturesSubtext))
+                                    <p style="font-size: 14.5px; color: #64748b; line-height: 1.6; margin: 0;">
+                                        {!! $finalFeaturesSubtext !!}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <!-- Tabs Row -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-4" id="compFeatureTabButtons">
+                                @foreach($featureTabs as $idx => $tabData)
+                                    @php $isActive = $idx === 0; @endphp
+                                    <button type="button" 
+                                        class="btn comp-feat-tab-btn {{ $isActive ? 'active' : '' }}" 
+                                        data-tab-target="pane-comp-feat-{{ $tabData['slug'] }}"
+                                        style="{{ $isActive ? 'background: #0f172a; color: #ffffff; border: 1px solid #0f172a;' : 'background: #ffffff; color: #475569; border: 1px solid #e2e8f0;' }} border-radius: 9999px; padding: 7px 18px; font-weight: 500; font-size: 13.5px; transition: all 0.15s ease;">
+                                        {{ $tabData['name'] }}
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <!-- Tab Panes -->
+                            <div class="comp-feature-tab-panes">
+                                @foreach($featureTabs as $idx => $tabData)
+                                    @php $isActive = $idx === 0; @endphp
+                                    <div class="comp-feat-pane {{ $isActive ? '' : 'd-none' }}" id="pane-comp-feat-{{ $tabData['slug'] }}">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle mb-0" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                                                <thead>
+                                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                        <th style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; width: 40%; background: transparent; border-bottom: 1px solid #e2e8f0;">Feature</th>
+                                                        @foreach($businesses as $b)
+                                                            @php $bColName = $b->translations->first()?->name ?? $b->name ?? 'Business'; @endphp
+                                                            <th class="text-center" style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; background: transparent; border-bottom: 1px solid #e2e8f0;">
+                                                                {{ $bColName }}
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($tabData['features'] as $fIdx => $feat)
+                                                        @php $isExtra = $fIdx >= 10; @endphp
+                                                        <tr class="comp-feat-row {{ $isExtra ? 'comp-feat-extra d-none' : '' }}" style="border-bottom: 1px solid #f1f5f9;">
+                                                            <td style="font-size: 14px; color: #334155; padding: 14px 16px; font-weight: 400; border-bottom: 1px solid #f1f5f9;">
+                                                                {{ $feat['name'] }}
+                                                            </td>
+                                                            @foreach($businesses as $b)
+                                                                @php
+                                                                    $hasFeature = isset($bizFeatureLookup[$b->id][$feat['id']]);
+                                                                    $customVal = $bizFeatureValues[$b->id][$feat['id']] ?? null;
+                                                                @endphp
+                                                                <td class="text-center" style="padding: 14px 16px; font-size: 13.5px; color: #475569; border-bottom: 1px solid #f1f5f9;">
+                                                                    @php
+                                                                    $isYes = $hasFeature || (is_string($customVal) && in_array(strtolower(trim($customVal)), ['yes', 'true', '1']));
+                                                                    $isNo = !$hasFeature || (is_string($customVal) && in_array(strtolower(trim($customVal)), ['no', 'false', '0']));
+                                                                    $hasCustomText = !empty($customVal) && !in_array(strtolower(trim($customVal)), ['yes', 'no', 'true', 'false', '1', '0']);
+                                                                @endphp
+                                                                @if($hasCustomText)
+                                                                    <span style="font-weight: 500; color: #334155;">{{ $customVal }}</span>
+                                                                @elseif($isYes)
+                                                                    <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #ecfdf5;">
+                                                                        <i class="fas fa-check" style="font-size: 11px; color: #10b981;"></i>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #fef2f2;">
+                                                                        <i class="fas fa-times" style="font-size: 11px; color: #ef4444;"></i>
+                                                                    </span>
+                                                                @endif
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        @if(count($tabData['features']) > 10)
+                                            <div class="text-center pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                                                <a href="javascript:void(0);" class="btn-g-link comp-feat-toggle-btn d-inline-flex align-items-center justify-content-center" data-pane="pane-comp-feat-{{ $tabData['slug'] }}" data-total="{{ count($tabData['features']) }}" data-expanded="false" style="cursor: pointer; gap: 6px;">
+                                                    <span class="btn-text">Show all ({{ count($tabData['features']) }})</span>
+                                                    <i class="fas fa-chevron-down btn-icon" style="font-size: 11px; transition: transform 0.2s ease;"></i>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    
 
                     <!-- price start from / offers (only for affiliated businesses) -->
                     @if($hasAffiliated)
@@ -1101,98 +1207,6 @@
                     </div>
                     @endif
 
-                    {{-- Compare Features Section --}}
-                    @if(!empty($featureTabs) && count($featureTabs) > 0)
-                    <div class="compare_features_sec my-4" id="section-compare-features" data-aos="fade-up" data-aos-duration="1000">
-                        <div class="bg-white p-4 p-md-5" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);">
-                            <!-- Header -->
-                            <div class="mb-4">
-                                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
-                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalFeaturesHeadline) !!}
-                                </h2>
-                                @if(!empty($finalFeaturesSubtext))
-                                    <p style="font-size: 14.5px; color: #64748b; line-height: 1.6; margin: 0;">
-                                        {!! $finalFeaturesSubtext !!}
-                                    </p>
-                                @endif
-                            </div>
-
-                            <!-- Tabs Row -->
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-4" id="compFeatureTabButtons">
-                                @foreach($featureTabs as $idx => $tabData)
-                                    @php $isActive = $idx === 0; @endphp
-                                    <button type="button" 
-                                        class="btn comp-feat-tab-btn {{ $isActive ? 'active' : '' }}" 
-                                        data-tab-target="pane-comp-feat-{{ $tabData['slug'] }}"
-                                        style="{{ $isActive ? 'background: #0f172a; color: #ffffff; border: 1px solid #0f172a;' : 'background: #ffffff; color: #475569; border: 1px solid #e2e8f0;' }} border-radius: 9999px; padding: 7px 18px; font-weight: 500; font-size: 13.5px; transition: all 0.15s ease;">
-                                        {{ $tabData['name'] }}
-                                    </button>
-                                @endforeach
-                            </div>
-
-                            <!-- Tab Panes -->
-                            <div class="comp-feature-tab-panes">
-                                @foreach($featureTabs as $idx => $tabData)
-                                    @php $isActive = $idx === 0; @endphp
-                                    <div class="comp-feat-pane {{ $isActive ? '' : 'd-none' }}" id="pane-comp-feat-{{ $tabData['slug'] }}">
-                                        <div class="table-responsive">
-                                            <table class="table align-middle mb-0" style="width: 100%; border-collapse: separate; border-spacing: 0;">
-                                                <thead>
-                                                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                                                        <th style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; width: 40%; background: transparent; border-bottom: 1px solid #e2e8f0;">Feature</th>
-                                                        @foreach($businesses as $b)
-                                                            @php $bColName = $b->translations->first()?->name ?? $b->name ?? 'Business'; @endphp
-                                                            <th class="text-center" style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; background: transparent; border-bottom: 1px solid #e2e8f0;">
-                                                                {{ $bColName }}
-                                                            </th>
-                                                        @endforeach
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($tabData['features'] as $fIdx => $feat)
-                                                        @php $isExtra = $fIdx >= 10; @endphp
-                                                        <tr class="comp-feat-row {{ $isExtra ? 'comp-feat-extra d-none' : '' }}" style="border-bottom: 1px solid #f1f5f9;">
-                                                            <td style="font-size: 14px; color: #334155; padding: 14px 16px; font-weight: 400; border-bottom: 1px solid #f1f5f9;">
-                                                                {{ $feat['name'] }}
-                                                            </td>
-                                                            @foreach($businesses as $b)
-                                                                @php
-                                                                    $hasFeature = isset($bizFeatureLookup[$b->id][$feat['id']]);
-                                                                    $customVal = $bizFeatureValues[$b->id][$feat['id']] ?? null;
-                                                                @endphp
-                                                                <td class="text-center" style="padding: 14px 16px; font-size: 13.5px; color: #475569; border-bottom: 1px solid #f1f5f9;">
-                                                                    @if(!empty($customVal))
-                                                                        <span style="font-weight: 500; color: #334155;">{{ $customVal }}</span>
-                                                                    @elseif($hasFeature)
-                                                                        <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #ecfdf5;">
-                                                                            <i class="fas fa-check" style="font-size: 11px; color: #10b981;"></i>
-                                                                        </span>
-                                                                    @else
-                                                                        <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #fef2f2;">
-                                                                            <i class="fas fa-times" style="font-size: 11px; color: #ef4444;"></i>
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-                                                            @endforeach
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                        @if(count($tabData['features']) > 10)
-                                            <div class="text-center pt-3 border-top" style="border-color: #f1f5f9 !important;">
-                                                <a href="javascript:void(0);" class="btn-g-link comp-feat-toggle-btn d-inline-flex align-items-center justify-content-center" data-pane="pane-comp-feat-{{ $tabData['slug'] }}" data-total="{{ count($tabData['features']) }}" data-expanded="false" style="cursor: pointer; gap: 6px;">
-                                                    <span class="btn-text">Show all ({{ count($tabData['features']) }})</span>
-                                                    <i class="fas fa-chevron-down btn-icon" style="font-size: 11px; transition: transform 0.2s ease;"></i>
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
                     @endif
                 </div>
             </div>
@@ -2139,6 +2153,10 @@
 .comp-feat-toggle-btn {
     cursor: pointer;
 }
+@keyframes compFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
    
 </style>
@@ -2357,7 +2375,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (btnText) btnText.textContent = `Show all (${total})`;
                 if (btnIcon) btnIcon.style.transform = 'rotate(0deg)';
             } else {
-                extraRows.forEach(r => r.classList.remove('d-none'));
+                extraRows.forEach(r => { r.classList.remove('d-none'); r.style.animation = 'compFadeIn 0.25s ease'; });
                 this.setAttribute('data-expanded', 'true');
                 if (btnText) btnText.textContent = 'Show less';
                 if (btnIcon) btnIcon.style.transform = 'rotate(180deg)';
