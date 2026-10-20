@@ -312,13 +312,6 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1 with formatting options.',
         ],
-        'popular_alternatives' => [
-            'label' => 'POPULAR ALTERNATIVES',
-            'type' => 'combined',
-            'field1_label' => 'Popular Alternatives Headline (H2)',
-            'field2_label' => 'Popular Alternatives Subtext',
-            'description' => 'Headline and subtext for the Most Popular Alternatives section.',
-        ],
         'compare_alternatives' => [
             'label' => 'TOP 10',
             'type' => 'combined',
@@ -1488,16 +1481,6 @@ class ContentTemplateService
                 2 => [
                     'headline' => 'Compare the top competitors and alternatives to [business] side-by-side.',
                     'subtext' => '<p>Compare the top competitors and alternatives to [business] side-by-side.</p>',
-                ],
-            ],
-            'popular_alternatives' => [
-                1 => [
-                    'headline' => 'Most popular [business] alternatives',
-                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
-                ],
-                2 => [
-                    'headline' => 'Popular [business] alternatives & competitors',
-                    'subtext' => '<p>Explore the most popular alternatives to [business] chosen by real users.</p>',
                 ],
             ],
             'compare_alternatives' => [

@@ -8,42 +8,6 @@
         $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
     )));
 
-    // 1. Fetch 4-6 popular alternatives
-    $popularAltBusinesses = \App\Models\Business::where('id', '!=', $business->id)
-        ->where('status', 1)
-        ->whereIn('category_id', $bCategoryIds)
-        ->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
-            'category.ratingCriteria',
-            'products.prices'
-        ])
-        ->get()
-        ->sortByDesc(function($b) {
-            return $b->display_rating ?? 0;
-        })
-        ->take(3);
-
-    if ($popularAltBusinesses->count() < 3) {
-        $morePop = \App\Models\Business::where('id', '!=', $business->id)
-            ->where('status', 1)
-            ->whereNotNull('category_id')
-            ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
-            ->with([
-                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
-                'category.ratingCriteria',
-                'products.prices'
-            ])
-            ->get()
-            ->sortByDesc(function ($b) {
-                return $b->display_rating ?? 0;
-            })
-            ->take(3 - $popularAltBusinesses->count());
-
-        $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
-    }
-
     // 2. Fetch 10 affiliated businesses for tables
     if (isset($topAffiliatedBusinesses) && $topAffiliatedBusinesses->count() > 0) {
         $affiliatedTableBusinesses = $topAffiliatedBusinesses;
@@ -55,7 +19,8 @@
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
-                'category.ratingCriteria'
+                'category.ratingCriteria',
+                'proCons'
             ])
             ->get()
             ->sortByDesc(function($b) {
@@ -71,7 +36,8 @@
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
                     'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
-                    'category.ratingCriteria'
+                    'category.ratingCriteria',
+                    'proCons'
                 ])
                 ->get()
                 ->sortByDesc(function($b) {
@@ -94,7 +60,8 @@
 @endphp
 
 
-    <section class="top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
+    @if(empty($hasUpperHeader))
+    <section class="d-none top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
     <div class="top-auto-btm">
         
             <div class="container">
@@ -102,226 +69,11 @@
                     <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="text-start col-lg-8">
-
-
-                                <!-- 1. Most popular alternatives (Matched design with product_detail.blade.php) -->
-                                @if($popularAltBusinesses->count() > 0)
-                                    <section class="software-like p_50 product_integra_sec my-4" id="sectionAlternatives">
-                                        <div class="container">
-                                            <div class="sftwre-like-innr">
-                                                @php
-                                                    if (!isset($bTrans) || !$bTrans) {
-                                                        $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
-                                                    }
-                                                    $resolvedPopAlt = \App\Services\ContentTemplateService::resolveBusinessSection(
-                                                        $business,
-                                                        'popular_alternatives',
-                                                        $lang_id
-                                                    );
-                                                    $altPopHeadline = !empty($resolvedPopAlt['headline'])
-                                                        ? $resolvedPopAlt['headline']
-                                                        : (!empty($bTrans->popular_alternatives_headline)
-                                                            ? $bTrans->popular_alternatives_headline
-                                                            : ('Most popular ' . $businessName . ' alternatives'));
-
-                                                    $altPopDesc = !empty($resolvedPopAlt['subtext'])
-                                                        ? $resolvedPopAlt['subtext']
-                                                        : (!empty($bTrans->popular_alternatives_subtext)
-                                                            ? $bTrans->popular_alternatives_subtext
-                                                            : "Based on other buyer's searches, these are the products that could be a good fit for you.");
-                                                @endphp
-                                                <div class="sftwre-asana-hd" data-aos="fade-up" data-aos-duration="1000">
-                                                    <h2>{{ $altPopHeadline }}</h2>
-                                                    @if(!empty($altPopDesc))
-                                                        <div class="ck-content" style="color: #64748b; font-size: 15px;">
-                                                            {!! $altPopDesc !!}
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="sft_ware_test" style="">
-                                                    <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
-                                                        @foreach ($popularAltBusinesses->take(3) as $altbusiness)
-                                                            @php
-                                                                $altTrans = $altbusiness->translations->firstWhere('lang_id', $lang_id) ?? $altbusiness->translations->first();
-                                                                $altBizName = $altTrans->name ?? $altbusiness->name ?? 'Business';
-                                                                $altBizSlug = $altTrans->slug ?? $altbusiness->slug ?? 'business-' . $altbusiness->id;
-
-                                                                $altStartingPrice = null;
-                                                                $altCurrency = '$';
-                                                                $altAdditionalInfo = null;
-                                                                $altPrice = getBusinessesWithStartingPrice($altbusiness);
-                                                                if (!empty($altPrice) && isset($altPrice[0]['starting_price'])) {
-                                                                    $altBusinessPrice = $altPrice[0]['starting_price'];
-                                                                    $altStartingPrice = $altBusinessPrice['amount'] ?? null;
-                                                                    $altCurrency = $altBusinessPrice['currency'] ?? '$';
-                                                                    $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? null;
-                                                                }
-
-                                                            $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)
-    ->whereIn('status', ['published', 'active'])
-    ->get();
-
-$altCriteria = $altbusiness->category
-    ? $altbusiness->category->getEffectiveRatingCriteria()
-    : collect();
-
-foreach ($altCriteria as $criterion) {
-    $totalScore = 0;
-    $ratingCount = 0;
-
-    foreach ($altReviews as $review) {
-        $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
-            ->where('criteria_id', $criterion->id)
-            ->first();
-
-        if ($ratingRecord && $ratingRecord->rating !== null) {
-            $totalScore += (float) $ratingRecord->rating;
-            $ratingCount++;
-            continue;
-        }
-
-        $legacyVal = null;
-        $criterionName = strtolower(trim($criterion->name));
-
-        if ($criterionName === 'ease of use') {
-            $legacyVal = $review->ease_of_use_rating;
-        } elseif ($criterionName === 'customer service') {
-            $legacyVal = $review->customer_service_rating;
-        } elseif ($criterionName === 'features') {
-            $legacyVal = $review->exclusive_service_rating;
-        } elseif ($criterionName === 'value for money') {
-            $legacyVal = $review->value_for_money_rating;
-        }
-
-        if ($legacyVal !== null && $legacyVal !== '') {
-            $totalScore += (float) $legacyVal;
-            $ratingCount++;
-        }
-    }
-
-    $criterion->average_rating = $ratingCount > 0
-        ? round($totalScore / $ratingCount, 1)
-        : null;
-}
-
-
-                                                                $altRatingAvg = $altbusiness->reviews->avg('rating');
-                                                                $count = $altbusiness->approved_reviews_count;
-                                                            @endphp
-                                                            <div class="sftware-alternative-pck" data-aos="fade-up" data-aos-duration="1000"
-                                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}'; }"
-                                                                style="cursor: pointer; padding: 25px 20px;">
-
-                                                                <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <div class="top-product-logo">
-                                                                        <x-business-logo :business="$altbusiness" :name="$altBizName" />
-                                                                    </div>
-                                                                    <div class="asn-rating">
-                                                                        <h6 class="m-0 fw_700" style="color: #002347">
-                                                                            {{ $altBizName }}
-                                                                        </h6>
-                                                                        @if($altbusiness->should_show_rating)
-                                                                        <div class="rating-group">
-                                                                            <span class="rate_box_num fw-medium">{{ number_format($altbusiness->display_rating, 1) }}</span>
-                                                                            <div class="rating-stars">
-                                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                                    @if ($i <= floor($altbusiness->display_rating))
-                                                                                        <i class="fas fa-star text-warning"></i>
-                                                                                    @elseif ($i - 0.5 <= $altbusiness->display_rating)
-                                                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                    @else
-                                                                                        <i class="far fa-star text-warning"></i>
-                                                                                    @endif
-                                                                                @endfor
-                                                                            </div>
-                                                                            @if($altbusiness->should_show_review_count)
-                                                                            <span class="rate_box_text">
-                                                                                ({{ $altbusiness->approved_reviews_count }})
-                                                                            </span>
-                                                                            @endif
-                                                                        </div>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-
-                                                                @if($altbusiness->should_show_detailed_ratings)
-                                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <p class="fw_700 mb-3" style="color: #002347; font-size:12px;">
-                                                                        Detailed user ratings 
-                                                                    </p>
-
-                                                                    @foreach ($altCriteria as $criterion)
-                                                                        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-
-                                                                            <p class="m-0" style="font-size: 12px; color: #002347;">
-                                                                                {{ $criterion->name }}
-                                                                            </p>
-
-                                                                            <div class="prgs_br d-flex align-items-center">
-
-                                                                                @if ($criterion->average_rating !== null)
-                                                                                    <progress
-                                                                                        class="progress-bar"
-                                                                                        value="{{ $criterion->average_rating * 20 }}"
-                                                                                        max="100">
-                                                                                    </progress>
-
-                                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">
-                                                                                        {{ number_format($criterion->average_rating, 1) }}
-                                                                                    </span>
-                                                                                @else
-                                                                                    <span style="font-size: 12px; font-weight: 600; color: #999; min-width: 32px; text-align: right;">
-                                                                                        N/A
-                                                                                    </span>
-                                                                                @endif
-
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                                @endif
-
-                                                                @php
-                                                                    $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
-                                                                @endphp
-                                                                @if ($hasAltPrice)
-                                                                    <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
-                                                                            <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
-                                                                        </h3>
-                                                                        @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
-                                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
-                                                                        @elseif(!empty($altBusinessPrice['time_unit']) && !in_array(strtolower($altBusinessPrice['time_unit']), ['one_time', 'na', 'n/a', 'null']))
-                                                                            <small class="text-muted" style="font-size: 12px;">per {{ strtolower($altBusinessPrice['time_unit']) }}</small>
-                                                                        @endif
-                                                                    </div>
-                                                                @endif
-
-                                                                <div class="sftwre-alt-btn pt-2">
-                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}"
-                                                                        class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                                        style="padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;">
-                                                                        {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                @endif
-
-                                
                             </div>
                             <div class="col-lg-4 mt-4 mt-md-0 text-start">
                                 <div class="mb-4">
-                                    <x-review-breakdown-card :business="$business" />
+                                    <x-review-breakdown-card :business="$business" :showDetailedRatings="false" />
                                 </div>
-                                <!-- Widget 3: More About Business Card -->
-                                <x-more-about-business :business="$business" current="alternatives" />
                             </div>
                         </div>
                     </div>
@@ -329,6 +81,7 @@ foreach ($altCriteria as $criterion) {
             </div>
         </div>
     </section>
+    @endif
 
     @if(isset($tableRowsList) && $tableRowsList->count() > 0)
     @php
@@ -611,8 +364,8 @@ foreach ($altCriteria as $criterion) {
                                             <tr>
                                                 <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                                 <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">{{ static_text('overall_rating_label') ?: 'Overall rating' }}</th>
-                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_pro_label') ?: 'Most mentioned pro' }}</th>
-                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('most_mentioned_con_label') ?: 'Most mentioned con' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('key_pro_label') ?: 'Key pro' }}</th>
+                                                <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">{{ static_text('key_con_label') ?: 'Key con' }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -629,7 +382,10 @@ foreach ($altCriteria as $criterion) {
                                                     $rCount = $rRevs->count();
                                                     $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
 
+                                                    $rowBiz->loadMissing('proCons');
+
                                                     if ($rCount >= 10) {
+                                                        // 10+ reviews: Most mentioned pro and con from user reviews
                                                         $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
                                                             ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                                             ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
@@ -643,44 +399,15 @@ foreach ($altCriteria as $criterion) {
                                                         $topProObj = $proCons->firstWhere('type', 'pro');
                                                         $topConObj = $proCons->firstWhere('type', 'con');
 
-                                                        $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
-                                                        $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
+                                                        $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : ($rowBiz->proCons ? ($rowBiz->proCons->where('type', 'pro')->sortByDesc(fn($p) => (int)($p->weight ?? 5))->first()?->text ?? '-') : '-');
+                                                        $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : ($rowBiz->proCons ? ($rowBiz->proCons->where('type', 'con')->sortByDesc(fn($c) => (int)($c->weight ?? 5))->first()?->text ?? '-') : '-');
                                                     } else {
-                                                        // When < 10 reviews: Check business_pro_cons first, or fallback to any review pro/con
-                                                        $manPro = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'pro')->sortByDesc(fn($p) => $p->weight ?? 5)->first() : null;
-                                                        $manCon = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'con')->sortByDesc(fn($c) => $c->weight ?? 5)->first() : null;
+                                                        // Less than 10 reviews: Take the pro and con with the highest importance (weight)
+                                                        $manPro = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'pro')->sortByDesc(fn($p) => (int)($p->weight ?? 5))->first() : null;
+                                                        $manCon = $rowBiz->proCons ? $rowBiz->proCons->where('type', 'con')->sortByDesc(fn($c) => (int)($c->weight ?? 5))->first() : null;
 
-                                                        if ($manPro) {
-                                                            $proStr = $manPro->text;
-                                                        } else {
-                                                            $revPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                                ->where('reviews.business_id', $rowBiz->id)
-                                                                ->whereIn('reviews.status', ['published', 'active'])
-                                                                ->where('category_pro_cons.type', 'pro')
-                                                                ->select('category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
-                                                                ->groupBy('category_pro_cons.id', 'category_pro_cons.text')
-                                                                ->orderByDesc('cnt')
-                                                                ->first();
-                                                            $proStr = $revPro ? $revPro->text . ' (' . $revPro->cnt . ')' : '-';
-                                                        }
-
-                                                        if ($manCon) {
-                                                            $conStr = $manCon->text;
-                                                        } else {
-                                                            $revCon = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                                ->where('reviews.business_id', $rowBiz->id)
-                                                                ->whereIn('reviews.status', ['published', 'active'])
-                                                                ->where('category_pro_cons.type', 'con')
-                                                                ->select('category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
-                                                                ->groupBy('category_pro_cons.id', 'category_pro_cons.text')
-                                                                ->orderByDesc('cnt')
-                                                                ->first();
-                                                            $conStr = $revCon ? $revCon->text . ' (' . $revCon->cnt . ')' : '-';
-                                                        }
+                                                        $proStr = $manPro ? $manPro->text : '-';
+                                                        $conStr = $manCon ? $manCon->text : '-';
                                                     }
                                                 @endphp
                                                 <tr style="border-bottom: 1px solid #f1f5f9; {{ $rowBiz->id === $business->id ? 'background-color: #f8fafc;' : '' }}">

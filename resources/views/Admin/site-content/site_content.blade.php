@@ -249,6 +249,8 @@
                                                     'most_mentioned_pros_cons_subtext' => 'Most Mentioned Pros & Cons Subtext',
                                                     'most_mentioned_pro_label' => 'Most Mentioned Pro Tag Label',
                                                     'most_mentioned_con_label' => 'Most Mentioned Con Tag Label',
+                                                    'key_pro_label' => 'Key Pro Label (Alternatives)',
+                                                    'key_con_label' => 'Key Con Label (Alternatives)',
                                                     'current_listing_badge' => 'Current Listing Badge Text',
                                                     'no_businesses_found_search' => 'No Businesses Found Search Notice',
                                                     'active_today_label' => 'Active Today Counter Label',
