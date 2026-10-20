@@ -5,10 +5,7 @@
     @livewireStyles
     <?php
     $lang_id = getCurrentLanguageID();
-    $favicon = \App\Models\HeaderContent::where([['lang_id', $lang_id], ['type', 'file']])
-        ->where('meta_key', 'favicon_icon')
-        ->pluck('meta_value', 'meta_key')
-        ->first();
+    $favicon = function_exists('getSiteFavicon') ? getSiteFavicon($lang_id) : 'front/img/icon.svg';
 
     ?>
 
@@ -20,9 +17,7 @@
         content="A powerful and conceptual apps base dashboard template that especially build for developers and programmers.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Fav Icon  -->
-    @if ($favicon)
-        <link rel="shortcut icon" href="{{ asset($favicon) }}">
-    @endif
+    @include('partials.favicon')
     <!-- Page Title  -->
     <title>Localio || Admin Dashboard</title>
     <link rel="stylesheet" href="{{ asset('admin-theme/assets/css/admin-dash.css') }}?{{ time() }}">

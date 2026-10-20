@@ -5,10 +5,7 @@
     <?php
       $lang_id = getCurrentLanguageID();
 
-$favicon = \App\Models\HeaderContent::where([
-['lang_id', $lang_id],
-['type', 'file']
-])->where('meta_key', 'favicon_icon')->pluck('meta_value', 'meta_key')->first();
+$favicon = function_exists('getSiteFavicon') ? getSiteFavicon($lang_id) : 'front/img/icon.svg';
       ?>
     <base href="../">
     <meta charset="utf-8">
@@ -18,10 +15,7 @@ $favicon = \App\Models\HeaderContent::where([
         content="A powerful and conceptual apps base dashboard template that especially build for developers and programmers.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Fav Icon  -->
-    @if($favicon)
-    <link rel="shortcut icon" href="{{ asset($favicon) }}">
-@endif
-    <!-- <link rel="shortcut icon" href="/front/img/icon.svg"> -->
+    @include('partials.favicon')
 
     <title>@yield('meta_title', 'localio')</title>
     <meta name="description" content="@yield('meta_description', '')">

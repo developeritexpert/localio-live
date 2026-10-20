@@ -58,9 +58,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <title><?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?></title>
-    @if ($favicon)
-    <link rel="shortcut icon" href="{{ asset($favicon) }}">
-    @endif
+    @include('partials.favicon')
     @livewireStyles
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">

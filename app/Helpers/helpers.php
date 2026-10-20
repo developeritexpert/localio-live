@@ -168,6 +168,35 @@ function getCurrentLanguageID()
 
     return 1;
 }
+
+function getSiteFavicon($lang_id = null)
+{
+    try {
+        if (!$lang_id) {
+            $lang_id = getCurrentLanguageID();
+        }
+
+        $favicon = \App\Models\HeaderContent::where([['lang_id', $lang_id], ['type', 'file']])
+            ->where('meta_key', 'favicon_icon')
+            ->pluck('meta_value', 'meta_key')
+            ->first();
+
+        if (empty($favicon)) {
+            $favicon = \App\Models\HeaderContent::where('meta_key', 'favicon_icon')
+                ->where('type', 'file')
+                ->whereNotNull('meta_value')
+                ->value('meta_value');
+        }
+
+        if (empty($favicon) || !file_exists(public_path($favicon))) {
+            return 'front/img/icon.svg';
+        }
+
+        return $favicon;
+    } catch (\Throwable $e) {
+        return 'front/img/icon.svg';
+    }
+}
 function getCurrentSiteLanguage()
 {
     $locale = Cookie::get('lang_code', config('app.locale'));

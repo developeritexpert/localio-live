@@ -17,10 +17,7 @@
     $languages = App\Models\Language::all();
     $lang_id = getCurrentLanguageID();
 
-    $favicon = \App\Models\HeaderContent::where([['lang_id', $lang_id], ['type', 'file']])
-        ->where('meta_key', 'favicon_icon')
-        ->pluck('meta_value', 'meta_key')
-        ->first();
+    $favicon = function_exists('getSiteFavicon') ? getSiteFavicon($lang_id) : 'front/img/icon.svg';
 
     $categories = Category::whereHas('translation', function ($query) use ($lang_id) {
         $query->where('lang_id', $lang_id)
@@ -122,9 +119,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     
-    @if ($favicon)
-    <link rel="shortcut icon" href="{{ asset($favicon) }}">
-    @endif
+    @include('partials.favicon')
     @livewireStyles
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
