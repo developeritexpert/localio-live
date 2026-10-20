@@ -177,9 +177,9 @@
                     <div class="col-lg-12">
                         <div class="is-asana-lft" id="section1">
                             <h2 style="margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($reviewsTitle1) !!}</h2>
-                            <div class="">
+                            <div class="is_text">
                                 @if(!empty($reviewsDesc1))
-                                    {!! $reviewsDesc1 !!}
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($reviewsDesc1) !!}
                                 @else
                                     <p style="margin-bottom: 0;">{{ $bName }} is a trusted technology service provider dedicated to helping businesses streamline operations, improve productivity, and strengthen their online presence. From custom software development and website design to cloud solutions and IT consulting, the company delivers tailored services that match the unique goals of each client.</p>
                                 @endif
@@ -188,7 +188,7 @@
                             @if(!empty($reviewsDesc2))
                                 <h2 class="mt-4" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $reviewsTitle2 }}</h2>
                                 <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                                    {!! $reviewsDesc2 !!}
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($reviewsDesc2) !!}
                                 </div>
                             @endif
                         </div>
@@ -554,81 +554,8 @@
                                     @endif
 
                                 
-@php
-    $bizNameForPrompt2 = $business->translations->first()->name ?? $business->name ?? 'this product';
-    $resolvedReviewPrompt2 = \App\Services\ContentTemplateService::resolveBusinessSection(
-        $business,
-        'profile_review_prompt',
-        getCurrentLanguageID()
-    );
-    $promptHeadline2 = !empty($resolvedReviewPrompt2['headline'])
-        ? $resolvedReviewPrompt2['headline']
-        : "Would you recommend {$bizNameForPrompt2} to others?";
-    $promptSubtext2 = !empty($resolvedReviewPrompt2['subtext'])
-        ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
-        : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
-@endphp
-<div class="review-prompt-banner d-none" id="reviewPromptBanner"
-    style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
-
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="top-product-logo">
-            <x-business-logo :business="$business" />
-        </div>
-
-        <div>
-            <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
-                {!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline2) !!}
-            </p>
-
-            <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
-                {{ $promptSubtext2 }}
-            </p>
-        </div>
-    </div>
-
-    <div style="display: flex; gap: 12px; align-items: center;">
-        @auth
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-up"></i>
-            </button>
-
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-down"></i>
-            </button>
-        @else
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-up"></i>
-            </button>
-
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-down"></i>
-            </button>
-        @endauth
-    </div>
-</div>
-
-
-
-
-
-                                    <div class="row review-row-prod-inr mx-0">
+                                    @if($hasUserReviews)
+<div class="row review-row-prod-inr mx-0">
 
                                         <div class="col-lg-12">
                                             <div class="review-sidebar-sticky">
@@ -852,6 +779,77 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @else
+                                    @php
+                                        $bizNameForPrompt2 = $business->translations->first()->name ?? $business->name ?? 'this product';
+                                        $resolvedReviewPrompt2 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'profile_review_prompt',
+                                            getCurrentLanguageID()
+                                        );
+                                        $promptHeadline2 = !empty($resolvedReviewPrompt2['headline'])
+                                            ? $resolvedReviewPrompt2['headline']
+                                            : "Would you recommend {$bizNameForPrompt2} to others?";
+                                        $promptSubtext2 = !empty($resolvedReviewPrompt2['subtext'])
+                                            ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
+                                            : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
+                                    @endphp
+                                    <div class="review-prompt-banner" id="reviewPromptBanner"
+                                        style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div class="top-product-logo">
+                                                <x-business-logo :business="$business" />
+                                            </div>
+
+                                            <div>
+                                                <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
+                                                    {!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline2) !!}
+                                                </p>
+
+                                                <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
+                                                    {{ $promptSubtext2 }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div style="display: flex; gap: 12px; align-items: center;">
+                                            @auth
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </button>
+
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </button>
+                                            @else
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </button>
+
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </button>
+                                            @endauth
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </section>
@@ -1010,7 +1008,7 @@
                                         <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                             <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
                                                 <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
-@if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($review->user->profile_image) }}"
                                                         class="rounded-circle"
                                                         style="width: 42px; height: 42px; object-fit: cover;"
@@ -1026,7 +1024,7 @@
                                                         </span>
                                                     </div>
                                                 @endif
-</a>
+                                                </a>
 
                                                 <div>
                                                     <p style="margin: 0; font-weight: 600;">
@@ -1034,13 +1032,13 @@
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
                                                             
-        @if($review->user)
-            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
-                {{ $review->user->displayName() }}
-            </a>
-        @else
-            Anonymous
-        @endif
+                                                        @if($review->user)
+                                                            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                                {{ $review->user->displayName() }}
+                                                            </a>
+                                                        @else
+                                                            Anonymous
+                                                        @endif
         
                                                         @endif
                                                     </p>
