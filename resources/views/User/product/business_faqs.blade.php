@@ -156,13 +156,6 @@
             <div class="col-lg-8 col-12">
                 
                 @php
-                    $resolvedSearchH = \App\Services\ContentTemplateService::resolveBusinessSection(
-                        $business,
-                        'faq_search_headline',
-                        getCurrentLanguageID()
-                    );
-                    $finalSearchHeadline = !empty($resolvedSearchH['headline']) ? $resolvedSearchH['headline'] : ('Search ' . $bName . ' FAQs');
-
                     $resolvedSearchP = \App\Services\ContentTemplateService::resolveBusinessSection(
                         $business,
                         'faq_search_placeholder',
@@ -179,9 +172,6 @@
                 @endphp
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
-                    <p style="margin-bottom: 14px;">
-                        {!! \App\Services\ContentTemplateService::cleanHeading($finalSearchHeadline) !!}
-                    </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="faqSearchInput" placeholder="{{ $finalSearchPlaceholder }}" autocomplete="off">

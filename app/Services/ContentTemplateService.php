@@ -362,12 +362,6 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
         ],
-        'faq_search_headline' => [
-            'label' => 'SEARCH HEADLINE',
-            'type' => 'single',
-            'field1_label' => 'Search Headline',
-            'description' => 'Headline above the FAQ search box on the Business FAQs page.',
-        ],
         'faq_search_placeholder' => [
             'label' => 'SEARCH PLACEHOLDER',
             'type' => 'single',
@@ -1769,12 +1763,6 @@ class ContentTemplateService
     public static function seedDefaultBusinessFaqOptionsIfMissing(): void
     {
         $defaults = [
-            'faq_search_headline' => [
-                1 => 'Search [business] FAQs',
-                2 => 'Looking for specific [business] answers?',
-                3 => 'Find answers in [business] FAQs',
-                4 => 'Quick search: [business] FAQs',
-            ],
             'faq_search_placeholder' => [
                 1 => 'Search questions...',
                 2 => 'Search FAQs for [business]...',
@@ -2720,11 +2708,11 @@ class ContentTemplateService
             $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
                 ?? $business->translations?->first()?->name 
                 ?? $business->name ?? '';
-            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[entity_name]', '[entity]', '[entity_tc]'], $bizName, $text);
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[entity_name]'], $bizName, $text);
             $text = str_replace(['[business_cap]', '[entity_name_cap]'], ucfirst($bizName), $text);
             $text = str_replace(['[business_lc]', '[entity_name_lc]'], mb_strtolower($bizName), $text);
         } else {
-            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]', '[entity_name]', '[entity]', '[entity_tc]', '[entity_name_cap]', '[entity_name_lc]'], '', $text);
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]', '[entity_name]', '[entity_name_cap]', '[entity_name_lc]'], '', $text);
         }
 
         // Category tags
@@ -2777,6 +2765,20 @@ class ContentTemplateService
                 '[entities2_short_cap]'  => $es2ShortCap,
                 '[entities2_short_lc]'   => $es2ShortLc,
 
+                // Entity aliases (e1 is default/primary entity)
+                '[entity_cap]'           => $e1Cap,
+                '[entity_lc]'            => $e1Lc,
+                '[entity_tc]'            => $e1Cap,
+                '[entity]'               => $e1Lc,
+                '[entities_cap]'         => $es1Cap,
+                '[entities_lc]'          => $es1Lc,
+                '[entities_tc]'          => $es1Cap,
+                '[entities]'             => $es1Lc,
+                '[entity_short_cap]'     => $e1ShortCap,
+                '[entity_short_lc]'      => $e1ShortLc,
+                '[entities_short_cap]'   => $es1ShortCap,
+                '[entities_short_lc]'    => $es1ShortLc,
+
                 // Legacy & convenience aliases
                 '[category]'             => $catLc,
                 '[Category]'             => $catCap,
@@ -2808,6 +2810,9 @@ class ContentTemplateService
                 '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]',
                 '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]',
                 '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]',
+                '[entity_cap]', '[entity_lc]', '[entities_cap]', '[entities_lc]',
+                '[entity_short_cap]', '[entity_short_lc]', '[entities_short_cap]', '[entities_short_lc]',
+                '[entity]', '[entities]', '[entity_tc]', '[entities_tc]',
             ], [
                 $catFallbackCap, $catFallbackCap, $catFallbackCap, $catFallbackCap,
                 $catFallbackTc,
@@ -3753,6 +3758,40 @@ class ContentTemplateService
                 $subtext = preg_replace('/\s+vs\s*$/i', '', $subtext);
             }
 
+            if ($fieldKey === 'comparison_h1' && $bizCollection->isNotEmpty()) {
+                $shortDescs = [];
+                foreach ($bizCollection as $b) {
+                    $trans = $b->translations ?? collect();
+                    $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', $langId) : null;
+                    if (!$t && is_iterable($trans)) {
+                        $t = collect($trans)->first();
+                    }
+                    $sDesc = trim(strip_tags((string)($t?->short_description ?? '')));
+                    if (empty($sDesc) && isset($b->id)) {
+                        $dbTrans = \App\Models\BusinessTranslation::where('business_id', $b->id)
+                            ->where('lang_id', $langId)
+                            ->first()
+                            ?: \App\Models\BusinessTranslation::where('business_id', $b->id)->first();
+                        $sDesc = trim(strip_tags((string)($dbTrans?->short_description ?? '')));
+                    }
+                    if (!empty($sDesc)) {
+                        if (!in_array(substr($sDesc, -1), ['.', '!', '?'])) {
+                            $sDesc .= '.';
+                        }
+                        $shortDescs[] = $sDesc;
+                    }
+                }
+
+                if (!empty($shortDescs)) {
+                    $extraText = implode(' ', $shortDescs);
+                    if (preg_match('/^(.*)(<\/p>\s*)$/is', $subtext, $pMatches)) {
+                        $subtext = rtrim($pMatches[1]) . ' ' . $extraText . $pMatches[2];
+                    } else {
+                        $subtext = rtrim($subtext) . (empty($subtext) ? '' : ' ') . $extraText;
+                    }
+                }
+            }
+
             return [
                 'headline'      => self::cleanHeading($headline),
                 'subtext'       => $subtext,
@@ -3770,6 +3809,34 @@ class ContentTemplateService
             $subtext = !empty($catName)
                 ? "Learn more from our team about {$catName} pricing, features, and user ratings in our side-by-side comparison guide."
                 : "Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.";
+
+            if ($bizCollection->isNotEmpty()) {
+                $shortDescs = [];
+                foreach ($bizCollection as $b) {
+                    $trans = $b->translations ?? collect();
+                    $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', $langId) : null;
+                    if (!$t && is_iterable($trans)) {
+                        $t = collect($trans)->first();
+                    }
+                    $sDesc = trim(strip_tags((string)($t?->short_description ?? '')));
+                    if (empty($sDesc) && isset($b->id)) {
+                        $dbTrans = \App\Models\BusinessTranslation::where('business_id', $b->id)
+                            ->where('lang_id', $langId)
+                            ->first()
+                            ?: \App\Models\BusinessTranslation::where('business_id', $b->id)->first();
+                        $sDesc = trim(strip_tags((string)($dbTrans?->short_description ?? '')));
+                    }
+                    if (!empty($sDesc)) {
+                        if (!in_array(substr($sDesc, -1), ['.', '!', '?'])) {
+                            $sDesc .= '.';
+                        }
+                        $shortDescs[] = $sDesc;
+                    }
+                }
+                if (!empty($shortDescs)) {
+                    $subtext = rtrim($subtext) . ' ' . implode(' ', $shortDescs);
+                }
+            }
         } elseif ($fieldKey === 'comparison_what_is') {
             $headline = !empty($b1) ? "What is {$b1}?" : 'What is this business?';
         } elseif ($fieldKey === 'comparison_usps') {
