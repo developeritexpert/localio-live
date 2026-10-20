@@ -986,6 +986,97 @@
                         </div>
                         @endif
 
+                        <!-- At a glance Box (Exact structure from product_detail.blade.php) -->
+                        @php
+                            $glanceResolved = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_at_a_glance', $lang_id ?? getCurrentLanguageID());
+                            $glanceHeadline = !empty($glanceResolved['headline']) 
+                                ? $glanceResolved['headline'] 
+                                : (($business->translations->first()->name ?? $business->name ?? '') . ' at a glance');
+                            $glanceLabels = $business->getGlanceLabels($lang_id ?? getCurrentLanguageID());
+                            $mainOfferingLabel = static_text('main_offering') ?: 'Main offering';
+                            $suitableForLabel = static_text('suitable_for') ?: 'Suitable for';
+                            $opt3Label = !empty($glanceLabels['option_3']) ? $glanceLabels['option_3'] : null;
+                            $opt4Label = !empty($glanceLabels['option_4']) ? $glanceLabels['option_4'] : null;
+
+                            $bTransGlance = $business->translations->where('lang_id', $lang_id ?? getCurrentLanguageID())->first() 
+                                ?? ($business->translations->where('language_id', $lang_id ?? getCurrentLanguageID())->first() ?? $business->translations->first());
+                            $mainOfferingVal = $bTransGlance->main_offering ?? null;
+                            $suitableForVal = $bTransGlance->suitable_for ?? null;
+                            $opt3Val = $bTransGlance->glance_option_3 ?? null;
+                            $opt4Val = $bTransGlance->glance_option_4 ?? null;
+                            $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || (!empty($opt3Label) && !empty($opt3Val)) || (!empty($opt4Label) && !empty($opt4Val));
+                        @endphp
+
+                        @if($hasGlanceData)
+                        <div class="main_feature_lg business-glance-card-wrapper">
+                            <style>
+                                .business-glance-list .glance-item {
+                                    display: flex;
+                                    align-items: flex-start;
+                                    justify-content: space-between;
+                                    gap: 16px;
+                                    padding: 11px 0;
+                                    border-bottom: 1px solid #f0f0f0;
+                                }
+                                .business-glance-list .glance-item:last-child {
+                                    border-bottom: none;
+                                    padding-bottom: 0;
+                                }
+                                .business-glance-list .glance-item:first-child {
+                                    padding-top: 4px;
+                                }
+                                .business-glance-list .glance-label {
+                                    font-weight: 600;
+                                    font-size: 13.5px;
+                                    color: #1e3050;
+                                    flex: 0 0 35%;
+                                    min-width: 110px;
+                                    line-height: 1.4;
+                                }
+                                .business-glance-list .glance-value {
+                                    font-size: 13px;
+                                    color: #475569;
+                                    line-height: 1.45;
+                                    flex: 1;
+                                    text-align: left;
+                                }
+                            </style>
+                            <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
+                                <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
+                                    <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
+                                        {{ $glanceHeadline }}
+                                    </h3>
+                                </div>
+                                <div class="business-glance-list">
+                                    @if(!empty($mainOfferingVal))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $mainOfferingLabel }}</span>
+                                        <span class="glance-value">{{ $mainOfferingVal }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($suitableForVal))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $suitableForLabel }}</span>
+                                        <span class="glance-value">{{ $suitableForVal }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($opt3Label) && !empty($opt3Val))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $opt3Label }}</span>
+                                        <span class="glance-value">{{ $opt3Val }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($opt4Label) && !empty($opt4Val))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $opt4Label }}</span>
+                                        <span class="glance-value">{{ $opt4Val }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- 2. Highlighted Reviews Card -->
                         @php
                             $topReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
