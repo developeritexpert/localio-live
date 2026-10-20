@@ -506,6 +506,20 @@ class ContentTemplateService
             'field2_label' => 'Subtext / Description',
             'description' => 'Headline and subtext displayed above the alternatives section on the comparison page.',
         ],
+        'comparison_fit' => [
+            'label' => 'FIT / WHICH OPTION FITS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Main Headline (H2)',
+            'field2_label' => 'Option Subheadline (supports [business])',
+            'description' => 'Headline and per-business subheadline for "Which option fits your needs?" comparison section.',
+        ],
+        'comparison_features' => [
+            'label' => 'COMPARE FEATURES SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Features Headline (H2)',
+            'field2_label' => 'Features Subtext',
+            'description' => 'Headline and subtext for the feature comparison section.',
+        ],
     ];
 
     public const BUSINESS_REVIEWS_FIELDS = [
@@ -2313,6 +2327,42 @@ class ContentTemplateService
                     'subtext'  => 'Discover other top providers worth evaluating alongside [business_vs].',
                 ],
             ],
+            'comparison_fit' => [
+                1 => [
+                    'headline' => 'Which option fits your needs?',
+                    'subtext'  => 'Consider [business] if…',
+                ],
+                2 => [
+                    'headline' => 'Which provider is right for you?',
+                    'subtext'  => 'Choose [business] if…',
+                ],
+                3 => [
+                    'headline' => 'Finding the right fit',
+                    'subtext'  => 'Go with [business] if…',
+                ],
+                4 => [
+                    'headline' => 'Which option fits your requirements?',
+                    'subtext'  => 'Pick [business] if…',
+                ],
+            ],
+            'comparison_features' => [
+                1 => [
+                    'headline' => 'Compare features',
+                    'subtext'  => 'Explore the features and capabilities offered by each provider. Switch between feature groups to compare the areas most relevant to you.',
+                ],
+                2 => [
+                    'headline' => 'Feature comparison',
+                    'subtext'  => 'Side-by-side breakdown of features and capabilities. Select different feature groups to compare key areas.',
+                ],
+                3 => [
+                    'headline' => 'Explore & compare features',
+                    'subtext'  => 'Review and compare technical specifications and features supported across each provider.',
+                ],
+                4 => [
+                    'headline' => 'Detailed feature breakdown',
+                    'subtext'  => 'Compare tools and capabilities offered by each provider to find the best match for your needs.',
+                ],
+            ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
@@ -3750,7 +3800,11 @@ class ContentTemplateService
 
         if ($template) {
             $headline = self::replacePlaceholders($template->headline, $category, null, $langId, $firstBiz, $compExtraTags);
-            $subtext  = self::replacePlaceholders($template->subtext, $category, null, $langId, $firstBiz, $compExtraTags);
+            if ($fieldKey === 'comparison_fit') {
+                $subtext = $template->subtext ?? 'Consider [business] if…';
+            } else {
+                $subtext  = self::replacePlaceholders($template->subtext, $category, null, $langId, $firstBiz, $compExtraTags);
+            }
 
             // Clean up possible dangling "vs " if business2 is missing
             if (empty($b2)) {
@@ -3850,6 +3904,12 @@ class ContentTemplateService
         } elseif ($fieldKey === 'comparison_alternatives') {
             $headline = 'Alternatives';
             $subtext = !empty($bVs) ? "Explore top-rated alternatives to {$bVs}." : '';
+        } elseif ($fieldKey === 'comparison_fit') {
+            $headline = 'Which option fits your needs?';
+            $subtext = 'Consider [business] if…';
+        } elseif ($fieldKey === 'comparison_features') {
+            $headline = 'Compare features';
+            $subtext = 'Explore the features and capabilities offered by each provider. Switch between feature groups to compare the areas most relevant to you.';
         }
 
         return [
