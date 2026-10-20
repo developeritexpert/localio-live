@@ -52,6 +52,118 @@
     $alternativesData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_alternatives', $curLangId);
     $finalAlternativesHeadline = !empty($alternativesData['headline']) ? $alternativesData['headline'] : 'Alternatives';
     $finalAlternativesSubtext = !empty($alternativesData['subtext']) ? $alternativesData['subtext'] : null;
+
+    $fitData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_fit', $curLangId);
+    $finalFitHeadline = !empty($fitData['headline']) ? $fitData['headline'] : 'Which option fits your needs?';
+    $finalFitSubtext = !empty($fitData['subtext']) ? $fitData['subtext'] : 'Consider [business] if…';
+
+    $featuresCompData = \App\Services\ContentTemplateService::resolveComparisonSection($cat, $businesses, 'comparison_features', $curLangId);
+    $finalFeaturesHeadline = !empty($featuresCompData['headline']) ? $featuresCompData['headline'] : 'Compare features';
+    $finalFeaturesSubtext = !empty($featuresCompData['subtext']) ? $featuresCompData['subtext'] : 'Explore the features and capabilities offered by each provider. Switch between feature groups to compare the areas most relevant to you.';
+
+    // Feature Comparison matrix preparation
+    $catId = $firstBiz ? $firstBiz->category_id : ($categoryTranslation ? $categoryTranslation->category_id : null);
+    $allCatFeatures = collect();
+    if ($catId) {
+        $allCatFeatures = \App\Models\Feature::with(['translations' => function($q) use ($curLangId) {
+            $q->where('lang_id', $curLangId);
+        }])
+        ->where('category_id', $catId)
+        ->where('status', 1)
+        ->get();
+    }
+    if ($allCatFeatures->isEmpty()) {
+        $bizFeatIds = $businesses->flatMap(function($b) {
+            return $b->features ? $b->features->pluck('id') : collect();
+        })->unique();
+        if ($bizFeatIds->isNotEmpty()) {
+            $allCatFeatures = \App\Models\Feature::with(['translations' => function($q) use ($curLangId) {
+                $q->where('lang_id', $curLangId);
+            }])
+            ->whereIn('id', $bizFeatIds)
+            ->where('status', 1)
+            ->get();
+        }
+    }
+
+    $bizFeatureLookup = [];
+    $bizFeatureValues = [];
+    foreach ($businesses as $b) {
+        $bizFeatureLookup[$b->id] = [];
+        $bizFeatureValues[$b->id] = [];
+        if ($b->features) {
+            foreach ($b->features as $bf) {
+                $bizFeatureLookup[$b->id][$bf->id] = true;
+            }
+        }
+        if ($b->relationLoaded('offerProducts')) {
+            foreach ($b->offerProducts as $op) {
+                foreach ($op->plans as $pl) {
+                    foreach ($pl->planFeatures as $pf) {
+                        $bizFeatureLookup[$b->id][$pf->feature_id] = true;
+                        if (!empty($pf->value) && !isset($bizFeatureValues[$b->id][$pf->feature_id])) {
+                            $bizFeatureValues[$b->id][$pf->feature_id] = $pf->value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    $groupMap = [
+        'Plans'       => 'Key features',
+        'Tools'       => 'Management tools',
+        'Build'       => 'Management tools',
+        'DNS'         => 'Hosting & performance',
+        'Domains'     => 'Hosting & performance',
+        'Performance' => 'Hosting & performance',
+        'Security'    => 'Security & backups',
+        'Support'     => 'Support',
+    ];
+    $defaultTabOrder = ['Key features', 'Hosting & performance', 'Management tools', 'Security & backups', 'Support'];
+    $groupedFeatures = [];
+    foreach ($allCatFeatures as $feat) {
+        $rawGroup = $feat->group_key ?: 'Other';
+        $grp = $groupMap[$rawGroup] ?? $rawGroup;
+        $priority = intval($feat->key_priority ?? ($feat->translations->first()?->key_priority ?? 0));
+        $name = $feat->translations->first()?->name ?? $feat->name ?? "Feature #{$feat->id}";
+        
+        $groupedFeatures[$grp][] = [
+            'id'       => $feat->id,
+            'name'     => $name,
+            'priority' => $priority,
+            'group'    => $grp,
+        ];
+    }
+    foreach ($groupedFeatures as $grp => &$gItems) {
+        usort($gItems, function($a, $b) {
+            if ($b['priority'] === $a['priority']) {
+                return strcmp($a['name'], $b['name']);
+            }
+            return $b['priority'] <=> $a['priority'];
+        });
+    }
+    unset($gItems);
+
+    $featureTabs = [];
+    foreach ($defaultTabOrder as $tabName) {
+        if (!empty($groupedFeatures[$tabName])) {
+            $featureTabs[] = [
+                'name'     => $tabName,
+                'slug'     => \Illuminate\Support\Str::slug($tabName),
+                'features' => $groupedFeatures[$tabName],
+            ];
+        }
+    }
+    foreach ($groupedFeatures as $tabName => $gItems) {
+        if (!in_array($tabName, $defaultTabOrder) && !empty($gItems)) {
+            $featureTabs[] = [
+                'name'     => $tabName,
+                'slug'     => \Illuminate\Support\Str::slug($tabName),
+                'features' => $gItems,
+            ];
+        }
+    }
 @endphp
 @if(isset($businesses) && count($businesses) > 0)
 <!-- Sticky Comparison Top Banner (Shows on scroll as sticky header) -->
@@ -122,6 +234,98 @@
 
 @push('styles')
 <style>
+/* Info icon & tooltip styles */
+.pro-con-info-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    vertical-align: middle;
+    outline: none;
+    padding: 0;
+    margin-left: 6px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    line-height: 1;
+}
+.pro-con-info-svg, .pro-con-info-icon {
+    display: inline-block;
+    vertical-align: middle;
+    color: #64748b;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+.pro-con-info-btn:hover .pro-con-info-svg,
+.pro-con-info-btn:hover .pro-con-info-icon,
+.pro-con-info-btn:focus .pro-con-info-svg,
+.pro-con-info-btn:focus .pro-con-info-icon,
+.pro-con-info-btn.is-active .pro-con-info-svg,
+.pro-con-info-btn.is-active .pro-con-info-icon {
+    color: #0284c7;
+    transform: scale(1.15);
+}
+.pro-con-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #1e293b;
+    color: #ffffff;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    white-space: normal;
+    min-width: 200px;
+    max-width: 280px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    z-index: 9999 !important;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.pro-con-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
+}
+.pro-con-info-btn:hover .pro-con-tooltip,
+.pro-con-info-btn:focus .pro-con-tooltip,
+.pro-con-info-btn.is-active .pro-con-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Compare Features section styles */
+.comp-feat-tab-btn:hover:not(.active) {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+.comp-feat-row:last-child {
+    border-bottom: none !important;
+}
+.comp-feat-row:last-child td {
+    border-bottom: none !important;
+}
+.comp-feat-toggle-btn {
+    cursor: pointer;
+}
+@keyframes compFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .sticky-comparison-bar {
     position: fixed;
     top: 0;
@@ -205,6 +409,47 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+/* Merged Top Comparison Card Styles */
+.pdc_box {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    position: relative !important;
+}
+
+@media (min-width: 768px) {
+    .pdc_box .versus-box {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        position: relative !important;
+        align-self: stretch !important;
+    }
+    .pdc_box .versus-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1px;
+        border-left: 1px dashed #06498b4d;
+        z-index: 1;
+    }
+    .pdc_box .versus-box p {
+        position: relative !important;
+        z-index: 2 !important;
+        margin-top: 15px !important;
+        margin-bottom: 0 !important;
+        background-color: #ffffff !important;
+    }
+    .pdc_box .versus-box p::before,
+    .pdc_box .versus-box p::after {
+        display: none !important;
+    }
 }
 
 </style>
@@ -430,92 +675,58 @@
                                         </div>
 
 
-                                        @if($business->should_show_detailed_ratings)
-                                        <!-- Thin horizontal line -->
-                                        <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
+                                        <!-- Horizontal divider line -->
+                                        <hr class="w-100" style="border: 0; border-top: 1px solid #e2e8f0; opacity: 1; margin: 20px 0 24px 0;">
 
-                                        <!-- Review Breakdown inside card -->
+                                        <!-- What stands out / USPs inside top card -->
                                         @php
-                                            $activeReviews = $business->reviews->whereIn('status', ['published', 'active']);
-                                            $activeReviewIds = $activeReviews->pluck('id')->toArray();
-                                            $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
-
-                                            $activeReviewsCount = $activeReviews->count();
-                                            if ($activeReviewsCount > 0) {
-                                                $recommendCount = $activeReviews->where('recommend', 1)->count();
-                                                $recPercent = round(($recommendCount / $activeReviewsCount) * 100);
-                                            } else {
-                                                $recPercent = $ratingCount > 0 && $rating > 0 ? round(($rating / 5) * 100) : 100;
-                                            }
+                                            $resolvedUspHeader = \App\Services\ContentTemplateService::resolveComparisonSection(
+                                                $cat,
+                                                [$business],
+                                                'comparison_usps',
+                                                $curLangId,
+                                                ['[business]' => $business->translations->first()?->name ?? $business->name ?? 'Business']
+                                            );
+                                            $finalUspHeadline = !empty($resolvedUspHeader['headline']) ? $resolvedUspHeader['headline'] : 'What stands out';
+                                            $uspsList = ($business->usps && $business->usps->count() > 0) ? $business->usps : collect();
+                                            $featsList = ($business->features && $business->features->count() > 0) ? $business->features : collect();
                                         @endphp
-                                        <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
-                                            <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">{{ static_text('detailed_user_ratings_heading') ?: 'Detailed user ratings' }} </p>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
-                                                @forelse($criteria as $criterion)
-                                                    @php
-                                                        $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
-                                                            ->orWhere(function ($q) use ($criterion) {
-                                                                if ($criterion->default_key) {
-                                                                    $q->where('default_key', $criterion->default_key);
-                                                                }
-                                                                $q->orWhereRaw('LOWER(name) = ?', [strtolower((string) $criterion->name)]);
-                                                            })
-                                                            ->pluck('id')
-                                                            ->toArray();
-
-                                                        $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
-                                                            ->whereIn('criteria_id', $matchingCriteriaIds)
-                                                            ->get();
-
-                                                        $totalScore = 0;
-                                                        $count = 0;
-                                                        if ($ratingRecords->isNotEmpty()) {
-                                                            $totalScore = $ratingRecords->sum('rating');
-                                                            $count = $ratingRecords->count();
-                                                        } else {
-                                                            foreach ($activeReviews as $review) {
-                                                                $legacyVal = null;
-                                                                $cName = strtolower((string) $criterion->name);
-                                                                if ($cName === 'ease of use') {
-                                                                    $legacyVal = $review->ease_of_use_rating;
-                                                                } elseif ($cName === 'customer service') {
-                                                                    $legacyVal = $review->customer_service_rating;
-                                                                } elseif ($cName === 'features') {
-                                                                    $legacyVal = $review->exclusive_service_rating;
-                                                                } elseif ($cName === 'value for money') {
-                                                                    $legacyVal = $review->value_for_money_rating;
-                                                                }
-                                                                if (!is_null($legacyVal) && $legacyVal > 0) {
-                                                                    $totalScore += $legacyVal;
-                                                                    $count++;
-                                                                }
-                                                            }
-                                                        }
-                                                        $crAvg = $count > 0 ? round($totalScore / $count, 1) : 0;
-                                                        $crPercent = min(100, max(0, $crAvg * 20));
-                                                    @endphp
-                                                    <li class="d-flex justify-content-between align-items-center">
-                                                        <span style="font-size: 12px; font-weight: 500; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="{{ $criterion->name }}">{{ $criterion->name }}</span>
-                                                        <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px; justify-content: flex-end;">
-                                                            <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
-                                                                <div class="progress-bar" style="height: 8px; width: {{ $crPercent }}%; background-color: #007bff; border-radius: 10px;"></div>
-                                                            </div>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($crAvg, 1) }}</span>
-                                                        </div>
-                                                    </li>
-                                                @empty
-                                                    <li class="d-flex justify-content-between align-items-center text-muted small">
-                                                        <span>{{ static_text('no_criteria_available') ?: 'No criteria available' }}</span>
-                                                    </li>
-                                                @endforelse
+                                        <div class="w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
+                                            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 14px; color: #002347;">
+                                                {!! \App\Services\ContentTemplateService::cleanHeading($finalUspHeadline) !!}
+                                            </h6>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 12px; flex: 1 1 auto;">
+                                                @if($uspsList->count() > 0)
+                                                    @foreach($uspsList->take(6) as $usp)
+                                                        @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
+                                                        @if(!empty($uText))
+                                                        <li class="d-flex align-items-start" style="gap: 10px;">
+                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 20px; margin-top: 2px;">
+                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 18px; height: 14px; object-fit: contain;">
+                                                            </span>
+                                                            <span style="font-size: 14.5px; font-weight: 500; color: #002347; line-height: 1.4;">{{ $uText }}</span>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                @elseif($featsList->count() > 0)
+                                                    @foreach($featsList->take(5) as $feature)
+                                                        <li class="d-flex align-items-start" style="gap: 10px;">
+                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 20px; margin-top: 2px;">
+                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 18px; height: 14px; object-fit: contain;">
+                                                            </span>
+                                                            <span style="font-size: 14.5px; font-weight: 500; color: #002347; line-height: 1.4;">{{ $feature->translations->first()?->name ?? $feature->name }}</span>
+                                                        </li>
+                                                    @endforeach
+                                                @else
+                                                    @php $bShort = $business->translations->first()?->short_description ?? $business->translations->first()?->description; @endphp
+                                                    @if(!empty($bShort))
+                                                        <li style="font-size: 14px; color: #475569; line-height: 1.5;">
+                                                            {{ \Illuminate\Support\Str::limit(strip_tags($bShort), 180) }}
+                                                        </li>
+                                                    @endif
+                                                @endif
                                             </ul>
-
-                                            <div class="d-flex justify-content-between align-items-center  recommended-users-row">
-                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
-                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
-                                            </div>
                                         </div>
-                                        @endif
                                     </div>
                                     <!-- <a href="javascript:void(0);" class="remove-from-comparison"
                                         data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $business->id]) }}">
@@ -538,80 +749,51 @@
                             @endif
                         </div>
                     </div>
-                    <!-- USPs or Company Description Card for each business -->
-                    <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
-                        @foreach ($businesses as $business)
-                            @php
-                                $bTrans = $business->translations->first();
-                                $bName = $bTrans?->name ?? $business->name ?? 'Product';
-                                $bDesc = $bTrans?->description ?? null;
-                                $hasUsps = !empty($business->is_affiliate) && (($business->usps && $business->usps->count() > 0) || ($business->features && $business->features->count() > 0));
-
-                                $resolvedWhatIsHeader = \App\Services\ContentTemplateService::resolveComparisonSection(
-                                    $cat,
-                                    [$business],
-                                    'comparison_what_is',
-                                    $curLangId,
-                                    ['[business]' => $bName, '[business_cap]' => ucfirst($bName)]
-                                );
-                                $finalWhatIsHeadline = !empty($bTrans?->description_title)
-                                    ? $bTrans->description_title
-                                    : (!empty($resolvedWhatIsHeader['headline']) ? $resolvedWhatIsHeader['headline'] : "About {$bName}");
-
-                                $resolvedUspHeader = \App\Services\ContentTemplateService::resolveComparisonSection(
-                                    $cat,
-                                    [$business],
-                                    'comparison_usps',
-                                    $curLangId,
-                                    ['[business]' => $bName, '[business_cap]' => ucfirst($bName)]
-                                );
-                                $finalUspHeadline = !empty($resolvedUspHeader['headline']) ? $resolvedUspHeader['headline'] : "Why choose {$bName}?";
-                            @endphp
-                            <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 mb-3">
-                                <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%; display: flex; flex-direction: column;">
-                                    @if($hasUsps)
-                                        <div>
-                                            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalUspHeadline) !!}</h6>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
-                                                @if($business->usps && $business->usps->count() > 0)
-                                                    @foreach($business->usps as $usp)
-                                                        @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
-                                                        @if(!empty($uText))
-                                                        <li class="d-flex align-items-center" style="gap: 12px;">
-                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                            </span>
-                                                            <span style="font-size: 15px; font-weight: 500; color: #002347; line-height: 1.3;">{{ $uText }}</span>
-                                                        </li>
-                                                        @endif
-                                                    @endforeach
-                                                @elseif($business->features && $business->features->count() > 0)
-                                                    @foreach($business->features as $feature)
-                                                        <li class="d-flex align-items-center" style="gap: 12px;">
-                                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                                <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                            </span>
-                                                            <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
-                                                        </li>
-                                                    @endforeach
-                                                @endif
-                                            </ul>
+                                        {{-- Which option fits your needs? Section --}}
+                    <div class="fit_comp_sec my-4" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="bg-white p-4 p-md-5" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 24px;">
+                                {!! \App\Services\ContentTemplateService::cleanHeading($finalFitHeadline) !!}
+                            </h2>
+                            <div class="row g-4">
+                                @foreach ($businesses as $business)
+                                    @php
+                                        $bTrans = $business->translations->first();
+                                        $bName = $bTrans?->name ?? $business->name ?? 'Business';
+                                        $subheadline = str_ireplace(['[business]', '[business_cap]', '[business_lc]'], [$bName, ucfirst($bName), strtolower($bName)], $finalFitSubtext);
+                                        if (!empty($bTrans?->comparison_fit_summary)) {
+                                            $fitSummary = trim(strip_tags($bTrans->comparison_fit_summary));
+                                        } else {
+                                            $rawFallback = trim(strip_tags($bTrans?->short_description ?: ($bTrans?->description ?? '')));
+                                            if (!empty($rawFallback)) {
+                                                $sentences = preg_split('/(?<=[.?!])\s+/', $rawFallback, 3);
+                                                $fitSummary = implode(' ', array_slice($sentences, 0, 2));
+                                            } else {
+                                                $fitSummary = null;
+                                            }
+                                        }
+                                    @endphp
+                                    <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 20px;">
+                                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <circle cx="10" cy="10" r="9" stroke="#10b981" stroke-width="1.8"/>
+                                                    <path d="M6 10.2L8.7 13L14 7.5" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                            <h5 class="m-0" style="font-size: 16px; font-weight: 700; color: #002347;">
+                                                {!! $subheadline !!}
+                                            </h5>
                                         </div>
-                                    @else
-                                        <div>
-                                            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($finalWhatIsHeadline) !!}</h6>
-                                            <div style="font-size: 14px;">
-                                                @if(!empty($bDesc))
-                                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($bDesc) !!}
-                                                @else
-                                                    <p class="text-muted mb-0">{{ static_text('no_description_available') ?: 'No description available.' }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
+                                        @if(!empty($fitSummary))
+                                            <p style="font-size: 14.5px; color: #475569; line-height: 1.6; margin: 0; padding-left: 28px;">
+                                                {{ $fitSummary }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
                     </div>
 
                     <!-- Pros and Cons Section for Each Business in Comparison Grid -->
@@ -653,8 +835,8 @@
                                     ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
                                     ->where('reviews.business_id', $b->id)
                                     ->whereIn('reviews.status', ['published', 'active'])
-                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
-                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                    ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', 'category_pro_cons.description', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', 'category_pro_cons.description')
                                     ->orderByDesc('review_count')
                                     ->get();
 
@@ -732,21 +914,26 @@
                                         @if($bPros->isNotEmpty() || $bCons->isNotEmpty())
                                             {{-- Pros Section --}}
                                             <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
-                                                    <span style="color: rgb(33, 172, 33);" class="me-2">
-                                                        <!-- <i class="fas fa-plus-circle"></i> -->
-                                                    </span>
-                                                    Pros
-                                                </div>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #002347;">Pros</p>
                                                 @if($bPros->isNotEmpty())
                                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                         @foreach($bPros->take(6) as $pro)
+                                                            @php
+                                                                $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.';
+                                                            @endphp
                                                             <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important; flex-shrink: 0; line-height: 1.3;">
                                                                     <i class="fas fa-plus-circle"></i>
                                                                 </span>
-                                                                <span style="color: #202124; font-size: 16px; font-weight:500; line-height: 1.4;">
+                                                                <span style="color: #202124; font-size: 14.5px; font-weight: 400; line-height: 1.5;">
                                                                     {{ $pro->text }}
+                                                                    <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($proDesc) }}">
+                                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                            <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                                        </svg>
+                                                                        <span class="pro-con-tooltip">{{ $proDesc }}</span>
+                                                                    </span>
                                                                     @if(!empty($pro->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
                                                                         from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}
@@ -765,21 +952,26 @@
 
                                             {{-- Cons Section --}}
                                             <div class="mb-1">
-                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
-                                                    <span style="color: rgb(247, 40, 60);" class="me-2">
-                                                        <!-- <i class="fas fa-minus-circle"></i> -->
-                                                    </span>
-                                                    Cons
-                                                </div>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #002347;">Cons</p>
                                                 @if($bCons->isNotEmpty())
                                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                         @foreach($bCons->take(6) as $con)
+                                                            @php
+                                                                $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.';
+                                                            @endphp
                                                             <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                <span style="color: rgb(247, 40, 60); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important; flex-shrink: 0; line-height: 1.3;">
                                                                     <i class="fas fa-minus-circle"></i>
                                                                 </span>
-                                                                <span style="color: #202124; font-size: 16px; font-weight:500; line-height: 1.4;">
+                                                                <span style="color: #202124; font-size: 14.5px; font-weight: 400; line-height: 1.5;">
                                                                     {{ $con->text }}
+                                                                    <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($conDesc) }}">
+                                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                                            <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                                        </svg>
+                                                                        <span class="pro-con-tooltip">{{ $conDesc }}</span>
+                                                                    </span>
                                                                     @if(!empty($con->review_count))
                                                                     <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
                                                                         from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}
@@ -804,6 +996,105 @@
                         </div>
                     </div>
                     @endif
+
+                    {{-- Compare Features Section --}}
+                    @if(!empty($featureTabs) && count($featureTabs) > 0)
+                    <div class="compare_features_sec my-4" id="section-compare-features" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="bg-white p-4 p-md-5" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);">
+                            <!-- Header -->
+                            <div class="mb-4">
+                                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+                                    {!! \App\Services\ContentTemplateService::cleanHeading($finalFeaturesHeadline) !!}
+                                </h2>
+                                @if(!empty($finalFeaturesSubtext))
+                                    <p style="font-size: 14.5px; color: #64748b; line-height: 1.6; margin: 0;">
+                                        {!! $finalFeaturesSubtext !!}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <!-- Tabs Row -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-4" id="compFeatureTabButtons">
+                                @foreach($featureTabs as $idx => $tabData)
+                                    @php $isActive = $idx === 0; @endphp
+                                    <button type="button" 
+                                        class="btn comp-feat-tab-btn {{ $isActive ? 'active' : '' }}" 
+                                        data-tab-target="pane-comp-feat-{{ $tabData['slug'] }}"
+                                        style="{{ $isActive ? 'background: #0f172a; color: #ffffff; border: 1px solid #0f172a;' : 'background: #ffffff; color: #475569; border: 1px solid #e2e8f0;' }} border-radius: 9999px; padding: 7px 18px; font-weight: 500; font-size: 13.5px; transition: all 0.15s ease;">
+                                        {{ $tabData['name'] }}
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <!-- Tab Panes -->
+                            <div class="comp-feature-tab-panes">
+                                @foreach($featureTabs as $idx => $tabData)
+                                    @php $isActive = $idx === 0; @endphp
+                                    <div class="comp-feat-pane {{ $isActive ? '' : 'd-none' }}" id="pane-comp-feat-{{ $tabData['slug'] }}">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle mb-0" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                                                <thead>
+                                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                        <th style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; width: 40%; background: transparent; border-bottom: 1px solid #e2e8f0;">Feature</th>
+                                                        @foreach($businesses as $b)
+                                                            @php $bColName = $b->translations->first()?->name ?? $b->name ?? 'Business'; @endphp
+                                                            <th class="text-center" style="font-size: 14px; font-weight: 600; color: #1e293b; padding: 14px 16px; background: transparent; border-bottom: 1px solid #e2e8f0;">
+                                                                {{ $bColName }}
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($tabData['features'] as $fIdx => $feat)
+                                                        @php $isExtra = $fIdx >= 10; @endphp
+                                                        <tr class="comp-feat-row {{ $isExtra ? 'comp-feat-extra d-none' : '' }}" style="border-bottom: 1px solid #f1f5f9;">
+                                                            <td style="font-size: 14px; color: #334155; padding: 14px 16px; font-weight: 400; border-bottom: 1px solid #f1f5f9;">
+                                                                {{ $feat['name'] }}
+                                                            </td>
+                                                            @foreach($businesses as $b)
+                                                                @php
+                                                                    $hasFeature = isset($bizFeatureLookup[$b->id][$feat['id']]);
+                                                                    $customVal = $bizFeatureValues[$b->id][$feat['id']] ?? null;
+                                                                @endphp
+                                                                <td class="text-center" style="padding: 14px 16px; font-size: 13.5px; color: #475569; border-bottom: 1px solid #f1f5f9;">
+                                                                    @php
+                                                                    $isYes = $hasFeature || (is_string($customVal) && in_array(strtolower(trim($customVal)), ['yes', 'true', '1']));
+                                                                    $isNo = !$hasFeature || (is_string($customVal) && in_array(strtolower(trim($customVal)), ['no', 'false', '0']));
+                                                                    $hasCustomText = !empty($customVal) && !in_array(strtolower(trim($customVal)), ['yes', 'no', 'true', 'false', '1', '0']);
+                                                                @endphp
+                                                                @if($hasCustomText)
+                                                                    <span style="font-weight: 500; color: #334155;">{{ $customVal }}</span>
+                                                                @elseif($isYes)
+                                                                    <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #ecfdf5;">
+                                                                        <i class="fas fa-check" style="font-size: 11px; color: #10b981;"></i>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="d-inline-flex align-items-center justify-content-center" style="width: 22px; height: 22px; border-radius: 50%; background: #fef2f2;">
+                                                                        <i class="fas fa-times" style="font-size: 11px; color: #ef4444;"></i>
+                                                                    </span>
+                                                                @endif
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        @if(count($tabData['features']) > 10)
+                                            <div class="text-center pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                                                <a href="javascript:void(0);" class="btn-g-link comp-feat-toggle-btn d-inline-flex align-items-center justify-content-center" data-pane="pane-comp-feat-{{ $tabData['slug'] }}" data-total="{{ count($tabData['features']) }}" data-expanded="false" style="cursor: pointer; gap: 6px;">
+                                                    <span class="btn-text">Show all ({{ count($tabData['features']) }})</span>
+                                                    <i class="fas fa-chevron-down btn-icon" style="font-size: 11px; transition: transform 0.2s ease;"></i>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    
 
                     <!-- price start from / offers (only for affiliated businesses) -->
                     @if($hasAffiliated)
@@ -914,6 +1205,8 @@
                             @endforeach
                         </div>
                     </div>
+                    @endif
+
                     @endif
                 </div>
             </div>
@@ -1773,6 +2066,98 @@
 </div>
 @push('styles')
 <style>
+/* Info icon & tooltip styles */
+.pro-con-info-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    vertical-align: middle;
+    outline: none;
+    padding: 0;
+    margin-left: 6px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    line-height: 1;
+}
+.pro-con-info-svg, .pro-con-info-icon {
+    display: inline-block;
+    vertical-align: middle;
+    color: #64748b;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+.pro-con-info-btn:hover .pro-con-info-svg,
+.pro-con-info-btn:hover .pro-con-info-icon,
+.pro-con-info-btn:focus .pro-con-info-svg,
+.pro-con-info-btn:focus .pro-con-info-icon,
+.pro-con-info-btn.is-active .pro-con-info-svg,
+.pro-con-info-btn.is-active .pro-con-info-icon {
+    color: #0284c7;
+    transform: scale(1.15);
+}
+.pro-con-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #1e293b;
+    color: #ffffff;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    white-space: normal;
+    min-width: 200px;
+    max-width: 280px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    z-index: 9999 !important;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.pro-con-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
+}
+.pro-con-info-btn:hover .pro-con-tooltip,
+.pro-con-info-btn:focus .pro-con-tooltip,
+.pro-con-info-btn.is-active .pro-con-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Compare Features section styles */
+.comp-feat-tab-btn:hover:not(.active) {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+.comp-feat-row:last-child {
+    border-bottom: none !important;
+}
+.comp-feat-row:last-child td {
+    border-bottom: none !important;
+}
+.comp-feat-toggle-btn {
+    cursor: pointer;
+}
+@keyframes compFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
    
 </style>
 @endpush
@@ -1946,6 +2331,72 @@ document.addEventListener('DOMContentLoaded', function () {
             menu.style.right = '0';
         }
     }
+
+    // Feature comparison tab switching
+    document.querySelectorAll('.comp-feat-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const targetPaneId = this.getAttribute('data-tab-target');
+            document.querySelectorAll('.comp-feat-tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = '#ffffff';
+                b.style.color = '#475569';
+                b.style.borderColor = '#e2e8f0';
+            });
+            this.classList.add('active');
+            this.style.background = '#0f172a';
+            this.style.color = '#ffffff';
+            this.style.borderColor = '#0f172a';
+
+            document.querySelectorAll('.comp-feat-pane').forEach(p => p.classList.add('d-none'));
+            const targetPane = document.getElementById(targetPaneId);
+            if (targetPane) {
+                targetPane.classList.remove('d-none');
+            }
+        });
+    });
+
+    // Feature comparison "Show all" / "Show less" toggle
+    document.querySelectorAll('.comp-feat-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const paneId = this.getAttribute('data-pane');
+            const total = this.getAttribute('data-total');
+            const isExpanded = this.getAttribute('data-expanded') === 'true';
+            const pane = document.getElementById(paneId);
+            if (!pane) return;
+
+            const extraRows = pane.querySelectorAll('.comp-feat-extra');
+            const btnText = this.querySelector('.btn-text');
+            const btnIcon = this.querySelector('.btn-icon');
+
+            if (isExpanded) {
+                extraRows.forEach(r => r.classList.add('d-none'));
+                this.setAttribute('data-expanded', 'false');
+                if (btnText) btnText.textContent = `Show all (${total})`;
+                if (btnIcon) btnIcon.style.transform = 'rotate(0deg)';
+            } else {
+                extraRows.forEach(r => { r.classList.remove('d-none'); r.style.animation = 'compFadeIn 0.25s ease'; });
+                this.setAttribute('data-expanded', 'true');
+                if (btnText) btnText.textContent = 'Show less';
+                if (btnIcon) btnIcon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+    // Mobile tap support for pro-con tooltips
+    document.querySelectorAll('.pro-con-info-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isActive = this.classList.contains('is-active');
+            document.querySelectorAll('.pro-con-info-btn.is-active').forEach(b => b.classList.remove('is-active'));
+            if (!isActive) {
+                this.classList.add('is-active');
+            }
+        });
+    });
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.pro-con-info-btn.is-active').forEach(b => b.classList.remove('is-active'));
+    });
 });
 </script>
 

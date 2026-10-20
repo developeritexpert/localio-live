@@ -177,9 +177,9 @@
                     <div class="col-lg-12">
                         <div class="is-asana-lft" id="section1">
                             <h2 style="margin-bottom: 12px;">{!! \App\Services\ContentTemplateService::cleanHeading($reviewsTitle1) !!}</h2>
-                            <div class="">
+                            <div class="is_text">
                                 @if(!empty($reviewsDesc1))
-                                    {!! $reviewsDesc1 !!}
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($reviewsDesc1) !!}
                                 @else
                                     <p style="margin-bottom: 0;">{{ $bName }} is a trusted technology service provider dedicated to helping businesses streamline operations, improve productivity, and strengthen their online presence. From custom software development and website design to cloud solutions and IT consulting, the company delivers tailored services that match the unique goals of each client.</p>
                                 @endif
@@ -188,7 +188,7 @@
                             @if(!empty($reviewsDesc2))
                                 <h2 class="mt-4" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $reviewsTitle2 }}</h2>
                                 <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                                    {!! $reviewsDesc2 !!}
+                                    {!! \App\Services\ContentTemplateService::formatDescriptionText($reviewsDesc2) !!}
                                 </div>
                             @endif
                         </div>
@@ -554,81 +554,8 @@
                                     @endif
 
                                 
-@php
-    $bizNameForPrompt2 = $business->translations->first()->name ?? $business->name ?? 'this product';
-    $resolvedReviewPrompt2 = \App\Services\ContentTemplateService::resolveBusinessSection(
-        $business,
-        'profile_review_prompt',
-        getCurrentLanguageID()
-    );
-    $promptHeadline2 = !empty($resolvedReviewPrompt2['headline'])
-        ? $resolvedReviewPrompt2['headline']
-        : "Would you recommend {$bizNameForPrompt2} to others?";
-    $promptSubtext2 = !empty($resolvedReviewPrompt2['subtext'])
-        ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
-        : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
-@endphp
-<div class="review-prompt-banner d-none" id="reviewPromptBanner"
-    style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
-
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div class="top-product-logo">
-            <x-business-logo :business="$business" />
-        </div>
-
-        <div>
-            <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
-                {!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline2) !!}
-            </p>
-
-            <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
-                {{ $promptSubtext2 }}
-            </p>
-        </div>
-    </div>
-
-    <div style="display: flex; gap: 12px; align-items: center;">
-        @auth
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-up"></i>
-            </button>
-
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-down"></i>
-            </button>
-        @else
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-up"></i>
-            </button>
-
-            <button
-                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
-                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
-                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                <i class="fas fa-thumbs-down"></i>
-            </button>
-        @endauth
-    </div>
-</div>
-
-
-
-
-
-                                    <div class="row review-row-prod-inr mx-0">
+                                    @if($hasUserReviews)
+<div class="row review-row-prod-inr mx-0">
 
                                         <div class="col-lg-12">
                                             <div class="review-sidebar-sticky">
@@ -852,6 +779,77 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @else
+                                    @php
+                                        $bizNameForPrompt2 = $business->translations->first()->name ?? $business->name ?? 'this product';
+                                        $resolvedReviewPrompt2 = \App\Services\ContentTemplateService::resolveBusinessSection(
+                                            $business,
+                                            'profile_review_prompt',
+                                            getCurrentLanguageID()
+                                        );
+                                        $promptHeadline2 = !empty($resolvedReviewPrompt2['headline'])
+                                            ? $resolvedReviewPrompt2['headline']
+                                            : "Would you recommend {$bizNameForPrompt2} to others?";
+                                        $promptSubtext2 = !empty($resolvedReviewPrompt2['subtext'])
+                                            ? trim(strip_tags($resolvedReviewPrompt2['subtext']))
+                                            : (static_text('share_experience_subheading') ?: 'Share your experience with the community');
+                                    @endphp
+                                    <div class="review-prompt-banner" id="reviewPromptBanner"
+                                        style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div class="top-product-logo">
+                                                <x-business-logo :business="$business" />
+                                            </div>
+
+                                            <div>
+                                                <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
+                                                    {!! \App\Services\ContentTemplateService::cleanHeading($promptHeadline2) !!}
+                                                </p>
+
+                                                <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
+                                                    {{ $promptSubtext2 }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div style="display: flex; gap: 12px; align-items: center;">
+                                            @auth
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </button>
+
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </button>
+                                            @else
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                </button>
+
+                                                <button
+                                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                                                    style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                                    onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                                                    onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                </button>
+                                            @endauth
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </section>
@@ -988,6 +986,97 @@
                         </div>
                         @endif
 
+                        <!-- At a glance Box (Exact structure from product_detail.blade.php) -->
+                        @php
+                            $glanceResolved = \App\Services\ContentTemplateService::resolveBusinessSection($business, 'profile_at_a_glance', $lang_id ?? getCurrentLanguageID());
+                            $glanceHeadline = !empty($glanceResolved['headline']) 
+                                ? $glanceResolved['headline'] 
+                                : (($business->translations->first()->name ?? $business->name ?? '') . ' at a glance');
+                            $glanceLabels = $business->getGlanceLabels($lang_id ?? getCurrentLanguageID());
+                            $mainOfferingLabel = static_text('main_offering') ?: 'Main offering';
+                            $suitableForLabel = static_text('suitable_for') ?: 'Suitable for';
+                            $opt3Label = !empty($glanceLabels['option_3']) ? $glanceLabels['option_3'] : null;
+                            $opt4Label = !empty($glanceLabels['option_4']) ? $glanceLabels['option_4'] : null;
+
+                            $bTransGlance = $business->translations->where('lang_id', $lang_id ?? getCurrentLanguageID())->first() 
+                                ?? ($business->translations->where('language_id', $lang_id ?? getCurrentLanguageID())->first() ?? $business->translations->first());
+                            $mainOfferingVal = $bTransGlance->main_offering ?? null;
+                            $suitableForVal = $bTransGlance->suitable_for ?? null;
+                            $opt3Val = $bTransGlance->glance_option_3 ?? null;
+                            $opt4Val = $bTransGlance->glance_option_4 ?? null;
+                            $hasGlanceData = !empty($mainOfferingVal) || !empty($suitableForVal) || (!empty($opt3Label) && !empty($opt3Val)) || (!empty($opt4Label) && !empty($opt4Val));
+                        @endphp
+
+                        @if($hasGlanceData)
+                        <div class="main_feature_lg business-glance-card-wrapper">
+                            <style>
+                                .business-glance-list .glance-item {
+                                    display: flex;
+                                    align-items: flex-start;
+                                    justify-content: space-between;
+                                    gap: 16px;
+                                    padding: 11px 0;
+                                    border-bottom: 1px solid #f0f0f0;
+                                }
+                                .business-glance-list .glance-item:last-child {
+                                    border-bottom: none;
+                                    padding-bottom: 0;
+                                }
+                                .business-glance-list .glance-item:first-child {
+                                    padding-top: 4px;
+                                }
+                                .business-glance-list .glance-label {
+                                    font-weight: 600;
+                                    font-size: 13.5px;
+                                    color: #1e3050;
+                                    flex: 0 0 35%;
+                                    min-width: 110px;
+                                    line-height: 1.4;
+                                }
+                                .business-glance-list .glance-value {
+                                    font-size: 13px;
+                                    color: #475569;
+                                    line-height: 1.45;
+                                    flex: 1;
+                                    text-align: left;
+                                }
+                            </style>
+                            <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
+                                <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
+                                    <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
+                                        {{ $glanceHeadline }}
+                                    </h3>
+                                </div>
+                                <div class="business-glance-list">
+                                    @if(!empty($mainOfferingVal))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $mainOfferingLabel }}</span>
+                                        <span class="glance-value">{{ $mainOfferingVal }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($suitableForVal))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $suitableForLabel }}</span>
+                                        <span class="glance-value">{{ $suitableForVal }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($opt3Label) && !empty($opt3Val))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $opt3Label }}</span>
+                                        <span class="glance-value">{{ $opt3Val }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($opt4Label) && !empty($opt4Val))
+                                    <div class="glance-item">
+                                        <span class="glance-label">{{ $opt4Label }}</span>
+                                        <span class="glance-value">{{ $opt4Val }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- 2. Highlighted Reviews Card -->
                         @php
                             $topReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
@@ -1010,7 +1099,7 @@
                                         <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                             <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
                                                 <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
-@if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($review->user->profile_image) }}"
                                                         class="rounded-circle"
                                                         style="width: 42px; height: 42px; object-fit: cover;"
@@ -1026,7 +1115,7 @@
                                                         </span>
                                                     </div>
                                                 @endif
-</a>
+                                                </a>
 
                                                 <div>
                                                     <p style="margin: 0; font-weight: 600;">
@@ -1034,13 +1123,13 @@
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
                                                             
-        @if($review->user)
-            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
-                {{ $review->user->displayName() }}
-            </a>
-        @else
-            Anonymous
-        @endif
+                                                        @if($review->user)
+                                                            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                                {{ $review->user->displayName() }}
+                                                            </a>
+                                                        @else
+                                                            Anonymous
+                                                        @endif
         
                                                         @endif
                                                     </p>

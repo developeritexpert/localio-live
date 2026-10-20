@@ -5,15 +5,11 @@
     @php
       $lang_id = getCurrentLanguageID();
 
-        $favicon = \App\Models\HeaderContent::where([
-        ['lang_id', $lang_id],
-        ['type', 'file']
-        ])->where('meta_key', 'favicon_icon')->pluck('meta_value', 'meta_key')->first();
+        $favicon = function_exists('getSiteFavicon') ? getSiteFavicon($lang_id) : 'front/img/icon.svg';
     @endphp
 
 
-    <head>
-        <meta charset="UTF-8" />
+            <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@yield('title', 'User Dashboard | Localio')</title>
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -40,13 +36,9 @@
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/custom1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/responsive1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/Basis Grotesque Pro/stylesheet.css') }}?{{ time() }}">
-        <link rel="shortcut icon" href="{{ url('front/img/icon.svg') }}">
-
         <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        @if($favicon)
-        <link rel="shortcut icon" href="{{ asset($favicon) }}">
-        @endif
+        @include('partials.favicon')
         @livewireStyles
         <style>
             /* .profile-circle {

@@ -358,6 +358,8 @@ class StaticContentController extends Controller
                     'most_mentioned_pros_cons_subtext',
                     'most_mentioned_pro_label',
                     'most_mentioned_con_label',
+                    'key_pro_label',
+                    'key_con_label',
                     'current_listing_badge',
                     'no_businesses_found_search',
                 ],

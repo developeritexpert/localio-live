@@ -312,13 +312,6 @@ class ContentTemplateService
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1 with formatting options.',
         ],
-        'popular_alternatives' => [
-            'label' => 'POPULAR ALTERNATIVES',
-            'type' => 'combined',
-            'field1_label' => 'Popular Alternatives Headline (H2)',
-            'field2_label' => 'Popular Alternatives Subtext',
-            'description' => 'Headline and subtext for the Most Popular Alternatives section.',
-        ],
         'compare_alternatives' => [
             'label' => 'TOP 10',
             'type' => 'combined',
@@ -368,12 +361,6 @@ class ContentTemplateService
             'type' => 'single',
             'field1_label' => 'Sub-headline',
             'description' => 'Sub-headline text below the H1.',
-        ],
-        'faq_search_headline' => [
-            'label' => 'SEARCH HEADLINE',
-            'type' => 'single',
-            'field1_label' => 'Search Headline',
-            'description' => 'Headline above the FAQ search box on the Business FAQs page.',
         ],
         'faq_search_placeholder' => [
             'label' => 'SEARCH PLACEHOLDER',
@@ -518,6 +505,20 @@ class ContentTemplateService
             'field1_label' => 'Alternatives Headline (H2)',
             'field2_label' => 'Subtext / Description',
             'description' => 'Headline and subtext displayed above the alternatives section on the comparison page.',
+        ],
+        'comparison_fit' => [
+            'label' => 'FIT / WHICH OPTION FITS SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Main Headline (H2)',
+            'field2_label' => 'Option Subheadline (supports [business])',
+            'description' => 'Headline and per-business subheadline for "Which option fits your needs?" comparison section.',
+        ],
+        'comparison_features' => [
+            'label' => 'COMPARE FEATURES SECTION',
+            'type' => 'combined',
+            'field1_label' => 'Features Headline (H2)',
+            'field2_label' => 'Features Subtext',
+            'description' => 'Headline and subtext for the feature comparison section.',
         ],
     ];
 
@@ -1490,16 +1491,6 @@ class ContentTemplateService
                     'subtext' => '<p>Compare the top competitors and alternatives to [business] side-by-side.</p>',
                 ],
             ],
-            'popular_alternatives' => [
-                1 => [
-                    'headline' => 'Most popular [business] alternatives',
-                    'subtext' => '<p>Based on other buyer\'s searches, these are the products that could be a good fit for you.</p>',
-                ],
-                2 => [
-                    'headline' => 'Popular [business] alternatives & competitors',
-                    'subtext' => '<p>Explore the most popular alternatives to [business] chosen by real users.</p>',
-                ],
-            ],
             'compare_alternatives' => [
                 1 => [
                     'headline' => 'Compare [business] alternatives',
@@ -1786,12 +1777,6 @@ class ContentTemplateService
     public static function seedDefaultBusinessFaqOptionsIfMissing(): void
     {
         $defaults = [
-            'faq_search_headline' => [
-                1 => 'Search [business] FAQs',
-                2 => 'Looking for specific [business] answers?',
-                3 => 'Find answers in [business] FAQs',
-                4 => 'Quick search: [business] FAQs',
-            ],
             'faq_search_placeholder' => [
                 1 => 'Search questions...',
                 2 => 'Search FAQs for [business]...',
@@ -2342,6 +2327,42 @@ class ContentTemplateService
                     'subtext'  => 'Discover other top providers worth evaluating alongside [business_vs].',
                 ],
             ],
+            'comparison_fit' => [
+                1 => [
+                    'headline' => 'Which option fits your needs?',
+                    'subtext'  => 'Consider [business] if…',
+                ],
+                2 => [
+                    'headline' => 'Which provider is right for you?',
+                    'subtext'  => 'Choose [business] if…',
+                ],
+                3 => [
+                    'headline' => 'Finding the right fit',
+                    'subtext'  => 'Go with [business] if…',
+                ],
+                4 => [
+                    'headline' => 'Which option fits your requirements?',
+                    'subtext'  => 'Pick [business] if…',
+                ],
+            ],
+            'comparison_features' => [
+                1 => [
+                    'headline' => 'Compare features',
+                    'subtext'  => 'Explore the features and capabilities offered by each provider. Switch between feature groups to compare the areas most relevant to you.',
+                ],
+                2 => [
+                    'headline' => 'Feature comparison',
+                    'subtext'  => 'Side-by-side breakdown of features and capabilities. Select different feature groups to compare key areas.',
+                ],
+                3 => [
+                    'headline' => 'Explore & compare features',
+                    'subtext'  => 'Review and compare technical specifications and features supported across each provider.',
+                ],
+                4 => [
+                    'headline' => 'Detailed feature breakdown',
+                    'subtext'  => 'Compare tools and capabilities offered by each provider to find the best match for your needs.',
+                ],
+            ],
         ];
 
         foreach ($defaults as $fieldKey => $options) {
@@ -2737,11 +2758,11 @@ class ContentTemplateService
             $bizName = $business->translations?->where('lang_id', $langId)->first()?->name 
                 ?? $business->translations?->first()?->name 
                 ?? $business->name ?? '';
-            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[entity_name]', '[entity]', '[entity_tc]'], $bizName, $text);
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[entity_name]'], $bizName, $text);
             $text = str_replace(['[business_cap]', '[entity_name_cap]'], ucfirst($bizName), $text);
             $text = str_replace(['[business_lc]', '[entity_name_lc]'], mb_strtolower($bizName), $text);
         } else {
-            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]', '[entity_name]', '[entity]', '[entity_tc]', '[entity_name_cap]', '[entity_name_lc]'], '', $text);
+            $text = str_replace(['[business]', '[business_name]', '[business_tc]', '[business_cap]', '[business_lc]', '[entity_name]', '[entity_name_cap]', '[entity_name_lc]'], '', $text);
         }
 
         // Category tags
@@ -2794,6 +2815,20 @@ class ContentTemplateService
                 '[entities2_short_cap]'  => $es2ShortCap,
                 '[entities2_short_lc]'   => $es2ShortLc,
 
+                // Entity aliases (e1 is default/primary entity)
+                '[entity_cap]'           => $e1Cap,
+                '[entity_lc]'            => $e1Lc,
+                '[entity_tc]'            => $e1Cap,
+                '[entity]'               => $e1Lc,
+                '[entities_cap]'         => $es1Cap,
+                '[entities_lc]'          => $es1Lc,
+                '[entities_tc]'          => $es1Cap,
+                '[entities]'             => $es1Lc,
+                '[entity_short_cap]'     => $e1ShortCap,
+                '[entity_short_lc]'      => $e1ShortLc,
+                '[entities_short_cap]'   => $es1ShortCap,
+                '[entities_short_lc]'    => $es1ShortLc,
+
                 // Legacy & convenience aliases
                 '[category]'             => $catLc,
                 '[Category]'             => $catCap,
@@ -2825,6 +2860,9 @@ class ContentTemplateService
                 '[entity1_short_cap]', '[entity1_short_lc]', '[entities1_short_cap]', '[entities1_short_lc]',
                 '[entity2_cap]', '[entity2_lc]', '[entities2_cap]', '[entities2_lc]',
                 '[entity2_short_cap]', '[entity2_short_lc]', '[entities2_short_cap]', '[entities2_short_lc]',
+                '[entity_cap]', '[entity_lc]', '[entities_cap]', '[entities_lc]',
+                '[entity_short_cap]', '[entity_short_lc]', '[entities_short_cap]', '[entities_short_lc]',
+                '[entity]', '[entities]', '[entity_tc]', '[entities_tc]',
             ], [
                 $catFallbackCap, $catFallbackCap, $catFallbackCap, $catFallbackCap,
                 $catFallbackTc,
@@ -3762,12 +3800,50 @@ class ContentTemplateService
 
         if ($template) {
             $headline = self::replacePlaceholders($template->headline, $category, null, $langId, $firstBiz, $compExtraTags);
-            $subtext  = self::replacePlaceholders($template->subtext, $category, null, $langId, $firstBiz, $compExtraTags);
+            if ($fieldKey === 'comparison_fit') {
+                $subtext = $template->subtext ?? 'Consider [business] if…';
+            } else {
+                $subtext  = self::replacePlaceholders($template->subtext, $category, null, $langId, $firstBiz, $compExtraTags);
+            }
 
             // Clean up possible dangling "vs " if business2 is missing
             if (empty($b2)) {
                 $headline = preg_replace('/\s+vs\s*$/i', '', $headline);
                 $subtext = preg_replace('/\s+vs\s*$/i', '', $subtext);
+            }
+
+            if ($fieldKey === 'comparison_h1' && $bizCollection->isNotEmpty()) {
+                $shortDescs = [];
+                foreach ($bizCollection as $b) {
+                    $trans = $b->translations ?? collect();
+                    $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', $langId) : null;
+                    if (!$t && is_iterable($trans)) {
+                        $t = collect($trans)->first();
+                    }
+                    $sDesc = trim(strip_tags((string)($t?->short_description ?? '')));
+                    if (empty($sDesc) && isset($b->id)) {
+                        $dbTrans = \App\Models\BusinessTranslation::where('business_id', $b->id)
+                            ->where('lang_id', $langId)
+                            ->first()
+                            ?: \App\Models\BusinessTranslation::where('business_id', $b->id)->first();
+                        $sDesc = trim(strip_tags((string)($dbTrans?->short_description ?? '')));
+                    }
+                    if (!empty($sDesc)) {
+                        if (!in_array(substr($sDesc, -1), ['.', '!', '?'])) {
+                            $sDesc .= '.';
+                        }
+                        $shortDescs[] = $sDesc;
+                    }
+                }
+
+                if (!empty($shortDescs)) {
+                    $extraText = implode(' ', $shortDescs);
+                    if (preg_match('/^(.*)(<\/p>\s*)$/is', $subtext, $pMatches)) {
+                        $subtext = rtrim($pMatches[1]) . ' ' . $extraText . $pMatches[2];
+                    } else {
+                        $subtext = rtrim($subtext) . (empty($subtext) ? '' : ' ') . $extraText;
+                    }
+                }
             }
 
             return [
@@ -3787,6 +3863,34 @@ class ContentTemplateService
             $subtext = !empty($catName)
                 ? "Learn more from our team about {$catName} pricing, features, and user ratings in our side-by-side comparison guide."
                 : "Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.";
+
+            if ($bizCollection->isNotEmpty()) {
+                $shortDescs = [];
+                foreach ($bizCollection as $b) {
+                    $trans = $b->translations ?? collect();
+                    $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', $langId) : null;
+                    if (!$t && is_iterable($trans)) {
+                        $t = collect($trans)->first();
+                    }
+                    $sDesc = trim(strip_tags((string)($t?->short_description ?? '')));
+                    if (empty($sDesc) && isset($b->id)) {
+                        $dbTrans = \App\Models\BusinessTranslation::where('business_id', $b->id)
+                            ->where('lang_id', $langId)
+                            ->first()
+                            ?: \App\Models\BusinessTranslation::where('business_id', $b->id)->first();
+                        $sDesc = trim(strip_tags((string)($dbTrans?->short_description ?? '')));
+                    }
+                    if (!empty($sDesc)) {
+                        if (!in_array(substr($sDesc, -1), ['.', '!', '?'])) {
+                            $sDesc .= '.';
+                        }
+                        $shortDescs[] = $sDesc;
+                    }
+                }
+                if (!empty($shortDescs)) {
+                    $subtext = rtrim($subtext) . ' ' . implode(' ', $shortDescs);
+                }
+            }
         } elseif ($fieldKey === 'comparison_what_is') {
             $headline = !empty($b1) ? "What is {$b1}?" : 'What is this business?';
         } elseif ($fieldKey === 'comparison_usps') {
@@ -3800,6 +3904,12 @@ class ContentTemplateService
         } elseif ($fieldKey === 'comparison_alternatives') {
             $headline = 'Alternatives';
             $subtext = !empty($bVs) ? "Explore top-rated alternatives to {$bVs}." : '';
+        } elseif ($fieldKey === 'comparison_fit') {
+            $headline = 'Which option fits your needs?';
+            $subtext = 'Consider [business] if…';
+        } elseif ($fieldKey === 'comparison_features') {
+            $headline = 'Compare features';
+            $subtext = 'Explore the features and capabilities offered by each provider. Switch between feature groups to compare the areas most relevant to you.';
         }
 
         return [

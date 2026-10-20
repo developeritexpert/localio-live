@@ -1,4 +1,4 @@
-@props(['business'])
+@props(['business', 'showDetailedRatings' => true])
 
 @php
     $curLangId = getCurrentLanguageID();
@@ -7,7 +7,7 @@
     
     $bizTotalReviews = $business->approved_reviews_count;
     $bizAvgRating = $business->display_rating;
-    $hasUserRatings = $business->should_show_detailed_ratings;
+    $hasUserRatings = !empty($showDetailedRatings) && $business->should_show_detailed_ratings;
     
     $criteriaRatings = [];
     if ($hasUserRatings) {

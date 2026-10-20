@@ -688,6 +688,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'features.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'offerProducts.plans.planFeatures',
         ])
         ->whereIn('id', $comparedProductIds)
         ->get();
@@ -800,6 +801,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'features.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'offerProducts.plans.planFeatures',
         ])
         ->whereHas('translations', function($query) use ($slugs) {
             $query->whereIn('slug', $slugs);

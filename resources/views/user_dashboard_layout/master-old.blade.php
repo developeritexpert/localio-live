@@ -34,14 +34,11 @@
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/custom1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/responsive1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/Basis Grotesque Pro/stylesheet.css') }}?{{ time() }}">
-        <link rel="shortcut icon" href="{{ url('front/img/icon.svg') }}">
         <!-- CSS -->
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        @if($favicon)
-        <link rel="shortcut icon" href="{{ asset($favicon) }}">
-        @endif
+        @include('partials.favicon')
         @livewireStyles
         <style>
             .profile-circle {

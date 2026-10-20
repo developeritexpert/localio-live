@@ -156,13 +156,6 @@
             <div class="col-lg-8 col-12">
                 
                 @php
-                    $resolvedSearchH = \App\Services\ContentTemplateService::resolveBusinessSection(
-                        $business,
-                        'faq_search_headline',
-                        getCurrentLanguageID()
-                    );
-                    $finalSearchHeadline = !empty($resolvedSearchH['headline']) ? $resolvedSearchH['headline'] : ('Search ' . $bName . ' FAQs');
-
                     $resolvedSearchP = \App\Services\ContentTemplateService::resolveBusinessSection(
                         $business,
                         'faq_search_placeholder',
@@ -179,9 +172,6 @@
                 @endphp
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
-                    <p style="margin-bottom: 14px;">
-                        {!! \App\Services\ContentTemplateService::cleanHeading($finalSearchHeadline) !!}
-                    </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="faqSearchInput" placeholder="{{ $finalSearchPlaceholder }}" autocomplete="off">
@@ -645,14 +635,14 @@
                                             @endif
                                             <div>
                                                 <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
-        @if(isset($rev) && $rev->user_id)
-            <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
-                {{ $displayName }}
-            </a>
-        @else
-            {{ $displayName }}
-        @endif
-        </p>
+                                            @if(isset($rev) && $rev->user_id)
+                                                <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                    {{ $displayName }}
+                                                </a>
+                                            @else
+                                                {{ $displayName }}
+                                            @endif
+                                            </p>
         
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
