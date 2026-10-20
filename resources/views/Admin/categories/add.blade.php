@@ -1586,38 +1586,51 @@
                     setCkeditorContent(document.getElementById('description'), desc);
                 }
 
-                // 7. Category Type (Parent vs Subcategory)
-                let isParent = true;
-                if (data.category_type) {
-                    isParent = (data.category_type.toLowerCase() === 'parent' || data.category_type.toLowerCase() === 'category');
-                } else if (data.is_parent !== undefined) {
-                    isParent = Boolean(data.is_parent);
-                } else if (data.parent_id || data.parent_name || data.parent_category) {
-                    isParent = false;
-                }
+                // 7. Category Type (Parent vs Subcategory) - ONLY apply if explicitly provided in JSON
+                const hasCategoryTypeInfo = (data.category_type !== undefined && data.category_type !== null) ||
+                                            (data.is_parent !== undefined && data.is_parent !== null) ||
+                                            (data.parent_id !== undefined && data.parent_id !== null && data.parent_id !== "") ||
+                                            (data.parent_name !== undefined && data.parent_name !== null && data.parent_name !== "") ||
+                                            (data.parent_category !== undefined && data.parent_category !== null && data.parent_category !== "");
 
-                if (isParent) {
-                    $('#type_parent').prop('checked', true).trigger('change');
-                } else {
-                    $('#type_subcategory').prop('checked', true).trigger('change');
+                if (hasCategoryTypeInfo) {
+                    let isParent = true;
+                    if (data.category_type !== undefined && data.category_type !== null) {
+                        const typeVal = String(data.category_type).toLowerCase().trim();
+                        isParent = (typeVal === "parent" || typeVal === "category" || typeVal === "main");
+                    } else if (data.is_parent !== undefined && data.is_parent !== null) {
+                        isParent = Boolean(data.is_parent);
+                    } else if (data.parent_id || data.parent_name || data.parent_category) {
+                        isParent = false;
+                    }
 
-                    // Match parent category by ID or name
-                    const targetParentId = data.parent_id;
-                    const targetParentName = (data.parent_name || data.parent_category || '').toString().toLowerCase().trim();
+                    if (isParent) {
+                        if (!$('#type_parent').is(':disabled')) {
+                            $('#type_parent').prop('checked', true).trigger('change');
+                        }
+                    } else {
+                        if (!$('#type_subcategory').is(':disabled')) {
+                            $('#type_subcategory').prop('checked', true).trigger('change');
 
-                    if (targetParentId) {
-                        $('#parent_id').val(targetParentId);
-                    } else if (targetParentName) {
-                        let matchedVal = '';
-                        $('#parent_id option').each(function() {
-                            const optText = $(this).text().toLowerCase().trim();
-                            if (optText === targetParentName || optText.includes(targetParentName)) {
-                                matchedVal = $(this).val();
-                                return false;
+                            // Match parent category by ID or name
+                            const targetParentId = data.parent_id;
+                            const targetParentName = (data.parent_name || data.parent_category || "").toString().toLowerCase().trim();
+
+                            if (targetParentId) {
+                                $('#parent_id').val(targetParentId);
+                            } else if (targetParentName) {
+                                let matchedVal = "";
+                                $('#parent_id option').each(function() {
+                                    const optText = $(this).text().toLowerCase().trim();
+                                    if (optText === targetParentName || optText.includes(targetParentName)) {
+                                        matchedVal = $(this).val();
+                                        return false;
+                                    }
+                                });
+                                if (matchedVal) {
+                                    $('#parent_id').val(matchedVal);
+                                }
                             }
-                        });
-                        if (matchedVal) {
-                            $('#parent_id').val(matchedVal);
                         }
                     }
                 }
