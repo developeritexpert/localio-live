@@ -101,7 +101,7 @@
 
   // CurrentLink Detect @v1.0
   NioApp.CurrentLink = function () {
-    var _link = '.nk-menu-link, .menu-link, .nav-link',
+    var _link = '.nk-menu-link, .menu-link',
       currentPath = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
     $(_link).each(function () {
       var self = $(this),
