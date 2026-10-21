@@ -276,9 +276,42 @@
                     </p>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Select JSON / JSONL File</label>
-                        <input type="file" name="result_file" class="form-control" accept=".json,.jsonl,.txt">
-                        <span class="form-note">Accepts standard OpenAI batch output file (<code class="fs-11px">.jsonl</code>) or structured JSON array.</span>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold mb-0">Select JSON / JSONL File(s)</label>
+                            <span class="badge bg-outline-info fs-11px">Multi-file supported (up to 50+ files)</span>
+                        </div>
+                        <input type="file" name="result_files[]" id="reviewResultFilesInput" class="form-control" accept=".json,.jsonl,.txt" multiple>
+                        <span class="form-note">Accepts standard OpenAI batch output files (<code class="fs-11px">.jsonl</code>) or structured JSON arrays.</span>
+                        
+                        <div id="reviewFileSelectionInfo" class="mt-2 p-2 bg-light rounded border d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold small text-dark">
+                                    <em class="icon ni ni-check-circle-fill text-success me-1"></em> <span id="reviewFileCountBadge">0</span> file(s) selected
+                                </span>
+                                <div>
+                                    <span class="badge bg-white border text-muted me-1" id="reviewFileSizeBadge">0 KB</span>
+                                    <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1" id="btnReviewClearFiles">Clear</button>
+                                </div>
+                            </div>
+                            <div id="reviewFileNamesList" class="custom-scrollbar text-muted" style="max-height: 85px; overflow-y: auto; font-size: 11px; line-height: 1.4;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reviewUploadProgressContainer" class="mb-3 p-3 bg-lighter rounded border d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold small text-primary" id="reviewUploadProgressStatus">
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span> Uploading & processing batch files...
+                            </span>
+                            <span class="badge bg-primary" id="reviewUploadProgressPercent">0%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 14px; border-radius: 6px;">
+                            <div id="reviewUploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
+                        </div>
+                        <div class="small text-muted d-flex justify-content-between" id="reviewUploadProgressDetail">
+                            <span id="reviewUploadProgressText">Processing...</span>
+                            <span id="reviewUploadProgressStats"></span>
+                        </div>
                     </div>
 
                     <div class="text-center my-2 text-soft fw-bold fs-12px">— OR PASTE JSON TEXT DIRECTLY —</div>
@@ -295,7 +328,7 @@
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" id="btnSubmitReviewUpload" class="btn btn-success">
                         <em class="icon ni ni-check-circle me-1"></em> Process & Apply Results
                     </button>
                 </div>

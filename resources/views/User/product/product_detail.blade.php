@@ -821,7 +821,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 </div>
                             </div>
                             @push('styles')
-<style>
+                            <style>
                                 #prosConsTab .nav-link.active {
                                     color: #1e3050 !important;
                                 }
@@ -2238,7 +2238,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     }
                                                     @endif
                                                 </style>
-@endpush
+                                                @endpush
                                                 <div class="crm_review_box review_sec" id="all-reviews">
 
                                                     @php
@@ -3001,55 +3001,55 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             }
                             $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
                             @endphp
-@if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
-    <div class="innr_price_trail">
+                            @if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
+                                <div class="innr_price_trail">
 
-        @if($hasStartingPrice)
-            <div class="main_feature_sm">
-                <div class="feture_box str_prc_box">
+                                    @if($hasStartingPrice)
+                                        <div class="main_feature_sm">
+                                            <div class="feture_box str_prc_box">
 
-                    <p class="starting-price-title">
-                        {{ static_text('starting_price_label') ?: 'Starting price' }}
-                    </p>
+                                                <p class="starting-price-title">
+                                                    {{ static_text('starting_price_label') ?: 'Starting price' }}
+                                                </p>
 
-                    <p class="starting-price-value">
-                        {{ $currency }}{{ $startingPrice }}
-                    </p>
+                                                <p class="starting-price-value">
+                                                    {{ $currency }}{{ $startingPrice }}
+                                                </p>
 
-    @if (
-    !empty($additional_info) &&
-    !in_array(
-        strtoupper(trim((string) $additional_info)),
-        ['NA', 'N/A', 'NULL']
-    )
-)
-    <p class="starting-price-text">
-        {{ $additional_info }}
-    </p>
-@elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
-    <p class="starting-price-text">
-        {{ static_text('pricing_per_prefix') ?: 'per' }} {{ strtolower($timeUnit) }}
-    </p>
-@endif
+                                @if (
+                                !empty($additional_info) &&
+                                !in_array(
+                                    strtoupper(trim((string) $additional_info)),
+                                    ['NA', 'N/A', 'NULL']
+                                )
+                            )
+                                <p class="starting-price-text">
+                                    {{ $additional_info }}
+                                </p>
+                            @elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
+                                <p class="starting-price-text">
+                                    {{ static_text('pricing_per_prefix') ?: 'per' }} {{ strtolower($timeUnit) }}
+                                </p>
+                            @endif
 
-                    <a href="{{ $business->getTrackedUrl() }}"
-                        data-track="{{ json_encode([
-                            'type' => 'click',
-                            'business_id' => $business->id,
-                            'action' => 'view_pricing',
-                            'label' => 'View pricing',
-                        ]) }}"
-                        target="_blank"
-                        rel="sponsored"
-                        class="starting-price-link">
-                        {{ static_text('view_pricing_link') ?: 'View pricing' }}
-                    </a>
+                            <a href="{{ $business->getTrackedUrl() }}"
+                                data-track="{{ json_encode([
+                                    'type' => 'click',
+                                    'business_id' => $business->id,
+                                    'action' => 'view_pricing',
+                                    'label' => 'View pricing',
+                                ]) }}"
+                                target="_blank"
+                                rel="sponsored"
+                                class="starting-price-link">
+                                {{ static_text('view_pricing_link') ?: 'View pricing' }}
+                            </a>
 
-                </div>
+                        </div>
+                    </div>
+                @endif
+
             </div>
-        @endif
-
-    </div>
 
 
                                 @if($hasFreeTrial)
@@ -3481,11 +3481,11 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             @if ($business->is_affiliate)
                                             <a href="{{ $business->getTrackedUrl() }}"
                                                 data-track="{{ json_encode([
-                    'type' => 'click',
-                    'business_id' => $business->id,
-                    'action' => 'visit_website',
-                    'label' => 'Visit Website',
-                ]) }}"
+                                                'type' => 'click',
+                                                'business_id' => $business->id,
+                                                'action' => 'visit_website',
+                                                'label' => 'Visit Website',
+                                            ]) }}"
                                                 target="_blank" rel="sponsored" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
                                                 {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
                                             </a>
@@ -3494,7 +3494,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     </div>
 
                                     @push('styles')
-<style>
+                                    <style>
                                         .mobile-sticky-bottom-nav {
                                             position: fixed;
                                             bottom: 0;
@@ -3526,7 +3526,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             }
                                         }
                                     </style>
-@endpush
+                            @endpush
 
                         </div>
                     </div>
