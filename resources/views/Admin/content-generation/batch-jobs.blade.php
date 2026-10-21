@@ -376,11 +376,37 @@ const sampleResultJson = `{!! addslashes($batchResultExample ?? '') !!}`;
 const sampleFeatureResultJson = `{!! addslashes($featureBatchResultExample ?? '') !!}`;
 let currentModalIsFeature = false;
 
+function resetUploadModalState(label = 'Auto-detect from files') {
+    const labelEl = document.getElementById('uploadModalBatchId');
+    if (labelEl) labelEl.textContent = label;
+    const textInput = document.getElementById('resultTextInput');
+    if (textInput) textInput.value = '';
+    const fileInput = document.getElementById('resultFilesInput');
+    if (fileInput) fileInput.value = '';
+    const fileInfo = document.getElementById('fileSelectionInfo');
+    if (fileInfo) fileInfo.classList.add('d-none');
+    const fileNamesList = document.getElementById('fileNamesList');
+    if (fileNamesList) fileNamesList.innerHTML = '';
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    if (progressContainer) progressContainer.classList.add('d-none');
+    const progressBar = document.getElementById('uploadProgressBar');
+    if (progressBar) progressBar.style.width = '0%';
+    const progressPercent = document.getElementById('uploadProgressPercent');
+    if (progressPercent) progressPercent.textContent = '0%';
+    const progressStats = document.getElementById('uploadProgressStats');
+    if (progressStats) progressStats.textContent = '';
+    const btnSubmit = document.getElementById('btnSubmitUpload');
+    if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<em class="icon ni ni-check me-1"></em> Process & Apply Result';
+    }
+}
+
 function openGlobalUploadModal() {
     currentModalIsFeature = false;
+    resetUploadModalState('Auto-detect from files');
     const form = document.getElementById('uploadResultForm');
     form.action = "{{ route('content-gen.batch-jobs.upload-global-result') }}";
-    document.getElementById('resultTextInput').value = '';
     if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
         $('#uploadResultModal').modal('show');
     } else if (window.bootstrap && bootstrap.Modal) {
@@ -404,11 +430,10 @@ let currentExampleTab = 'business';
 
 function openUploadModal(jobId, batchId, isFeature = false) {
     currentModalIsFeature = isFeature;
+    const label = (batchId || ('#' + jobId)) + (isFeature ? ' (Features)' : ' (Businesses)');
+    resetUploadModalState(label);
     const form = document.getElementById('uploadResultForm');
     form.action = `/admin-dashboard/content-generation/batch-jobs/${jobId}/upload-result`;
-    const label = (batchId || ('#' + jobId)) + (isFeature ? ' (Features)' : ' (Businesses)');
-    document.getElementById('uploadModalBatchId').textContent = label;
-    document.getElementById('resultTextInput').value = '';
     if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
         $('#uploadResultModal').modal('show');
     } else if (window.bootstrap && bootstrap.Modal) {
@@ -557,6 +582,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function closeUploadModal() {
+    resetUploadModalState();
     if (window.jQuery && typeof $('#uploadResultModal').modal === 'function') {
         $('#uploadResultModal').modal('hide');
     }
