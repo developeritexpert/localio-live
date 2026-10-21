@@ -157,31 +157,45 @@
                                 </li>
 
                                 <!-- Batches -->
-                                <li class="nk-menu-item has-sub {{ request()->routeIs('admin.reviews.batches*', 'content-gen.batch-jobs*') ? 'active current-page' : '' }}">
+                                @php
+                                    $contentBatchPendingCount = class_exists(\App\Models\AiBatchJob::class)
+                                        ? \App\Models\AiBatchJob::where(function($q) {
+                                            $q->whereNull('prompt_type')->orWhere('prompt_type', '!=', 'review_moderation');
+                                        })->whereIn('status', ['pending', 'processing'])->count()
+                                        : 0;
+
+                                    $reviewsBatchPendingJobs = class_exists(\App\Models\AiBatchJob::class)
+                                        ? \App\Models\AiBatchJob::where('prompt_type', 'review_moderation')
+                                            ->whereIn('status', ['pending', 'processing'])->count()
+                                        : 0;
+                                    $reviewsWaitingForBatch = class_exists(\App\Models\Review::class)
+                                        ? \App\Models\Review::readyForBatch()->count()
+                                        : 0;
+                                    $reviewsBatchPendingCount = $reviewsBatchPendingJobs > 0 ? $reviewsBatchPendingJobs : $reviewsWaitingForBatch;
+
+                                    $totalBatchesPendingCount = $contentBatchPendingCount + $reviewsBatchPendingCount;
+                                @endphp
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*', 'admin.reviews.batches*') ? 'active current-page' : '' }}">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon">
                                             <em class="icon ni ni-layers-fill"></em>
                                         </span>
                                         <span class="nk-menu-text">Batches</span>
-                                        @php
-                                            $waitingBatchCount = \App\Models\Review::readyForBatch()->count();
-                                        @endphp
-                                        @if($waitingBatchCount > 0)
-                                            <span class="badge bg-primary ms-auto">{{ $waitingBatchCount }}</span>
+                                        @if($totalBatchesPendingCount > 0)
+                                            <span class="badge bg-primary ms-auto">{{ $totalBatchesPendingCount }}</span>
                                         @endif
                                     </a>
                                     <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.batches*') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.batches') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Review Batches</span>
-                                                @if($waitingBatchCount > 0)
-                                                    <span class="badge bg-primary ms-auto">{{ $waitingBatchCount }}</span>
-                                                @endif
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.batch-jobs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Content</span>
+                                                <span class="badge {{ $contentBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $contentBatchPendingCount }}</span>
                                             </a>
                                         </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.batch-jobs*') ? 'active' : '' }}">
-                                            <a href="{{ route('content-gen.batch-jobs') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Content Generation Batches</span>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.batches*') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.batches') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Reviews</span>
+                                                <span class="badge {{ $reviewsBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $reviewsBatchPendingCount }}</span>
                                             </a>
                                         </li>
                                     </ul>
