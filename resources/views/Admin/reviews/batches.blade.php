@@ -276,9 +276,42 @@
                     </p>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Select JSON / JSONL File</label>
-                        <input type="file" name="result_file" class="form-control" accept=".json,.jsonl,.txt">
-                        <span class="form-note">Accepts standard OpenAI batch output file (<code class="fs-11px">.jsonl</code>) or structured JSON array.</span>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold mb-0">Select JSON / JSONL File(s)</label>
+                            <span class="badge bg-outline-info fs-11px">Multi-file supported (up to 50+ files)</span>
+                        </div>
+                        <input type="file" name="result_files[]" id="reviewResultFilesInput" class="form-control" accept=".json,.jsonl,.txt" multiple>
+                        <span class="form-note">Accepts standard OpenAI batch output files (<code class="fs-11px">.jsonl</code>) or structured JSON arrays.</span>
+                        
+                        <div id="reviewFileSelectionInfo" class="mt-2 p-2 bg-light rounded border d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold small text-dark">
+                                    <em class="icon ni ni-check-circle-fill text-success me-1"></em> <span id="reviewFileCountBadge">0</span> file(s) selected
+                                </span>
+                                <div>
+                                    <span class="badge bg-white border text-muted me-1" id="reviewFileSizeBadge">0 KB</span>
+                                    <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1" id="btnReviewClearFiles">Clear</button>
+                                </div>
+                            </div>
+                            <div id="reviewFileNamesList" class="custom-scrollbar text-muted" style="max-height: 85px; overflow-y: auto; font-size: 11px; line-height: 1.4;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reviewUploadProgressContainer" class="mb-3 p-3 bg-lighter rounded border d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold small text-primary" id="reviewUploadProgressStatus">
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span> Uploading & processing batch files...
+                            </span>
+                            <span class="badge bg-primary" id="reviewUploadProgressPercent">0%</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 14px; border-radius: 6px;">
+                            <div id="reviewUploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
+                        </div>
+                        <div class="small text-muted d-flex justify-content-between" id="reviewUploadProgressDetail">
+                            <span id="reviewUploadProgressText">Processing...</span>
+                            <span id="reviewUploadProgressStats"></span>
+                        </div>
                     </div>
 
                     <div class="text-center my-2 text-soft fw-bold fs-12px">— OR PASTE JSON TEXT DIRECTLY —</div>
@@ -295,7 +328,7 @@
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" id="btnSubmitReviewUpload" class="btn btn-success">
                         <em class="icon ni ni-check-circle me-1"></em> Process & Apply Results
                     </button>
                 </div>
@@ -361,6 +394,7 @@ const sampleResultJson = `[
 ]`;
 
 function openUploadModal(jobId = null, batchId = null) {
+    resetReviewUploadModalState();
     const form = document.getElementById('uploadResultForm');
     if (jobId) {
         form.action = `/admin-dashboard/reviews/batches/${jobId}/upload-result`;
@@ -376,8 +410,164 @@ function openExampleModal() {
     modal.show();
 }
 
+function resetReviewUploadModalState() {
+    const textInput = document.getElementById('resultTextInput');
+    if (textInput) textInput.value = '';
+    const fileInput = document.getElementById('reviewResultFilesInput');
+    if (fileInput) fileInput.value = '';
+    const fileInfo = document.getElementById('reviewFileSelectionInfo');
+    if (fileInfo) fileInfo.classList.add('d-none');
+    const fileNamesList = document.getElementById('reviewFileNamesList');
+    if (fileNamesList) fileNamesList.innerHTML = '';
+    const progressContainer = document.getElementById('reviewUploadProgressContainer');
+    if (progressContainer) progressContainer.classList.add('d-none');
+    const progressBar = document.getElementById('reviewUploadProgressBar');
+    if (progressBar) progressBar.style.width = '0%';
+    const progressPercent = document.getElementById('reviewUploadProgressPercent');
+    if (progressPercent) progressPercent.textContent = '0%';
+    const progressStats = document.getElementById('reviewUploadProgressStats');
+    if (progressStats) progressStats.textContent = '';
+    const btnSubmit = document.getElementById('btnSubmitReviewUpload');
+    if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<em class="icon ni ni-check-circle me-1"></em> Process & Apply Results';
+    }
+}
+
 function insertSampleResult() {
     document.getElementById('resultTextInput').value = sampleResultJson;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('reviewResultFilesInput');
+    const fileInfo = document.getElementById('reviewFileSelectionInfo');
+    const fileCountBadge = document.getElementById('reviewFileCountBadge');
+    const fileSizeBadge = document.getElementById('reviewFileSizeBadge');
+    const fileNamesList = document.getElementById('reviewFileNamesList');
+    const btnClearFiles = document.getElementById('btnReviewClearFiles');
+    const form = document.getElementById('uploadResultForm');
+    const textInput = document.getElementById('resultTextInput');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const files = Array.from(this.files);
+            if (files.length > 0) {
+                fileCountBadge.textContent = files.length;
+                let totalBytes = files.reduce((acc, f) => acc + f.size, 0);
+                fileSizeBadge.textContent = totalBytes > 1048576 
+                    ? (totalBytes / 1048576).toFixed(2) + ' MB' 
+                    : (totalBytes / 1024).toFixed(1) + ' KB';
+
+                fileNamesList.innerHTML = files.map((f, i) => `<div>${i + 1}. <span class="text-dark fw-semibold">${f.name}</span> (${(f.size / 1024).toFixed(1)} KB)</div>`).join('');
+                fileInfo.classList.remove('d-none');
+            } else {
+                fileInfo.classList.add('d-none');
+                fileNamesList.innerHTML = '';
+            }
+        });
+    }
+
+    if (btnClearFiles && fileInput) {
+        btnClearFiles.addEventListener('click', function() {
+            fileInput.value = '';
+            fileInfo.classList.add('d-none');
+            fileNamesList.innerHTML = '';
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            const files = fileInput && fileInput.files ? Array.from(fileInput.files) : [];
+            const textVal = textInput ? textInput.value.trim() : '';
+
+            if (files.length === 0 && !textVal) {
+                e.preventDefault();
+                alert('Please select at least one JSON/JSONL file or paste JSON text.');
+                return;
+            }
+
+            if (files.length > 0) {
+                e.preventDefault();
+
+                const progressContainer = document.getElementById('reviewUploadProgressContainer');
+                const progressBar = document.getElementById('reviewUploadProgressBar');
+                const progressPercent = document.getElementById('reviewUploadProgressPercent');
+                const progressStatus = document.getElementById('reviewUploadProgressStatus');
+                const progressText = document.getElementById('reviewUploadProgressText');
+                const progressStats = document.getElementById('reviewUploadProgressStats');
+                const btnSubmit = document.getElementById('btnSubmitReviewUpload');
+
+                progressContainer.classList.remove('d-none');
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+
+                const chunkSize = 5;
+                const totalFiles = files.length;
+                let processedFiles = 0;
+                let totalReviews = 0;
+                let allErrors = [];
+                const token = form.querySelector("input[name='_token']").value;
+                const actionUrl = form.action;
+
+                for (let i = 0; i < totalFiles; i += chunkSize) {
+                    const chunk = files.slice(i, i + chunkSize);
+                    const formData = new FormData();
+                    formData.append('_token', token);
+                    chunk.forEach(f => formData.append('result_files[]', f));
+
+                    progressStatus.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span> Uploading & processing review files ${i + 1} to ${Math.min(i + chunkSize, totalFiles)} of ${totalFiles}...`;
+                    progressText.textContent = `Batch ${Math.floor(i / chunkSize) + 1} of ${Math.ceil(totalFiles / chunkSize)}`;
+
+                    try {
+                        const response = await fetch(actionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success || response.ok) {
+                            processedFiles += (result.processed_files || chunk.length);
+                            totalReviews += (result.processed_reviews || 0);
+                            if (result.errors && result.errors.length) {
+                                allErrors.push(...result.errors);
+                            }
+                        } else {
+                            allErrors.push(`Chunk ${Math.floor(i / chunkSize) + 1} error: ` + (result.message || 'Failed to process files.'));
+                        }
+                    } catch (err) {
+                        allErrors.push(`Network error on files ${i + 1}-${Math.min(i + chunkSize, totalFiles)}: ` + err.message);
+                    }
+
+                    const pct = Math.min(100, Math.round((Math.min(i + chunkSize, totalFiles) / totalFiles) * 100));
+                    progressBar.style.width = pct + '%';
+                    progressPercent.textContent = pct + '%';
+                    progressStats.textContent = `${Math.min(i + chunkSize, totalFiles)} / ${totalFiles} files`;
+                }
+
+                progressBar.style.width = '100%';
+                progressPercent.textContent = '100%';
+
+                if (allErrors.length === 0) {
+                    progressStatus.innerHTML = `<em class="icon ni ni-check-circle-fill text-success me-1"></em> All ${totalFiles} batch files processed successfully!`;
+                    progressText.textContent = `${totalReviews} reviews updated. Reloading...`;
+                    setTimeout(() => window.location.reload(), 1500);
+                } else if (processedFiles > 0) {
+                    progressStatus.innerHTML = `<em class="icon ni ni-alert-fill text-warning me-1"></em> ${processedFiles} of ${totalFiles} files processed with warnings.`;
+                    progressText.textContent = allErrors.slice(0, 3).join('; ');
+                    setTimeout(() => window.location.reload(), 3000);
+                } else {
+                    progressStatus.innerHTML = `<em class="icon ni ni-cross-circle-fill text-danger me-1"></em> Processing failed!`;
+                    progressText.textContent = allErrors.join('; ');
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = `<em class="icon ni ni-check-circle me-1"></em> Retry Upload`;
+                }
+            }
+        });
+    }
+});
 </script>
 @endsection

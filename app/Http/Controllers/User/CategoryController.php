@@ -86,6 +86,16 @@ class CategoryController extends Controller
            abort(404);
        }
 
+       if ($category->target_category_id && $category->targetCategory) {
+           $targetCat = $category->targetCategory;
+           $targetTrans = $targetCat->categoryTranslations()->where('lang_id', $lang_id)->first()
+               ?? $targetCat->categoryTranslations()->where('lang_id', 1)->first()
+               ?? $targetCat->categoryTranslations()->first();
+           if ($targetTrans && $targetTrans->slug && $targetTrans->slug !== $slug) {
+               return redirect()->to('/' . $lang_code . '/' . $targetTrans->slug, 301);
+           }
+       }
+
        $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
            ? $category->translations->first()
            : ($category->translations ?? $category->translation);
@@ -325,26 +335,8 @@ class CategoryController extends Controller
             }
         }
 
-        if (empty($faqs)) {
-            $faqs = [
-                [
-                    'question' => "How do I choose the best " . strtolower($catName) . " provider?",
-                    'answer' => "Compare essential features, user ratings, transparent pricing, and reliability. Assess whether the provider aligns with your specific technical and budgetary requirements."
-                ],
-                [
-                    'question' => "What factors influence " . strtolower($catName) . " rankings on Localio?",
-                    'answer' => "Rankings are based on authentic customer reviews, verified user satisfaction scores, pricing value, and overall feature completeness."
-                ],
-                [
-                    'question' => "Are all " . strtolower($catName) . " providers verified by Localio?",
-                    'answer' => "We verify listing details and user reviews through automated checks and community moderation to ensure honest recommendations."
-                ],
-                [
-                    'question' => "Can I leave a review for a " . strtolower($catName) . " solution I use?",
-                    'answer' => "Yes, search for the provider on Localio, navigate to its profile, and submit your detailed rating and review."
-                ]
-            ];
-        }
+        // Do not fallback to dummy FAQs; leave empty if not uploaded
+        // if (empty($faqs)) { ... }
 
         $catIds = [$category->id];
         if ($category->parent_id === null) {

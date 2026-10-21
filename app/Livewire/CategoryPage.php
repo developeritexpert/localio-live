@@ -264,10 +264,25 @@ class CategoryPage extends Component
     public function calculateRatingCounts()
     {
         if ($this->isParentCategory) {
-            $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
-            $allCategoryIds = array_merge([$this->category->id], $allSubcatIds);
+            $children = Category::where('parent_id', $this->category->id)->get(['id', 'target_category_id']);
+            $allSubcatIds = [];
+            $aliasTargetMap = [];
+            foreach ($children as $ch) {
+                $allSubcatIds[] = (int) $ch->id;
+                if ($ch->target_category_id) {
+                    $allSubcatIds[] = (int) $ch->target_category_id;
+                    $aliasTargetMap[(int) $ch->id] = (int) $ch->target_category_id;
+                }
+            }
+            $allCategoryIds = array_values(array_unique(array_merge([$this->category->id], $allSubcatIds)));
             if (!empty($this->selectedSubCategories)) {
-                $targetCategoryIds = array_intersect($allCategoryIds, array_map('intval', (array)$this->selectedSubCategories));
+                $rawSelected = array_map('intval', (array)$this->selectedSubCategories);
+                $targetCategoryIds = array_intersect($allCategoryIds, $rawSelected);
+                foreach ($rawSelected as $sId) {
+                    if (isset($aliasTargetMap[$sId])) {
+                        $targetCategoryIds[] = $aliasTargetMap[$sId];
+                    }
+                }
             } else {
                 $targetCategoryIds = $allCategoryIds;
             }
@@ -386,20 +401,27 @@ class CategoryPage extends Component
         // Start with businesses in this category or its subcategories if parent category
         // Include parent category businesses in all child/subcategory pages
         if ($this->isParentCategory) {
-            $childIds = Category::where('parent_id', $this->category->id)
-                ->pluck('id')
-                ->map(fn ($id) => (int) $id)
-                ->toArray();
+            $children = Category::where('parent_id', $this->category->id)->get(['id', 'target_category_id']);
+            $childIds = [];
+            $aliasTargetMap = [];
+            foreach ($children as $ch) {
+                $childIds[] = (int) $ch->id;
+                if ($ch->target_category_id) {
+                    $childIds[] = (int) $ch->target_category_id;
+                    $aliasTargetMap[(int) $ch->id] = (int) $ch->target_category_id;
+                }
+            }
+            $childIds = array_values(array_unique($childIds));
 
             if (!empty($this->selectedSubCategories)) {
-                $selectedIds = array_map(
-                    'intval',
-                    (array) $this->selectedSubCategories
-                );
-
-                $selectedIds = array_values(
-                    array_intersect($childIds, $selectedIds)
-                );
+                $rawSelected = array_map('intval', (array) $this->selectedSubCategories);
+                $selectedIds = array_values(array_intersect($childIds, $rawSelected));
+                foreach ($rawSelected as $sId) {
+                    if (isset($aliasTargetMap[$sId])) {
+                        $selectedIds[] = $aliasTargetMap[$sId];
+                    }
+                }
+                $selectedIds = array_values(array_unique($selectedIds));
 
                 // Keep parent category businesses even when a subcategory is selected
                 $targetCategoryIds = array_merge(
@@ -1325,6 +1347,10 @@ public function getFeatureDescriptionProperty()
 
     public function getFaqsProperty()
     {
+        if (!$this->category) {
+            return [];
+        }
+
         $trans = $this->category->translations;
         if ($trans && !empty($trans->faqs)) {
             $decoded = is_array($trans->faqs) ? $trans->faqs : json_decode($trans->faqs, true);
@@ -1333,21 +1359,20 @@ public function getFeatureDescriptionProperty()
             }
         }
 
-        $catName = $trans->name ?? $this->category->name ?? 'this category';
-        return [
-            [
-                'question' => 'How do I choose the best ' . strtolower($catName) . ' provider?',
-                'answer' => 'Compare essential features, user ratings, transparent pricing, and reliability. Assess whether the provider aligns with your specific technical and budgetary requirements.'
-            ],
-            [
-                'question' => 'Are community ratings and reviews verified?',
-                'answer' => 'Yes, reviews and ratings on Localio are submitted by verified users and evaluated for authenticity by our moderation team.'
-            ],
-            [
-                'question' => 'How often are rankings and listings updated?',
-                'answer' => 'Our listings and rating scores are updated dynamically as community members submit feedback and ratings.'
-            ]
-        ];
+        // Check if category translation has faqs directly in DB for current language
+        $langId = $this->lang_id ?: getCurrentLanguageID();
+        $dbFaqs = \App\Models\CategoryTranslation::where('category_id', $this->category->id)
+            ->where('lang_id', $langId)
+            ->value('faqs');
+
+        if (!empty($dbFaqs)) {
+            $decoded = is_array($dbFaqs) ? $dbFaqs : json_decode($dbFaqs, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        return [];
     }
 
     

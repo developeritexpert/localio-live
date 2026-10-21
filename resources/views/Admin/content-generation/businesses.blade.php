@@ -55,21 +55,21 @@
 
         {{-- Status Tabs: Pending (Default) / Completed / All --}}
         <ul class="nav nav-tabs nav-tabs-mb-icon mb-3">
-            <li class="nav-item">
+            <li class="nav-item {{ $activeTab === 'pending' ? 'active' : '' }}">
                 <a class="nav-link {{ $activeTab === 'pending' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'pending'])) }}">
                     <em class="icon ni ni-clock me-1 text-warning"></em>
                     <span class="fw-semibold">Pending</span>
                     <span class="badge rounded-pill bg-warning text-dark ms-1" style="font-size: 11px;">{{ $pendingCount }}</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ $activeTab === 'completed' ? 'active' : '' }}">
                 <a class="nav-link {{ $activeTab === 'completed' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'completed'])) }}">
                     <em class="icon ni ni-check-circle me-1 text-success"></em>
                     <span class="fw-semibold">Completed</span>
                     <span class="badge rounded-pill bg-success ms-1" style="font-size: 11px;">{{ $completedCount }}</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ $activeTab === 'all' ? 'active' : '' }}">
                 <a class="nav-link {{ $activeTab === 'all' ? 'active' : '' }}" href="{{ route('content-gen.businesses', array_merge(request()->except(['tab', 'page']), ['tab' => 'all'])) }}">
                     <em class="icon ni ni-list me-1 text-primary"></em>
                     <span>All</span>
@@ -385,6 +385,20 @@
 </div>
 
 <style>
+/* Only underline active tab */
+.nav-tabs .nav-link:not(.active)::after,
+.nav-tabs .nav-item .nav-link:not(.active)::after,
+.nav-tabs .nav-item.active .nav-link:not(.active)::after {
+    display: none !important;
+    opacity: 0 !important;
+}
+.nav-tabs .nav-link.active::after {
+    display: block !important;
+    opacity: 1 !important;
+}
+.nav-tabs .nav-link:not(.active) {
+    color: #526484 !important;
+}
 .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .content-gen-table th, .content-gen-table td { vertical-align: middle; }
 .content-gen-table th { font-size:0.8rem; text-transform: uppercase; letter-spacing:.04em; color:#8094ae; font-weight:600; }

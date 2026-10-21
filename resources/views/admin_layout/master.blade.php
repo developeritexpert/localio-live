@@ -73,6 +73,134 @@
                         <div class="nk-sidebar-menu" data-simplebar>
                             <ul class="nk-menu">
 
+                                <!-- Reviews -->
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('reviews*', 'admin.reviews*') && !request()->routeIs('admin.reviews.batches*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon">
+                                             <em class="icon ni ni-chat"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Reviews</span>
+                                        @php
+                                            $pendingCount = class_exists(\App\Models\Review::class) ? \App\Models\Review::where('status', \App\Models\Review::STATUS_PENDING_REVIEW)->count() : 0;
+                                            $pendingAppealsCount = class_exists(\App\Models\ReviewAppeal::class) ? \App\Models\ReviewAppeal::whereIn('status', ['open', 'under_review'])->count() : 0;
+                                            $totalReviewBadges = $pendingCount + $pendingAppealsCount;
+                                        @endphp
+                                        @if($totalReviewBadges > 0)
+                                            <span class="badge bg-danger ms-auto">{{ $totalReviewBadges }}</span>
+                                        @endif
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('reviews') ? 'active' : '' }}">
+                                            <a href="{{ route('reviews') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">All Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.pending') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.pending') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Pending Queue</span>
+                                                @if($pendingCount > 0)
+                                                    <span class="badge bg-danger ms-auto">{{ $pendingCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.reported') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.reported') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Reported Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.removed') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.removed') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Removed Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.appeals') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.appeals') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Review Appeals</span>
+                                                @if($pendingAppealsCount > 0)
+                                                    <span class="badge bg-danger ms-auto">{{ $pendingAppealsCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.cases') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.cases') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Moderation Cases</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.settings') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.settings') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Moderation Settings</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Content Generation -->
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.businesses*', 'content-gen.features*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon">
+                                            <em class="icon ni ni-cpu"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Content Generation</span>
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.businesses*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Businesses</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.features*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.features') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Features</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Batches -->
+                                @php
+                                    $contentBatchPendingCount = class_exists(\App\Models\AiBatchJob::class)
+                                        ? \App\Models\AiBatchJob::where(function($q) {
+                                            $q->whereNull('prompt_type')->orWhere('prompt_type', '!=', 'review_moderation');
+                                        })->whereIn('status', ['pending', 'processing'])->count()
+                                        : 0;
+
+                                    $reviewsBatchPendingJobs = class_exists(\App\Models\AiBatchJob::class)
+                                        ? \App\Models\AiBatchJob::where('prompt_type', 'review_moderation')
+                                            ->whereIn('status', ['pending', 'processing'])->count()
+                                        : 0;
+                                    $reviewsWaitingForBatch = class_exists(\App\Models\Review::class)
+                                        ? \App\Models\Review::readyForBatch()->count()
+                                        : 0;
+                                    $reviewsBatchPendingCount = $reviewsBatchPendingJobs > 0 ? $reviewsBatchPendingJobs : $reviewsWaitingForBatch;
+
+                                    $totalBatchesPendingCount = $contentBatchPendingCount + $reviewsBatchPendingCount;
+                                @endphp
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*', 'admin.reviews.batches*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon">
+                                            <em class="icon ni ni-layers-fill"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Batches</span>
+                                        @if($totalBatchesPendingCount > 0)
+                                            <span class="badge bg-primary ms-auto">{{ $totalBatchesPendingCount }}</span>
+                                        @endif
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.batch-jobs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Content</span>
+                                                <span class="badge {{ $contentBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $contentBatchPendingCount }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.batches*') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.reviews.batches') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Reviews</span>
+                                                <span class="badge {{ $reviewsBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $reviewsBatchPendingCount }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 <!-- Businesses -->
                                 <li class="nk-menu-item has-sub">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
@@ -458,70 +586,7 @@
 
                                     </ul>
                                 </li>
-                                <!-- Reviews -->
-                                <li class="nk-menu-item has-sub">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon">
-                                            <!-- <em class="icon ni ni-article"></em> -->
-                                             <em class="icon ni ni-chat"></em>
-                                        </span>
-                                        <span class="nk-menu-text">Reviews</span>
-                                    </a>
-                                    <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item {{ request()->routeIs('reviews') ? 'active' : '' }}">
-                                            <a href="{{ route('reviews') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">All Reviews</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.pending') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.pending') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Pending Queue</span>
-                                                @php
-                                                    $pendingCount = \App\Models\Review::where('status', \App\Models\Review::STATUS_PENDING_REVIEW)->count();
-                                                @endphp
-                                                @if($pendingCount > 0)
-                                                    <span class="badge bg-danger ms-auto">{{ $pendingCount }}</span>
-                                                @endif
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.reported') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.reported') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Reported Reviews</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.removed') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.removed') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Removed Reviews</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.appeals') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.appeals') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Review Appeals</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.cases') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.cases') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Moderation Cases</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.batches*') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.batches') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Batch Jobs</span>
-                                                @php
-                                                    $waitingBatchCount = \App\Models\Review::readyForBatch()->count();
-                                                @endphp
-                                                @if($waitingBatchCount > 0)
-                                                    <span class="badge bg-primary ms-auto">{{ $waitingBatchCount }}</span>
-                                                @endif
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('admin.reviews.settings') ? 'active' : '' }}">
-                                            <a href="{{ route('admin.reviews.settings') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Moderation Settings</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+
                                 <!-- Contributor Badges -->
                                 <li class="nk-menu-item">
                                     <a href="{{ route('admin.contributor.badges') }}" class="nk-menu-link">
@@ -533,32 +598,7 @@
                                 </li>
 
 
-                                <!-- Content Generation -->
-                                <li class="nk-menu-item has-sub">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon">
-                                            <em class="icon ni ni-cpu"></em>
-                                        </span>
-                                        <span class="nk-menu-text">Content Generation</span>
-                                    </a>
-                                    <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Businesses</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('content-gen.features') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Features</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('content-gen.batch-jobs') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Batch Jobs</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+
 
                                 <li class="nk-menu-item has-sub">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
@@ -1042,7 +1082,7 @@
         // Exact active link matching override to fix duplicate menu highlights
         if (window.NioApp) {
             NioApp.CurrentLink = function () {
-                var _link = '.nk-menu-link, .menu-link, .nav-link',
+                var _link = '.nk-menu-link, .menu-link',
                     currentPath = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
                 $(_link).each(function () {
                     var self = $(this),

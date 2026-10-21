@@ -38,7 +38,7 @@ class CategoriesController extends Controller
         $siteLanguage = Language::where('lang_code', $locale)->value('id') ?? 1;
         $englishLangId = Language::where('lang_code', 'en-us')->value('id') ?? 1;
 
-        $allCategories = Category::with(['parent', 'subCategories', 'categoryTranslations'])->get();
+        $allCategories = Category::with(['parent', 'subCategories', 'categoryTranslations', 'targetCategory.categoryTranslations'])->get();
 
         foreach ($allCategories as $category) {
             $englishTrans = $category->categoryTranslations->where('lang_id', $englishLangId)->first()
@@ -183,6 +183,26 @@ class CategoriesController extends Controller
             }, 'categoryTranslations'])
             ->get();
 
+        $allTargetCategories = Category::with([
+                'parent.translation' => function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id);
+                },
+                'translation' => function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id);
+                },
+                'categoryTranslations'
+            ])
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->where('id', '!=', $categoryId);
+            })
+            ->whereNull('target_category_id')
+            ->get()
+            ->sortBy(function ($c) {
+                $parentName = $c->parent ? ($c->parent->translation?->name ?? 'Main') : 'Main';
+                $name = $c->translation?->name ?? ('Category #' . $c->id);
+                return $parentName . ' - ' . $name;
+            });
+
         return view('Admin.categories.add', compact(
             'text_sections',
             'category_faqs',
@@ -196,7 +216,8 @@ class CategoriesController extends Controller
             'default_criteria',
             'inherited_criteria',
             'custom_criteria',
-            'parentGlanceLabels'
+            'parentGlanceLabels',
+            'allTargetCategories'
         ));
     }
 
@@ -440,6 +461,7 @@ class CategoriesController extends Controller
             'category_icon' => 'nullable',
             'is_parent' => 'nullable',
             'parent_id' => $is_parent ? 'nullable' : 'required|exists:categories,id',
+            'target_category_id' => 'nullable|exists:categories,id',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -458,7 +480,22 @@ class CategoriesController extends Controller
                 }
             }
 
+            if ($is_parent && $request->filled('target_category_id')) {
+                $validator->errors()->add('target_category_id', 'A main / parent category cannot point to another category.');
+            }
+
             if (!$is_parent) {
+                if ($request->filled('target_category_id')) {
+                    $tId = (int) $request->target_category_id;
+                    if ($category_id && $tId === (int) $category_id) {
+                        $validator->errors()->add('target_category_id', 'A category cannot point to itself.');
+                    }
+                    $targetCat = Category::find($tId);
+                    if ($targetCat && $targetCat->target_category_id) {
+                        $validator->errors()->add('target_category_id', 'The selected target category is already an alias. Chained pointers are not allowed.');
+                    }
+                }
+
                 if (empty($parent_id)) {
                     $validator->errors()->add('parent_id', 'Please select a parent category for this subcategory.');
                     return;
@@ -531,8 +568,10 @@ class CategoriesController extends Controller
 
         if ($is_parent) {
             $category->parent_id = null;
+            $category->target_category_id = null;
         } else {
             $category->parent_id = $request->filled('parent_id') ? (int) $request->parent_id : null;
+            $category->target_category_id = $request->filled('target_category_id') ? (int) $request->target_category_id : null;
         }
         $category->page_title_addition = $request->page_title_addition;
         if ($request->has('top_rated_listing_headline_addition')) {
@@ -604,6 +643,17 @@ class CategoriesController extends Controller
             $comparisonSlug = !empty($validate['comparison_slug']) 
                 ? Str::slug($validate['comparison_slug']) 
                 : ($slug . '-comparison');
+
+            $origCompSlug = $comparisonSlug;
+            $compCount = 1;
+            while (CategoryTranslation::where('comparison_slug', $comparisonSlug)
+                ->where(function($query) use ($category, $language_id) {
+                    $query->where('category_id', '!=', $category->id)
+                          ->orWhere('lang_id', '!=', $language_id);
+                })
+                ->exists()) {
+                $comparisonSlug = $origCompSlug . '-' . $compCount++;
+            }
 
            // Process Dynamic Text Sections (H2 & H3)
             $textSectionsInput = $request->input('text_sections', []);

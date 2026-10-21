@@ -131,6 +131,7 @@
             <!-- Left Side: FAQs Content, Search & Accordion -->
             <div class="col-lg-8 col-12">
                 
+                @if(isset($faqs) && count($faqs) > 0)
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
                     @php
@@ -148,6 +149,7 @@
                         <input type="text" id="faqSearchInput" placeholder="{{ \App\Services\ContentTemplateService::cleanPlaceholder($faqSearchPlaceholder) }}" value="{{ request('q') }}" autocomplete="off">
                     </div>
                 </div>
+                @endif
 
                 <!-- Main FAQ Section: Headline & Accordion List -->
                 <div class="main-faq-container">
@@ -400,30 +402,8 @@
                                 </div>
                             @endforeach
                         @else
-                            <div class="sidebar-review-card mb-3 pb-3 border-bottom">
-                                <div class="review-header d-flex justify-content-between align-items-start">
-                                    <div class="review-user d-flex align-items-center gap-2">
-                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <span style="color: white; font-weight: bold; font-size: 16px;">B</span>
-                                        </div>
-                                        <div>
-                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Beck K.</p>
-                                            <div style="font-size: 11px; color: #777;">Fugiat aute anim eni</div>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted" style="font-size: 11px;">1 week ago</small>
-                                </div>
-                                <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
-                                    Rem sint adipisicin
-                                </p>
-                                <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                    <i class="fas fa-star text-warning"></i>
-                                </div>
-                                <p style="font-weight: 400; font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">Numquam officia rem</p>
+                            <div class="text-center py-3 text-muted">
+                                <p class="m-0 small">{{ static_text('no_reviews_yet') ?: 'No reviews yet' }}</p>
                             </div>
                         @endif
                     </div>
@@ -505,52 +485,8 @@
                             </div>
                             @endforeach
                         @else
-                            <div class="sidebar-review-card mb-3 pb-3 border-bottom">
-                                <div class="review-header d-flex justify-content-between align-items-start">
-                                    <div class="review-user d-flex align-items-center gap-2">
-                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
-                                        </div>
-                                        <div>
-                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Marc L.</p>
-                                            <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
-                                </div>
-                                <p style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #002347;">
-                                    <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions')) }}"
-                                       class="recent-discussion-title-link">
-                                        Is there a free tier for API access or is it trial only?
-                                    </a>
-                                </p>
-                                <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
-                                    We are looking to integrate this into our workflow and want to test latency...
-                                </p>
-                            </div>
-
-                            <div class="sidebar-review-card">
-                                <div class="review-header d-flex justify-content-between align-items-start">
-                                    <div class="review-user d-flex align-items-center gap-2">
-                                        <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
-                                        </div>
-                                        <div>
-                                            <p style="line-height:1; margin: 0; font-size: 14px; font-weight: 600; color: #002347;">Sarah J.</p>
-                                            <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted" style="font-size: 11px;">1 day ago</small>
-                                </div>
-                                <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #002347;">
-                                    <a href="{{ url(app()->getLocale() . '/' . $catSlug . '/' . ($discSlug ?? 'discussions')) }}"
-                                       class="recent-discussion-title-link">
-                                        How does the performance compare to alternatives in large datasets?
-                                    </a>
-                                </p>
-                                <p style="font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">
-                                    We noticed some latency spikes during queries with more than 10k items...
-                                </p>
+                            <div class="text-center py-3 text-muted">
+                                <p class="m-0 small">{{ static_text('no_discussions_yet') ?: 'No discussions yet' }}</p>
                             </div>
                         @endif
                     </div>
@@ -559,7 +495,7 @@
                     @if(isset($topBusinesses) && $topBusinesses->count() > 0)
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="m-0 card-h-title">Web hosting top 3 </h2>
+                            <h2 class="m-0 card-h-title">{{ $catName }} top 3</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -694,10 +630,7 @@
                         }
                     }
                 }
-                // Fallback: If no custom FAQs exist in DB, category FAQ pages display the 4 standard fallback FAQs
-                if ($faqCount === 0) {
-                    $faqCount = 4;
-                }
+                // If no custom FAQs exist in DB, keep faqCount as 0
             @endphp
             <div class="col-lg-4 col-md-6 col-6">
                 <a href="{{ $subFaqUrl }}" class="text-decoration-none d-block h-100">

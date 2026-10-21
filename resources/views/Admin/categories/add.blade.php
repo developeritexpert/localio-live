@@ -705,7 +705,7 @@
                         {{-- Parent Category Dropdown Group --}}
                         <div class="col-md-12" id="parent_category_group" style="display: {{ (!isset($category) || $category->parent_id === null) ? 'none' : 'block' }};">
                             <div class="card card-bordered p-3 mb-3 bg-white border-primary" style="border-radius: 8px;">
-                                <div class="form-group mb-0">
+                                <div class="form-group mb-3">
                                     <label class="form-label fw-bold" for="parent_id">
                                         <span class="text-danger">*</span> Select Parent Category
                                     </label>
@@ -727,6 +727,75 @@
                                     @error('parent_id')
                                         <div class="error text-danger mt-1">{{ $message }}</div>
                                     @enderror
+                                </div>
+
+                                {{-- Pointer / Alias Subcategory Option --}}
+                                <div class="border-top pt-3 mt-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <label class="form-label fw-bold mb-0">
+                                            <em class="icon ni ni-link text-warning me-1"></em> Pointer / Alias Option (Merge & Link Subcategories)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input type="checkbox" class="form-check-input" id="is_alias_toggle" name="is_alias_toggle" value="1"
+                                            {{ (isset($category) && !empty($category->target_category_id)) || old('target_category_id') ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-semibold text-dark" for="is_alias_toggle" style="cursor: pointer;">
+                                            Point this subcategory to another existing Category or Subcategory
+                                        </label>
+                                    </div>
+                                    <small class="text-muted d-block mb-3">
+                                        Use this when the identical subcategory belongs under multiple parents (e.g. <em>Digital product platforms</em> under both <em>Ecommerce</em> and <em>Creator tools</em>). It prevents duplicate comparison slugs and merges reviews, rating criteria, and business listings while keeping navigation visible under this parent.
+                                    </small>
+
+                                    <div id="target_category_wrap" style="display: {{ (isset($category) && !empty($category->target_category_id)) || old('target_category_id') ? 'block' : 'none' }};">
+                                        <div class="form-group mb-2">
+                                            <label class="form-label fw-bold" for="target_category_id">
+                                                <span class="text-warning">*</span> Target Category / Subcategory to Point To
+                                            </label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-control form-select" name="target_category_id" id="target_category_id">
+                                                    <option value="">-- Select Target Category to Point To --</option>
+                                                    @if(isset($allTargetCategories))
+                                                        @php
+                                                            $currentSelectedTarget = old('target_category_id', isset($category) ? $category->target_category_id : null);
+                                                            $groupedTargets = $allTargetCategories->groupBy(function($item) {
+                                                                return $item->parent ? ($item->parent->translation?->name ?? 'Main Categories') : 'Main / Parent Categories';
+                                                            });
+                                                        @endphp
+                                                        @foreach($groupedTargets as $groupLabel => $items)
+                                                            <optgroup label="{{ $groupLabel }}">
+                                                                @foreach($items as $tCat)
+                                                                    @php
+                                                                        $tCatName = $tCat->translation?->name ?? ($tCat->categoryTranslations->first()->name ?? 'Category #' . $tCat->id);
+                                                                        $tCatSlug = $tCat->translation?->slug ?? '';
+                                                                        $tCompSlug = $tCat->translation?->comparison_slug ?? '';
+                                                                    @endphp
+                                                                    <option value="{{ $tCat->id }}" 
+                                                                        data-name="{{ $tCatName }}"
+                                                                        data-slug="{{ $tCatSlug }}"
+                                                                        data-compslug="{{ $tCompSlug }}"
+                                                                        {{ $currentSelectedTarget == $tCat->id ? 'selected' : '' }}>
+                                                                        {{ $tCatName }} (ID: {{ $tCat->id }})
+                                                                    </option>
+                                                                @endforeach
+                                                            </optgroup>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                            @error('target_category_id')
+                                                <div class="error text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="alert alert-warning py-2 px-3 small mt-2 mb-0 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                            <div>
+                                                <em class="icon ni ni-info me-1"></em> Visitors and comparison routes will seamlessly resolve to the Target Category.
+                                            </div>
+                                            <button type="button" class="btn btn-xs btn-outline-warning bg-white" id="btn_sync_target_info">
+                                                <em class="icon ni ni-copy me-1"></em> Copy Name & Slug from Target
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1142,6 +1211,44 @@
                 radio.addEventListener('change', updateCategoryTypeUI);
             });
             updateCategoryTypeUI();
+
+            // Alias / Pointer Subcategory Toggle
+            const isAliasToggle = document.getElementById('is_alias_toggle');
+            const targetCategoryWrap = document.getElementById('target_category_wrap');
+            const targetCategorySelect = document.getElementById('target_category_id');
+            const btnSyncTargetInfo = document.getElementById('btn_sync_target_info');
+
+            if (isAliasToggle && targetCategoryWrap) {
+                isAliasToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        targetCategoryWrap.style.display = 'block';
+                    } else {
+                        targetCategoryWrap.style.display = 'none';
+                        if (targetCategorySelect) {
+                            targetCategorySelect.value = '';
+                        }
+                    }
+                });
+            }
+
+            if (btnSyncTargetInfo && targetCategorySelect) {
+                btnSyncTargetInfo.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedOpt = targetCategorySelect.options[targetCategorySelect.selectedIndex];
+                    if (selectedOpt && selectedOpt.value) {
+                        const targetName = selectedOpt.getAttribute('data-name');
+                        const targetCompSlug = selectedOpt.getAttribute('data-compslug');
+                        if (targetName) {
+                            if (catCapInput) catCapInput.value = targetName;
+                            if (nameInput) nameInput.value = targetName;
+                        }
+                        if (targetCompSlug && comparisonSlugInput) {
+                            comparisonSlugInput.value = targetCompSlug;
+                            isSlugManuallyEdited = true;
+                        }
+                    }
+                });
+            }
 
             // Comparison Slug Auto-generate & Pencil Edit Toggle
             const nameInput = document.getElementById('name');

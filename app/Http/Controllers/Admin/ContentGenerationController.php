@@ -2539,34 +2539,138 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     }
 
     // -------------------------------------------------------------------------
-    // UPLOAD BATCH RESULT JSON (From ChatGPT)
+    // UPLOAD BATCH RESULT JSON (From ChatGPT) - Supports Multiple Files
     // -------------------------------------------------------------------------
     public function uploadBatchResult(Request $request, ?AiBatchJob $job = null)
     {
         $request->validate([
-            'result_file' => 'nullable|file|max:10240',
-            'result_text' => 'nullable|string',
+            'result_files'   => 'nullable|array',
+            'result_files.*' => 'file|max:20480',
+            'result_file'    => 'nullable|file|max:20480',
+            'result_text'    => 'nullable|string',
         ]);
 
-        $rawJson = null;
-        if ($request->hasFile('result_file')) {
-            $rawJson = file_get_contents($request->file('result_file')->getRealPath());
-        } elseif ($request->filled('result_text')) {
-            $rawJson = trim($request->result_text);
+        $payloads = [];
+
+        // 1. Multiple files
+        if ($request->hasFile('result_files')) {
+            $files = $request->file('result_files');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            foreach ($files as $file) {
+                if ($file && $file->isValid()) {
+                    $payloads[] = [
+                        'name' => $file->getClientOriginalName(),
+                        'json' => file_get_contents($file->getRealPath()),
+                    ];
+                }
+            }
         }
 
-        if (empty($rawJson)) {
-            return back()->with('error', 'Please upload a JSON file or paste the JSON text.');
+        // 2. Fallback to single file
+        if (empty($payloads) && $request->hasFile('result_file')) {
+            $file = $request->file('result_file');
+            if ($file && $file->isValid()) {
+                $payloads[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'json' => file_get_contents($file->getRealPath()),
+                ];
+            }
         }
 
+        // 3. Fallback to pasted text
+        if (empty($payloads) && $request->filled('result_text')) {
+            $payloads[] = [
+                'name' => 'Pasted JSON',
+                'json' => trim($request->result_text),
+            ];
+        }
+
+        if (empty($payloads)) {
+            $err = 'Please upload at least one JSON file or paste the JSON text.';
+            return ($request->expectsJson() || $request->ajax())
+                ? response()->json(['success' => false, 'message' => $err], 422)
+                : back()->with('error', $err);
+        }
+
+        $processedFiles = 0;
+        $failedFiles    = 0;
+        $jobsAffected   = [];
+        $totalItems     = 0;
+        $totalFields    = 0;
+        $totalCreated   = 0;
+        $errors         = [];
+
+        foreach ($payloads as $p) {
+            $res = $this->processSingleBatchResultJson($p['json'], $job);
+            if ($res['success']) {
+                $processedFiles++;
+                if (!empty($res['job_id'])) {
+                    $jobsAffected[$res['job_id']] = $res['batch_id'] ?? ('#' . $res['job_id']);
+                }
+                $totalItems   += $res['applied_items_count'] ?? 0;
+                $totalFields  += $res['applied_fields_count'] ?? 0;
+                $totalCreated += $res['newly_created_count'] ?? 0;
+            } else {
+                $failedFiles++;
+                $errors[] = $p['name'] . ': ' . ($res['error'] ?? 'Unknown error');
+            }
+        }
+
+        $jobsCount = count($jobsAffected);
+        $summaryMsg = "Batch processing complete: {$processedFiles} file(s) processed successfully across {$jobsCount} batch job(s)";
+        if ($totalItems > 0) {
+            $summaryMsg .= " (applied to {$totalItems} record(s)";
+            if ($totalCreated > 0) {
+                $summaryMsg .= ", including {$totalCreated} newly created";
+            }
+            $summaryMsg .= " across {$totalFields} field(s))";
+        }
+        $summaryMsg .= ".";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'              => $processedFiles > 0,
+                'processed_files'      => $processedFiles,
+                'failed_files'         => $failedFiles,
+                'jobs_count'           => $jobsCount,
+                'total_applied_items'  => $totalItems,
+                'total_applied_fields' => $totalFields,
+                'total_newly_created'  => $totalCreated,
+                'errors'               => $errors,
+                'message'              => $summaryMsg,
+            ], $processedFiles > 0 ? 200 : 422);
+        }
+
+        if ($failedFiles > 0 && $processedFiles === 0) {
+            return back()->with('error', 'All files failed to process: ' . implode('; ', $errors));
+        }
+
+        if ($failedFiles > 0) {
+            return back()->with('warning', $summaryMsg . ' Note: ' . $failedFiles . ' file(s) failed: ' . implode('; ', $errors));
+        }
+
+        return back()->with('success', $summaryMsg);
+    }
+
+    /**
+     * Process a single JSON payload string for features or businesses.
+     */
+    public function processSingleBatchResultJson(string $rawJson, ?AiBatchJob $job = null): array
+    {
         // Clean any markdown code blocks if user pasted ```json ... ```
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
         $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
         $cleanJson = trim($cleanJson);
 
+        if (empty($cleanJson)) {
+            return ['success' => false, 'error' => 'Empty JSON content'];
+        }
+
         $parsed = json_decode($cleanJson, true);
         if (!is_array($parsed)) {
-            return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+            return ['success' => false, 'error' => 'Invalid JSON syntax: ' . json_last_error_msg()];
         }
 
         // Auto-detect batch job if not provided in URL
@@ -2622,7 +2726,10 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
 
             if (!$job) {
-                return back()->with('error', 'Could not detect which batch job this result belongs to. Please make sure the JSON includes "batch_id": "BATCH-..." matching one of your batch jobs.');
+                return [
+                    'success' => false,
+                    'error' => 'Could not detect which batch job this result belongs to. Please make sure the JSON includes "batch_id": "BATCH-..." matching one of your batch jobs.'
+                ];
             }
         }
 
@@ -2758,7 +2865,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 'raw_response'    => $cleanJson,
             ]);
 
-            return back()->with('success', "Batch result processed successfully! Applied content for {$appliedFeaturesCount} feature(s) across {$appliedFieldsCount} field(s).");
+            return [
+                'success'             => true,
+                'job_id'              => $job->id,
+                'batch_id'            => $job->batch_id,
+                'type'                => 'features',
+                'applied_items_count' => $appliedFeaturesCount,
+                'applied_fields_count'=> $appliedFieldsCount,
+                'newly_created_count' => 0,
+            ];
         }
 
         // If wrapped in {"businesses": [...]} or {"results": [...]}
@@ -2920,83 +3035,47 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     if (isset($bData['categories'])) {
                         $fieldVal = $bData['categories'];
                         $hasField = true;
-                    } elseif (isset($bData['category']) || isset($bData['category_id'])) {
-                        $fieldVal = [
-                            'category_id'     => $bData['category_id'] ?? null,
-                            'category_name'   => $bData['category'] ?? null,
-                            'subcategory_ids' => $bData['subcategory_ids'] ?? ($bData['subcategories'] ?? []),
-                        ];
+                    }
+                } else {
+                    if (isset($bData[$field])) {
+                        $fieldVal = $bData[$field];
                         $hasField = true;
                     }
-                } elseif ($field === 'pros_cons') {
-                    if (isset($bData['pros_cons'])) {
-                        $fieldVal = $bData['pros_cons'];
-                        $hasField = true;
-                    } elseif (isset($bData['pro_ids']) || isset($bData['con_ids']) || isset($bData['pros']) || isset($bData['cons'])) {
-                        $fieldVal = [
-                            'pro_ids' => $bData['pro_ids'] ?? ($bData['pros'] ?? []),
-                            'con_ids' => $bData['con_ids'] ?? ($bData['cons'] ?? []),
-                        ];
-                        $hasField = true;
-                    }
-                } elseif ($field === 'reviews_description') {
-                    if (isset($bData['reviews_description'])) {
-                        $fieldVal = $bData['reviews_description'];
-                        $hasField = true;
-                    } elseif (isset($bData['review_description'])) {
-                        $fieldVal = $bData['review_description'];
-                        $hasField = true;
-                    } elseif (isset($bData['short_business_description_reviews'])) {
-                        $fieldVal = $bData['short_business_description_reviews'];
-                        $hasField = true;
-                    }
-                } elseif ($field === 'rating') {
-                    if (isset($bData['rating'])) {
-                        $fieldVal = $bData['rating'];
-                        $hasField = true;
-                    } elseif (isset($bData['admin_rating'])) {
-                        $fieldVal = $bData['admin_rating'];
-                        $hasField = true;
-                    }
-                } elseif ($field === 'features') {
-                    if (isset($bData['features'])) {
-                        $fieldVal = $bData['features'];
-                        $hasField = true;
-                    } elseif (isset($bData['feature_ids'])) {
-                        $fieldVal = $bData['feature_ids'];
-                        $hasField = true;
-                    }
-                } elseif (isset($bData[$field])) {
-                    $fieldVal = $bData[$field];
-                    $hasField = true;
                 }
 
                 if (!$hasField) continue;
 
-                $normalizedData = is_array($fieldVal) ? $fieldVal : [$field => $fieldVal];
+                $normalizedData = [];
+                if ($field === 'categories' && is_array($fieldVal)) {
+                    $primaryCatId = !empty($fieldVal['primary_category_id']) ? (int)$fieldVal['primary_category_id'] : null;
+                    $primarySubId = !empty($fieldVal['primary_subcategory_id']) ? (int)$fieldVal['primary_subcategory_id'] : null;
+                    $catIds = isset($fieldVal['category_ids']) && is_array($fieldVal['category_ids'])
+                        ? array_values(array_filter(array_map('intval', $fieldVal['category_ids'])))
+                        : [];
+                    $subIds = isset($fieldVal['subcategory_ids']) && is_array($fieldVal['subcategory_ids'])
+                        ? array_values(array_filter(array_map('intval', $fieldVal['subcategory_ids'])))
+                        : [];
 
-                if ($field === 'categories') {
-                    if (is_string($fieldVal)) {
-                        $normalizedData = ['category_name' => $fieldVal];
-                    } elseif (is_numeric($fieldVal)) {
-                        $normalizedData = ['category_id' => (int)$fieldVal];
-                    } elseif (is_array($fieldVal)) {
-                        $normalizedData = $fieldVal;
-                    }
-                } elseif ($field === 'short_description' && is_string($fieldVal)) {
-                    $normalizedData = ['short_description' => $fieldVal];
-                } elseif ($field === 'long_description' && is_string($fieldVal)) {
-                    $normalizedData = ['long_preview_description' => $fieldVal, 'long_description' => $fieldVal];
-                } elseif ($field === 'what_is' && is_string($fieldVal)) {
-                    $normalizedData = ['description' => $fieldVal, 'what_is' => $fieldVal];
-                } elseif (($field === 'reviews_description' || $field === 'short_business_description_reviews') && (is_string($fieldVal) || is_array($fieldVal))) {
-                    $val = is_array($fieldVal) ? ($fieldVal['reviews_description'] ?? ($fieldVal['description'] ?? '')) : $fieldVal;
-                    $normalizedData = ['reviews_description' => $val];
+                    $normalizedData = [
+                        'primary_category_id'    => $primaryCatId,
+                        'primary_subcategory_id' => $primarySubId,
+                        'category_ids'           => $catIds,
+                        'subcategory_ids'        => $subIds,
+                    ];
+                } elseif (in_array($field, ['short_description', 'long_description', 'what_is', 'reviews_description'])) {
+                    $normalizedData = [$field => is_string($fieldVal) ? trim($fieldVal) : ''];
                 } elseif ($field === 'usps' && is_array($fieldVal)) {
-                    $normalizedData = ['usps' => $fieldVal];
+                    $normalizedData = ['usps' => array_values(array_filter(array_map('trim', $fieldVal)))];
                 } elseif ($field === 'faqs' && is_array($fieldVal)) {
                     $normalizedData = ['faqs' => $fieldVal];
-                } elseif (($field === 'features' || $field === 'feature_ids') && is_array($fieldVal)) {
+                } elseif ($field === 'services' && is_array($fieldVal)) {
+                    $normalizedData = $fieldVal;
+                } elseif ($field === 'pros_cons' && is_array($fieldVal)) {
+                    $normalizedData = [
+                        'pro_ids' => isset($fieldVal['pro_ids']) && is_array($fieldVal['pro_ids']) ? array_values(array_map('intval', $fieldVal['pro_ids'])) : [],
+                        'con_ids' => isset($fieldVal['con_ids']) && is_array($fieldVal['con_ids']) ? array_values(array_map('intval', $fieldVal['con_ids'])) : [],
+                    ];
+                } elseif ($field === 'features' && is_array($fieldVal)) {
                     $normalizedData = ['features' => $fieldVal];
                 } elseif ($field === 'active_countries' && is_array($fieldVal)) {
                     $activeAll = !empty($fieldVal['active_all_countries']);
@@ -3135,12 +3214,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             'raw_response'    => $cleanJson,
         ]);
 
-        $msg = "Batch result processed successfully! Applied content for {$appliedBusinessesCount} business(es)";
-        if ($newlyCreatedCount > 0) {
-            $msg .= " (including {$newlyCreatedCount} newly created in directory)";
-        }
-        $msg .= " across {$appliedFieldsCount} field(s).";
-        return back()->with('success', $msg);
+        return [
+            'success'              => true,
+            'job_id'               => $job->id,
+            'batch_id'             => $job->batch_id,
+            'type'                 => 'businesses',
+            'applied_items_count'  => $appliedBusinessesCount,
+            'applied_fields_count' => $appliedFieldsCount,
+            'newly_created_count'  => $newlyCreatedCount,
+        ];
     }
 
     // -------------------------------------------------------------------------

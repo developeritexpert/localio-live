@@ -621,35 +621,127 @@ class ReviewController extends Controller
     public function uploadBatchResult(Request $request, ?AiBatchJob $job = null)
     {
         $request->validate([
-            'result_file' => 'nullable|file|max:10240',
-            'result_text' => 'nullable|string',
+            'result_files'   => 'nullable|array',
+            'result_files.*' => 'file|max:20480',
+            'result_file'    => 'nullable|file|max:20480',
+            'result_text'    => 'nullable|string',
         ]);
 
-        $rawJson = null;
-        if ($request->hasFile('result_file')) {
-            $rawJson = file_get_contents($request->file('result_file')->getRealPath());
-        } elseif ($request->filled('result_text')) {
-            $rawJson = trim($request->result_text);
+        $payloads = [];
+
+        // 1. Multiple files
+        if ($request->hasFile('result_files')) {
+            $files = $request->file('result_files');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            foreach ($files as $file) {
+                if ($file && $file->isValid()) {
+                    $payloads[] = [
+                        'name' => $file->getClientOriginalName(),
+                        'json' => file_get_contents($file->getRealPath()),
+                    ];
+                }
+            }
         }
 
-        if (empty($rawJson)) {
-            return back()->with('error', 'Please upload a JSON file or paste the result JSON text.');
+        // 2. Single file
+        if (empty($payloads) && $request->hasFile('result_file')) {
+            $file = $request->file('result_file');
+            if ($file && $file->isValid()) {
+                $payloads[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'json' => file_get_contents($file->getRealPath()),
+                ];
+            }
         }
 
+        // 3. Pasted text
+        if (empty($payloads) && $request->filled('result_text')) {
+            $payloads[] = [
+                'name' => 'Pasted Text',
+                'json' => trim($request->result_text),
+            ];
+        }
+
+        if (empty($payloads)) {
+            $err = 'Please upload at least one JSON/JSONL file or paste the result JSON text.';
+            return ($request->expectsJson() || $request->ajax())
+                ? response()->json(['success' => false, 'message' => $err], 422)
+                : back()->with('error', $err);
+        }
+
+        $processedFiles = 0;
+        $failedFiles    = 0;
+        $totalProcessedReviews = 0;
+        $totalFailedReviews    = 0;
+        $jobsAffected   = [];
+        $errors         = [];
+
+        foreach ($payloads as $p) {
+            $res = $this->processSingleReviewBatchResult($p['json'], $job);
+            if ($res['success']) {
+                $processedFiles++;
+                if (!empty($res['job_id'])) {
+                    $jobsAffected[$res['job_id']] = $res['batch_id'] ?? ('#' . $res['job_id']);
+                }
+                $totalProcessedReviews += $res['processed_items'] ?? 0;
+                $totalFailedReviews    += $res['failed_items'] ?? 0;
+            } else {
+                $failedFiles++;
+                $errors[] = $p['name'] . ': ' . ($res['error'] ?? 'Unknown error');
+            }
+        }
+
+        $jobsCount = count($jobsAffected);
+        $summaryMsg = "Batch results processed successfully: {$processedFiles} file(s) processed across {$jobsCount} batch job(s) ({$totalProcessedReviews} reviews updated, {$totalFailedReviews} failed).";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'           => $processedFiles > 0,
+                'processed_files'   => $processedFiles,
+                'failed_files'      => $failedFiles,
+                'jobs_count'        => $jobsCount,
+                'processed_reviews' => $totalProcessedReviews,
+                'failed_reviews'    => $totalFailedReviews,
+                'errors'            => $errors,
+                'message'           => $summaryMsg,
+            ], $processedFiles > 0 ? 200 : 422);
+        }
+
+        if ($failedFiles > 0 && $processedFiles === 0) {
+            return back()->with('error', 'All files failed to process: ' . implode('; ', $errors));
+        }
+
+        if ($failedFiles > 0) {
+            return back()->with('warning', $summaryMsg . ' Note: ' . $failedFiles . ' file(s) failed: ' . implode('; ', $errors));
+        }
+
+        return back()->with('success', $summaryMsg);
+    }
+
+    /**
+     * Process a single review moderation batch JSON or JSONL payload string.
+     */
+    public function processSingleReviewBatchResult(string $rawJson, ?AiBatchJob $job = null): array
+    {
         // Clean markdown code blocks
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
         $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
         $cleanJson = trim($cleanJson);
 
+        if (empty($cleanJson)) {
+            return ['success' => false, 'error' => 'Empty content'];
+        }
+
         // Check if JSON Lines or JSON array
         $lines = explode("\n", $cleanJson);
-        $firstLine = trim($lines[0] ?? '');
 
         // If JSON array or single object
         if (str_starts_with($cleanJson, '[') || (str_starts_with($cleanJson, '{') && !str_contains($cleanJson, '"custom_id"'))) {
             $parsed = json_decode($cleanJson, true);
             if (!is_array($parsed)) {
-                return back()->with('error', 'Invalid JSON syntax: ' . json_last_error_msg());
+                return ['success' => false, 'error' => 'Invalid JSON syntax: ' . json_last_error_msg()];
             }
 
             // Convert items array to JSONL-like format
@@ -696,7 +788,13 @@ class ReviewController extends Controller
             'failed_items'    => $result['failed'],
         ]);
 
-        return back()->with('success', "Batch results processed successfully: {$result['processed']} reviews updated, {$result['failed']} failed.");
+        return [
+            'success'         => true,
+            'job_id'          => $job->id,
+            'batch_id'        => $job->batch_id,
+            'processed_items' => $result['processed'],
+            'failed_items'    => $result['failed'],
+        ];
     }
 
     public function deleteBatchJob(AiBatchJob $job)

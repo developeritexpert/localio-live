@@ -2230,25 +2230,27 @@
                 <div class="row g-3">
                     @foreach($exploreSubcategories['items'] as $subcatItem)
                     @php
+                        $effectiveSub = ($subcatItem->target_category_id && $subcatItem->targetCategory) ? $subcatItem->targetCategory : $subcatItem;
                         $subTrans = null;
-                        if (isset($subcatItem->translations)) {
-                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
-                                $subTrans = $subcatItem->translations;
-                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
-                                $subTrans = $subcatItem->translations->first();
+                        if (isset($effectiveSub->translations)) {
+                            if (is_object($effectiveSub->translations) && !($effectiveSub->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                                $subTrans = $effectiveSub->translations;
+                            } elseif ($effectiveSub->translations instanceof \Illuminate\Database\Eloquent\Collection && $effectiveSub->translations->isNotEmpty()) {
+                                $subTrans = $effectiveSub->translations->first();
                             }
                         }
-                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
-                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                        $listingsCount = $subcatItem->listings_count ?? ($subcatItem->businesses_count ?? $subcatItem->businesses()->where('status', 1)->count());
+                        $subName = $subcatItem->translations->name ?? ($subTrans->name ?? ($subcatItem->name ?? 'Subcategory'));
+                        $subSlug = $subTrans->slug ?? ($effectiveSub->slug ?? (string)$effectiveSub->id);
+                        $listingsCount = $effectiveSub->listings_count ?? ($effectiveSub->businesses_count ?? $effectiveSub->businesses()->where('status', 1)->count());
+                        $effectiveTopImage = $effectiveSub->topRatedImageMedia ?? $subcatItem->topRatedImageMedia;
                     @endphp
                     <div class="col-lg-4 col-sm-6 col-12">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
                             <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                                 
                                 <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
-                                    @if(isset($subcatItem->topRatedImageMedia))
-                                        <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
+                                    @if(isset($effectiveTopImage))
+                                        <img src="{{ asset($effectiveTopImage->dir_path . '/' . $effectiveTopImage->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
                                     @else
                                         <!-- Placeholder if no SVG is uploaded -->
                                         <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
