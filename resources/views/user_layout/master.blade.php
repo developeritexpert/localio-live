@@ -3674,11 +3674,15 @@ header .sec_head {
                         </h3>
                         <ul class="sidebar-menu-list">
                             @foreach($cat->subCategories as $subCat)
-                            @if($subCat->translation)
+                            @php
+                                $effectiveCat = ($subCat->target_category_id && $subCat->targetCategory) ? $subCat->targetCategory : $subCat;
+                                $effectiveTrans = $effectiveCat->translation ?? $subCat->translation;
+                            @endphp
+                            @if($effectiveTrans)
                             <li>
                                 <a
-                                    href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}">
-                                    {{ $subCat->translation->name }}
+                                    href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $effectiveTrans->slug]) }}">
+                                    {{ $subCat->translation->name ?? $effectiveTrans->name }}
                                 </a>
                             </li>
                             @endif

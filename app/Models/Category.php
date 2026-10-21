@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'faq_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit', 'page_title_addition', 'top_rated_listing_headline_addition', 'category_overlay_image', 'category_overlay_position', 'faq_overlay_image', 'faq_overlay_position', 'comparison_overlay_image', 'comparison_overlay_position'];
+    protected $fillable = [ 'parent_id', 'target_category_id', 'image','category_icon', 'top_rated_image', 'faq_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit', 'page_title_addition', 'top_rated_listing_headline_addition', 'category_overlay_image', 'category_overlay_position', 'faq_overlay_image', 'faq_overlay_position', 'comparison_overlay_image', 'comparison_overlay_position'];
 
     protected $lang_code, $lang_id;
 
@@ -22,6 +22,26 @@ class Category extends Model
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function targetCategory()
+    {
+        return $this->belongsTo(Category::class, 'target_category_id');
+    }
+
+    public function aliasSubCategories()
+    {
+        return $this->hasMany(Category::class, 'target_category_id');
+    }
+
+    public function isAlias(): bool
+    {
+        return !empty($this->target_category_id);
+    }
+
+    public function getEffectiveCategory(): Category
+    {
+        return ($this->target_category_id && $this->targetCategory) ? $this->targetCategory : $this;
     }
 
     public function subCategories()
@@ -303,7 +323,7 @@ public function imageMedia()
         $q = Business::where('status', 1);
 
         if ($parentId === null) {
-            $childIds = self::where('parent_id', $catId)->pluck('id')->toArray();
+            $childIds = self::where('parent_id', 'target_category_id', $catId)->pluck('id')->toArray();
             $allIds = array_merge([$catId], $childIds);
             $q->where(function ($sub) use ($allIds) {
                 $sub->whereIn('category_id', $allIds)

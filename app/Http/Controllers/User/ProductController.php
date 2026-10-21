@@ -752,7 +752,23 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             ->first();
             
         if (!$categoryTranslation) {
+            $categoryTranslation = \App\Models\CategoryTranslation::where('comparison_slug', $comparison_slug)->first();
+        }
+
+        if (!$categoryTranslation) {
             return app(\App\Http\Controllers\User\ViewController::class)->handleBusinessSubPage(request(), $locale, $comparison_slug, $comparison_businesses);
+        }
+
+        if ($categoryTranslation->category && $categoryTranslation->category->target_category_id) {
+            $targetCat = $categoryTranslation->category->targetCategory;
+            if ($targetCat) {
+                $targetTrans = $targetCat->categoryTranslations()->where('lang_id', $lang_id)->first()
+                    ?? $targetCat->categoryTranslations()->where('lang_id', 1)->first()
+                    ?? $targetCat->categoryTranslations()->first();
+                if ($targetTrans && $targetTrans->comparison_slug && $targetTrans->comparison_slug !== $comparison_slug) {
+                    return redirect()->to(url('/' . $locale . '/' . $targetTrans->comparison_slug . '/' . $comparison_businesses), 301);
+                }
+            }
         }
 
         // The "vs" keyword is defined per country/language in site content

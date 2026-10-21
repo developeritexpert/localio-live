@@ -86,6 +86,16 @@ class CategoryController extends Controller
            abort(404);
        }
 
+       if ($category->target_category_id && $category->targetCategory) {
+           $targetCat = $category->targetCategory;
+           $targetTrans = $targetCat->categoryTranslations()->where('lang_id', $lang_id)->first()
+               ?? $targetCat->categoryTranslations()->where('lang_id', 1)->first()
+               ?? $targetCat->categoryTranslations()->first();
+           if ($targetTrans && $targetTrans->slug && $targetTrans->slug !== $slug) {
+               return redirect()->to('/' . $lang_code . '/' . $targetTrans->slug, 301);
+           }
+       }
+
        $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
            ? $category->translations->first()
            : ($category->translations ?? $category->translation);

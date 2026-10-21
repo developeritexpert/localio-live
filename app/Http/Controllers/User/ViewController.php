@@ -1125,6 +1125,15 @@ class ViewController extends Controller
         }
 
         if ($category) {
+            if ($category->target_category_id && $category->targetCategory) {
+                $targetCat = $category->targetCategory;
+                $targetTrans = $targetCat->categoryTranslations()->where('lang_id', $lang_id)->first()
+                    ?? $targetCat->categoryTranslations()->where('lang_id', 1)->first()
+                    ?? $targetCat->categoryTranslations()->first();
+                if ($targetTrans && $targetTrans->slug && $targetTrans->slug !== $slug) {
+                    return redirect()->to('/' . $locale . '/' . $targetTrans->slug, 301);
+                }
+            }
             return app(\App\Http\Controllers\User\CategoryController::class)->categoryDetail($locale, $slug);
         }
 

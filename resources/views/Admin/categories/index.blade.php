@@ -180,6 +180,17 @@
                                                     ?? $category->parent->categoryTranslations->where('lang_id', $englishLangId)->first()) : null;
                                             @endphp
                                             <span class="badge badge-dim bg-outline-info">Sub-category (of {{ $parentTranslation->name ?? 'Unknown' }})</span>
+                                            @if(!empty($category->target_category_id))
+                                                @php
+                                                    $targetTrans = $category->targetCategory ? ($category->targetCategory->categoryTranslations->where('lang_id', $siteLanguage)->first() 
+                                                        ?? $category->targetCategory->categoryTranslations->where('lang_id', $englishLangId)->first()) : null;
+                                                @endphp
+                                                <div class="mt-1">
+                                                    <span class="badge badge-dim bg-outline-warning" title="Points to {{ $targetTrans->name ?? ('#' . $category->target_category_id) }}">
+                                                        <em class="icon ni ni-forward-ios me-1"></em>Points to: {{ $targetTrans->name ?? ('Category #' . $category->target_category_id) }}
+                                                    </span>
+                                                </div>
+                                            @endif
                                         @endif
                                     </td>
                                     <td class="nk-tb-col">
