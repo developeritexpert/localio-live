@@ -1325,6 +1325,10 @@ public function getFeatureDescriptionProperty()
 
     public function getFaqsProperty()
     {
+        if (!$this->category) {
+            return [];
+        }
+
         $trans = $this->category->translations;
         if ($trans && !empty($trans->faqs)) {
             $decoded = is_array($trans->faqs) ? $trans->faqs : json_decode($trans->faqs, true);
@@ -1333,21 +1337,20 @@ public function getFeatureDescriptionProperty()
             }
         }
 
-        $catName = $trans->name ?? $this->category->name ?? 'this category';
-        return [
-            [
-                'question' => 'How do I choose the best ' . strtolower($catName) . ' provider?',
-                'answer' => 'Compare essential features, user ratings, transparent pricing, and reliability. Assess whether the provider aligns with your specific technical and budgetary requirements.'
-            ],
-            [
-                'question' => 'Are community ratings and reviews verified?',
-                'answer' => 'Yes, reviews and ratings on Localio are submitted by verified users and evaluated for authenticity by our moderation team.'
-            ],
-            [
-                'question' => 'How often are rankings and listings updated?',
-                'answer' => 'Our listings and rating scores are updated dynamically as community members submit feedback and ratings.'
-            ]
-        ];
+        // Check if category translation has faqs directly in DB for current language
+        $langId = $this->lang_id ?: getCurrentLanguageID();
+        $dbFaqs = \App\Models\CategoryTranslation::where('category_id', $this->category->id)
+            ->where('lang_id', $langId)
+            ->value('faqs');
+
+        if (!empty($dbFaqs)) {
+            $decoded = is_array($dbFaqs) ? $dbFaqs : json_decode($dbFaqs, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        return [];
     }
 
     
