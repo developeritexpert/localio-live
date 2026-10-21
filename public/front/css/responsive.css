@@ -3680,6 +3680,10 @@
     .cat_pg .host-pro {
         max-width: 100% !important
     }
+
+    .pdc_box {       
+        flex-direction: column !important;     
+    }
 }
 
 @media only screen and (min-width: 992px) {
