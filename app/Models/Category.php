@@ -76,6 +76,13 @@ class Category extends Model
 
     public function getEffectiveRatingCriteria()
     {
+        // If this category points to a target category, inherit all rating criteria from target category
+        if ($this->target_category_id) {
+            $targetCategory = $this->targetCategory ?: Category::find($this->target_category_id);
+            if ($targetCategory && $targetCategory->id !== $this->id) {
+                return $targetCategory->getEffectiveRatingCriteria();
+            }
+        }
         $defaultMaster = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
         $effectiveCriteria = collect();
 
