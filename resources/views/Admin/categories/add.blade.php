@@ -29,6 +29,52 @@
         .ck-editor__editable_inline i {
             font-style: italic !important;
         }
+        /* Pointer / Alias inactive field & section styling */
+        .pointer-muted-section {
+            opacity: 0.45 !important;
+            background-color: #f8fafc !important;
+            border: 1px dashed #cbd5e1 !important;
+            border-radius: 8px !important;
+            padding: 14px !important;
+            pointer-events: none !important;
+            user-select: none !important;
+            transition: opacity 0.25s ease;
+            position: relative;
+        }
+        .pointer-muted-section input,
+        .pointer-muted-section textarea,
+        .pointer-muted-section select,
+        .pointer-muted-section .form-file,
+        .pointer-muted-section .ck-editor {
+            background-color: #f1f5f9 !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+        }
+        .pointer-muted-field {
+            opacity: 0.45 !important;
+            pointer-events: none !important;
+            user-select: none !important;
+            transition: opacity 0.25s ease;
+        }
+        .pointer-muted-field input {
+            background-color: #f1f5f9 !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+        }
+        .pointer-inactive-badge {
+            display: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #64748b;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .is-pointing-active .pointer-inactive-badge {
+            display: inline-block !important;
+        }
     </style>
     <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between align-items-center mb-3">
@@ -60,7 +106,7 @@
                     <div class="row g-gs">
                         {{-- 1. Category Name Placeholders --}}
                         <div class="col-12 mt-2">
-                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-tag me-1"></i> Category Name Placeholders</h6>
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-tag me-1"></i> Category Name Placeholders <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Tc &amp; Lc Not Used (Inherited from Target)</span></h6>
                             <small class="text-muted d-block mb-3">Placeholders used in SEO templates and dynamic content generation.</small>
                         </div>
 
@@ -85,7 +131,7 @@
                         </div>
 
                         {{-- Name title case [category_tc] --}}
-                        <div class="col-md-4 col-12">
+                        <div class="col-md-4 col-12 pointer-mutable-field">
                             <div class="form-group">
                                 <label class="form-label fw-bold" for="category_tc">Name title case <code class="text-primary">[category_tc]</code></label>
                                 <div class="form-control-wrap">
@@ -100,7 +146,7 @@
                         </div>
 
                         {{-- Name lowercase [category_lc] --}}
-                        <div class="col-md-4 col-12">
+                        <div class="col-md-4 col-12 pointer-mutable-field">
                             <div class="form-group">
                                 <label class="form-label fw-bold" for="category_lc">Name lowercase <code class="text-primary">[category_lc]</code></label>
                                 <div class="form-control-wrap">
@@ -115,8 +161,8 @@
                         </div>
 
                         {{-- 2. Entity 1 Placeholders --}}
-                        <div class="col-12 mt-4 pt-3 border-top">
-                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-building-o me-1"></i> Entity 1 Placeholders (e.g. Provider)</h6>
+                        <div class="col-12 mt-4 pt-3 border-top pointer-mutable-section">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-building-o me-1"></i> Entity 1 Placeholders (e.g. Provider) <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></h6>
                             <small class="text-muted d-block mb-3">Primary entity descriptors for this category (e.g. provider, business, platform).</small>
                         </div>
 
@@ -241,8 +287,8 @@
                         </div>
 
                         {{-- 3. Entity 2 Placeholders --}}
-                        <div class="col-12 mt-4 pt-3 border-top">
-                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-cogs me-1"></i> Entity 2 Placeholders (e.g. Service)</h6>
+                        <div class="col-12 mt-4 pt-3 border-top pointer-mutable-section">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-cogs me-1"></i> Entity 2 Placeholders (e.g. Service) <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></h6>
                             <small class="text-muted d-block mb-3">Secondary entity descriptors for this category (e.g. service, tool, solution).</small>
                         </div>
 
@@ -419,12 +465,12 @@
                         </div>
 
                         {{-- Basic Business Information ("At a glance") Labels for Options 3 & 4 --}}
-                        <div class="col-12 mt-4 pt-3 border-top">
-                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-list-alt me-1"></i> Basic Business Information ("At a glance") Labels</h6>
+                        <div class="col-12 mt-4 pt-3 border-top pointer-mutable-section">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-list-alt me-1"></i> Basic Business Information ("At a glance") Labels <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></h6>
                             <small class="text-muted d-block mb-3">Define category-specific attribute labels for options 3 &amp; 4 displayed in the business profile "At a glance" card. If left blank on a subcategory, it inherits from the parent category.</small>
                         </div>
 
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-6 col-12 pointer-mutable-field">
                             <div class="form-group">
                                 <label class="form-label fw-bold" for="glance_option_3_label">Option 3 Label</label>
                                 <div class="form-control-wrap">
@@ -436,7 +482,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-6 col-12 pointer-mutable-field">
                             <div class="form-group">
                                 <label class="form-label fw-bold" for="glance_option_4_label">Option 4 Label</label>
                                 <div class="form-control-wrap">
@@ -448,9 +494,9 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="form-group">
-                                <label class="form-label" for="description">Header Text (First Introductory Paragraph)</label>
+                                <label class="form-label" for="description">Header Text (First Introductory Paragraph) <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></label>
                                 <small class="text-muted d-block mb-1">Enter the individual introductory overview sentence(s) for this category (e.g. up to "...need to handle directly."). The closing question sentence and the second overview paragraph are automatically appended from the assigned Content Template.</small>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{!! isset($category_data) ? $category_data['description'] : old('description') !!}</textarea>
@@ -461,9 +507,9 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="form-group">
-                                <label class="form-label" for="top_rated_image">Top-Rated SVG Graphic (300x100)</label>
+                                <label class="form-label" for="top_rated_image">Top-Rated SVG Graphic (300x100) <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></label>
                                 <div class="form-control-wrap">
                                     <div class="form-file">
                                         <input type="file" class="form-file-input" id="top_rated_image" name="top_rated_image" accept="image/svg+xml">
@@ -484,7 +530,7 @@
                         </div>
 
                         <!-- 1. Category / Subcategory Page Overlay SVG (150x150) -->
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-7 col-12">
@@ -526,7 +572,7 @@
                         </div>
 
                         <!-- 2. FAQ Page Overlay SVG (150x150) -->
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-7 col-12">
@@ -568,7 +614,7 @@
                         </div>
 
                         <!-- 3. Comparison Page Overlay SVG (150x150) -->
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-7 col-12">
@@ -609,7 +655,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 pointer-mutable-section">
                             <div class="alert alert-primary bg-primary-dim border-0 d-flex align-items-center justify-content-between p-3 mb-3">
                                 <div>
                                     <strong class="d-block text-primary"><em class="icon ni ni-template me-1"></em>Dynamic Content Templates</strong>
@@ -803,10 +849,10 @@
                         
 
                         <!-- FAQ Page Content & Settings Section -->
-                        <div class="col-md-12 mt-4">
+                        <div class="col-md-12 mt-4 pointer-mutable-section">
                             <div class="card card-bordered bg-light">
                                 <div class="card-inner py-3">
-                                    <h5 class="title mb-1 text-primary"><i class="fa fa-question-circle me-1"></i> FAQ Page Settings & Content</h5>
+                                    <h5 class="title mb-1 text-primary"><i class="fa fa-question-circle me-1"></i> FAQ Page Settings & Content <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></h5>
                                     <p class="text-muted small mb-3">Custom settings and texts displayed exclusively on this category's public FAQs page.</p>
 
                                     <div class="row g-3">
@@ -858,7 +904,27 @@
                         <!-- Rating Criteria Section -->
                         <div class="col-md-12 mt-4" id="rating_criteria_section">
                             <h5 class="title mb-1">Rating Criteria</h5>
-                            <p class="text-muted small mb-3">Configure default rating criteria descriptions and define category or subcategory specific criteria.</p>
+                            <p class="text-muted small mb-3" id="rating_criteria_subtitle">Configure default rating criteria descriptions and define category or subcategory specific criteria.</p>
+
+                            <!-- Pointer / Target Category Inherited Criteria View -->
+                            <div id="pointer_criteria_view" style="display: none;">
+                                <div class="alert alert-warning border border-warning-subtle mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <em class="icon ni ni-link fs-4 me-2 text-warning"></em>
+                                        <div>
+                                            <strong class="d-block text-dark">Rating Criteria Inherited from Target Category</strong>
+                                            <span class="small text-muted" id="pointer_criteria_target_label">
+                                                This subcategory points to another category. All rating criteria and customer reviews are inherited from the target category.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="pointer_criteria_list" class="row g-2 mb-3">
+                                    <!-- Rendered dynamically via JavaScript -->
+                                </div>
+                            </div>
+
+                            <div id="normal_criteria_wrapper">
 
                             @php
                                 $isSubcategory = isset($category) && $category->parent_id !== null;
@@ -964,15 +1030,16 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                            </div> <!-- /#normal_criteria_wrapper -->
+                        </div> <!-- /#rating_criteria_section -->
 
                         <!-- Dynamic Rich Text Sections (H2 & H3 Sub-headlines) -->
-                        <div class="col-md-12 mt-4" id="text_sections_wrapper">
+                        <div class="col-md-12 mt-4 pointer-mutable-section" id="text_sections_wrapper">
                             <div class="card card-bordered">
                                 <div class="card-inner py-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div>
-                                            <h5 class="title mb-0 text-primary"><i class="fa fa-file-text-o me-1"></i> Dynamic Content Sections (H2 & H3 Sub-headlines)</h5>
+                                            <h5 class="title mb-0 text-primary"><i class="fa fa-file-text-o me-1"></i> Dynamic Content Sections (H2 & H3 Sub-headlines) <span class="pointer-inactive-badge"><em class="icon ni ni-info-fill me-1"></em>Not Used (Inherited from Target)</span></h5>
                                             <p class="text-muted small mb-0">Add custom content sections with an H2 headline, rich text editor, and optional nested H3 sub-headlines.</p>
                                         </div>
                                         <button type="button" class="btn btn-sm btn-primary" id="addCategoryTextSectionBtn">
@@ -1212,11 +1279,98 @@
             });
             updateCategoryTypeUI();
 
-            // Alias / Pointer Subcategory Toggle
+            // Alias / Pointer Subcategory Toggle & Grey-Out Logic
+            const targetCriteriaMap = @json($targetCriteriaMap ?? []);
             const isAliasToggle = document.getElementById('is_alias_toggle');
             const targetCategoryWrap = document.getElementById('target_category_wrap');
             const targetCategorySelect = document.getElementById('target_category_id');
             const btnSyncTargetInfo = document.getElementById('btn_sync_target_info');
+
+            function renderPointerCriteria(targetId) {
+                const listEl = document.getElementById('pointer_criteria_list');
+                const labelEl = document.getElementById('pointer_criteria_target_label');
+                if (!listEl) return;
+
+                if (!targetId || !targetCriteriaMap[targetId]) {
+                    listEl.innerHTML = '<div class="col-12"><div class="alert alert-light border small text-muted"><em class="icon ni ni-info me-1"></em>Please select a target category above to view its inherited criteria.</div></div>';
+                    if (labelEl) labelEl.textContent = 'Please select a target category above to inherit rating criteria.';
+                    return;
+                }
+
+                let targetName = 'Target Category';
+                if (targetCategorySelect && targetCategorySelect.selectedIndex >= 0) {
+                    const opt = targetCategorySelect.options[targetCategorySelect.selectedIndex];
+                    targetName = opt ? (opt.getAttribute('data-name') || opt.textContent.trim()) : 'Target Category';
+                }
+
+                if (labelEl) {
+                    labelEl.innerHTML = 'Inherited from <strong>' + $('<div>').text(targetName).html() + '</strong>. Rating criteria and customer reviews are linked:';
+                }
+
+                const criteria = targetCriteriaMap[targetId] || [];
+                if (criteria.length === 0) {
+                    listEl.innerHTML = '<div class="col-12"><div class="alert alert-light border small text-muted">No criteria defined on target category.</div></div>';
+                    return;
+                }
+
+                let html = '';
+                criteria.forEach(function(c) {
+                    const badge = c.is_default 
+                        ? '<span class="badge bg-secondary">Default</span>' 
+                        : '<span class="badge bg-info">Target Category Criterion</span>';
+                    const descHtml = c.description ? '<small class="text-muted d-block mt-1">' + $('<div>').text(c.description).html() + '</small>' : '';
+                    html += '<div class="col-md-6 col-12">' +
+                        '<div class="p-3 bg-white rounded border border-light-subtle h-100 shadow-sm">' +
+                            '<div class="d-flex align-items-center justify-content-between mb-1">' +
+                                '<span class="fw-bold text-dark">' + $('<div>').text(c.name).html() + '</span>' +
+                                badge +
+                            '</div>' +
+                            descHtml +
+                        '</div>' +
+                    '</div>';
+                });
+                listEl.innerHTML = html;
+            }
+
+            function updatePointerUIState() {
+                const formEl = document.querySelector('form.form-validate') || document.body;
+                const isChecked = isAliasToggle && isAliasToggle.checked;
+                const selectedTarget = targetCategorySelect ? targetCategorySelect.value : '';
+
+                if (isChecked) {
+                    formEl.classList.add('is-pointing-active');
+                    document.querySelectorAll('.pointer-mutable-section').forEach(function(el) {
+                        el.classList.add('pointer-muted-section');
+                    });
+                    document.querySelectorAll('.pointer-mutable-field').forEach(function(el) {
+                        el.classList.add('pointer-muted-field');
+                    });
+
+                    const pointerView = document.getElementById('pointer_criteria_view');
+                    const normalWrapper = document.getElementById('normal_criteria_wrapper');
+                    const criteriaSubtitle = document.getElementById('rating_criteria_subtitle');
+                    if (pointerView) pointerView.style.display = 'block';
+                    if (normalWrapper) normalWrapper.style.display = 'none';
+                    if (criteriaSubtitle) criteriaSubtitle.textContent = 'All rating criteria are automatically inherited from the target category to which this subcategory points.';
+
+                    renderPointerCriteria(selectedTarget);
+                } else {
+                    formEl.classList.remove('is-pointing-active');
+                    document.querySelectorAll('.pointer-muted-section').forEach(function(el) {
+                        el.classList.remove('pointer-muted-section');
+                    });
+                    document.querySelectorAll('.pointer-muted-field').forEach(function(el) {
+                        el.classList.remove('pointer-muted-field');
+                    });
+
+                    const pointerView = document.getElementById('pointer_criteria_view');
+                    const normalWrapper = document.getElementById('normal_criteria_wrapper');
+                    const criteriaSubtitle = document.getElementById('rating_criteria_subtitle');
+                    if (pointerView) pointerView.style.display = 'none';
+                    if (normalWrapper) normalWrapper.style.display = 'block';
+                    if (criteriaSubtitle) criteriaSubtitle.textContent = 'Configure default rating criteria descriptions and define category or subcategory specific criteria.';
+                }
+            }
 
             if (isAliasToggle && targetCategoryWrap) {
                 isAliasToggle.addEventListener('change', function() {
@@ -1228,7 +1382,19 @@
                             targetCategorySelect.value = '';
                         }
                     }
+                    updatePointerUIState();
                 });
+
+                if (targetCategorySelect) {
+                    targetCategorySelect.addEventListener('change', function() {
+                        if (isAliasToggle.checked) {
+                            renderPointerCriteria(this.value);
+                        }
+                    });
+                }
+
+                // Initial run on page load
+                updatePointerUIState();
             }
 
             if (btnSyncTargetInfo && targetCategorySelect) {

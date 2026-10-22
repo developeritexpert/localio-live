@@ -203,6 +203,18 @@ class CategoriesController extends Controller
                 return $parentName . ' - ' . $name;
             });
 
+        $targetCriteriaMap = [];
+        foreach ($allTargetCategories as $tCat) {
+            $targetCriteriaMap[$tCat->id] = $tCat->getEffectiveRatingCriteria()->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'description' => $c->description ?? '',
+                    'is_default' => (bool)$c->is_default,
+                ];
+            })->values()->toArray();
+        }
+
         return view('Admin.categories.add', compact(
             'text_sections',
             'category_faqs',
@@ -217,7 +229,8 @@ class CategoriesController extends Controller
             'inherited_criteria',
             'custom_criteria',
             'parentGlanceLabels',
-            'allTargetCategories'
+            'allTargetCategories',
+            'targetCriteriaMap'
         ));
     }
 
@@ -240,7 +253,7 @@ class CategoriesController extends Controller
     //         'homepage_order' => 'nullable|integer',
     //         'homepage_product_limit' => 'nullable|integer|min:1|max:50',
     //         'comparison_slug' => 'nullable|string|max:255',
-    //         'description' => 'required|string|min:10',
+    //         'description' => $is_pointer ? 'nullable|string' : 'required|string|min:10',
     //         'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
     //         'category_icon' => $isNewCategory
     //         ? 'required|mimes:svg,png,jpg,jpeg,webp|max:2048'
@@ -418,6 +431,7 @@ class CategoriesController extends Controller
         $is_parent = $request->has('is_parent')
             ? $request->boolean('is_parent')
             : ($request->input('category_type') === 'subcategory' ? false : true);
+        $is_pointer = (!$is_parent && $request->filled('target_category_id'));
         
         $rules = [
             'name' => [
@@ -655,6 +669,10 @@ class CategoriesController extends Controller
                 $comparisonSlug = $origCompSlug . '-' . $compCount++;
             }
 
+           $existingTranslation = CategoryTranslation::where('category_id', $category->id)
+                ->where('lang_id', (int) $language_id)
+                ->first();
+
            // Process Dynamic Text Sections (H2 & H3)
             $textSectionsInput = $request->input('text_sections', []);
             $cleanTextSections = [];
@@ -681,43 +699,47 @@ class CategoriesController extends Controller
                 }
             }
 
-            // Process Category FAQs
+            // Process Category FAQs & ensure data preservation for pointer subcategories
+            $descriptionVal = !empty($validate['description']) 
+                ? $validate['description'] 
+                : ($existingTranslation?->description ?? '');
+
             $catTransData = [
                 'category_id'  => $category->id,
                 'lang_id'      => $language_id,
                 'name'         => $categoryName ?: ($validate['name'] ?? ''),
                 'category_cap' => $categoryName ?: ($validate['name'] ?? ''),
-                'category_tc'  => $request->input('category_tc'),
-                'category_lc'  => $request->input('category_lc'),
-                'entity1_cap'  => $request->input('entity1_cap'),
-                'entity1_lc'   => $request->input('entity1_lc'),
-                'entities1_cap'=> $request->input('entities1_cap'),
-                'entities1_lc' => $request->input('entities1_lc'),
-                'entity1_short_cap' => $request->input('entity1_short_cap'),
-                'entity1_short_lc'  => $request->input('entity1_short_lc'),
-                'entities1_short_cap' => $request->input('entities1_short_cap'),
-                'entities1_short_lc'  => $request->input('entities1_short_lc'),
-                'entity2_cap'  => $request->input('entity2_cap'),
-                'entity2_lc'   => $request->input('entity2_lc'),
-                'entities2_cap'=> $request->input('entities2_cap'),
-                'entities2_lc' => $request->input('entities2_lc'),
-                'entity2_short_cap' => $request->input('entity2_short_cap'),
-                'entity2_short_lc'  => $request->input('entity2_short_lc'),
-                'entities2_short_cap' => $request->input('entities2_short_cap'),
-                'entities2_short_lc'  => $request->input('entities2_short_lc'),
-                'comparison_name' => $validate['comparison_name'] ?? null,
-                'glance_option_3_label' => $request->input('glance_option_3_label'),
-                'glance_option_4_label' => $request->input('glance_option_4_label'),
-                'page_title'   => $validate['page_title'] ?? null,
-                'description'  => $validate['description'],
-                'faq_h1_title' => $request->input('faq_h1_title'),
-                'faq_subtext'  => $request->input('faq_subtext'),
+                'category_tc'  => $request->filled('category_tc') ? $request->input('category_tc') : ($existingTranslation?->category_tc ?? null),
+                'category_lc'  => $request->filled('category_lc') ? $request->input('category_lc') : ($existingTranslation?->category_lc ?? null),
+                'entity1_cap'  => $request->filled('entity1_cap') ? $request->input('entity1_cap') : ($existingTranslation?->entity1_cap ?? null),
+                'entity1_lc'   => $request->filled('entity1_lc') ? $request->input('entity1_lc') : ($existingTranslation?->entity1_lc ?? null),
+                'entities1_cap'=> $request->filled('entities1_cap') ? $request->input('entities1_cap') : ($existingTranslation?->entities1_cap ?? null),
+                'entities1_lc' => $request->filled('entities1_lc') ? $request->input('entities1_lc') : ($existingTranslation?->entities1_lc ?? null),
+                'entity1_short_cap' => $request->filled('entity1_short_cap') ? $request->input('entity1_short_cap') : ($existingTranslation?->entity1_short_cap ?? null),
+                'entity1_short_lc'  => $request->filled('entity1_short_lc') ? $request->input('entity1_short_lc') : ($existingTranslation?->entity1_short_lc ?? null),
+                'entities1_short_cap' => $request->filled('entities1_short_cap') ? $request->input('entities1_short_cap') : ($existingTranslation?->entities1_short_cap ?? null),
+                'entities1_short_lc'  => $request->filled('entities1_short_lc') ? $request->input('entities1_short_lc') : ($existingTranslation?->entities1_short_lc ?? null),
+                'entity2_cap'  => $request->filled('entity2_cap') ? $request->input('entity2_cap') : ($existingTranslation?->entity2_cap ?? null),
+                'entity2_lc'   => $request->filled('entity2_lc') ? $request->input('entity2_lc') : ($existingTranslation?->entity2_lc ?? null),
+                'entities2_cap'=> $request->filled('entities2_cap') ? $request->input('entities2_cap') : ($existingTranslation?->entities2_cap ?? null),
+                'entities2_lc' => $request->filled('entities2_lc') ? $request->input('entities2_lc') : ($existingTranslation?->entities2_lc ?? null),
+                'entity2_short_cap' => $request->filled('entity2_short_cap') ? $request->input('entity2_short_cap') : ($existingTranslation?->entity2_short_cap ?? null),
+                'entity2_short_lc'  => $request->filled('entity2_short_lc') ? $request->input('entity2_short_lc') : ($existingTranslation?->entity2_short_lc ?? null),
+                'entities2_short_cap' => $request->filled('entities2_short_cap') ? $request->input('entities2_short_cap') : ($existingTranslation?->entities2_short_cap ?? null),
+                'entities2_short_lc'  => $request->filled('entities2_short_lc') ? $request->input('entities2_short_lc') : ($existingTranslation?->entities2_short_lc ?? null),
+                'comparison_name' => $validate['comparison_name'] ?? ($existingTranslation?->comparison_name ?? null),
+                'glance_option_3_label' => $request->filled('glance_option_3_label') ? $request->input('glance_option_3_label') : ($existingTranslation?->glance_option_3_label ?? null),
+                'glance_option_4_label' => $request->filled('glance_option_4_label') ? $request->input('glance_option_4_label') : ($existingTranslation?->glance_option_4_label ?? null),
+                'page_title'   => $validate['page_title'] ?? ($existingTranslation?->page_title ?? null),
+                'description'  => $descriptionVal,
+                'faq_h1_title' => $request->filled('faq_h1_title') ? $request->input('faq_h1_title') : ($existingTranslation?->faq_h1_title ?? null),
+                'faq_subtext'  => $request->filled('faq_subtext') ? $request->input('faq_subtext') : ($existingTranslation?->faq_subtext ?? null),
                 // 'top_rated_description' is now managed centrally on the Top Rated page
-                'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
-                'meta_title'   => $validate['meta_title'] ?? null,
-                'meta_description' => $validate['meta_description'] ?? null,
-                'faq_meta_title'   => $validate['faq_meta_title'] ?? null,
-                'faq_meta_description' => $validate['faq_meta_description'] ?? null,
+                'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : ($existingTranslation?->text_sections ?? null),
+                'meta_title'   => $validate['meta_title'] ?? ($existingTranslation?->meta_title ?? null),
+                'meta_description' => $validate['meta_description'] ?? ($existingTranslation?->meta_description ?? null),
+                'faq_meta_title'   => $validate['faq_meta_title'] ?? ($existingTranslation?->faq_meta_title ?? null),
+                'faq_meta_description' => $validate['faq_meta_description'] ?? ($existingTranslation?->faq_meta_description ?? null),
                 'slug'         => $slug,
                 'comparison_slug' => $comparisonSlug,
                 'is_important' => $request->has('is_important') ? 1 : 0,
@@ -780,44 +802,47 @@ class CategoriesController extends Controller
             }
 
             // 2. Process Custom Criteria (Category or Subcategory specific)
-            $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? [];
-            $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? [];
+            // If this category is pointing to another category, do NOT alter or delete its own saved criteria!
+            if (!$is_pointer) {
+                $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? [];
+                $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? [];
 
-            $existingIds = array_keys($submittedExistingCriteria);
-            $category->ratingCriteria()
-                ->where('is_default', false)
-                ->whereNotIn('id', $existingIds)
-                ->delete();
+                $existingIds = array_keys($submittedExistingCriteria);
+                $category->ratingCriteria()
+                    ->where('is_default', false)
+                    ->whereNotIn('id', $existingIds)
+                    ->delete();
 
-            // Update existing custom criteria
-            foreach ($submittedExistingCriteria as $criteriaId => $data) {
-                $name = is_array($data) ? ($data['name'] ?? '') : $data;
-                $desc = is_array($data) ? ($data['description'] ?? null) : null;
-
-                if (trim($name) !== '') {
-                    CategoryRatingCriteria::where('id', $criteriaId)
-                        ->where('category_id', $category->id)
-                        ->where('is_default', false)
-                        ->update([
-                            'name' => trim($name),
-                            'description' => $desc ? trim($desc) : null,
-                        ]);
-                }
-            }
-
-            // Add new custom criteria
-            if (is_array($submittedNewCriteria)) {
-                foreach ($submittedNewCriteria as $newCrit) {
-                    $name = is_array($newCrit) ? ($newCrit['name'] ?? '') : $newCrit;
-                    $desc = is_array($newCrit) ? ($newCrit['description'] ?? null) : null;
+                // Update existing custom criteria
+                foreach ($submittedExistingCriteria as $criteriaId => $data) {
+                    $name = is_array($data) ? ($data['name'] ?? '') : $data;
+                    $desc = is_array($data) ? ($data['description'] ?? null) : null;
 
                     if (trim($name) !== '') {
-                        CategoryRatingCriteria::create([
-                            'category_id' => $category->id,
-                            'name' => trim($name),
-                            'description' => $desc ? trim($desc) : null,
-                            'is_default' => false,
-                        ]);
+                        CategoryRatingCriteria::where('id', $criteriaId)
+                            ->where('category_id', $category->id)
+                            ->where('is_default', false)
+                            ->update([
+                                'name' => trim($name),
+                                'description' => $desc ? trim($desc) : null,
+                            ]);
+                    }
+                }
+
+                // Add new custom criteria
+                if (is_array($submittedNewCriteria)) {
+                    foreach ($submittedNewCriteria as $newCrit) {
+                        $name = is_array($newCrit) ? ($newCrit['name'] ?? '') : $newCrit;
+                        $desc = is_array($newCrit) ? ($newCrit['description'] ?? null) : null;
+
+                        if (trim($name) !== '') {
+                            CategoryRatingCriteria::create([
+                                'category_id' => $category->id,
+                                'name' => trim($name),
+                                'description' => $desc ? trim($desc) : null,
+                                'is_default' => false,
+                            ]);
+                        }
                     }
                 }
             }
