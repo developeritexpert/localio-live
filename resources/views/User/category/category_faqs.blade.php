@@ -383,7 +383,7 @@
                                         <small class="text-muted" style="font-size: 11px;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
                                     </div>
                                     <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
-                                        {{ $revTrans->title ?? 'Review' }}
+                                        {{ $rev->display_title ?? $revTrans->title ?? 'Review' }}
                                     </p>
                                     <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                         @for($s=1; $s<=5; $s++)
@@ -397,7 +397,7 @@
                                         @endfor
                                     </div>
                                     @if($revTrans && !empty($revTrans->description))
-                                        <p style="font-weight: 400; font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 85) }}</p>
+                                        <p style="font-weight: 400; font-size: 14px; line-height: 1.4; color: #002347; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($rev->display_text ?? $revTrans->description ?? ''), 85) }}</p>
                                     @endif
                                 </div>
                             @endforeach

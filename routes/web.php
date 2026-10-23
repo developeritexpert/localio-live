@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TranslationsController;
 use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
@@ -267,6 +268,22 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::delete('/admin-dashboard/content-generation/batch-jobs/{job}', [ContentGenerationController::class, 'deleteBatchJob'])->name('content-gen.batch-jobs.delete');
     Route::match(['DELETE', 'POST'], '/admin-dashboard/content-generation/businesses/bulk-delete', [ContentGenerationController::class, 'deleteBulkBusinesses'])->name('content-gen.delete-bulk-businesses');
     Route::match(['DELETE', 'POST'], '/admin-dashboard/content-generation/businesses/{id}', [ContentGenerationController::class, 'deleteBusiness'])->name('content-gen.delete-business');
+
+    // ===== Translations =====
+    Route::get('/admin-dashboard/translations/businesses', [TranslationsController::class, 'businesses'])->name('translations.businesses');
+    Route::get('/admin-dashboard/translations/reviews', [TranslationsController::class, 'reviews'])->name('translations.reviews');
+    Route::post('/admin-dashboard/translations/reviews/dispatch-batch', [TranslationsController::class, 'dispatchReviewBatch'])->name('translations.reviews.dispatch-batch');
+    Route::post('/admin-dashboard/translations/reviews/retry', [TranslationsController::class, 'retryReviewTranslation'])->name('translations.reviews.retry');
+    Route::get('/admin-dashboard/translations/website', [TranslationsController::class, 'website'])->name('translations.website');
+    Route::get('/admin-dashboard/translations/website/export-json', [TranslationsController::class, 'exportWebsiteJson'])->name('translations.website.export-json');
+    Route::post('/admin-dashboard/translations/website/import-json', [TranslationsController::class, 'importWebsiteJson'])->name('translations.website.import-json');
+    Route::get('/admin-dashboard/translations/templates', [TranslationsController::class, 'templates'])->name('translations.templates');
+    Route::get('/admin-dashboard/translations/batch-jobs', [TranslationsController::class, 'batchJobs'])->name('translations.batch-jobs');
+    Route::get('/admin-dashboard/translations/batch-jobs/{batch}/download', [TranslationsController::class, 'downloadBatchJson'])->name('translations.batch-jobs.download');
+    Route::post('/admin-dashboard/translations/batch-jobs/upload-result', [TranslationsController::class, 'uploadBatchResult'])->name('translations.batch-jobs.upload-result');
+    Route::get('/admin-dashboard/translations/poll-status', [TranslationsController::class, 'pollStatusNow'])->name('translations.poll-status');
+    Route::delete('/admin-dashboard/translations/batch-jobs/{batch}', [TranslationsController::class, 'deleteBatchJob'])->name('translations.batch-jobs.delete');
+
 
 
 

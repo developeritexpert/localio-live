@@ -6,19 +6,15 @@
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
             <div class="nk-block-head-content">
-                <h3 class="nk-block-title page-title">Update Review: {{$language->name}}</h3>
+                <h3 class="nk-block-title page-title">Update Review: {{ $language->name ?? 'Default' }}</h3>
+                <div class="nk-block-des text-soft">
+                    <p>Review #{{ $review->id }} &bull; Submitted by {{ $review->user->name ?? $review->user->first_name ?? 'User' }} &bull; Current status: <span class="badge bg-secondary text-uppercase">{{ $review->status }}</span></p>
+                </div>
             </div>
             <div class="nk-block-head-content">
-                <div class="toggle-wrap nk-block-tools-toggle">
-                    <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu">
-                        <em class="icon ni ni-more-v"></em>
-                    </a>
-                    <div class="toggle-expand-content" data-content="pageMenu">
-                        <ul class="nk-block-tools g-3">
-                            <!-- Optional page tools go here -->
-                        </ul>
-                    </div>
-                </div>
+                <a href="{{ route('reviews') }}" class="btn btn-outline-secondary">
+                    <em class="icon ni ni-arrow-left"></em><span>Back to Reviews</span>
+                </a>
             </div>
         </div>
     </div>
@@ -29,10 +25,10 @@
             <form action="{{ url('admin-dashboard/review-status-update/' . $review->id) }}" method="POST">
                 @csrf
                 @php
-                    $ease_of_use_rating = old('ease_of_use_rating', $review->ease_of_use_rating);
-                    $value_for_money_rating = old('value_for_money_rating', $review->value_for_money_rating);
-                    $customer_service_rating = old('customer_service_rating', $review->customer_service_rating);
-                    $exclusive_service_rating = old('exclusive_service_rating', $review->exclusive_service_rating);
+                    $ease_of_use_rating = old('ease_of_use_rating', $review->ease_of_use_rating ?? round($review->rating ?? 5));
+                    $value_for_money_rating = old('value_for_money_rating', $review->value_for_money_rating ?? round($review->rating ?? 5));
+                    $customer_service_rating = old('customer_service_rating', $review->customer_service_rating ?? round($review->rating ?? 5));
+                    $exclusive_service_rating = old('exclusive_service_rating', $review->exclusive_service_rating ?? round($review->rating ?? 5));
                 @endphp
 
                 <div class="row g-3">
@@ -113,11 +109,10 @@
                                     @foreach ($businesses as $business)
                                         <option value="{{ $business->id }}"
                                             {{ $business->id == $review->business_id ? 'selected' : '' }}>
-                                            {{ $business->translations->first()->name ?? '' }}
+                                            {{ $business->translations->first()->name ?? "Business #{$business->id}" }}
                                         </option>
                                     @endforeach
                                 </select>
-                                <input type="hidden" name="business_id" value="{{ $review->business_id }}">
                                 @error('business_id')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -129,7 +124,7 @@
                     <div class="col-md-12 mt-3">
                         <div class="form-group">
                             <label class="form-label" for="description">Description</label>
-                            <textarea class="form-control" name="description" id="description" rows="4"
+                            <textarea class="form-control" name="description" id="description" rows="5"
                                       style="text-align: left">{{ old('description', $reviewTranslation->description ?? $defaultTranslation->description ?? '') }}</textarea>
                             @error('description')
                                 <div class="error text-danger">{{ $message }}</div>
@@ -143,14 +138,13 @@
                             <label class="form-label d-block me-3">Review Status:</label>
                             <label class="me-2 mb-0"><b>Awaiting Approval</b></label>
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="customSwitch1" name="status"
-                                    {{ ($review->status ?? 'inactive') === 'active' ? 'checked' : '' }}
-                                    {{ getCurrentLocale() !== 'en-us' ? 'disabled' : '' }}>
+                                <input type="checkbox" class="custom-control-input" id="customSwitch1"
+                                    {{ in_array($review->status ?? 'inactive', ['active', 'published']) ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="customSwitch1"></label>
                             </div>
                             <label class="ms-2 mb-0"><b>Approved</b></label>
                         </div>
-                        <input type="hidden" name="status" id="statusHidden1" value="{{ $review->status ?? 'inactive' }}">
+                        <input type="hidden" name="status" id="statusHidden1" value="{{ in_array($review->status ?? 'inactive', ['active', 'published']) ? 'active' : 'inactive' }}">
                         @error('status')
                             <div class="error text-danger">{{ $message }}</div>
                         @enderror
@@ -160,8 +154,11 @@
                     <div class="col-md-12 mt-4">
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">
-                                <span>Update Review</span>
+                                <em class="icon ni ni-save me-1"></em><span>Update Review</span>
                             </button>
+                            <a href="{{ route('reviews') }}" class="btn btn-outline-secondary ms-2">
+                                <span>Cancel</span>
+                            </a>
                         </div>
                     </div>
                 </div> <!-- End of form rows -->
@@ -170,23 +167,21 @@
     </div>
 </div>
 
-    <script>
-        $(document).ready(function() {
-            const switchInput = $("#customSwitch1");
-            const hiddenInput = $("#statusHidden1");
+<script>
+    $(document).ready(function() {
+        const switchInput = $("#customSwitch1");
+        const hiddenInput = $("#statusHidden1");
 
-            // Set initial checkbox state
-            switchInput.prop("checked", hiddenInput.val() === "active");
+        // Set initial checkbox state
+        switchInput.prop("checked", hiddenInput.val() === "active" || hiddenInput.val() === "published");
 
-            // Update hidden input when the switch is toggled, only if it's not disabled
-            if (!switchInput.prop("disabled")) {
-                switchInput.on("change", function() {
-                    const newValue = this.checked ? "active" : "inactive";
-                    hiddenInput.val(newValue);
-                });
-            }
+        // Update hidden input when the switch is toggled
+        switchInput.on("change", function() {
+            const newValue = this.checked ? "active" : "inactive";
+            hiddenInput.val(newValue);
         });
-    </script>
+    });
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -218,5 +213,5 @@
             });
         });
     });
-    </script>
+</script>
 @endsection

@@ -275,6 +275,7 @@
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#removeModal-{{ $review->id }}"><em class="icon ni ni-trash text-danger"></em><span>Remove Review</span></a>
                                                 </li>
                                             @endif
+                                            <li><a href="{{ route('review-edit', $review->id) }}"><em class="icon ni ni-edit text-primary"></em><span>Edit Review</span></a></li>
                                             <li><a href="{{ route('review-status-update', ['id' => $review->id]) }}"><em class="icon ni ni-swap-alt"></em><span>Toggle Visibility</span></a></li>
                                         </ul>
                                     </div>
