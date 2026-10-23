@@ -165,6 +165,7 @@ class TranslationsController extends Controller
         $counts = [
             'all'          => ReviewTranslation::whereNotNull('target_locale')->count(),
             'waiting'      => ReviewTranslation::whereNotNull('target_locale')->where('status', ReviewTranslation::STATUS_WAITING)->count(),
+            'batched'      => ReviewTranslation::whereNotNull('target_locale')->where('status', ReviewTranslation::STATUS_BATCHED)->count(),
             'completed'    => ReviewTranslation::whereNotNull('target_locale')->where('status', ReviewTranslation::STATUS_COMPLETED)->count(),
             'outdated'     => ReviewTranslation::whereNotNull('target_locale')->where('status', ReviewTranslation::STATUS_OUTDATED)->count(),
             'failed'       => ReviewTranslation::whereNotNull('target_locale')->where('status', ReviewTranslation::STATUS_FAILED)->count(),

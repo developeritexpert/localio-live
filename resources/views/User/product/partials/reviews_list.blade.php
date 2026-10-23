@@ -649,20 +649,23 @@ $(document).on('click', '.view-original-toggle', function(e) {
     var $btn = $(this);
     var reviewId = $btn.data('review-id');
     var state = $btn.data('state');
-    var $textEl = $('#review-text-' + reviewId);
-    var $titleEl = $('#review-title-' + reviewId);
+    var $card = $btn.closest('.review_detl');
+    var $textEl = $card.find('.review-display-text');
+    if (!$textEl.length) $textEl = $('#review-text-' + reviewId);
+    var $titleEl = $card.find('.review-title');
+    if (!$titleEl.length) $titleEl = $('#review-title-' + reviewId);
 
     if (state === 'translated') {
         var origText = $btn.data('original-text');
         var origTitle = $btn.data('original-title');
-        if (origText) $textEl.text(origText);
+        if (origText) $textEl.html(String(origText).replace(/\n/g, '<br>'));
         if (origTitle && $titleEl.length) $titleEl.text(origTitle);
         $btn.text('View Translation');
         $btn.data('state', 'original');
     } else {
         var transText = $btn.data('translated-text');
         var transTitle = $btn.data('translated-title');
-        if (transText) $textEl.text(transText);
+        if (transText) $textEl.html(String(transText).replace(/\n/g, '<br>'));
         if (transTitle && $titleEl.length) $titleEl.text(transTitle);
         $btn.text('View Original');
         $btn.data('state', 'translated');

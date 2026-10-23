@@ -319,6 +319,9 @@ class AddReview extends Component
 
                 $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
                 $existingReview->selectedProCons()->sync($selectedIds);
+
+                // Invalidate existing translations because review content changed
+                \App\Services\ReviewTranslationService::invalidateTranslationsForReview($existingReview);
             });
 
             // Dispatch moderation after transaction commits

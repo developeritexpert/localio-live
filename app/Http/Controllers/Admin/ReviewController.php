@@ -427,6 +427,12 @@ class ReviewController extends Controller
 
         $review->update(['status' => $newStatus]);
 
+        if ($newStatus === Review::STATUS_PUBLISHED) {
+            \App\Services\ReviewTranslationService::queueTranslationsForReview($review);
+        } else {
+            \App\Services\ReviewTranslationService::handleRemovedOrRejectedReview($review);
+        }
+
         ReviewModerationLog::logModerator(
             $review->id,
             ReviewModerationLog::ACTION_STATUS_CHANGED,

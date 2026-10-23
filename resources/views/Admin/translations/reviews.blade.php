@@ -56,6 +56,11 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ ($statusFilter ?? '') === 'batched' ? 'active' : '' }}" href="{{ route('translations.reviews', array_merge(request()->except(['status', 'page']), ['status' => 'batched'])) }}">
+                    Batched <span class="badge bg-info ms-1">{{ $counts['batched'] ?? 0 }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ ($statusFilter ?? '') === 'completed' ? 'active' : '' }}" href="{{ route('translations.reviews', array_merge(request()->except(['status', 'page']), ['status' => 'completed'])) }}">
                     Completed <span class="badge bg-success ms-1">{{ $counts['completed'] ?? 0 }}</span>
                 </a>
@@ -124,6 +129,7 @@
                             <th style="min-width: 250px;">Translated Content</th>
                             <th style="width: 120px;">Status</th>
                             <th style="width: 90px;" class="text-center">Retries</th>
+                            <th style="width: 120px;">Date</th>
                             <th style="width: 100px;" class="text-end">Action</th>
                         </tr>
                     </thead>
@@ -174,6 +180,11 @@
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-muted">{{ $tr->retry_count ?? 0 }} / 3</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted fs-11px">
+                                        {{ $tr->translated_at ? \Carbon\Carbon::parse($tr->translated_at)->format('M d, H:i') : ($tr->created_at ? $tr->created_at->format('M d, Y') : '—') }}
+                                    </span>
                                 </td>
                                 <td class="text-end">
                                     @if(in_array($tr->status, ['FAILED', 'NEEDS_REVIEW', 'OUTDATED']))

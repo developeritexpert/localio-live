@@ -28,6 +28,15 @@ return [
 
     /*
     |----------------------------------------------------------------------
+    | Automated Review Translations (OpenAI Batch API)
+    |----------------------------------------------------------------------
+    */
+    'review_translation_model'          => env('OPENAI_TRANSLATION_MODEL', 'gpt-5.6-luna'),
+    'review_translation_prompt_id'      => env('OPENAI_TRANSLATION_PROMPT_ID', 'Localio Review Translation'),
+    'review_translation_prompt_version' => env('OPENAI_TRANSLATION_PROMPT_VERSION', '1'),
+
+    /*
+    |----------------------------------------------------------------------
     | Supported Localio Locales (sent to GPT for locale detection)
     |----------------------------------------------------------------------
     */

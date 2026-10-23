@@ -662,16 +662,11 @@ class ViewController extends Controller
             $additional_info = $bPrice['additional_info'] ?? 'NA';
         }
 
-        $topReviews = Review::with([
-            'user',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
-        ])
+        $allBusinessReviews = Review::with(['user', 'business', 'ratings.criteria', 'translations'])
             ->where('business_id', $business->id)
-            ->where('status', 'active')
-            ->orderByDesc('rating')
-            ->orderByDesc('created_at')
-            ->take(2)
+            ->whereIn('status', ['published', 'active'])
             ->get();
+        $topReviews = ReviewDisplayService::getHighlightedReviews($allBusinessReviews, $locale, $lang_id, 2);
 
         // FAQ Categories & Grouped FAQs
         $faqCategories = BusinessFaqCategory::where('business_id', $business->id)

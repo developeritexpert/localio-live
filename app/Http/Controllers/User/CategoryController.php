@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Services\ReviewDisplayService;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
@@ -388,13 +390,15 @@ class CategoryController extends Controller
             $recentReviews = Review::whereIn('status', ['published', 'active'])
                 ->with([
                     'user',
-                    'translations' => fn($q) => $q->where('language_id', $lang_id),
+                    'translations',
                     'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
                 ])
                 ->orderByDesc('created_at')
-                ->take(2)
+                ->take(10)
                 ->get();
         }
+
+        $recentReviews = ReviewDisplayService::getHighlightedReviews($recentReviews, $locale, $lang_id, 2);
 
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $faqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
