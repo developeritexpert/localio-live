@@ -342,6 +342,10 @@ class ReviewModerationService
 
         $review->save();
 
+        if ($review->status === Review::STATUS_PUBLISHED) {
+            \App\Services\ReviewTranslationService::queueTranslationsForReview($review);
+        }
+
         ReviewModerationLog::logSystem(
             $review->id,
             ReviewModerationLog::ACTION_LAYER3_RESULT,

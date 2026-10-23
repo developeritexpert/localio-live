@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Services\ReviewDisplayService;
 use App\Models\Business;
 use App\Models\CategoryProduct;
 use App\Models\CategoryTranslation;
@@ -147,55 +148,50 @@ class ProductController extends Controller
             return $query;
         };
 
-        // Build reviews
+        // Build reviews with 3-Tier ordering (Tier 1 base -> Tier 2 same lang -> Tier 3 translated)
         $reviewsQuery = Review::with([
-    'user',
-    'selectedProCons',
-    'translations' => fn($q) => $q->where('language_id', $lang_id)
-])->where('business_id', $business->id);
-
-$reviews = $applyFiltersAndSort($reviewsQuery)->get();
-
-        $topReviews = Review::with([
             'user',
-            'business',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
-        ])
+            'selectedProCons',
+            'ratings.criteria',
+            'translations',
+        ])->where('business_id', $business->id);
+
+        $reviewsUnsorted = $applyFiltersAndSort($reviewsQuery)->get();
+        $reviews = ReviewDisplayService::getTieredReviews($reviewsUnsorted, $locale, $lang_id, $sort);
+
+        // Highlighted reviews (Tier 1 -> Tier 2 -> Tier 3 without "View original" link)
+        $allBusinessReviews = Review::with(['user', 'business', 'ratings.criteria', 'translations'])
             ->where('business_id', $business->id)
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-            ->orderByDesc('rating')
-            ->orderByDesc('created_at')
-            ->take(3)
+            ->whereIn('status', ['published', 'active'])
             ->get();
+        $topReviews = ReviewDisplayService::getHighlightedReviews($allBusinessReviews, $locale, $lang_id, 3);
 
         $allReviewsQuery = Review::with([
             'user',
             'ratings.criteria',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
-        ])
-            ->where('business_id', $business->id)
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $allReviews = $applyFiltersAndSort($allReviewsQuery)->take(10)->get();
+            'translations',
+        ])->where('business_id', $business->id);
+        $allReviewsUnsorted = $applyFiltersAndSort($allReviewsQuery)->get();
+        $allReviews = ReviewDisplayService::getTieredReviews($allReviewsUnsorted, $locale, $lang_id, $sort)->take(10);
 
         $ourReviewsQuery = Review::with([
             'user',
             'ratings.criteria',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
+            'translations',
         ])
             ->where('business_id', $business->id)
-            ->where('user_id', auth()->id())
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $ourReviews = $applyFiltersAndSort($ourReviewsQuery)->take(10)->get();
+            ->where('user_id', auth()->id());
+        $ourReviewsUnsorted = $applyFiltersAndSort($ourReviewsQuery)->get();
+        $ourReviews = ReviewDisplayService::getTieredReviews($ourReviewsUnsorted, $locale, $lang_id, $sort)->take(10);
 
         $trustpilotReviewsQuery = Review::with([
             'user',
             'business',
             'ratings.criteria',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
-        ])
-            ->where('business_id', $business->id)
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $trustpilotReviews = $applyFiltersAndSort($trustpilotReviewsQuery)->take(10)->get();
+            'translations',
+        ])->where('business_id', $business->id);
+        $trustpilotReviewsUnsorted = $applyFiltersAndSort($trustpilotReviewsQuery)->get();
+        $trustpilotReviews = ReviewDisplayService::getTieredReviews($trustpilotReviewsUnsorted, $locale, $lang_id, $sort)->take(10);
 
         $ratingCount = $business->reviews->whereIn('status', ['published', 'active'])->count();
 

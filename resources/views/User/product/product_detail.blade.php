@@ -3203,7 +3203,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 </div>
 
                                                 <p class="sidebar-review-card-p">
-                                                    {{ $review->translations->first()->title ?? 'Review' }}
+                                                    {{ $review->display_title ?? $review->translations->first()->title ?? 'Review' }}
                                                 </p>
 
                                                 @if($hasUserRatings)
@@ -3223,7 +3223,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 @endif
 
                                                 <p>
-                                                    {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
+                                                    {{ \Illuminate\Support\Str::limit(strip_tags($review->display_text ?? $review->translations->first()->description ?? ''),90) }}
                                                 </p>
 
                                             </div>

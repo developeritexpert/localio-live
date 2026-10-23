@@ -83,9 +83,8 @@
                     </div>
 
                     <div class="review_text size18" style="padding-right: 0;">
-                        <h3 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
-                            {{ $review->translations->first()->title ?? '' }}
-                            
+                        <h3 class="review-title" id="review-title-{{ $review->id }}" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                            {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                         </h3>
                     @push('styles')
 <style>
@@ -176,8 +175,23 @@
                     </div>
                     @endif
                         <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
-                            {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
+                            <span class="review-display-text" id="review-text-{{ $review->id }}">{!! nl2br(e(strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available'))) !!}</span>
                         </div>
+                        @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
+                            <div class="mt-1">
+                                <a href="javascript:void(0);" 
+                                   class="text-primary view-original-toggle" 
+                                   data-review-id="{{ $review->id }}"
+                                   data-state="translated"
+                                   data-translated-title="{{ e($review->display_title ?? '') }}"
+                                   data-translated-text="{{ e(strip_tags($review->display_text ?? '')) }}"
+                                   data-original-title="{{ e($review->original_title ?? '') }}"
+                                   data-original-text="{{ e(strip_tags($review->original_text ?? '')) }}"
+                                   style="font-size: 13px; color: #64748b; font-weight: 500; text-decoration: underline; cursor: pointer;">
+                                    {{ static_text('view_original_text') ?: 'View Original' }}
+                                </a>
+                            </div>
+                        @endif
 @php
     $selectedPros = $review->selectedProCons->where('type', 'pro');
     $selectedCons = $review->selectedProCons->where('type', 'con');
@@ -316,8 +330,8 @@
                         </div>
 
                         <div class="review_text size18" style="padding-right: 0;">
-                            <h3 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
-                                {{ $review->translations->first()->title ?? '' }}
+                            <h3 class="review-title" id="review-title-{{ $review->id }}" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                                {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                             </h3>
                             
                             <!-- Ratings below headline -->
@@ -398,8 +412,23 @@
                         </div>
                             <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                         @endif
-                                {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
+                                <span class="review-display-text" id="review-text-{{ $review->id }}">{!! nl2br(e(strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available'))) !!}</span>
                             </div>
+                            @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
+                                <div class="mt-1">
+                                    <a href="javascript:void(0);" 
+                                       class="text-primary view-original-toggle" 
+                                       data-review-id="{{ $review->id }}"
+                                       data-state="translated"
+                                       data-translated-title="{{ e($review->display_title ?? '') }}"
+                                       data-translated-text="{{ e(strip_tags($review->display_text ?? '')) }}"
+                                       data-original-title="{{ e($review->original_title ?? '') }}"
+                                       data-original-text="{{ e(strip_tags($review->original_text ?? '')) }}"
+                                       style="font-size: 13px; color: #64748b; font-weight: 500; text-decoration: underline; cursor: pointer;">
+                                        {{ static_text('view_original_text') ?: 'View Original' }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Bottom right actions (Report flag & Share) -->
@@ -503,11 +532,26 @@
                         @endif
                     </div>
                     <div class="review_text size18">
-                        <p class="review-title" style="margin-bottom: 4px;">
-                            {{ $review->translations->first()->title ?? '' }}
+                        <p class="review-title" id="review-title-{{ $review->id }}" style="margin-bottom: 4px;">
+                            {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                         </p>
                         <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
-                        <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}</p>
+                        <p class="review-display-text" id="review-text-{{ $review->id }}">{{ strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available') }}</p>
+                        @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
+                            <div class="mt-1">
+                                <a href="javascript:void(0);" 
+                                   class="text-primary view-original-toggle" 
+                                   data-review-id="{{ $review->id }}"
+                                   data-state="translated"
+                                   data-translated-title="{{ e($review->display_title ?? '') }}"
+                                   data-translated-text="{{ e(strip_tags($review->display_text ?? '')) }}"
+                                   data-original-title="{{ e($review->original_title ?? '') }}"
+                                   data-original-text="{{ e(strip_tags($review->original_text ?? '')) }}"
+                                   style="font-size: 13px; color: #64748b; font-weight: 500; text-decoration: underline; cursor: pointer;">
+                                    {{ static_text('view_original_text') ?: 'View Original' }}
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -598,4 +642,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     
+
+// View Original Toggle Handler
+$(document).on('click', '.view-original-toggle', function(e) {
+    e.preventDefault();
+    var $btn = $(this);
+    var reviewId = $btn.data('review-id');
+    var state = $btn.data('state');
+    var $textEl = $('#review-text-' + reviewId);
+    var $titleEl = $('#review-title-' + reviewId);
+
+    if (state === 'translated') {
+        var origText = $btn.data('original-text');
+        var origTitle = $btn.data('original-title');
+        if (origText) $textEl.text(origText);
+        if (origTitle && $titleEl.length) $titleEl.text(origTitle);
+        $btn.text('View Translation');
+        $btn.data('state', 'original');
+    } else {
+        var transText = $btn.data('translated-text');
+        var transTitle = $btn.data('translated-title');
+        if (transText) $textEl.text(transText);
+        if (transTitle && $titleEl.length) $titleEl.text(transTitle);
+        $btn.text('View Original');
+        $btn.data('state', 'translated');
+    }
+});
+
 </script>

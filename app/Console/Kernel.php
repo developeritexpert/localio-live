@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\DispatchReviewModerationBatch::class,
         \App\Console\Commands\PollReviewModerationBatch::class,
         \App\Console\Commands\DetectModerationCases::class,
+        \App\Console\Commands\DispatchReviewTranslationBatch::class,
+        \App\Console\Commands\PollReviewTranslationBatch::class,
     ];
 
     /**
@@ -45,6 +47,19 @@ class Kernel extends ConsoleKernel
             ->dailyAt('02:30')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/moderation_cases.log'));
+
+        // -- Automated Review Translations -----------------------------------
+        // Dispatch pending review translations (daily at 03:00)
+        $schedule->command('translations:dispatch-batch')
+            ->dailyAt('03:00')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/translation_batch_dispatch.log'));
+
+        // Poll translation batch completion every 30 minutes
+        $schedule->command('translations:poll-batch')
+            ->everyThirtyMinutes()
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/translation_batch_poll.log'));
     }
 
     /**

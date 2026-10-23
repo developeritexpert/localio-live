@@ -156,6 +156,43 @@
                                     </ul>
                                 </li>
 
+                                <!-- Translations -->
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('translations.*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon">
+                                            <em class="icon ni ni-globe"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Translations</span>
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('translations.businesses*') ? 'active' : '' }}">
+                                            <a href="{{ route('translations.businesses') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Businesses</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('translations.reviews*') ? 'active' : '' }}">
+                                            <a href="{{ route('translations.reviews') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Reviews</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('translations.website*') ? 'active' : '' }}">
+                                            <a href="{{ route('translations.website') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Website</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('translations.templates*') ? 'active' : '' }}">
+                                            <a href="{{ route('translations.templates') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Templates</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('translations.batch-jobs*') ? 'active' : '' }}">
+                                            <a href="{{ route('translations.batch-jobs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Batch Jobs</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 <!-- Batches -->
                                 @php
                                     $contentBatchPendingCount = class_exists(\App\Models\AiBatchJob::class)

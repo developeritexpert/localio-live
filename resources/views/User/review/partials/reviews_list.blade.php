@@ -67,13 +67,18 @@
 
                 <div class="review_text size18" style="padding-right: 0;">
                     @php
-                        $translation = $review->translations->firstWhere('language_id', getCurrentLanguageID());
-                        $title = $translation?->title ?? $review->translations->first()?->title ?? '';
-                        $description = $translation?->description ?? $review->description ?? 'No Review Available';
+                        $translation = $review->translations ? $review->translations->firstWhere('language_id', getCurrentLanguageID()) : null;
+                        $displayTitle = $review->display_title ?? ($translation?->title ?? $review->translations?->first()?->title ?? '');
+                        $displayText = $review->display_text ?? ($translation?->description ?? $review->description ?? $review->review ?? 'No Review Available');
+                        $title = $displayTitle;
+                        $description = $displayText;
+                        $origTitle = $review->original_title ?? ($review->translations ? $review->translations->where('status', 'ORIGINAL')->first()?->title : null) ?? $displayTitle;
+                        $origText = $review->original_text ?? ($review->translations ? $review->translations->where('status', 'ORIGINAL')->first()?->description : null) ?? $displayText;
+                        $canToggle = !empty($review->can_toggle_original) && !empty($review->is_translated);
                     @endphp
 
                     @if(!empty($title))
-                        <h3 class="review-title" style="font-size: 18px !important; font-weight: 700 !important; margin-bottom: 12px;">
+                        <h3 class="review-title" id="review-title-{{ $review->id }}" style="font-size: 18px !important; font-weight: 700 !important; margin-bottom: 12px;">
                             {{ $title }}
                         </h3>
                     @endif
@@ -97,11 +102,27 @@
                     </div>
                     @endif
 
+
                     <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
-                        <p class="review-text">
-                            {!! nl2br(e(strip_tags($description))) !!}
+                        <p class="review-text" id="review-text-{{ $review->id }}">
+                            {!! nl2br(e(strip_tags($displayText))) !!}
                         </p>
                     </div>
+                    @if($canToggle)
+                        <div class="mt-1">
+                            <a href="javascript:void(0);" 
+                               class="text-primary view-original-toggle" 
+                               data-review-id="{{ $review->id }}"
+                               data-state="translated"
+                               data-translated-title="{{ e($displayTitle) }}"
+                               data-translated-text="{{ e(strip_tags($displayText)) }}"
+                               data-original-title="{{ e($origTitle) }}"
+                               data-original-text="{{ e(strip_tags($origText)) }}"
+                               style="font-size: 13px; color: #64748b; font-weight: 500; text-decoration: underline; cursor: pointer;">
+                                {{ static_text('view_original_text') ?: 'View Original' }}
+                            </a>
+                        </div>
+                    @endif
 
                     @php
     $selectedPros = $review->selectedProCons->where('type', 'pro');
@@ -263,4 +284,33 @@
             document.body.removeChild(textArea);
         }
     }
+</script>
+<script>
+
+// View Original Toggle Handler
+$(document).on('click', '.view-original-toggle', function(e) {
+    e.preventDefault();
+    var $btn = $(this);
+    var reviewId = $btn.data('review-id');
+    var state = $btn.data('state');
+    var $textEl = $('#review-text-' + reviewId);
+    var $titleEl = $('#review-title-' + reviewId);
+
+    if (state === 'translated') {
+        var origText = $btn.data('original-text');
+        var origTitle = $btn.data('original-title');
+        if (origText) $textEl.text(origText);
+        if (origTitle && $titleEl.length) $titleEl.text(origTitle);
+        $btn.text('View Translation');
+        $btn.data('state', 'original');
+    } else {
+        var transText = $btn.data('translated-text');
+        var transTitle = $btn.data('translated-title');
+        if (transText) $textEl.text(transText);
+        if (transTitle && $titleEl.length) $titleEl.text(transTitle);
+        $btn.text('View Original');
+        $btn.data('state', 'translated');
+    }
+});
+
 </script>

@@ -16,6 +16,7 @@ use App\Models\HomeContent;
 use App\Models\Faq;
 use App\Models\FaqCategory;
 use App\Models\Review;
+use App\Services\ReviewDisplayService;
 use App\Models\ExpertGuides;
 use App\Models\PolicyTranslation;
 use App\Models\ContactContent;
@@ -392,21 +393,16 @@ class ViewController extends Controller
             $recommendPercent = 0;
         }
 
-        // Build reviews query
-       $reviewsQuery = Review::with([
-    'user',
-    'business.translations' => function ($query) use ($lang_id) {
-        $query->where('lang_id', $lang_id);
-    },
-    'translations' => function ($query) use ($lang_id) {
-        $query->where('language_id', $lang_id);
-    },
-    'selectedProCons',
-])
+        // Build reviews query with 3-tier support
+        $reviewsQuery = Review::with([
+            'user',
+            'business.translations',
+            'translations',
+            'selectedProCons',
+        ])
             ->where('business_id', $business->id)
-            ->whereHas('translations', function ($query) use ($lang_id) {
-                $query->where('language_id', $lang_id);
-            })->whereHas('user', function ($query) {
+            ->whereIn('status', ['published', 'active'])
+            ->whereHas('user', function ($query) {
                 $query->where('user_type', '!=', 'admin');
             });
 
@@ -446,7 +442,9 @@ class ViewController extends Controller
                 break;
         }
 
-        $reviews = $reviewsQuery->paginate(5)->appends($request->query());
+        $reviewsUnsorted = $reviewsQuery->get();
+        $tieredReviews = ReviewDisplayService::getTieredReviews($reviewsUnsorted, $locale, $lang_id, $sort);
+        $reviews = ReviewDisplayService::paginateCollection($tieredReviews, 5)->appends($request->query());
 
         // Calculate rating breakdown
         $ratingsCount = Review::where('business_id', $business->id)

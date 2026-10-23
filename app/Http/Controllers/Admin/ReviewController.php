@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\WebSetting;
 use App\Services\MailService;
 use App\Services\ReviewModerationService;
+use App\Services\ReviewTranslationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\AiBatchJob;
@@ -206,6 +207,8 @@ class ReviewController extends Controller
         $review->status = Review::STATUS_PUBLISHED;
         $review->save();
 
+        \App\Services\ReviewTranslationService::queueTranslationsForReview($review);
+
         ReviewModerationLog::logModerator(
             $review->id,
             ReviewModerationLog::ACTION_MODERATED,
@@ -246,6 +249,8 @@ class ReviewController extends Controller
         $review->status = Review::STATUS_REJECTED;
         $review->save();
 
+        \App\Services\ReviewTranslationService::handleRemovedOrRejectedReview($review);
+
         ReviewModerationLog::logModerator(
             $review->id,
             ReviewModerationLog::ACTION_MODERATED,
@@ -281,6 +286,8 @@ class ReviewController extends Controller
 
         $review->status = Review::STATUS_REMOVED;
         $review->save();
+
+        \App\Services\ReviewTranslationService::handleRemovedOrRejectedReview($review);
 
         ReviewModerationLog::logModerator(
             $review->id,
@@ -350,6 +357,8 @@ class ReviewController extends Controller
             $review->appeal_status = ReviewAppeal::STATUS_RESOLVED;
             $review->save();
 
+            \App\Services\ReviewTranslationService::queueTranslationsForReview($review);
+
             $appeal->update([
                 'status'              => ReviewAppeal::STATUS_RESOLVED,
                 'moderator_id'        => auth()->id(),
@@ -402,9 +411,9 @@ class ReviewController extends Controller
     /**
      * Backward-compatible legacy toggle for existing admin index button.
      */
-    public function reviewStatusUpdate(Request $request)
+    public function reviewStatusUpdate(Request $request, $id = null)
     {
-        $id = $request->id;
+        $id = $id ?? $request->id;
         $review = Review::with(['user', 'business.translations'])->find($id);
 
         if (!$review) {
@@ -428,6 +437,154 @@ class ReviewController extends Controller
 
         return redirect()->back()->with(['success' => 'Review status updated successfully']);
     }
+
+    public function reviewEdit($id)
+    {
+        $review = Review::with(['user', 'business.translations', 'translations'])->find($id);
+
+        if (!$review) {
+            return redirect()->route('reviews')->with('error', 'Review not found.');
+        }
+
+        $locale = function_exists('getCurrentLocale') ? getCurrentLocale() : 'en-us';
+        $language = Language::where('lang_code', $locale)->first() ?? Language::find(1);
+        if (!$language) {
+            $language = (object)['id' => 1, 'name' => 'English', 'lang_code' => 'en-us'];
+        }
+        $langId = $language->id ?? 1;
+
+        $reviewTranslation = ReviewTranslation::where(function ($q) use ($review) {
+                $q->where('reviews_id', $review->id)->orWhere('review_id', $review->id);
+            })
+            ->where('language_id', $langId)
+            ->first();
+
+        $businesses = Business::with(['translations' => function ($query) use ($langId) {
+            $query->where('lang_id', $langId)->where('status', 1);
+        }])->get();
+
+        $defaultTranslation = ReviewTranslation::where(function ($q) use ($review) {
+                $q->where('reviews_id', $review->id)->orWhere('review_id', $review->id);
+            })
+            ->where('language_id', 1)
+            ->first() ?? $reviewTranslation ?? $review->translations->first();
+
+        return view('Admin.reviews.update_review', compact('language', 'review', 'reviewTranslation', 'businesses', 'defaultTranslation'));
+    }
+
+    public function reviewUpdate(Request $request, $id)
+    {
+        $review = Review::with(['user', 'business.translations', 'translations'])->find($id);
+
+        if (!$review) {
+            return redirect()->route('reviews')->with('error', 'Review not found.');
+        }
+
+        $request->validate([
+            'ease_of_use_rating'       => 'required|numeric|min:1|max:5',
+            'value_for_money_rating'   => 'required|numeric|min:1|max:5',
+            'customer_service_rating'  => 'required|numeric|min:1|max:5',
+            'exclusive_service_rating' => 'required|numeric|min:1|max:5',
+            'description'              => 'required|string|max:5000',
+            'status'                   => 'required|string',
+            'business_id'              => 'nullable',
+        ]);
+
+        $locale = function_exists('getCurrentLocale') ? getCurrentLocale() : 'en-us';
+        $language = Language::where('lang_code', $locale)->first() ?? Language::find(1);
+        $langId = $language ? $language->id : 1;
+
+        $fromStatus = $review->status;
+
+        $review->ease_of_use_rating = (int)$request->ease_of_use_rating;
+        $review->value_for_money_rating = (int)$request->value_for_money_rating;
+        $review->customer_service_rating = (int)$request->customer_service_rating;
+        $review->exclusive_service_rating = (int)$request->exclusive_service_rating;
+
+        $avg_rating = round((
+            $review->ease_of_use_rating +
+            $review->value_for_money_rating +
+            $review->customer_service_rating +
+            $review->exclusive_service_rating
+        ) / 4, 2);
+        $review->rating = $avg_rating;
+
+        if ($request->filled('business_id') && Business::where('id', $request->business_id)->exists()) {
+            $review->business_id = $request->business_id;
+        }
+
+        // Map submitted status
+        if (in_array(strtolower($request->status), ['active', Review::STATUS_PUBLISHED])) {
+            $review->status = Review::STATUS_PUBLISHED;
+        } else {
+            $review->status = Review::STATUS_PENDING_REVIEW;
+        }
+
+        $review->save();
+
+        // Update or create ReviewTranslation for target language
+        $reviewTranslation = ReviewTranslation::where(function ($q) use ($review) {
+                $q->where('reviews_id', $review->id)->orWhere('review_id', $review->id);
+            })
+            ->where('language_id', $langId)
+            ->first();
+
+        if ($reviewTranslation) {
+            $reviewTranslation->update([
+                'description' => $request->description,
+            ]);
+        } else {
+            ReviewTranslation::create([
+                'reviews_id'  => $review->id,
+                'review_id'   => $review->id,
+                'language_id' => $langId,
+                'description' => $request->description,
+                'status'      => ReviewTranslation::STATUS_ORIGINAL,
+            ]);
+        }
+
+        // Also update default translation (language_id = 1) if different
+        if ($langId != 1) {
+            $defaultTranslation = ReviewTranslation::where(function ($q) use ($review) {
+                    $q->where('reviews_id', $review->id)->orWhere('review_id', $review->id);
+                })
+                ->where('language_id', 1)
+                ->first();
+            if ($defaultTranslation) {
+                $defaultTranslation->update([
+                    'description' => $request->description,
+                ]);
+            } else {
+                ReviewTranslation::create([
+                    'reviews_id'  => $review->id,
+                    'review_id'   => $review->id,
+                    'language_id' => 1,
+                    'description' => $request->description,
+                    'status'      => ReviewTranslation::STATUS_ORIGINAL,
+                ]);
+            }
+        }
+
+        // Invalidate translations because review text/ratings were modified
+        ReviewTranslationService::invalidateTranslationsForReview($review);
+
+        // If published, queue re-translations
+        if (in_array($review->status, [Review::STATUS_PUBLISHED, 'active'])) {
+            ReviewTranslationService::queueTranslationsForReview($review);
+        }
+
+        ReviewModerationLog::logModerator(
+            $review->id,
+            ReviewModerationLog::ACTION_MODERATED,
+            auth()->id(),
+            $fromStatus,
+            $review->status,
+            ['action' => 'review_edited', 'rating' => $avg_rating]
+        );
+
+        return redirect()->route('reviews')->with('success', 'Review updated successfully!');
+    }
+
 
     public function unpublishedReviews()
     {
@@ -504,6 +661,8 @@ class ReviewController extends Controller
         }
         // Never physically delete moderation history: mark as removed
         $review->update(['status' => Review::STATUS_REMOVED]);
+
+        \App\Services\ReviewTranslationService::handleRemovedOrRejectedReview($review);
 
         ReviewModerationLog::logModerator(
             $review->id,
