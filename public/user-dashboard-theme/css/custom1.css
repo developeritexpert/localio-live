@@ -4,15 +4,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* body {
-  overflow-x: hidden;
-  font-family: "Montserrat", sans-serif !important;
-  font-size: 18px;
-  font-weight: 300;
-  line-height: 26px;
-  text-align: left;
-  color: #000;
-} */
+
 .nav-link.active {
   border: none !important;
 }
@@ -154,11 +146,8 @@ h6 {
   padding: 0;
 }
 
-.main_dhdr .form {
-  /* border: 1px solid #06498B26; */
-  /* padding: 5px 7px; */
+.main_dhdr .form { 
   border-radius: 110px;
-  /* position: relative; */
   min-height: 44px;
   width: 693px;
   display: flex;
@@ -222,10 +211,6 @@ h6 {
 }
 
 .main_dhdr .form button i:hover {
-  /* border-color: #FD5602;
-    background: #fff;
-    color: #FD5602; */
-
   border-color: #06498b;
   background: #06498b;
   color: #fff;
@@ -251,9 +236,6 @@ h6 {
   max-width: 20px;
 }
 
-/* .usr_profile {
-  max-width: 60px;
-} */
 
 .notf .notfictn_lnk .badge {
   position: absolute;
@@ -353,7 +335,7 @@ h6 {
 
 .user_dashbord .user_content {
   padding: 60px 65px 60px 65px;
-  /* height: calc(100vh - 150.78px); */
+
 }
 
 .user_dashbord .user_content .uer_nm {
@@ -2005,7 +1987,6 @@ ul.list-unstyled.m-0 li:hover {
 
 .crop-modal-overlay .btn-save {
   text-align: center !important;
-  /* padding: 19px 40px !important; */
   font-size: 16px !important;
   font-weight: 600 !important;
   border-radius: 100px !important;
@@ -2013,12 +1994,6 @@ ul.list-unstyled.m-0 li:hover {
   color: #fff !important;
   border: 1px solid #06498b !important;
 }
-
-/* .crop-modal-overlay .btn-save:hover {
-  border: 1px solid #06498b !important;
-  background-color: transparent !important;
-  color: #06498b !important;
-} */
 
 .crop-modal-overlay .btn-save:hover {
   border: 1px solid #f9633b !important;
@@ -2036,8 +2011,6 @@ ul.list-unstyled.m-0 li:hover {
 }
 
 .btn-cancel {
-  /* background: #6c757d; */
-  /* color: white; */
   background: transparent;
   color: #06498b;
   border: 1px solid #06498b !important;
@@ -2326,12 +2299,6 @@ ul.list-unstyled.m-0 li:hover {
   color: #002347;
 }
 
-/* .my_review_deals  .child_my_reviews i{
-    position: absolute;
-    top: 0%;
-    right: 0%;
-
-} */
 .my_review_deals .child_my_reviews {
   border: 1px solid #06498b26;
   box-shadow: 0px 34px 74px 0px #0023470f;
@@ -2524,13 +2491,6 @@ ul.list-unstyled.m-0 li:hover {
   overflow: hidden;
 }
 
-/* .user_img.drop_menu .usr_profile img.img-fluid.profile-circle {
-  max-width: 40px !important;
-  width: 100% !important;
-  height: 40px;
-  min-width: 40px !important;
-} */
-
 .stars ul.list-unstyled.m-0 li:hover {
   background-color: unset;
 }
@@ -2550,12 +2510,6 @@ ul.list-unstyled.m-0 li:hover {
 .reward-main-inner .rewrd-innr-btm form .form-wrp .input-box .input-label {
   margin: 0px !important;
 }
-
-/* .user_dashbord .dashboard_lft {
-  height: calc(100vh - 150.78px);
-  position: sticky;
-  top: 35px;
-} */
 
 /* 14aug 2025 start  */
 
@@ -2679,12 +2633,7 @@ header.main_dhdr {
   color: #000 !important;
 }
 
-/* 7oct2025 end  */
 
-/* 11-jun-26  */
-/* .usr_profile img {
-  max-width: 50px
-} */
 
 .notf .notfictn_lnk span {
   font-size: 12px;
@@ -2735,27 +2684,12 @@ header.main_dhdr {
   max-height: 45px;
 }
 
-
-/* header 30-july-26 */
-/* header .menu li.menu-item a {
-  padding: 8px 16px;
-} */
-
 .left_menu>.menu>.menu-item a:hover {
   background-color: #ffffff45;
   border-radius: 8px;
   color: #fff !important;
   ;
 }
-
-/* #navbarSupportedContent .menu .menu-item a {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-}
-
-#navbarSupportedContent .menu {
-  gap: 0 !important;
-} */
 
 .main_dhdr nav.navbar {
   row-gap: 15px !important;
@@ -2766,34 +2700,6 @@ header.main_dhdr {
   top: 90px;
 }
 
-/* .Header_buttons {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0px 16px;
-}
-
-.Header_buttons .cta {
-  padding: 11px 28px;
-  min-width: 155px;
-  width: 100%;
-  height: 44px;
-  font-size: 16px;
-  font-weight: 600;
-  border-width: 1px;
-  font-size: 14px;
-  display: flex;
-  border: 1px solid #fff;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50px;
-  color: #fff;
-}
-
-.Header_buttons .cta:hover {
-  background-color: #fff;
-  color: #06498b;
-} */
 /* Business Initial Avatar (when business has no logo) */
 .business-initial-logo,
 .business-logo-initial {
