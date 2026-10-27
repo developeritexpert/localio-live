@@ -1726,12 +1726,6 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     text-align: center;
 }
 
-/* .main_feture .feture_box p {
-    text-align: left;
-    font-weight: 600;
-    color: var(--color-primary-grey-text);
-    font-size: 14px;
-} */
 
 .cta.clm_btn {
     padding: 11px 30px;
@@ -1843,19 +1837,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     color: var(--color-primary-blue);
 }
 
-/* 
-.review_sec .review_detl {
-    padding: 25px 40px;
-    border: 1px solid #06498b08;
-    border-radius: var(--radius-xl);
-    margin-bottom: 30px;
-    background-color: var(--color-white);
-    border: 1px solid #e2e8f0 !important;
-} */
 
-/* .review_sec .review_detl:hover {
-    box-shadow: var(--shadow-card);
-} */
 
 .review_sec .review_detl .reviw_hd {
     display: flex;
@@ -5256,12 +5238,7 @@ header .search_logo .search-box {
     font-weight: 400;
 }
 
-/* .rating-on::before {
-    font-size: 14px;
-    font-weight: 400;
-    content: "\f155";
-    color: #fe9d27;
-} */
+
 
 .tab_star_li {
     display: flex;
@@ -5744,38 +5721,6 @@ button.cta.cta_white.register_btn {
     border-color: var(--color-orange-hover) !important;
     color: var(--color-white) !important;
 }
-
-/* .outer_slider.dark .latest-reviews-slider .slick-prev.slick-disabled:before, .slick-next.slick-disabled:before{
-    color: var(--color-white);
-    background: #FA6338;
-}
-.outer_slider .latest-reviews-slider button.slick-arrow.slick-disabled::before{
-    color: var(--color-white);
-    background: #FA6338;
-} */
-/* .range-input {
-    position: absolute;
-    width: 100%;
-    pointer-events: none; /* prevent interaction unless styled otherwise */
-/* -webkit-appearance: none;
-    background: transparent;
-}
-
-.range-input::-webkit-slider-thumb {
-    pointer-events: all;
-    width: 20px;
-    height: 20px;
-    background: var(--color-light-blue-text) ;
-    border-radius: 50%;
-    cursor: pointer;
-    -webkit-appearance: none;
-}
-
-.range-input::-webkit-slider-runnable-track {
-    height: 5px;
-    background: #ddd;
-    border-radius: var(--radius-xs);
-} */
 
 .price-slider-container #priceRangeSlider {
     height: 5px;
@@ -7256,23 +7201,11 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
     border-radius: 4px;
 }
 
-/* .revie_img_sec .image_revie_inr {
-    display: flex;
-    gap: var(--space-xl);
-} */
 
 .revie_img_sec .imges_left_sde {
     width: 70%;
 }
 
-/* .revie_img_sec .thre_revi_rgt {
-    width: 38%;
-} */
-
-/* .revie_img_sec .thre_revi_rgt .fetru_row {
-    flex-direction: column;
-    gap: var(--space-lg);
-} */
 
 .revie_img_sec .thre_revi_rgt .main_feature_sm {
     max-width: 100%;
@@ -8329,10 +8262,7 @@ header .notfictn_lnk img {
     border-radius: 0 !important;
 }
 
-/* h5.card-title.mb-3 {
-    font-size: 20px !important;
-    font-weight: 500 !important;
-} */
+
 
 .card.card-bordered .card-body ul {
     font-size: 16px;
@@ -11308,17 +11238,6 @@ body.country-modal-open footer {
     font-weight: 700;
 }
 
-/* .sticky-nav-item.active::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 60%;
-    width: 3.5px;
-    background-color: var(--color-dark-blue-text);
-    border-radius: 0 3px 3px 0;
-} */
 
 a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
     background-color: #e4e7ea !important;
@@ -11457,9 +11376,6 @@ a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:ho
     font-size: 13px !important;
 }
 
-/* .review-breakdown-box {
-    padding: 22px;
-} */
 
 .review-breakdown-box h2 {
     margin-bottom: 18px;
@@ -12014,10 +11930,6 @@ section#section-compare {
     outline: none;
 }
 
-/* .faq-search-input-group input:focus {
-    border-color: var(--color-primary-blue);
-    box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.12);
-} */
 
 .faq-category-nav {
     display: flex;
@@ -15869,7 +15781,6 @@ button.action-icon-btn.share-trigger-btn:hover {
     font-size: 12px;
     color: #64748b;
 }
-
 
 .toggle-reply-text {
     font-size: 12px !important;
