@@ -12,10 +12,28 @@
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
                             <ul class="nk-block-tools g-3 align-items-center">
+                                {{-- Search Input --}}
+                                <li>
+                                    <form method="GET" action="{{ route('features') }}" class="d-flex align-items-center gap-1" id="featureSearchForm">
+                                        @if(!empty($selectedCategoryId))
+                                            <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
+                                        @endif
+                                        <div class="form-control-wrap" style="min-width: 200px;">
+                                            <div class="form-icon form-icon-left">
+                                                <em class="icon ni ni-search"></em>
+                                            </div>
+                                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search feature..." value="{{ $search ?? '' }}">
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                                        @if(!empty($search) || !empty($selectedCategoryId))
+                                            <a href="{{ route('features') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filters">Reset</a>
+                                        @endif
+                                    </form>
+                                </li>
                                 {{-- Category Filter Dropdown --}}
                                 <li>
-                                    <div class="form-control-wrap" style="min-width: 240px;">
-                                        <select class="form-select" id="categoryFilter" onchange="filterByCategory(this.value)">
+                                    <div class="form-control-wrap" style="min-width: 220px;">
+                                        <select class="form-select form-select-sm" id="categoryFilter" onchange="filterByCategory(this.value)">
                                             <option value="">All Categories</option>
                                             @foreach ($categories as $cat)
                                                 <option value="{{ $cat->id }}" {{ (isset($selectedCategoryId) && $selectedCategoryId == $cat->id) ? 'selected' : '' }}>
@@ -27,14 +45,14 @@
                                 </li>
                                 @if(getCurrentLanguageID() === 1)
                                 <li class="nk-block-tools-opt d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadJsonModal">
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadJsonModal">
                                         <em class="icon ni ni-upload-cloud"></em><span>Upload Features JSON</span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" onclick="confirmDeleteAll()">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteAll()">
                                         <em class="icon ni ni-trash"></em><span>Delete All Features</span>
                                     </button>
                                     <a href="{{ route('features.create') }}"
-                                        class="btn btn-primary btn-localio"><span>Add Feature</span></a>
+                                        class="btn btn-sm btn-primary btn-localio"><span>Add Feature</span></a>
                                 </li>
                                 @endif
                             </ul>
@@ -66,7 +84,7 @@
             <div class="d-flex align-items-center gap-2 mb-3">
                 <span class="text-muted small">Filtered by category:</span>
                 <span class="badge bg-primary fs-7 d-inline-flex align-items-center px-2 py-1">
-                    {{ $activeCatName }} ({{ $features->count() }} features)
+                    {{ $activeCatName }} ({{ $features->total() }} features)
                 </span>
                 <a href="{{ route('features') }}" class="btn btn-xs btn-outline-secondary">
                     <em class="icon ni ni-cross me-1"></em> Clear Filter
@@ -86,7 +104,7 @@
 
         <div class="card card-bordered card-preview">
             <div class="card-inner">
-                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                <table class="table table-hover align-middle nk-tb-list nk-tb-ulist mb-0" data-auto-responsive="false">
                     <thead>
                         <tr class="nk-tb-item nk-tb-head">
                             <th class="nk-tb-col"><span class="sub-text">Name</span></th>
@@ -171,6 +189,16 @@
                     </tbody>
                 </table>
             </div>
+            @if ($features->hasPages() || $features->total() > 0)
+                <div class="card-inner py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="text-muted small">
+                        Showing <strong>{{ $features->firstItem() ?? 0 }}</strong> to <strong>{{ $features->lastItem() ?? 0 }}</strong> of <strong>{{ $features->total() }}</strong> features
+                    </div>
+                    <div>
+                        {{ $features->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -248,6 +276,7 @@
     <script>
         function filterByCategory(categoryId) {
             let url = new URL(window.location.href);
+            url.searchParams.delete('page'); // Reset to page 1 on filter
             if (categoryId) {
                 url.searchParams.set('category_id', categoryId);
             } else {

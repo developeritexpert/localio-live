@@ -6,6 +6,7 @@ use App\Models\Business;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\ContentTemplate;
+use App\Models\EntitySectionTranslation;
 use App\Models\ContentTemplateAssignment;
 use App\Models\Feature;
 use App\Models\StaticContentKey;
@@ -698,6 +699,148 @@ class ContentTemplateService
     /**
      * Determine the section_group based on entityType and fieldKey.
      */
+
+    /**
+     * Checks if a string contains any bracketed placeholder variables (e.g. [business], [entity1_lc]).
+     */
+    public static function templateHasVariables(?string $text): bool
+    {
+        if (empty($text)) {
+            return false;
+        }
+        return (bool) preg_match('/\[[a-zA-Z0-9_]+\]/', $text);
+    }
+
+    /**
+     * Returns the fully resolved English (US-EN) frontend text for any entity and field_key,
+     * with all placeholder variables already replaced with real words.
+     */
+    public static function getResolvedEnglishSection(string $entityType, int $entityId, string $fieldKey, ?string $sectionGroup = null): array
+    {
+        $headline = '';
+        $subtext = '';
+        $rawHeadline = '';
+        $rawSubtext = '';
+        $template = null;
+        $optionNumber = null;
+
+        if ($entityType === 'category') {
+            $cat = Category::find($entityId);
+            if ($cat) {
+                $resolved = self::resolveCategorySection($cat, $fieldKey, 1);
+                $headline = $resolved['headline'] ?? '';
+                $subtext = $resolved['subtext'] ?? '';
+                $template = $resolved['template'] ?? null;
+                $optionNumber = $resolved['option_number'] ?? null;
+                $rawHeadline = $template?->headline ?? '';
+                $rawSubtext = $template?->subtext ?? '';
+            }
+        } elseif ($entityType === 'feature') {
+            $feat = Feature::with('category')->find($entityId);
+            if ($feat) {
+                $resolved = self::resolveFeatureSection($feat, $feat->category, $fieldKey, 1);
+                $headline = $resolved['headline'] ?? '';
+                $subtext = $resolved['subtext'] ?? '';
+                $template = $resolved['template'] ?? null;
+                $optionNumber = $resolved['option_number'] ?? null;
+                $rawHeadline = $template?->headline ?? '';
+                $rawSubtext = $template?->subtext ?? '';
+            }
+        } elseif ($entityType === 'business') {
+            $biz = Business::with(['category', 'subCategories'])->find($entityId);
+            if ($biz) {
+                $resolved = self::resolveBusinessSection($biz, $fieldKey, 1);
+                $headline = $resolved['headline'] ?? '';
+                $subtext = $resolved['subtext'] ?? '';
+                $template = $resolved['template'] ?? null;
+                $optionNumber = $resolved['option_number'] ?? null;
+                $rawHeadline = $template?->headline ?? '';
+                $rawSubtext = $template?->subtext ?? '';
+            }
+        } elseif ($entityType === 'template') {
+            $tmpl = ContentTemplate::where('field_key', $fieldKey)
+                ->where('lang_id', 1)
+                ->where('is_active', true)
+                ->first();
+            if ($tmpl) {
+                $headline = self::cleanHeading($tmpl->headline);
+                $subtext = $tmpl->subtext ?? '';
+                $template = $tmpl;
+                $optionNumber = $tmpl->option_number;
+                $rawHeadline = $tmpl->headline ?? '';
+                $rawSubtext = $tmpl->subtext ?? '';
+            }
+        }
+
+        $hasVariables = self::templateHasVariables($rawHeadline) || self::templateHasVariables($rawSubtext);
+        $sectionGroup = $sectionGroup ?: ($template?->section_group ?: self::determineSectionGroup($entityType, $fieldKey));
+        $hash = EntitySectionTranslation::computeHash($headline, $subtext);
+
+        return [
+            'headline'      => $headline,
+            'subtext'       => $subtext,
+            'raw_headline'  => $rawHeadline,
+            'raw_subtext'   => $rawSubtext,
+            'has_variables' => $hasVariables,
+            'hash'          => $hash,
+            'template'      => $template,
+            'option_number' => $optionNumber,
+            'section_group' => $sectionGroup,
+        ];
+    }
+
+    /**
+     * Automatically syncs and detects changes in English frontend text for an entity and section.
+     * If the English text changed (e.g. new template assigned or text edited), updates source_hash
+     * and flags all existing translations as OUTDATED so they get re-queued.
+     */
+    public static function syncEntitySectionSource(string $entityType, int $entityId, string $fieldKey, ?string $sectionGroup = null): ?EntitySectionTranslation
+    {
+        $resolved = self::getResolvedEnglishSection($entityType, $entityId, $fieldKey, $sectionGroup);
+        if (empty($resolved['headline']) && empty($resolved['subtext'])) {
+            return null;
+        }
+
+        $newHash = $resolved['hash'];
+        $secGroup = $resolved['section_group'] ?: 'general';
+
+        // 1. Fetch or create the English reference row (lang_id = 1)
+        $enRow = EntitySectionTranslation::firstOrNew([
+            'entity_type' => $entityType,
+            'entity_id'   => $entityId,
+            'field_key'   => $fieldKey,
+            'lang_id'     => 1,
+        ]);
+
+        $textChanged = ($enRow->exists && $enRow->source_hash !== $newHash);
+
+        $enRow->section_group        = $secGroup;
+        $enRow->source_headline      = $resolved['headline'];
+        $enRow->source_subtext       = $resolved['subtext'];
+        $enRow->source_hash          = $newHash;
+        $enRow->translated_headline  = $resolved['headline'];
+        $enRow->translated_subtext   = $resolved['subtext'];
+        $enRow->status               = EntitySectionTranslation::STATUS_COMPLETED;
+        $enRow->save();
+
+        // 2. Flag any non-English row whose source_hash !== newHash as OUTDATED
+        EntitySectionTranslation::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('field_key', $fieldKey)
+            ->where('lang_id', '>', 1)
+            ->where(function ($q) use ($newHash) {
+                $q->where('source_hash', '!=', $newHash)
+                  ->orWhereNull('source_hash');
+            })
+            ->update([
+                'source_headline' => $resolved['headline'],
+                'source_subtext'  => $resolved['subtext'],
+                'source_hash'     => $newHash,
+                'status'          => EntitySectionTranslation::STATUS_OUTDATED,
+            ]);
+
+        return $enRow;
+    }
     public static function determineSectionGroup(string $entityType, string $fieldKey, ?string $explicitSectionGroup = null): ?string
     {
         if ($explicitSectionGroup) {
@@ -1060,7 +1203,7 @@ class ContentTemplateService
      */
     public static function manuallyAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $templateId, int $langId = 1): ContentTemplateAssignment
     {
-        return ContentTemplateAssignment::updateOrCreate(
+        $assignment = ContentTemplateAssignment::updateOrCreate(
             [
                 'entity_type' => $entityType,
                 'entity_id' => $entityId,
@@ -1071,6 +1214,15 @@ class ContentTemplateService
                 'template_id' => $templateId,
             ]
         );
+
+        // Detect text change and flag outdated translations if source hash changed
+        try {
+            self::syncEntitySectionSource($entityType, $entityId, $fieldKey);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to sync entity section source on assignment: " . $e->getMessage());
+        }
+
+        return $assignment;
     }
 
     /**
@@ -2981,6 +3133,27 @@ class ContentTemplateService
         if ($fieldKey === 'discussions_empty_headline') {
             $fieldKey = 'category_discussions_empty_headline';
         }
+
+        // When langId > 1, check if a dedicated translation exists for this category page section
+        if ($langId > 1) {
+            $secTrans = EntitySectionTranslation::where('entity_type', 'category')
+                ->where('entity_id', $category->id)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('status', EntitySectionTranslation::STATUS_COMPLETED)
+                ->first();
+            if ($secTrans && (!empty($secTrans->translated_headline) || !empty($secTrans->translated_subtext))) {
+                return [
+                    'headline'      => in_array($fieldKey, ['category_faq_search', 'discussions_prompt_placeholder', 'category_discussions_prompt_placeholder'], true)
+                        ? self::cleanPlaceholder($secTrans->translated_headline)
+                        : self::cleanHeading($secTrans->translated_headline),
+                    'subtext'       => $secTrans->translated_subtext ?? '',
+                    'template'      => null,
+                    'option_number' => null,
+                ];
+            }
+        }
+
         $catTrans = self::getCategoryTranslation($category, $langId);
 
         $template = self::getTemplateForResolution('category', $category->id, $fieldKey, $langId);
@@ -3156,6 +3329,24 @@ class ContentTemplateService
      */
     public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
     {
+        // When langId > 1, check if a dedicated translation exists for this feature page section
+        if ($langId > 1) {
+            $secTrans = EntitySectionTranslation::where('entity_type', 'feature')
+                ->where('entity_id', $feature->id)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('status', EntitySectionTranslation::STATUS_COMPLETED)
+                ->first();
+            if ($secTrans && (!empty($secTrans->translated_headline) || !empty($secTrans->translated_subtext))) {
+                return [
+                    'headline'      => self::cleanHeading($secTrans->translated_headline),
+                    'subtext'       => $secTrans->translated_subtext ?? '',
+                    'template'      => null,
+                    'option_number' => null,
+                ];
+            }
+        }
+
         $template = self::getTemplateForResolution('feature', $feature->id, $fieldKey, $langId, 'features');
 
         if (!$template && $fieldKey === 'top_10_under_10') {
@@ -3431,6 +3622,27 @@ class ContentTemplateService
         if ($fieldKey === 'business_discussions_empty_headline') {
             $fieldKey = 'discussions_empty_headline';
         }
+
+        // When langId > 1, check if a dedicated translation exists for this business page section
+        if ($langId > 1) {
+            $secTrans = EntitySectionTranslation::where('entity_type', 'business')
+                ->where('entity_id', $business->id)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('status', EntitySectionTranslation::STATUS_COMPLETED)
+                ->first();
+            if ($secTrans && (!empty($secTrans->translated_headline) || !empty($secTrans->translated_subtext))) {
+                return [
+                    'headline'      => in_array($fieldKey, ['faq_search', 'faq_search_placeholder', 'discussions_prompt_placeholder', 'faq_discussions_prompt_placeholder', 'business_discussions_prompt_placeholder', 'compare_search_placeholder', 'compare_discussions_prompt_placeholder', 'reviews_discussions_prompt_placeholder'], true)
+                        ? self::cleanPlaceholder($secTrans->translated_headline)
+                        : self::cleanHeading($secTrans->translated_headline),
+                    'subtext'       => $secTrans->translated_subtext ?? '',
+                    'template'      => null,
+                    'option_number' => null,
+                ];
+            }
+        }
+
         $category = $business->category ?? $business->subCategories->first();
 
         // Check if there is an explicit assignment for this specific field_key

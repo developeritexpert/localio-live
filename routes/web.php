@@ -278,6 +278,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/translations/website/export-json', [TranslationsController::class, 'exportWebsiteJson'])->name('translations.website.export-json');
     Route::post('/admin-dashboard/translations/website/import-json', [TranslationsController::class, 'importWebsiteJson'])->name('translations.website.import-json');
     Route::get('/admin-dashboard/translations/templates', [TranslationsController::class, 'templates'])->name('translations.templates');
+    Route::get('/admin-dashboard/translations/get-section-translation', [TranslationsController::class, 'getSectionTranslation'])->name('translations.get-section-translation');
+    Route::post('/admin-dashboard/translations/save-section-translation', [TranslationsController::class, 'saveSectionTranslation'])->name('translations.save-section-translation');
+    Route::get('/admin-dashboard/translations/templates/export-json', [TranslationsController::class, 'exportTemplatesJson'])->name('translations.templates.export-json');
+    Route::post('/admin-dashboard/translations/templates/import-json', [TranslationsController::class, 'importTemplatesJson'])->name('translations.templates.import-json');
     Route::get('/admin-dashboard/translations/batch-jobs', [TranslationsController::class, 'batchJobs'])->name('translations.batch-jobs');
     Route::get('/admin-dashboard/translations/batch-jobs/{batch}/download', [TranslationsController::class, 'downloadBatchJson'])->name('translations.batch-jobs.download');
     Route::post('/admin-dashboard/translations/batch-jobs/upload-result', [TranslationsController::class, 'uploadBatchResult'])->name('translations.batch-jobs.upload-result');

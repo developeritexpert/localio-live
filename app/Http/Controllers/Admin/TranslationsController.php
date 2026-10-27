@@ -7,7 +7,10 @@ use App\Models\Bcp47Language;
 use App\Models\Business;
 use App\Models\BusinessTranslation;
 use App\Models\Category;
+use App\Models\Feature;
 use App\Models\ContentTemplate;
+use App\Models\EntitySectionTranslation;
+use App\Services\ContentTemplateService;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Review;
@@ -374,56 +377,449 @@ class TranslationsController extends Controller
         $languages = $this->getMatrixLanguages();
         $langCodeToIdMap = $this->getLangCodeToIdMap();
 
-        // Distinct templates grouped by field_key in English (lang_id = 1)
-        $query = ContentTemplate::where('lang_id', 1);
+        $activeTab = $request->query('tab', 'categories');
+        if (!in_array($activeTab, ['categories', 'businesses', 'features', 'global_templates'], true)) {
+            $activeTab = 'categories';
+        }
 
-        if ($request->filled('search')) {
-            $search = trim($request->search);
+        $search = trim((string)$request->query('search'));
+        $sectionGroup = $request->query('section_group');
+        $selectedCategoryId = $request->query('category_id');
+
+        // Auto-seed/sync reference rows if current tab table is empty
+        $checkCount = EntitySectionTranslation::where('lang_id', 1)
+            ->where('entity_type', $activeTab === 'global_templates' ? 'template' : ($activeTab === 'categories' ? 'category' : ($activeTab === 'businesses' ? 'business' : 'feature')))
+            ->count();
+        if ($checkCount === 0) {
+            \Artisan::call('translations:sync-page-sections', [
+                '--type' => ($activeTab === 'global_templates' ? 'template' : $activeTab),
+                '--limit' => 25
+            ]);
+        }
+
+        // Query EntitySectionTranslation for lang_id = 1 (source of truth in English)
+        $query = EntitySectionTranslation::where('lang_id', 1);
+
+        if ($activeTab === 'categories') {
+            $query->where('entity_type', 'category');
+            if (!empty($selectedCategoryId)) {
+                $query->where('entity_id', $selectedCategoryId);
+            }
+        } elseif ($activeTab === 'businesses') {
+            $query->where('entity_type', 'business');
+        } elseif ($activeTab === 'features') {
+            $query->where('entity_type', 'feature');
+        } elseif ($activeTab === 'global_templates') {
+            $query->where('entity_type', 'template');
+        }
+
+        if (!empty($sectionGroup)) {
+            $query->where('section_group', $sectionGroup);
+        }
+
+        if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('field_key', 'like', "%{$search}%")
-                  ->orWhere('headline', 'like', "%{$search}%")
-                  ->orWhere('subtext', 'like', "%{$search}%");
+                  ->orWhere('source_headline', 'like', "%{$search}%")
+                  ->orWhere('source_subtext', 'like', "%{$search}%");
             });
         }
 
-        if ($request->filled('section_group')) {
-            $query->where('section_group', $request->section_group);
+        $items = $query->orderBy('id', 'asc')->paginate(25)->withQueryString();
+
+        // Preload target language translations for items on current page
+        $lookupKeys = [];
+        foreach ($items as $item) {
+            $lookupKeys[] = [
+                'entity_type' => $item->entity_type,
+                'entity_id'   => $item->entity_id,
+                'field_key'   => $item->field_key,
+            ];
         }
 
-        $templates = $query->orderBy('section_group')->paginate(30);
-        $sectionGroups = ContentTemplate::select('section_group')->distinct()->whereNotNull('section_group')->pluck('section_group');
+        $targetRows = collect();
+        if (!empty($lookupKeys)) {
+            $targetQuery = EntitySectionTranslation::where('lang_id', '>', 1)
+                ->where(function ($q) use ($lookupKeys) {
+                    foreach ($lookupKeys as $lk) {
+                        $q->orWhere(function ($sub) use ($lk) {
+                            $sub->where('entity_type', $lk['entity_type'])
+                                ->where('entity_id', $lk['entity_id'])
+                                ->where('field_key', $lk['field_key']);
+                        });
+                    }
+                });
+            $targetRows = $targetQuery->get();
+        }
 
-        // Preload template translations for the field_keys on current page
-        $fieldKeys = $templates->pluck('field_key')->toArray();
-        $allTmplRows = ContentTemplate::whereIn('field_key', $fieldKeys)->get();
+        // Preload entity names for display
+        $categoryIds = $items->where('entity_type', 'category')->pluck('entity_id')->unique()->filter()->values();
+        $categoriesMap = Category::whereIn('id', $categoryIds)->with('translations')->get()->keyBy('id');
+
+        $businessIds = $items->where('entity_type', 'business')->pluck('entity_id')->unique()->filter()->values();
+        $businessesMap = Business::whereIn('id', $businessIds)->with('translations')->get()->keyBy('id');
+
+        $featureIds = $items->where('entity_type', 'feature')->pluck('entity_id')->unique()->filter()->values();
+        $featuresMap = Feature::whereIn('id', $featureIds)->with('translations')->get()->keyBy('id');
 
         $matrix = [];
-        foreach ($templates as $tmpl) {
-            $locales = [];
-            $matchingRows = $allTmplRows->where('field_key', $tmpl->field_key);
+        foreach ($items as $item) {
+            $entityTitle = 'Global Template';
+            $pageUrl = '#';
+            $pageType = 'Template';
 
+            if ($item->entity_type === 'category') {
+                $cat = $categoriesMap->get($item->entity_id);
+                $catName = $cat?->translations?->first()?->name ?? $cat?->name ?? ('Category #' . $item->entity_id);
+                $catSlug = $cat?->translations?->first()?->slug ?? $cat?->slug ?? $cat?->id;
+                if ($cat && $cat->parent_id) {
+                    $entityTitle = "Subcategory: {$catName}";
+                    $pageType = 'Subcategory Page';
+                } else {
+                    $entityTitle = "Category: {$catName}";
+                    $pageType = 'Category Page';
+                }
+                if ($catSlug) {
+                    if (str_contains($item->field_key, 'faq')) {
+                        $pageUrl = url("/en-us/{$catSlug}/faqs");
+                    } elseif (str_contains($item->field_key, 'discussion')) {
+                        $pageUrl = url("/en-us/{$catSlug}/discussions");
+                    } else {
+                        $pageUrl = url("/en-us/{$catSlug}");
+                    }
+                }
+            } elseif ($item->entity_type === 'business') {
+                $biz = $businessesMap->get($item->entity_id);
+                $bizName = $biz?->translations?->first()?->name ?? $biz?->title ?? $biz?->name ?? ('Business #' . $item->entity_id);
+                $bizSlug = $biz?->translations?->first()?->slug ?? $biz?->slug ?? $biz?->id;
+                $entityTitle = "Business: {$bizName}";
+                $pageType = 'Business Page';
+                if ($bizSlug) {
+                    if (str_contains($item->field_key, 'alternatives')) {
+                        $pageUrl = url("/en-us/{$bizSlug}/alternatives");
+                    } elseif (str_contains($item->field_key, 'faq')) {
+                        $pageUrl = url("/en-us/{$bizSlug}/faqs");
+                    } elseif (str_contains($item->field_key, 'pricing')) {
+                        $pageUrl = url("/en-us/{$bizSlug}/pricing");
+                    } elseif (str_contains($item->field_key, 'reviews') || str_contains($item->field_key, 'user_reviews')) {
+                        $pageUrl = url("/en-us/{$bizSlug}/reviews");
+                    } elseif (str_contains($item->field_key, 'discussion')) {
+                        $pageUrl = url("/en-us/{$bizSlug}/discussions");
+                    } else {
+                        $pageUrl = url("/en-us/{$bizSlug}");
+                    }
+                }
+            } elseif ($item->entity_type === 'feature') {
+                $feat = $featuresMap->get($item->entity_id);
+                $featName = $feat?->translations?->first()?->name ?? $feat?->name ?? ('Feature #' . $item->entity_id);
+                $entityTitle = "Feature: {$featName}";
+                $pageType = 'Feature Page';
+                $featCat = $feat?->category;
+                $featCatSlug = $featCat?->translations?->first()?->slug ?? $featCat?->slug;
+                $featSlug = $feat?->translations?->first()?->slug ?? Str::slug($featName);
+                if ($featCat && $featCat->parent_id && $featSlug) {
+                    $parentCat = Category::find($featCat->parent_id);
+                    $parentSlug = $parentCat?->translations?->first()?->slug ?? $parentCat?->slug;
+                    if ($parentSlug) {
+                        $pageUrl = url("/en-us/{$parentSlug}/{$featCatSlug}/{$featSlug}");
+                    } else {
+                        $pageUrl = url("/en-us/{$featCatSlug}/{$featSlug}");
+                    }
+                } elseif ($featCatSlug && $featSlug) {
+                    $pageUrl = url("/en-us/{$featCatSlug}/{$featSlug}");
+                }
+            }
+
+            $locales = [];
             foreach ($languages as $lang) {
                 $codeKey = strtolower($lang['code']);
                 $matchedId = $langCodeToIdMap[$codeKey] ?? null;
 
-                if ($matchedId) {
-                    $hasRow = $matchingRows->firstWhere('lang_id', $matchedId);
-                    $status = ($hasRow && (!empty($hasRow->headline) || !empty($hasRow->subtext))) ? 'full' : 'missing';
+                if ($codeKey === 'en-us' || $matchedId === 1) {
+                    $locales[$lang['code']] = [
+                        'status' => 'full',
+                        'label'  => 'Original Source (en-US)',
+                        'row_id' => $item->id,
+                        'lang_id'=> 1,
+                    ];
+                    continue;
+                }
+
+                $matchingTrans = $targetRows->first(function ($r) use ($item, $matchedId) {
+                    return $r->entity_type === $item->entity_type
+                        && (int)$r->entity_id === (int)$item->entity_id
+                        && $r->field_key === $item->field_key
+                        && (int)$r->lang_id === (int)$matchedId;
+                });
+
+                if ($matchingTrans) {
+                    if ($matchingTrans->status === EntitySectionTranslation::STATUS_OUTDATED) {
+                        $status = 'outdated';
+                    } elseif (!empty($matchingTrans->translated_headline) || !empty($matchingTrans->translated_subtext)) {
+                        $status = 'full';
+                    } else {
+                        $status = 'missing';
+                    }
+                    $rowId = $matchingTrans->id;
                 } else {
                     $status = 'missing';
+                    $rowId = null;
                 }
-                $locales[$lang['code']] = ['status' => $status];
+
+                $locales[$lang['code']] = [
+                    'status' => $status,
+                    'row_id' => $rowId,
+                    'lang_id'=> $matchedId,
+                ];
             }
 
             $matrix[] = [
-                'name'          => $tmpl->headline ? strip_tags($tmpl->headline) : $tmpl->field_key,
-                'key'           => $tmpl->field_key,
-                'section_group' => $tmpl->section_group ?? 'general',
-                'locales'       => $locales,
+                'id'              => $item->id,
+                'entity_type'     => $item->entity_type,
+                'entity_id'       => $item->entity_id,
+                'entity_title'    => $entityTitle,
+                'page_type'       => $pageType,
+                'page_url'        => $pageUrl,
+                'field_key'       => $item->field_key,
+                'section_group'   => $item->section_group,
+                'source_headline' => $item->source_headline,
+                'source_subtext'  => $item->source_subtext,
+                'source_hash'     => $item->source_hash,
+                'locales'         => $locales,
             ];
         }
 
-        return view('Admin.translations.templates', compact('templates', 'matrix', 'languages', 'sectionGroups'));
+        $allCategories = Category::onlyParents()->with('translations')->get();
+        $sectionGroups = EntitySectionTranslation::select('section_group')->distinct()->whereNotNull('section_group')->pluck('section_group');
+
+        return view('Admin.translations.templates', compact(
+            'items',
+            'matrix',
+            'languages',
+            'activeTab',
+            'search',
+            'sectionGroup',
+            'selectedCategoryId',
+            'allCategories',
+            'sectionGroups'
+        ));
+    }
+
+    /**
+     * AJAX endpoint to fetch translation details for modal editor.
+     */
+    public function getSectionTranslation(Request $request)
+    {
+        $entityType = $request->query('entity_type');
+        $entityId   = (int) $request->query('entity_id', 0);
+        $fieldKey   = $request->query('field_key');
+        $langId     = (int) $request->query('lang_id', 1);
+
+        $enRow = EntitySectionTranslation::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('field_key', $fieldKey)
+            ->where('lang_id', 1)
+            ->first();
+
+        $transRow = null;
+        if ($langId > 1) {
+            $transRow = EntitySectionTranslation::where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->first();
+        }
+
+        return response()->json([
+            'success'             => true,
+            'entity_type'         => $entityType,
+            'entity_id'           => $entityId,
+            'field_key'           => $fieldKey,
+            'lang_id'             => $langId,
+            'source_headline'     => $enRow?->source_headline ?? '',
+            'source_subtext'      => $enRow?->source_subtext ?? '',
+            'source_hash'         => $enRow?->source_hash ?? '',
+            'translated_headline' => $transRow?->translated_headline ?? '',
+            'translated_subtext'  => $transRow?->translated_subtext ?? '',
+            'status'              => $transRow?->status ?? 'missing',
+        ]);
+    }
+
+    /**
+     * AJAX endpoint to save an edited page section translation.
+     */
+    public function saveSectionTranslation(Request $request)
+    {
+        $request->validate([
+            'entity_type' => 'required|string',
+            'entity_id'   => 'required|integer',
+            'field_key'   => 'required|string',
+            'lang_id'     => 'required|integer',
+        ]);
+
+        $entityType = $request->input('entity_type');
+        $entityId   = (int) $request->input('entity_id', 0);
+        $fieldKey   = $request->input('field_key');
+        $langId     = (int) $request->input('lang_id');
+
+        $enRow = EntitySectionTranslation::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('field_key', $fieldKey)
+            ->where('lang_id', 1)
+            ->first();
+
+        $currentHash = $enRow?->source_hash ?? EntitySectionTranslation::computeHash(
+            $request->input('source_headline'),
+            $request->input('source_subtext')
+        );
+
+        $row = EntitySectionTranslation::updateOrCreate(
+            [
+                'entity_type' => $entityType,
+                'entity_id'   => $entityId,
+                'field_key'   => $fieldKey,
+                'lang_id'     => $langId,
+            ],
+            [
+                'section_group'       => $enRow?->section_group ?? 'general',
+                'source_headline'     => $enRow?->source_headline ?? $request->input('source_headline'),
+                'source_subtext'      => $enRow?->source_subtext ?? $request->input('source_subtext'),
+                'source_hash'         => $currentHash,
+                'translated_headline' => $request->input('translated_headline'),
+                'translated_subtext'  => $request->input('translated_subtext'),
+                'status'              => EntitySectionTranslation::STATUS_COMPLETED,
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Translation saved successfully!',
+            'row'     => $row,
+        ]);
+    }
+
+    /**
+     * Export Missing / Outdated Page Section Strings for ChatGPT / Batch translation.
+     */
+    public function exportTemplatesJson(Request $request)
+    {
+        $targetLocale = $request->input('target_locale', 'de-DE');
+        $tab = $request->input('tab', 'categories');
+        $langCodeToIdMap = $this->getLangCodeToIdMap();
+        $targetLangId = $langCodeToIdMap[strtolower($targetLocale)] ?? null;
+
+        if (!$targetLangId) {
+            return redirect()->back()->with('error', "Locale {$targetLocale} not supported.");
+        }
+
+        $enItems = EntitySectionTranslation::where('lang_id', 1)->get();
+        $exportData = [];
+
+        foreach ($enItems as $en) {
+            $trans = EntitySectionTranslation::where('entity_type', $en->entity_type)
+                ->where('entity_id', $en->entity_id)
+                ->where('field_key', $en->field_key)
+                ->where('lang_id', $targetLangId)
+                ->first();
+
+            $isMissingOrOutdated = (!$trans || $trans->status === EntitySectionTranslation::STATUS_OUTDATED || empty($trans->translated_headline));
+            if ($isMissingOrOutdated) {
+                $exportData[] = [
+                    'custom_id'           => "sec_{$en->entity_type}_{$en->entity_id}_{$en->field_key}",
+                    'entity_type'         => $en->entity_type,
+                    'entity_id'           => $en->entity_id,
+                    'field_key'           => $en->field_key,
+                    'english_headline'    => $en->source_headline ?? '',
+                    'english_subtext'     => $en->source_subtext ?? '',
+                    'translated_headline' => '',
+                    'translated_subtext'  => '',
+                ];
+            }
+        }
+
+        $payload = [
+            'type'          => 'page_section_templates',
+            'target_locale' => $targetLocale,
+            'count'         => count($exportData),
+            'instructions'  => "Translate each english_headline and english_subtext into natural {$targetLocale} with correct grammar and populate translated_headline and translated_subtext.",
+            'strings'       => $exportData,
+        ];
+
+        $filename = "localio_page_sections_{$targetLocale}_" . date('Y-m-d_His') . ".json";
+        return response()->json($payload, 200, [
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
+     * Import Translated Page Section JSON.
+     */
+    public function importTemplatesJson(Request $request)
+    {
+        $request->validate([
+            'json_file' => 'nullable|file|mimes:json,txt',
+            'json_text' => 'nullable|string',
+        ]);
+
+        $rawJson = $request->input('json_text');
+        if ($request->hasFile('json_file')) {
+            $rawJson = file_get_contents($request->file('json_file')->getRealPath());
+        }
+
+        if (empty($rawJson)) {
+            return redirect()->back()->with('error', 'Please provide a JSON file or paste JSON text.');
+        }
+
+        $data = json_decode($rawJson, true);
+        if (!is_array($data)) {
+            return redirect()->back()->with('error', 'Invalid JSON structure provided.');
+        }
+
+        $targetLocale = $data['target_locale'] ?? 'de-DE';
+        $strings = $data['strings'] ?? $data;
+
+        $langCodeToIdMap = $this->getLangCodeToIdMap();
+        $targetLangId = $langCodeToIdMap[strtolower($targetLocale)] ?? 1;
+
+        $updated = 0;
+        foreach ($strings as $item) {
+            $entityType = $item['entity_type'] ?? null;
+            $entityId   = isset($item['entity_id']) ? (int)$item['entity_id'] : 0;
+            $fieldKey   = $item['field_key'] ?? null;
+            $transHead  = $item['translated_headline'] ?? ($item['headline'] ?? null);
+            $transSub   = $item['translated_subtext'] ?? ($item['subtext'] ?? null);
+
+            if ($entityType && $fieldKey && (!empty($transHead) || !empty($transSub))) {
+                $enRow = EntitySectionTranslation::where('entity_type', $entityType)
+                    ->where('entity_id', $entityId)
+                    ->where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->first();
+
+                $currentHash = $enRow?->source_hash ?? EntitySectionTranslation::computeHash($item['english_headline'] ?? '', $item['english_subtext'] ?? '');
+
+                EntitySectionTranslation::updateOrCreate(
+                    [
+                        'entity_type' => $entityType,
+                        'entity_id'   => $entityId,
+                        'field_key'   => $fieldKey,
+                        'lang_id'     => $targetLangId,
+                    ],
+                    [
+                        'section_group'       => $enRow?->section_group ?? 'general',
+                        'source_headline'     => $enRow?->source_headline ?? ($item['english_headline'] ?? ''),
+                        'source_subtext'      => $enRow?->source_subtext ?? ($item['english_subtext'] ?? ''),
+                        'source_hash'         => $currentHash,
+                        'translated_headline' => $transHead,
+                        'translated_subtext'  => $transSub,
+                        'status'              => EntitySectionTranslation::STATUS_COMPLETED,
+                    ]
+                );
+                $updated++;
+            }
+        }
+
+        return redirect()->back()->with('success', "Successfully imported {$updated} translated page sections for locale {$targetLocale}.");
     }
 
     // =========================================================================
