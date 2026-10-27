@@ -15,6 +15,11 @@ class FeatureController extends Controller
     {
         $lang_id = getCurrentLanguageID();
         $selectedCategoryId = $request->query('category_id');
+        $search = trim((string)$request->query('search'));
+        $perPage = (int)$request->query('per_page', 25);
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
 
         $featuresQuery = Feature::whereHas('translations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
@@ -31,26 +36,34 @@ class FeatureController extends Controller
             $featuresQuery->where('category_id', $selectedCategoryId);
         }
 
-        $features = $featuresQuery->get();
+        if (!empty($search)) {
+            $featuresQuery->where(function ($q) use ($search, $lang_id) {
+                $q->where('id', $search)
+                  ->orWhereHas('translations', function ($tq) use ($search, $lang_id) {
+                      $tq->where('lang_id', $lang_id)
+                         ->where(function ($sub) use ($search) {
+                             $sub->where('name', 'like', "%{$search}%")
+                                 ->orWhere('feature_cap', 'like', "%{$search}%")
+                                 ->orWhere('group_key', 'like', "%{$search}%");
+                         });
+                  });
+            });
+        }
 
-        // Retrieve top-level categories only
+        $features = $featuresQuery->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+
+        // Retrieve top-level categories only with eager loaded translations (single fast query)
         $categories = Category::where(function ($query) {
             $query->whereNull('parent_id')->orWhere('parent_id', 0);
-        })->get()->map(function ($cat) use ($lang_id) {
-            $catName = DB::table('category_translations')
-                ->where('category_id', $cat->id)
-                ->where('lang_id', $lang_id)
-                ->value('name');
-            if (empty($catName)) {
-                $catName = DB::table('category_translations')
-                    ->where('category_id', $cat->id)
-                    ->value('name') ?? ('Category #' . $cat->id);
-            }
+        })->with(['translations' => function ($q) use ($lang_id) {
+            $q->where('lang_id', $lang_id);
+        }])->get()->map(function ($cat) {
+            $catName = $cat->translations->first()?->name ?? ('Category #' . $cat->id);
             $cat->translated_name = $catName;
             return $cat;
-        })->sortBy('translated_name', SORT_NATURAL|SORT_FLAG_CASE)->values();
+        })->sortBy('translated_name', SORT_NATURAL | SORT_FLAG_CASE)->values();
 
-        return view('Admin.features.index', compact('features', 'categories', 'selectedCategoryId'));
+        return view('Admin.features.index', compact('features', 'categories', 'selectedCategoryId', 'search', 'perPage'));
     }
 
     public function create()

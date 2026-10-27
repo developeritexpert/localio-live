@@ -2924,10 +2924,6 @@
         margin-bottom: 20px;
     }
 
-    /* .right_tool_sec .right-tool-pack>div {
-        flex-direction: column;
-        gap: var(--space-md) ;
-    } */
 
     .popular-accordion-wrp .accor-img {
         height: 40px;
@@ -3680,9 +3676,7 @@
     .cat_pg .host-pro {
         max-width: 100% !important
     }
-}
 
-@media only screen and (min-width: 992px) {
     .mobile-cat-nav-bar {
         display: none !important;
     }
@@ -7119,12 +7113,6 @@
         padding: 0 8px;
     }
 
-    /* .top_rate_pg.common_detail_sec{
-        padding-top:40px;       
-    }
-      section.top-automotive-sec.top_rate_pg.common_detail_sec{
-           margin-top:0 !important;
-      }      */
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 0 !important;
     }
@@ -7349,9 +7337,6 @@
         margin-top: -4px !important;
         color: #888 !important;
     }
-
-
-
 
 }
 
