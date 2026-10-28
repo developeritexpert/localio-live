@@ -11,7 +11,7 @@
                         <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
-                            <ul class="nk-block-tools g-3 align-items-center">
+                            <ul class="nk-block-tools gap-3 align-items-center">
                                 {{-- Search Input --}}
                                 <li>
                                     <form method="GET" action="{{ route('features') }}" class="d-flex align-items-center gap-1" id="featureSearchForm">
@@ -190,7 +190,7 @@
                 </table>
             </div>
             @if ($features->hasPages() || $features->total() > 0)
-                <div class="card-inner py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="card-inner py-3 border-top d-flex justify-content-between align-items-center flex-wrap">
                     <div class="text-muted small">
                         Showing <strong>{{ $features->firstItem() ?? 0 }}</strong> to <strong>{{ $features->lastItem() ?? 0 }}</strong> of <strong>{{ $features->total() }}</strong> features
                     </div>

@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 class ContentTemplateService
 {
     /**
+     * Request-level in-memory cache for entity assignments to prevent N+1 queries during page renders.
+     */
+    public static array $entityAssignmentsCache = [];
+    /**
      * Field definitions categorized by subsection.
      */
     public const CATEGORY_FIELDS = [
@@ -903,13 +907,17 @@ class ContentTemplateService
     {
         $sectionGroup = self::determineSectionGroup($entityType, $fieldKey, $sectionGroup);
 
-        // 1. Check if a valid, active assignment exists in the database
-        $assignment = ContentTemplateAssignment::where('entity_type', $entityType)
-            ->where('entity_id', $entityId)
-            ->where('lang_id', $langId)
-            ->where('field_key', $fieldKey)
-            ->with('template')
-            ->first();
+        // 1. Check if a valid, active assignment exists in the database (with request-level preload)
+        $cacheKey = "{$entityType}:{$entityId}:{$langId}";
+        if (!isset(self::$entityAssignmentsCache[$cacheKey])) {
+            self::$entityAssignmentsCache[$cacheKey] = ContentTemplateAssignment::where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('lang_id', $langId)
+                ->with('template')
+                ->get()
+                ->keyBy('field_key');
+        }
+        $assignment = self::$entityAssignmentsCache[$cacheKey]->get($fieldKey);
 
         // Fallback for business entity: if no assignment under 'business', check category assignment for business's primary category / subcategories
         if (!$assignment && $entityType === 'business') {
@@ -1174,28 +1182,67 @@ class ContentTemplateService
      */
     public static function assignMissingForFeatures(int $langId = 1): int
     {
-        $allFeatureIds = Feature::pluck('id');
         $allFieldKeys = array_keys(self::FEATURE_FIELDS);
-        $assignedCount = 0;
+        $totalAssigned = 0;
+        $now = now();
 
-        foreach ($allFeatureIds as $featId) {
-            foreach ($allFieldKeys as $fieldKey) {
-                $exists = ContentTemplateAssignment::where('entity_type', 'feature')
-                    ->where('entity_id', $featId)
-                    ->where('lang_id', $langId)
-                    ->where('field_key', $fieldKey)
-                    ->exists();
+        foreach ($allFieldKeys as $fieldKey) {
+            $templates = ContentTemplate::where('field_key', $fieldKey)
+                ->where('lang_id', $langId)
+                ->where('is_active', true)
+                ->where('section_group', 'features')
+                ->pluck('id')
+                ->toArray();
 
-                if (!$exists) {
-                    $template = self::getOrAssignTemplate('feature', $featId, $fieldKey, $langId);
-                    if ($template) {
-                        $assignedCount++;
-                    }
+            if (empty($templates) && $langId !== 1) {
+                $templates = ContentTemplate::where('field_key', $fieldKey)
+                    ->where('lang_id', 1)
+                    ->where('is_active', true)
+                    ->where('section_group', 'features')
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            if (empty($templates)) {
+                continue;
+            }
+
+            $missingIds = DB::table('features as f')
+                ->leftJoin('content_template_assignments as a', function ($join) use ($fieldKey, $langId) {
+                    $join->on('a.entity_id', '=', 'f.id')
+                         ->where('a.entity_type', '=', 'feature')
+                         ->where('a.lang_id', '=', $langId)
+                         ->where('a.field_key', '=', $fieldKey);
+                })
+                ->whereNull('a.id')
+                ->pluck('f.id')
+                ->toArray();
+
+            if (empty($missingIds)) {
+                continue;
+            }
+
+            $chunks = array_chunk($missingIds, 1000);
+            foreach ($chunks as $chunk) {
+                $batch = [];
+                foreach ($chunk as $featId) {
+                    $chosenTemplateId = $templates[array_rand($templates)];
+                    $batch[] = [
+                        'entity_type' => 'feature',
+                        'entity_id'   => $featId,
+                        'lang_id'     => $langId,
+                        'field_key'   => $fieldKey,
+                        'template_id' => $chosenTemplateId,
+                        'created_at'  => $now,
+                        'updated_at'  => $now,
+                    ];
                 }
+                DB::table('content_template_assignments')->insert($batch);
+                $totalAssigned += count($batch);
             }
         }
 
-        return $assignedCount;
+        return $totalAssigned;
     }
 
     /**
@@ -1203,6 +1250,8 @@ class ContentTemplateService
      */
     public static function manuallyAssignTemplate(string $entityType, int $entityId, string $fieldKey, int $templateId, int $langId = 1): ContentTemplateAssignment
     {
+        unset(self::$entityAssignmentsCache["{$entityType}:{$entityId}:{$langId}"]);
+
         $assignment = ContentTemplateAssignment::updateOrCreate(
             [
                 'entity_type' => $entityType,

@@ -268,7 +268,7 @@ $favicon = function_exists('getSiteFavicon') ? getSiteFavicon($lang_id) : 'front
                 <div class="nk-footer">
                     <div class="container-fluid">
                         <div class="nk-footer-wrap">
-                            <div class="nk-footer-copyright"> &copy; 2024 by <a
+                            <div class="nk-footer-copyright"> &copy; {{ date('Y') }} by <a
                                     href="{{ url('admin-dashboard') ?? '' }}" target="_blank">localio</a>
                             </div>
                         </div>

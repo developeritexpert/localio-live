@@ -181,11 +181,15 @@ class ContentTemplateController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        $assignments = ContentTemplateAssignment::where('entity_type', 'feature')
-            ->where('lang_id', $lang_id)
-            ->with('template')
-            ->get()
-            ->groupBy('entity_id');
+        $featureIds = $features->pluck('id')->toArray();
+        $assignments = !empty($featureIds)
+            ? ContentTemplateAssignment::where('entity_type', 'feature')
+                ->whereIn('entity_id', $featureIds)
+                ->where('lang_id', $lang_id)
+                ->with('template')
+                ->get()
+                ->groupBy('entity_id')
+            : collect();
 
         $templates = ContentTemplate::where('section_group', 'features')
             ->where('lang_id', $lang_id)
@@ -336,12 +340,16 @@ class ContentTemplateController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        $assignments = ContentTemplateAssignment::where('entity_type', 'business')
-            ->where('lang_id', $lang_id)
-            ->whereHas('template', fn($q) => $q->where('section_group', $sectionGroup))
-            ->with('template')
-            ->get()
-            ->groupBy('entity_id');
+        $bizIds = $businesses->pluck('id')->toArray();
+        $assignments = !empty($bizIds)
+            ? ContentTemplateAssignment::where('entity_type', 'business')
+                ->whereIn('entity_id', $bizIds)
+                ->where('lang_id', $lang_id)
+                ->whereHas('template', fn($q) => $q->where('section_group', $sectionGroup))
+                ->with('template')
+                ->get()
+                ->groupBy('entity_id')
+            : collect();
 
         $templates = ContentTemplate::where('section_group', $sectionGroup)
             ->where('lang_id', $lang_id)

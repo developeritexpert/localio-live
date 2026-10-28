@@ -55,8 +55,14 @@ class CategoryFeatureContentController extends Controller
             return $cat;
         });
 
-        // Features for filter
-        $features = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->get()->map(function($f) {
+        // Features for filter (optimized for 20k scale: scoped by category or limited)
+        $featuresQuery = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
+        if (!empty($selectedCategoryId)) {
+            $featuresQuery->where('category_id', $selectedCategoryId);
+        } else {
+            $featuresQuery->limit(300);
+        }
+        $features = $featuresQuery->get()->map(function($f) {
             $f->display_name = $f->translations->first()?->name ?? ('Feature #' . $f->id);
             return $f;
         })->sortBy('display_name')->values();
@@ -98,7 +104,13 @@ class CategoryFeatureContentController extends Controller
             return $cat;
         });
 
-        $features = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->get()->map(function($f) {
+        $featuresQuery = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
+        if (!empty($selectedCategoryId)) {
+            $featuresQuery->where('category_id', $selectedCategoryId);
+        } else {
+            $featuresQuery->limit(300);
+        }
+        $features = $featuresQuery->get()->map(function($f) {
             $f->display_name = $f->translations->first()?->name ?? ('Feature #' . $f->id);
             return $f;
         })->sortBy('display_name')->values();
@@ -195,7 +207,13 @@ class CategoryFeatureContentController extends Controller
             return $cat;
         });
 
-        $features = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->get()->map(function($f) {
+        $featuresQuery = Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
+        if (!empty($content->category_id)) {
+            $featuresQuery->where('category_id', $content->category_id);
+        } else {
+            $featuresQuery->limit(300);
+        }
+        $features = $featuresQuery->get()->map(function($f) {
             $f->display_name = $f->translations->first()?->name ?? ('Feature #' . $f->id);
             return $f;
         })->sortBy('display_name')->values();
