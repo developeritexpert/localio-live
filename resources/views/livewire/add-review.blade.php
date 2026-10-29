@@ -328,18 +328,15 @@
 
                                                 @if(count($selectedPros) > 0)
                                                     <div class="selected-chips-container">
-                                                        @foreach($availablePros as $pro)
-                                                            @if(in_array($pro['id'], $selectedPros))
-                                                                <button type="button" 
-                                                                        wire:key="selected-pro-{{ $pro['id'] }}"
-                                                                        wire:click="togglePro({{ $pro['id'] }})"
-                                                                        class="selected-chip-badge"
-                                                                        title="Click to remove">
-                                                                    <i class="fas fa-plus text-success" style="font-size: 10px;"></i>
-                                                                    <span>{{ $pro['text'] }}</span>
-                                                                    <i class="fas fa-times ms-1"></i>
-                                                                </button>
-                                                            @endif
+                                                        @foreach($selectedProsModels as $pro)
+                                                            <button type="button" 
+                                                                    wire:key="selected-pro-{{ $pro->id }}"
+                                                                    wire:click="togglePro({{ $pro->id }})"
+                                                                    class="selected-chip-badge"
+                                                                    title="Click to remove">
+                                                                <span>{{ $pro->text }}</span>
+                                                                <i class="fas fa-times ms-1"></i>
+                                                            </button>
                                                         @endforeach
                                                     </div>
                                                 @endif
@@ -367,6 +364,19 @@
                                                             @endif
                                                         </p>
                                                     @endforelse
+
+                                                    @if($hasMorePros && empty($proSearch))
+                                                        <div class="w-100 text-center pt-2 pb-1">
+                                                            <button type="button" wire:click="loadMorePros" wire:loading.attr="disabled" class="btn btn-sm btn-link text-decoration-none" style="font-size: 11px; color: #06498b;">
+                                                                <span wire:loading.remove wire:target="loadMorePros">
+                                                                    <i class="fas fa-chevron-down me-1"></i> Show more suggestions
+                                                                </span>
+                                                                <span wire:loading wire:target="loadMorePros">
+                                                                    <i class="fas fa-spinner fa-spin me-1"></i> Loading...
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -394,7 +404,7 @@
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedCons) }}/5 selected
-                                                </span>`
+                                                </span>
                                             </div>
                                             
                                             <div class="pro-con-box">
@@ -414,18 +424,15 @@
 
                                                 @if(count($selectedCons) > 0)
                                                     <div class="selected-chips-container">
-                                                        @foreach($availableCons as $con)
-                                                            @if(in_array($con['id'], $selectedCons))
-                                                                <button type="button" 
-                                                                        wire:key="selected-con-{{ $con['id'] }}"
-                                                                        wire:click="toggleCon({{ $con['id'] }})"
-                                                                        class="selected-chip-badge"
-                                                                        title="Click to remove">
-                                                                    <i class="fas fa-minus text-danger" style="font-size: 10px;"></i>
-                                                                    <span>{{ $con['text'] }}</span>
-                                                                    <i class="fas fa-times ms-1"></i>
-                                                                </button>
-                                                            @endif
+                                                        @foreach($selectedConsModels as $con)
+                                                            <button type="button" 
+                                                                    wire:key="selected-con-{{ $con->id }}"
+                                                                    wire:click="toggleCon({{ $con->id }})"
+                                                                    class="selected-chip-badge"
+                                                                    title="Click to remove">
+                                                                <span>{{ $con->text }}</span>
+                                                                <i class="fas fa-times ms-1"></i>
+                                                            </button>
                                                         @endforeach
                                                     </div>
                                                 @endif
@@ -453,6 +460,19 @@
                                                             @endif
                                                         </p>
                                                     @endforelse
+
+                                                    @if($hasMoreCons && empty($conSearch))
+                                                        <div class="w-100 text-center pt-2 pb-1">
+                                                            <button type="button" wire:click="loadMoreCons" wire:loading.attr="disabled" class="btn btn-sm btn-link text-decoration-none" style="font-size: 11px; color: #06498b;">
+                                                                <span wire:loading.remove wire:target="loadMoreCons">
+                                                                    <i class="fas fa-chevron-down me-1"></i> Show more suggestions
+                                                                </span>
+                                                                <span wire:loading wire:target="loadMoreCons">
+                                                                    <i class="fas fa-spinner fa-spin me-1"></i> Loading...
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
