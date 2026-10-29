@@ -22,12 +22,13 @@ class AddReview extends Component
     public $recommend = null;
     public $title2;
     public $comment;
-    public $availablePros = [];
-    public $availableCons = [];
+    public $categoryIds = [];
     public $selectedPros = [];
     public $selectedCons = [];
     public $proSearch = '';
     public $conSearch = '';
+    public $proLimit = 30;
+    public $conLimit = 30;
     public $reviewId;
 
     protected $rules = [];
@@ -54,8 +55,8 @@ class AddReview extends Component
         $this->reset([
             'step', 'businessId', 'businessName', 'businessIcon', 'criteria',
             'criteriaRatings', 'recommend', 'title2', 'comment',
-            'availablePros', 'availableCons', 'selectedPros', 'selectedCons',
-            'proSearch', 'conSearch', 'reviewId'
+            'categoryIds', 'selectedPros', 'selectedCons',
+            'proSearch', 'conSearch', 'proLimit', 'conLimit', 'reviewId'
         ]);
 
         $this->step = 1;
@@ -73,11 +74,11 @@ class AddReview extends Component
 
             $category = $business->category ?? \App\Models\Category::whereNull('parent_id')->orderBy('id')->first();
 
-            $categoryIds = array_filter(array_unique([
+            $this->categoryIds = array_values(array_filter(array_unique([
                 $business->category_id,
                 $category ? $category->parent_id : null,
                 $category ? $category->id : null,
-            ]));
+            ])));
 
             if ($category) {
                 $this->criteria = $category->getEffectiveRatingCriteria()->toArray();
@@ -87,22 +88,9 @@ class AddReview extends Component
             } else {
                 $this->criteria = [];
             }
-
-            if (!empty($categoryIds)) {
-                $allProCons = CategoryProCon::whereIn('category_id', $categoryIds)
-                    ->where('status', 1)
-                    ->get();
-
-                $this->availablePros = $allProCons->where('type', 'pro')->values()->toArray();
-                $this->availableCons = $allProCons->where('type', 'con')->values()->toArray();
-            } else {
-                $this->availablePros = [];
-                $this->availableCons = [];
-            }
         } else {
+            $this->categoryIds = [];
             $this->criteria = [];
-            $this->availablePros = [];
-            $this->availableCons = [];
             $this->businessName = 'Business';
         }
 
@@ -167,11 +155,37 @@ class AddReview extends Component
     public function clearProSearch()
     {
         $this->proSearch = '';
+        $this->proLimit = 30;
     }
 
     public function clearConSearch()
     {
         $this->conSearch = '';
+        $this->conLimit = 30;
+    }
+
+    public function updatingProSearch()
+    {
+        $this->proLimit = 30;
+    }
+
+    public function updatingConSearch()
+    {
+        $this->conLimit = 30;
+    }
+
+    public function loadMorePros()
+    {
+        if (empty($this->proSearch)) {
+            $this->proLimit += 30;
+        }
+    }
+
+    public function loadMoreCons()
+    {
+        if (empty($this->conSearch)) {
+            $this->conLimit += 30;
+        }
     }
 
     public function selectRecommend($val)
@@ -414,26 +428,61 @@ class AddReview extends Component
         }
     }
 
-    protected function filterProCons(array $availableItems, array $selectedIds, string $searchQuery): array
+    protected function fetchProCons(string $type, array $selectedIds, string $searchQuery, int $limit = 30): array
     {
-        $unselected = array_values(array_filter($availableItems, function ($item) use ($selectedIds) {
-            return !in_array($item['id'], $selectedIds);
-        }));
-
-        $query = trim(strtolower($searchQuery));
-        if (empty($query)) {
-            return array_map(function ($item) {
-                $item['matched_alias'] = null;
-                return $item;
-            }, $unselected);
+        if (empty($this->categoryIds)) {
+            return [];
         }
 
-        $searchWords = array_values(array_filter(explode(' ', $query), fn($w) => strlen($w) > 0));
+        $query = CategoryProCon::query()
+            ->select(['id', 'text', 'aliases'])
+            ->whereIn('category_id', $this->categoryIds)
+            ->where('type', $type)
+            ->where('status', 1);
 
-        $matchedList = [];
-        foreach ($unselected as $item) {
-            $text = strtolower($item['text'] ?? '');
-            $aliases = $item['aliases'] ?? [];
+        if (!empty($selectedIds)) {
+            $query->whereNotIn('id', $selectedIds);
+        }
+
+        $trimmed = trim(strtolower($searchQuery));
+
+        if (empty($trimmed)) {
+            return $query->orderBy('id')
+                ->limit($limit)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id'            => $item->id,
+                        'text'          => $item->text,
+                        'matched_alias' => null,
+                    ];
+                })
+                ->toArray();
+        }
+
+        $words = array_values(array_filter(explode(' ', $trimmed), fn($w) => strlen($w) > 0));
+
+        $query->where(function ($q) use ($trimmed, $words) {
+            $q->where('text', 'LIKE', "%{$trimmed}%")
+              ->orWhere('aliases', 'LIKE', "%{$trimmed}%");
+
+            if (count($words) > 1) {
+                $q->orWhere(function ($allWordsQuery) use ($words) {
+                    foreach ($words as $w) {
+                        $allWordsQuery->where(function ($sub) use ($w) {
+                            $sub->where('text', 'LIKE', "%{$w}%")
+                                ->orWhere('aliases', 'LIKE', "%{$w}%");
+                        });
+                    }
+                });
+            }
+        });
+
+        $results = $query->orderBy('id')->limit($limit)->get();
+
+        return $results->map(function ($item) use ($trimmed, $words) {
+            $text = strtolower($item->text ?? '');
+            $aliases = $item->aliases ?? [];
             if (is_string($aliases)) {
                 $aliases = json_decode($aliases, true) ?: [$aliases];
             }
@@ -441,52 +490,26 @@ class AddReview extends Component
                 $aliases = [];
             }
 
-            $isMatch = false;
             $matchedAlias = null;
-
-            // 1. Direct match on primary text
-            if (str_contains($text, $query)) {
-                $isMatch = true;
-            }
-
-            // 2. Token match on primary text (all search words present in primary text)
-            if (!$isMatch && count($searchWords) > 1) {
-                $allWordsMatch = true;
-                foreach ($searchWords as $w) {
-                    if (!str_contains($text, $w)) {
-                        $allWordsMatch = false;
-                        break;
-                    }
-                }
-                if ($allWordsMatch) {
-                    $isMatch = true;
-                }
-            }
-
-            // 3. Match against aliases
-            if (!$isMatch) {
+            if (!str_contains($text, $trimmed)) {
                 foreach ($aliases as $alias) {
                     $aliasStr = strtolower(trim((string)$alias));
                     if (empty($aliasStr)) continue;
 
-                    // Direct substring in alias, or search query contains the alias
-                    if (str_contains($aliasStr, $query) || str_contains($query, $aliasStr)) {
-                        $isMatch = true;
+                    if (str_contains($aliasStr, $trimmed) || str_contains($trimmed, $aliasStr)) {
                         $matchedAlias = $alias;
                         break;
                     }
 
-                    // Token match on alias (all search words present in this alias)
-                    if (count($searchWords) > 1) {
-                        $allWordsInAlias = true;
-                        foreach ($searchWords as $w) {
+                    if (count($words) > 1) {
+                        $allMatch = true;
+                        foreach ($words as $w) {
                             if (!str_contains($aliasStr, $w)) {
-                                $allWordsInAlias = false;
+                                $allMatch = false;
                                 break;
                             }
                         }
-                        if ($allWordsInAlias) {
-                            $isMatch = true;
+                        if ($allMatch) {
                             $matchedAlias = $alias;
                             break;
                         }
@@ -494,30 +517,52 @@ class AddReview extends Component
                 }
             }
 
-            if ($isMatch) {
-                $item['matched_alias'] = $matchedAlias;
-                $matchedList[] = $item;
-            }
-        }
-
-        return $matchedList;
+            return [
+                'id'            => $item->id,
+                'text'          => $item->text,
+                'matched_alias' => $matchedAlias,
+            ];
+        })->toArray();
     }
 
     public function getFilteredProsProperty()
     {
-        return $this->filterProCons($this->availablePros, $this->selectedPros, (string)$this->proSearch);
+        return $this->fetchProCons('pro', $this->selectedPros, (string)$this->proSearch, $this->proLimit);
     }
 
     public function getFilteredConsProperty()
     {
-        return $this->filterProCons($this->availableCons, $this->selectedCons, (string)$this->conSearch);
+        return $this->fetchProCons('con', $this->selectedCons, (string)$this->conSearch, $this->conLimit);
+    }
+
+    public function getSelectedProsModelsProperty()
+    {
+        if (empty($this->selectedPros)) {
+            return collect();
+        }
+        return CategoryProCon::whereIn('id', $this->selectedPros)->get(['id', 'text']);
+    }
+
+    public function getSelectedConsModelsProperty()
+    {
+        if (empty($this->selectedCons)) {
+            return collect();
+        }
+        return CategoryProCon::whereIn('id', $this->selectedCons)->get(['id', 'text']);
     }
 
     public function render()
     {
+        $filteredPros = $this->getFilteredProsProperty();
+        $filteredCons = $this->getFilteredConsProperty();
+
         return view('livewire.add-review', [
-            'filteredPros' => $this->filteredPros,
-            'filteredCons' => $this->filteredCons,
+            'filteredPros'       => $filteredPros,
+            'filteredCons'       => $filteredCons,
+            'selectedProsModels' => $this->getSelectedProsModelsProperty(),
+            'selectedConsModels' => $this->getSelectedConsModelsProperty(),
+            'hasMorePros'        => count($filteredPros) >= $this->proLimit,
+            'hasMoreCons'        => count($filteredCons) >= $this->conLimit,
         ]);
     }
 }

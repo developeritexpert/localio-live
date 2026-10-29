@@ -53,15 +53,7 @@ class FeatureController extends Controller
         $features = $featuresQuery->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         // Retrieve top-level categories only with eager loaded translations (single fast query)
-        $categories = Category::where(function ($query) {
-            $query->whereNull('parent_id')->orWhere('parent_id', 0);
-        })->with(['translations' => function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        }])->get()->map(function ($cat) {
-            $catName = $cat->translations->first()?->name ?? ('Category #' . $cat->id);
-            $cat->translated_name = $catName;
-            return $cat;
-        })->sortBy('translated_name', SORT_NATURAL | SORT_FLAG_CASE)->values();
+        $categories = $this->getTopLevelCategories($lang_id);
 
         return view('Admin.features.index', compact('features', 'categories', 'selectedCategoryId', 'search', 'perPage'));
     }
@@ -70,21 +62,7 @@ class FeatureController extends Controller
     {
         $lang_id = getCurrentLanguageID();
         // Retrieve top-level categories only
-        $categories = Category::where(function ($query) {
-            $query->whereNull('parent_id')->orWhere('parent_id', 0);
-        })->get()->map(function ($cat) use ($lang_id) {
-            $catName = DB::table('category_translations')
-                ->where('category_id', $cat->id)
-                ->where('lang_id', $lang_id)
-                ->value('name');
-            if (empty($catName)) {
-                $catName = DB::table('category_translations')
-                    ->where('category_id', $cat->id)
-                    ->value('name') ?? ('Category #' . $cat->id);
-            }
-            $cat->translated_name = $catName;
-            return $cat;
-        });
+        $categories = $this->getTopLevelCategories($lang_id);
 
         return view('Admin.features.add', compact('categories'));
     }
@@ -334,21 +312,7 @@ class FeatureController extends Controller
         ])->findOrFail($id);
 
         // Retrieve top-level categories only
-        $categories = Category::where(function ($query) {
-            $query->whereNull('parent_id')->orWhere('parent_id', 0);
-        })->get()->map(function ($cat) use ($lang_id) {
-            $catName = DB::table('category_translations')
-                ->where('category_id', $cat->id)
-                ->where('lang_id', $lang_id)
-                ->value('name');
-            if (empty($catName)) {
-                $catName = DB::table('category_translations')
-                    ->where('category_id', $cat->id)
-                    ->value('name') ?? ('Category #' . $cat->id);
-            }
-            $cat->translated_name = $catName;
-            return $cat;
-        });
+        $categories = $this->getTopLevelCategories($lang_id);
 
         return view('Admin.features.edit', compact('feature', 'categories', 'lang_id'));
     }
@@ -492,5 +456,27 @@ class FeatureController extends Controller
             return redirect()->route('features', !empty($categoryId) ? ['category_id' => $categoryId] : [])
                 ->with('error', 'Error deleting features: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Retrieve top-level categories with eager loaded translations.
+     */
+    private function getTopLevelCategories(int $lang_id)
+    {
+        return Category::where(function ($query) {
+            $query->whereNull('parent_id')->orWhere('parent_id', 0);
+        })->with([
+            'translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            },
+            'categoryTranslations'
+        ])->get()->map(function ($cat) {
+            $catName = $cat->translations?->name 
+                ?? $cat->categoryTranslations->firstWhere('lang_id', 1)?->name 
+                ?? $cat->categoryTranslations->first()?->name 
+                ?? ('Category #' . $cat->id);
+            $cat->translated_name = $catName;
+            return $cat;
+        })->sortBy('translated_name', SORT_NATURAL | SORT_FLAG_CASE)->values();
     }
 }

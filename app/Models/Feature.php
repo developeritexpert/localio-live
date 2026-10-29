@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FeatureTransalte;
 use App\Models\Business;
+use Illuminate\Support\Facades\Cache;
 
 class Feature extends Model
 {
@@ -14,6 +15,12 @@ class Feature extends Model
     protected $table = 'features';
 
     protected $guarded = [];
+
+    /**
+     * Request-level in-memory cache to prevent duplicate database lookups
+     * when findBySlug is called repeatedly across middleware, controllers, and Livewire.
+     */
+    private static array $resolvedSlugs = [];
 
     public function translations()
     {
@@ -31,19 +38,46 @@ class Feature extends Model
     {
         return $this->hasMany(FeatureBusinessReview::class, 'feature_id');
     }
+
     public static function findBySlug(string $slug, ?int $categoryId = null, ?int $langId = null): ?self
     {
         if (empty($slug)) {
             return null;
         }
 
+        $langId = $langId ?: 1;
+        $memKey = "{$slug}|" . ($categoryId ?? 'null') . "|{$langId}";
+
+        // 1. In-memory per-request cache (0ms, zero external dependencies)
+        if (array_key_exists($memKey, self::$resolvedSlugs)) {
+            return self::$resolvedSlugs[$memKey];
+        }
+
+        // 2. Safe persistent cache (wrapped in try/catch: works seamlessly whether Redis/file cache exists or not)
+        $cacheKey = "feat_slug:v1:{$langId}:" . ($categoryId ?? 0) . ":" . md5(strtolower($slug));
+        try {
+            $cachedId = Cache::get($cacheKey);
+            if ($cachedId !== null) {
+                if ($cachedId === 0) {
+                    return self::$resolvedSlugs[$memKey] = null;
+                }
+                $cachedFeature = self::with(['translations' => fn($q) => $q->whereIn('lang_id', [$langId, 1])])
+                    ->where('id', $cachedId)
+                    ->first();
+                if ($cachedFeature) {
+                    return self::$resolvedSlugs[$memKey] = $cachedFeature;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore cache driver errors/missing Redis
+        }
+
         $targetSlug = \Illuminate\Support\Str::slug($slug);
         $cleanSlug = str_replace(['-', '.', '_', ' '], '', strtolower($slug));
+        $nameWithSpaces = str_replace(['-', '_'], ' ', $slug);
 
         $query = self::query()->with(['translations' => function ($q) use ($langId) {
-            if ($langId) {
-                $q->where('lang_id', $langId)->orWhereRaw('1=1');
-            }
+            $q->whereIn('lang_id', [$langId, 1]);
         }]);
 
         // Candidate category IDs (if category provided)
@@ -56,33 +90,56 @@ class Feature extends Model
             }
         }
 
-        // 1. If category candidate IDs exist, try querying features for this category hierarchy first
+        // 1. Try querying features for this category hierarchy first (uses composite idx_features_cat_status)
         if (!empty($candidateCatIds)) {
-            $catFeats = (clone $query)->whereIn('category_id', $candidateCatIds)->get();
+            $catFeats = (clone $query)->whereIn('category_id', $candidateCatIds)->where('status', 'active')->get();
             $found = $catFeats->first(function ($f) use ($targetSlug, $cleanSlug) {
                 return self::matchesSlug($f, $targetSlug, $cleanSlug);
             });
             if ($found) {
-                return $found;
+                self::safeCachePut($cacheKey, $found->id, 86400);
+                return self::$resolvedSlugs[$memKey] = $found;
             }
         }
 
-        // 2. Query with SQL matching conditions across all features
-        $candidate = (clone $query)->whereHas('translations', function ($q) use ($slug, $cleanSlug) {
-            $q->where('name', 'LIKE', str_replace('-', ' ', $slug))
-                ->orWhere('name', 'LIKE', $slug)
-                ->orWhereRaw("REPLACE(REPLACE(REPLACE(REPLACE(LOWER(name), '-', ''), '.', ''), '_', ''), ' ', '') = ?", [$cleanSlug]);
+        // 2. Query with indexed SQL matching across all features (uses idx_ft_lang_name)
+        $candidate = (clone $query)->where('status', 'active')->whereHas('translations', function ($q) use ($nameWithSpaces, $slug, $langId) {
+            $q->whereIn('lang_id', [$langId, 1])
+              ->where(function ($sub) use ($nameWithSpaces, $slug) {
+                  $sub->where('name', $nameWithSpaces)
+                      ->orWhere('name', $slug)
+                      ->orWhere('name', 'LIKE', $nameWithSpaces . '%');
+              });
         })->first();
 
         if ($candidate) {
-            return $candidate;
+            self::safeCachePut($cacheKey, $candidate->id, 86400);
+            return self::$resolvedSlugs[$memKey] = $candidate;
         }
 
-        // 3. Fallback: scan features and compare using Str::slug
-        $allFeats = (clone $query)->get();
-        return $allFeats->first(function ($f) use ($targetSlug, $cleanSlug) {
-            return self::matchesSlug($f, $targetSlug, $cleanSlug);
-        });
+        // 3. Fallback matching without full-table memory scan
+        $fallback = (clone $query)->where('status', 'active')->whereHas('translations', function ($q) use ($nameWithSpaces, $langId) {
+            $q->whereIn('lang_id', [$langId, 1])
+              ->where('name', 'LIKE', '%' . $nameWithSpaces . '%');
+        })->first();
+
+        if ($fallback) {
+            self::safeCachePut($cacheKey, $fallback->id, 86400);
+            return self::$resolvedSlugs[$memKey] = $fallback;
+        }
+
+        // Cache negative lookup (0) for 10 minutes to prevent repeated DB misses by bots/crawlers
+        self::safeCachePut($cacheKey, 0, 600);
+        return self::$resolvedSlugs[$memKey] = null;
+    }
+
+    private static function safeCachePut(string $key, int $val, int $ttl): void
+    {
+        try {
+            Cache::put($key, $val, $ttl);
+        } catch (\Throwable $e) {
+            // Silently ignore cache write failures if Redis/cache not configured
+        }
     }
 
     public static function matchesSlug(self $f, string $targetSlug, string $cleanSlug): bool
