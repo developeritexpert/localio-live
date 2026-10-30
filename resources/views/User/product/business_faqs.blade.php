@@ -30,7 +30,12 @@
     $metaResolved = \App\Services\MetaTagService::resolveBusinessFaqsMeta($business, $lang_id);
     $faqsMetaTitle = $metaResolved['title'];
     $faqsMetaDesc = $metaResolved['description'];
+    $activeFaqsCount = isset($allFaqs) ? $allFaqs->count() : $business->faqs()->where('status', 1)->count();
 @endphp
+
+@if($activeFaqsCount < 1)
+@section('meta_robots', 'noindex, follow')
+@endif
 
 @section('meta_title', format_meta_text($faqsMetaTitle))
 @if(!empty($faqsMetaDesc))

@@ -8,6 +8,10 @@
     </style>
 @endpush
 
+@if(empty($faqs) || count($faqs) < 1)
+@section('meta_robots', 'noindex, follow')
+@endif
+
 @section('meta_title', format_meta_text('Top-Rated FAQs & Questions Answered | Localio'))
 @section('meta_description', format_meta_text('Find answers to frequently asked questions about top-rated products, businesses, user reviews, and how rankings work on Localio.'))
 

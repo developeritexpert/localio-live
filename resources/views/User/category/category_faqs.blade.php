@@ -34,6 +34,10 @@
     $pageFaqDesc = !empty($faqMetaDesc) ? $faqMetaDesc : $resolvedFaqMeta['description'];
 @endphp
 
+@if(empty($faqs) || count($faqs) < 1)
+@section('meta_robots', 'noindex, follow')
+@endif
+
 @section('meta_title', format_meta_text($pageFaqTitle))
 @if(!empty($faqMetaDesc))
 @section('meta_description', format_meta_text($pageFaqDesc))

@@ -8,7 +8,12 @@ $currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $match
 $resolvedBizMeta = \App\Services\MetaTagService::resolveBusinessMeta($business, $currentLangId);
 $pageMetaTitle = !empty($metaTitle) ? $metaTitle : $resolvedBizMeta['title'];
 $pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBizMeta['description'];
+$reviewCountForIndex = isset($ratingCount) ? (int)$ratingCount : $business->reviews()->whereIn('status', ['published', 'active'])->count();
 @endphp
+
+@if($reviewCountForIndex < 5)
+@section('meta_robots', 'noindex, follow')
+@endif
 
 @section('meta_title', format_meta_text($pageMetaTitle))
 @if(!empty($pageMetaDescription))
