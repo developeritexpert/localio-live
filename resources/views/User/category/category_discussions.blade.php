@@ -28,7 +28,12 @@
 
 @php
     $discMeta = \App\Services\MetaTagService::resolveCategoryDiscussionsMeta($category, $lang_id);
+    $activeDiscsCount = $category->discussions()->where('status', 'active')->count();
 @endphp
+
+@if($activeDiscsCount < 1)
+@section('meta_robots', 'noindex, follow')
+@endif
 @section('meta_title', format_meta_text($discMeta['title']))
 @section('meta_description', format_meta_text($discMeta['description']))
 <style>

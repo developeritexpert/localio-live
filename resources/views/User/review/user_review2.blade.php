@@ -5,7 +5,12 @@
     $metaResolved = \App\Services\MetaTagService::resolveBusinessReviewsMeta($business, $lang_id);
     $reviewsMetaTitle = $metaResolved['title'];
     $reviewsMetaDesc = $metaResolved['description'];
+    $reviewCountForIndex = isset($ratingCount) && $ratingCount !== null ? (int)$ratingCount : $business->reviews()->whereIn('status', ['published', 'active'])->count();
 @endphp
+
+@if($reviewCountForIndex < 5)
+@section('meta_robots', 'noindex, follow')
+@endif
 
 @section('meta_title', format_meta_text($reviewsMetaTitle))
 @if(!empty($reviewsMetaDesc))

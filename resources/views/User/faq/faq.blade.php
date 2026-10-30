@@ -8,6 +8,13 @@
         </style>
 @endpush
 
+@php
+    $hasAnyFaqs = !empty($activeCategory) && !empty($activeCategory->faqs) && $activeCategory->faqs->count() > 0;
+@endphp
+@if(!$hasAnyFaqs)
+@section('meta_robots', 'noindex, follow')
+@endif
+
 @section('meta_title', format_meta_text('Frequently Asked Questions | Localio'))
 @section('meta_description', format_meta_text('Find answers to common questions about Localio, categories, business reviews, and software ratings.'))
 

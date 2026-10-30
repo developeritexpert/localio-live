@@ -11,6 +11,10 @@
     $totalDiscs = $totalDiscussionsCount ?? 0;
 @endphp
 
+@if($totalDiscs < 1)
+@section('meta_robots', 'noindex, follow')
+@endif
+
 @section('meta_title', format_meta_text($metaTitle))
 @section('meta_description', format_meta_text($metaDescription))
 
