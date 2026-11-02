@@ -19,6 +19,9 @@ use App\Http\Controllers\User\{ViewController, CategoryController, ProductContro
 use App\Http\Controllers\Vendor\HomeController;
 use App\Http\Controllers\PostbackController;
 use App\Http\Controllers\UserDashboard\{UserDashboardController};
+use App\Http\Controllers\BusinessClaimController;
+use App\Http\Controllers\BusinessManagementController;
+use App\Http\Controllers\Admin\AdminBusinessClaimController;
 use App\Models\ExpertGuides;
 use App\Models\ProductFeature;
 use App\Models\Rule;
@@ -683,6 +686,12 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     // routes/web.php
     Route::get('/admin-dashboard//feedback/handle/{id}/{action}', [AdminBusinessController::class, 'handleReviewFeedback'])->name('admin.review.feedback.handle');
 
+    // Business Claims & Profile Corrections Management
+    Route::get('/admin-dashboard/business-claims', [AdminBusinessClaimController::class, 'index'])->name('admin.claims.index');
+    Route::post('/admin-dashboard/business-claims/{id}/approve', [AdminBusinessClaimController::class, 'approve'])->name('admin.claims.approve');
+    Route::post('/admin-dashboard/business-claims/{id}/reject', [AdminBusinessClaimController::class, 'reject'])->name('admin.claims.reject');
+    Route::get('/admin-dashboard/business-corrections', [AdminBusinessClaimController::class, 'corrections'])->name('admin.claims.corrections');
+    Route::post('/admin-dashboard/business-corrections/{id}/update', [AdminBusinessClaimController::class, 'updateCorrectionStatus'])->name('admin.claims.update_correction');
 
 });
 
@@ -691,6 +700,14 @@ Route::post('/vendor-register-process', [AuthenticationController::class, 'vendo
 
 Route::post('/user/review-add-procc', [ReviewController::class, 'reviewAddProc'])->name('review.store')->middleware('auth');
 Route::get('/user/review-delete/{id}', [ReviewController::class, 'destroy'])->name('review.delete')->middleware('auth');
+
+// Direct non-locale routes for Claim Business endpoints
+Route::get('/claim-business-search', [BusinessClaimController::class, 'search']);
+Route::post('/claim-business/start', [BusinessClaimController::class, 'startClaim']);
+Route::post('/claim-business/verify-code', [BusinessClaimController::class, 'verifyCode']);
+Route::get('/claim-business/verify-link/{token}', [BusinessClaimController::class, 'verifyLink']);
+Route::post('/claim-business/resend-code', [BusinessClaimController::class, 'resendCode']);
+Route::get('/claim-business/{slug?}', [BusinessClaimController::class, 'index']);
 
 // --------------- USER ROUTES ----------------------
 Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically','CaptureAdClickId']], function () {
@@ -851,6 +868,20 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
         Route::get('/user-dashboard/email-preferences', [UserDashboardController::class, 'userEmailPreferences'])->name('user-email-preferences');
         Route::post('/user-dashboard-configuration-email-prefernce-update', [UserDashboardController::class, 'updateEmailPreferences'])
             ->name('user.email-preferences.update');
+
+        // Business Management Portal
+        Route::get('/user-dashboard/business/{business_id}/reviews', [BusinessManagementController::class, 'reviews'])->name('user.business.reviews');
+        Route::post('/user-dashboard/business/{business_id}/reviews/{review_id}/reply', [BusinessManagementController::class, 'storeReply'])->name('user.business.store_reply');
+        Route::get('/user-dashboard/business/{business_id}/get-reviews', [BusinessManagementController::class, 'getReviews'])->name('user.business.get_reviews');
+        Route::post('/user-dashboard/business/{business_id}/send-invitations', [BusinessManagementController::class, 'sendInvitations'])->name('user.business.send_invitations');
+        Route::get('/user-dashboard/business/{business_id}/ratings-feedback', [BusinessManagementController::class, 'ratingsFeedback'])->name('user.business.ratings_feedback');
+        Route::get('/user-dashboard/business/{business_id}/team', [BusinessManagementController::class, 'team'])->name('user.business.team');
+        Route::post('/user-dashboard/business/{business_id}/invite-member', [BusinessManagementController::class, 'inviteTeamMember'])->name('user.business.invite_member');
+        Route::put('/user-dashboard/business/{business_id}/members/{member_id}', [BusinessManagementController::class, 'updateMember'])->name('user.business.update_member');
+        Route::delete('/user-dashboard/business/{business_id}/members/{member_id}', [BusinessManagementController::class, 'removeMember'])->name('user.business.remove_member');
+        Route::post('/user-dashboard/business/{business_id}/leave', [BusinessManagementController::class, 'leaveBusiness'])->name('user.business.leave');
+        Route::get('/user-dashboard/business/{business_id}/profile-issues', [BusinessManagementController::class, 'profileIssues'])->name('user.business.profile_issues');
+        Route::post('/user-dashboard/business/{business_id}/profile-issues', [BusinessManagementController::class, 'storeCorrection'])->name('user.business.store_correction');
     });
 
     // Vendor Dashboard Routes
@@ -881,6 +912,17 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     Route::get('/{slug}/{page}', [CategoryController::class, 'categoryDetail'])
         ->where('page', '[0-9]+')
         ->name('category.detail.page');
+
+    // Public Claiming Routes (Fixed routes, must be BEFORE dynamic 2-segment wildcards)
+    Route::get('/claim-business-search', [BusinessClaimController::class, 'search'])->name('claim.search');
+    Route::post('/claim-business/start', [BusinessClaimController::class, 'startClaim'])->name('claim.start');
+    Route::post('/claim-business/verify-code', [BusinessClaimController::class, 'verifyCode'])->name('claim.verify_code');
+    Route::get('/claim-business/verify-link/{token}', [BusinessClaimController::class, 'verifyLink'])->name('claim.verify_link');
+    Route::post('/claim-business/resend-code', [BusinessClaimController::class, 'resendCode'])->name('claim.resend_code');
+    Route::get('/claim-business/{slug?}', [BusinessClaimController::class, 'index'])->name('claim.index');
+    Route::get('/refresh-csrf', function () {
+        return response()->json(['token' => csrf_token()]);
+    });
 
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
     Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])

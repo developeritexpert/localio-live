@@ -268,6 +268,28 @@
                                                 <span class="nk-menu-text">Pros & cons categories</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.claims.index') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.claims.index') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Claims</span>
+                                                @php
+                                                    $pendingClaimsCount = \App\Models\BusinessClaim::where('status', \App\Models\BusinessClaim::STATUS_PENDING_MANUAL)->count();
+                                                @endphp
+                                                @if($pendingClaimsCount > 0)
+                                                    <span class="badge bg-warning text-dark ms-auto" style="font-size: 11px;">{{ $pendingClaimsCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.claims.corrections') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.claims.corrections') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Profile Corrections</span>
+                                                @php
+                                                    $pendingCorrectionsCount = \App\Models\BusinessCorrectionRequest::where('status', \App\Models\BusinessCorrectionRequest::STATUS_PENDING)->count();
+                                                @endphp
+                                                @if($pendingCorrectionsCount > 0)
+                                                    <span class="badge bg-info text-white ms-auto" style="font-size: 11px;">{{ $pendingCorrectionsCount }}</span>
+                                                @endif
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
 

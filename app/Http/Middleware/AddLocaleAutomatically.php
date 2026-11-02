@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\URL;
 use App\Models\Language;
 
 class AddLocaleAutomatically
@@ -42,6 +43,7 @@ class AddLocaleAutomatically
         if (!empty($firstSegment) && in_array($firstSegment, $validLocales)) {
             $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $firstSegment);
             App::setLocale($firstSegment);
+            URL::defaults(['locale' => $firstSegment]);
             session(['lang_code' => $firstSegment]);
 
             if ($langObj) {

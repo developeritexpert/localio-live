@@ -41,6 +41,30 @@
         @include('partials.favicon')
         @livewireStyles
         <style>
+            .left-text ul li a.nav-link .side-links .icons-links i {
+                color: #ffffff;
+                transition: color 0.15s ease;
+            }
+            .left-text ul li a.nav-link.active .side-links .icons-links i,
+            .left-text ul li:hover a.nav-link .side-links .icons-links i {
+                color: #012555 !important;
+            }
+
+            .user_dashbord select.form-select,
+            .user_dashbord select.form-control,
+            .user_content select.form-select,
+            .user_content select.form-control {
+                height: 46px !important;
+                min-height: 46px !important;
+                font-size: 14px !important;
+                font-weight: 400 !important;
+                color: #1e293b !important;
+                background-color: #ffffff !important;
+                border: 1px solid #d1d5db !important;
+                border-radius: 8px !important;
+                padding: 8px 36px 8px 14px !important;
+                line-height: 1.5 !important;
+            }
             /* .profile-circle {
                 max-width: 45px;
                 height: 44px;
@@ -629,6 +653,87 @@
                                 </a>
                             </li>
 
+                            @php
+                                $userClaimedMemberships = Auth::check() ? Auth::user()->activeBusinessMemberships()->with('business.translations')->get() : collect();
+                            @endphp
+
+                            @if($userClaimedMemberships->isNotEmpty())
+                                @foreach($userClaimedMemberships as $bm)
+                                    @php
+                                        $managedBiz = $bm->business;
+                                        $managedBizName = $managedBiz?->translations?->first()?->name ?? 'Business';
+                                        $isCurrentBiz = (request()->route('business_id') == $managedBiz->id);
+                                    @endphp
+
+                                    <li class="sidebar-biz-divider" style="padding: 24px 20px 10px; margin-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.18);">
+                                        <div style="font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>Manage {{ $managedBizName }}</span>
+                                            <span class="badge" style="background: rgba(255, 255, 255, 0.22); color: #fff; font-size: 11px; font-weight: 600; text-transform: capitalize; padding: 4px 8px; border-radius: 20px;">{{ $bm->role }}</span>
+                                        </div>
+                                    </li>
+
+                                    <li class="nav-links">
+                                        <a href="{{ route('user.business.reviews', ['business_id' => $managedBiz->id, 'locale' => app()->getLocale()]) }}"
+                                            class="nav-link nav_sv {{ request()->routeIs('user.business.reviews') && $isCurrentBiz ? 'active' : '' }}">
+                                            <div class="side-links">
+                                                <span class="icons-links">
+                                                    <i class="fa-regular fa-star" style="font-size: 18px;"></i>
+                                                </span>
+                                                <span class="icons-text">Reviews</span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-links">
+                                        <a href="{{ route('user.business.get_reviews', ['business_id' => $managedBiz->id, 'locale' => app()->getLocale()]) }}"
+                                            class="nav-link nav_sv {{ request()->routeIs('user.business.get_reviews') && $isCurrentBiz ? 'active' : '' }}">
+                                            <div class="side-links">
+                                                <span class="icons-links">
+                                                    <i class="fa-regular fa-paper-plane" style="font-size: 18px;"></i>
+                                                </span>
+                                                <span class="icons-text">Get reviews</span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-links">
+                                        <a href="{{ route('user.business.ratings_feedback', ['business_id' => $managedBiz->id, 'locale' => app()->getLocale()]) }}"
+                                            class="nav-link nav_sv {{ request()->routeIs('user.business.ratings_feedback') && $isCurrentBiz ? 'active' : '' }}">
+                                            <div class="side-links">
+                                                <span class="icons-links">
+                                                    <i class="fa-solid fa-chart-line" style="font-size: 18px;"></i>
+                                                </span>
+                                                <span class="icons-text">Ratings & feedback</span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-links">
+                                        <a href="{{ route('user.business.team', ['business_id' => $managedBiz->id, 'locale' => app()->getLocale()]) }}"
+                                            class="nav-link nav_sv {{ request()->routeIs('user.business.team') && $isCurrentBiz ? 'active' : '' }}">
+                                            <div class="side-links">
+                                                <span class="icons-links">
+                                                    <i class="fa-solid fa-users" style="font-size: 18px;"></i>
+                                                </span>
+                                                <span class="icons-text">Team</span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-links">
+                                        <a href="{{ route('user.business.profile_issues', ['business_id' => $managedBiz->id, 'locale' => app()->getLocale()]) }}"
+                                            class="nav-link nav_sv {{ request()->routeIs('user.business.profile_issues') && $isCurrentBiz ? 'active' : '' }}">
+                                            <div class="side-links">
+                                                <span class="icons-links">
+                                                    <i class="fa-solid fa-circle-exclamation" style="font-size: 18px;"></i>
+                                                </span>
+                                                <span class="icons-text">Profile issues</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @endif
+
 
 
                         </ul>
@@ -668,7 +773,10 @@
                                     </button>
                                 </div>
                                 <div class="footer-langs-container">
-                                    @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
+                                    @php
+                                        $footerCountriesList = (isset($footer_countries) && is_object($footer_countries)) ? $footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) : (\App\Models\Country::where('status', 1)->with('language')->get()->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE));
+                                    @endphp
+                                    @foreach ($footerCountriesList as $country)
                                     @if($country->language)
                                     <li>
                                         <a href="{{ url('/' . strtolower($country->language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';">

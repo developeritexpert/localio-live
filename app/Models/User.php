@@ -97,6 +97,42 @@ class User extends Authenticatable
          return $this->belongsTo(Business::class, 'business_id');
      }
 
+     /**
+      * Business Memberships (Many-to-Many through business_members)
+      */
+     public function businessMemberships()
+     {
+         return $this->hasMany(BusinessMember::class, 'user_id');
+     }
+
+     public function activeBusinessMemberships()
+     {
+         return $this->hasMany(BusinessMember::class, 'user_id')->where('status', BusinessMember::STATUS_ACTIVE);
+     }
+
+     public function claimedBusinesses()
+     {
+         return $this->belongsToMany(Business::class, 'business_members', 'user_id', 'business_id')
+             ->withPivot(['role', 'job_title', 'work_email', 'permissions', 'status'])
+             ->wherePivot('status', BusinessMember::STATUS_ACTIVE)
+             ->withTimestamps();
+     }
+
+     public function businessClaims()
+     {
+         return $this->hasMany(BusinessClaim::class, 'user_id');
+     }
+
+     public function managesBusiness($businessId): bool
+     {
+         return $this->activeBusinessMemberships()->where('business_id', $businessId)->exists();
+     }
+
+     public function businessMembership($businessId): ?BusinessMember
+     {
+         return $this->activeBusinessMemberships()->where('business_id', $businessId)->first();
+     }
+
      public function displayName()
      {
          $firstName = $this->first_name ?? 'Anonymous';

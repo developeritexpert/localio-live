@@ -181,4 +181,16 @@ class Review extends Model
     {
         return $this->belongsToMany(ModerationCase::class, 'moderation_case_reviews', 'review_id', 'case_id')->withTimestamps();
     }
+
+    public function businessReplies()
+    {
+        return $this->hasMany(BusinessReviewReply::class, 'review_id');
+    }
+
+    public function businessReply()
+    {
+        return $this->hasOne(BusinessReviewReply::class, 'review_id')
+            ->where('status', BusinessReviewReply::STATUS_PUBLISHED)
+            ->latest();
+    }
 }

@@ -4766,6 +4766,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 submitBtn.textContent = 'Submit report';
             });
     }
+
+    // Auto-open review modal when accessed via direct review link (?action=review)
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'review') {
+            let attempts = 0;
+            const checkLivewire = setInterval(function() {
+                attempts++;
+                if (window.Livewire) {
+                    clearInterval(checkLivewire);
+                    Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });
+                } else if (attempts > 30) {
+                    clearInterval(checkLivewire);
+                }
+            }, 200);
+        }
+    });
 </script>
 
 @endsection

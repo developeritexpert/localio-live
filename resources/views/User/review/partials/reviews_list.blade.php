@@ -162,6 +162,24 @@
         </div>
     </div>
 @endif
+
+@if($review->businessReply)
+    <div class="business-reply-box mt-3 p-3 rounded" style="background: #f8fafc; border-left: 3px solid #003f7d; border-top: 1px solid #eef2f6; border-right: 1px solid #eef2f6; border-bottom: 1px solid #eef2f6;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-reply text-primary me-2" style="transform: rotate(180deg); margin-right: 8px;"></i>
+                <strong style="color: #0f172a; font-size: 13.5px;">
+                    Response from {{ $review->businessReply->business?->translations?->first()?->name ?? 'the business' }}
+                </strong>
+                <span class="badge bg-light text-primary border" style="font-size: 11px; margin-left: 8px;">Official Response</span>
+            </div>
+            <small class="text-muted" style="font-size: 12px;">{{ $review->businessReply->created_at->diffForHumans() }}</small>
+        </div>
+        <p class="mb-0" style="color: #334155; font-size: 14px; line-height: 1.5;">
+            {!! nl2br(e($review->businessReply->reply_text)) !!}
+        </p>
+    </div>
+@endif
                 </div>
 
                 <div class="translaton-txt mt-2">
