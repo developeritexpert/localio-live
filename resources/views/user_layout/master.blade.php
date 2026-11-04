@@ -2517,23 +2517,21 @@ header .sec_head {
                                     </li>
                                 </ul>
                             </div>
-                            {{-- <div class="foot-col">
-                                <p class="footer-title">{{ $footerContents['vendors'] ?? 'Vendors' }}</p>
-                            <ul class="foot-col-list">
-                                <li><a
-                                        href="{{ route('vendor-get-listed', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['get_listed'] ?? 'Get Listed' }}</a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="{{ route('vendor-how-it-work', ['locale' => session('lang_code', 'en-us')]) }}">
-                                        How It Works</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('vendor-help', ['locale' => session('lang_code', 'en-us')]) }}">
-                                        Vendor Help </a>
-
-                            </ul>
-                        </div> --}}
+                            <div class="foot-col footer-dropdown">
+                                <p class="footer-title">
+                                    {{ $footerContents['businesses'] ?? 'Businesses' }}
+                                    <span class="footer-arrow d-flex d-md-none">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </span>
+                                </p>
+                                <ul class="foot-col-list">
+                                    <li>
+                                        <a href="{{ route('claim.index', ['locale' => session('lang_code', 'en-us')]) }}">
+                                            Claim profile
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         <div class="foot-col footer-dropdown">
                             <p class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
                                 <span class="footer-arrow d-flex d-md-none">

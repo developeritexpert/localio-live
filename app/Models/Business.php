@@ -34,6 +34,8 @@ class Business extends Model
         'admin_rating',
         'screenshot_categories',
         'screenshot_display_category',
+        'is_claimed',
+        'website',
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
@@ -509,4 +511,98 @@ class Business extends Model
         ];
     }
 
+    /**
+     * Business Claiming & Team Management Relationships
+     */
+    public function claims()
+    {
+        return $this->hasMany(BusinessClaim::class);
+    }
+
+    public function members()
+    {
+        return $this->hasMany(BusinessMember::class);
+    }
+
+    public function activeMembers()
+    {
+        return $this->hasMany(BusinessMember::class)->where('status', BusinessMember::STATUS_ACTIVE);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'business_members')
+            ->withPivot(['role', 'job_title', 'work_email', 'permissions', 'status'])
+            ->withTimestamps();
+    }
+
+    public function reviewReplies()
+    {
+        return $this->hasMany(BusinessReviewReply::class);
+    }
+
+    public function correctionRequests()
+    {
+        return $this->hasMany(BusinessCorrectionRequest::class);
+    }
+
+    public function reviewInvitations()
+    {
+        return $this->hasMany(BusinessReviewInvitation::class);
+    }
+
+    /**
+     * Resolve the normalized domain of this business for email domain validation.
+     * E.g. "https://www.bluehost.com/special" -> "bluehost.com"
+     */
+    public function getWebsiteDomainAttribute(): string
+    {
+        $candidate = trim((string)($this->website ?: ($this->permanent_url ?: ($this->affiliate_link ?: ''))));
+
+        if (empty($candidate)) {
+            // Check screenshot_urls if available
+            if (!empty($this->screenshot_urls) && is_array($this->screenshot_urls)) {
+                $candidate = trim((string)$this->screenshot_urls[0]);
+            }
+        }
+
+        if (empty($candidate)) {
+            return '';
+        }
+
+        if (!preg_match('#^https?://#i', $candidate)) {
+            $candidate = 'https://' . $candidate;
+        }
+
+        $host = parse_url($candidate, PHP_URL_HOST);
+        if (!$host) {
+            return '';
+        }
+
+        // Lowercase and strip leading 'www.'
+        $host = strtolower(trim($host));
+        return preg_replace('/^www\./', '', $host);
+    }
+
+    /**
+     * Check if a given email's domain matches this business.
+     * e.g. "john@bluehost.com" matches domain "bluehost.com"
+     */
+    public function matchesEmailDomain(?string $email): bool
+    {
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        $parts = explode('@', strtolower(trim($email)));
+        $emailDomain = end($parts);
+        $emailDomain = preg_replace('/^www\./', '', $emailDomain);
+
+        $bizDomain = $this->website_domain;
+        if (empty($bizDomain)) {
+            return false;
+        }
+
+        return $emailDomain === $bizDomain || str_ends_with($emailDomain, '.' . $bizDomain);
+    }
 }

@@ -1152,7 +1152,7 @@ p.time_re {
   margin-left: 17px;
 }
 
-select {
+select:not(.form-select):not(.form-control) {
   height: 24px;
   font-size: 15px;
   font-weight: bold;
