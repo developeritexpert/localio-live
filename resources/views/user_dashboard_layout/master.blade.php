@@ -876,14 +876,14 @@
         const storedPage = localStorage.getItem("activePage");
         const currentPage = window.location.href;
 
-        // ✅ Apply 'active' class to the nav-link that matches current page
+        //  Apply 'active' class to the nav-link that matches current page
         navLinks.each(function () {
             if (this.href === currentPage) {
                 $(this).addClass("active");
             }
         });
 
-        // ✅ Only update localStorage on click (no redirect logic here)
+        //  Only update localStorage on click (no redirect logic here)
         navLinks.on("click", function () {
             const clickedHref = new URL($(this).attr("href"), window.location.origin).href;
             localStorage.setItem("activePage", clickedHref);
