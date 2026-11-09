@@ -69,7 +69,7 @@
                     <div class="col-auto">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light">Businesses per batch</span>
-                            <input type="number" name="batch_size" class="form-control text-center" value="{{ $batchSize ?? 5 }}" min="1" max="50" style="width: 70px;">
+                            <input type="number" name="batch_size" class="form-control text-center" value="{{ $batchSize ?? 1 }}" min="1" max="50" style="width: 70px;">
                             <button type="submit" class="btn btn-primary">Save Setting</button>
                         </div>
                     </div>
@@ -172,7 +172,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> or <a href="{{ route('content-gen.features') }}">Features</a> to create one.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

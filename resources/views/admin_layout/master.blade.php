@@ -135,25 +135,13 @@
                                 </li>
 
                                 <!-- Content Generation -->
-                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.businesses*', 'content-gen.features*') ? 'active current-page' : '' }}">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                <li class="nk-menu-item {{ request()->routeIs('content-gen.businesses*') ? 'active current-page' : '' }}">
+                                    <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon">
                                             <em class="icon ni ni-cpu"></em>
                                         </span>
                                         <span class="nk-menu-text">Content Generation</span>
                                     </a>
-                                    <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.businesses*') ? 'active' : '' }}">
-                                            <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Businesses</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.features*') ? 'active' : '' }}">
-                                            <a href="{{ route('content-gen.features') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Features</span>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
 
                                 <!-- Translations -->

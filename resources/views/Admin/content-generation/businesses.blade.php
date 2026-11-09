@@ -133,7 +133,7 @@
                         </div>
                         <div class="col-auto d-flex align-items-center gap-1">
                             <span class="text-soft small">Batch Size:</span>
-                            <input type="number" name="batch_size" class="form-control form-control-sm text-center" value="{{ $batchSize ?? 5 }}" min="1" max="50" style="width:65px" title="Businesses merged per batch job">
+                            <input type="number" name="batch_size" class="form-control form-control-sm text-center" value="{{ $batchSize ?? 1 }}" min="1" max="50" style="width:65px" title="Businesses merged per batch job">
                             <span class="text-soft small">/ batch</span>
                         </div>
                         <div class="col-auto">

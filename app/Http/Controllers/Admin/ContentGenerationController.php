@@ -107,7 +107,7 @@ class ContentGenerationController extends Controller
             });
         $fields     = self::FEATURE_CONTENT_FIELDS;
 
-        $batchSize = (int) (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+        $batchSize = (int) (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
 
         return view('Admin.content-generation.features', compact(
             'features', 'fieldStatusMap', 'existingContents', 'categories', 'fields', 'lastPollAt', 'batchSize'
@@ -135,7 +135,7 @@ class ContentGenerationController extends Controller
         if ($request->filled('batch_size')) {
             WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => (int)$request->batch_size]);
         }
-        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5));
+        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1));
 
         // ---------------------------------------------------------------------
         // MANUAL BATCH WORKFLOW FOR FEATURES (Download/Copy JSON for ChatGPT & Upload Results)
@@ -1062,7 +1062,7 @@ class ContentGenerationController extends Controller
         $lastPollAt = Cache::get('ai_batch_last_poll');
         $categories = Category::whereNull('parent_id')->orderBy('id')->get();
 
-        $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+        $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
 
         return view('Admin.content-generation.businesses', compact(
             'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize',
@@ -1092,7 +1092,7 @@ class ContentGenerationController extends Controller
         if ($request->filled('batch_size')) {
             WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => (int)$request->batch_size]);
         }
-        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5));
+        $batchSize = (int) ($request->batch_size ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1));
 
         // ---------------------------------------------------------------------
         // MANUAL BATCH WORKFLOW (Download JSON for ChatGPT & Upload Results)
@@ -1370,7 +1370,7 @@ class ContentGenerationController extends Controller
     {
         $jobs                      = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
         $lastPollAt                = Cache::get('ai_batch_last_poll');
-        $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 5);
+        $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
         $batchResultExample        = self::getBatchResultExampleJson();
         $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
 
