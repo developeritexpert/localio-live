@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\DetectModerationCases::class,
         \App\Console\Commands\DispatchReviewTranslationBatch::class,
         \App\Console\Commands\PollReviewTranslationBatch::class,
+        \App\Console\Commands\GenerateSitemapCommand::class,
     ];
 
     /**
@@ -60,6 +61,12 @@ class Kernel extends ConsoleKernel
             ->everyThirtyMinutes()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/translation_batch_poll.log'));
+
+        // -- Daily XML Sitemap Sync -----------------------------------------
+        $schedule->command('sitemap:generate')
+            ->dailyAt('04:00')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/sitemap_generate.log'));
     }
 
     /**

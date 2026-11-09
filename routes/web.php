@@ -709,6 +709,24 @@ Route::get('/claim-business/verify-link/{token}', [BusinessClaimController::clas
 Route::post('/claim-business/resend-code', [BusinessClaimController::class, 'resendCode']);
 Route::get('/claim-business/{slug?}', [BusinessClaimController::class, 'index']);
 
+// Central and Sub-Sitemap Routes
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (!file_exists($path)) {
+        app(\App\Services\SitemapService::class)->generateAll();
+    }
+    return response(file_get_contents($path), 200, ['Content-Type' => 'application/xml']);
+});
+
+Route::get('/sitemap-{any}.xml', function ($any) {
+    $filename = 'sitemap-' . $any . '.xml';
+    $path = public_path($filename);
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200, ['Content-Type' => 'application/xml']);
+    }
+    abort(404);
+})->where('any', '.*');
+
 // --------------- USER ROUTES ----------------------
 Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically','CaptureAdClickId']], function () {
 
