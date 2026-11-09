@@ -90,8 +90,10 @@
 
 @endsection
 
+@push('scripts')
 <script>
     $(window).on('load', function() {
         $('body').addClass('TrmsPricyPgCls');
     });
 </script>
+@endpush

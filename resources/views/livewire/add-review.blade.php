@@ -1,4 +1,5 @@
 <div>
+@push('styles')
 <style>
     button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.gap-1.btn-success.text-white.shadow-sm {
         background: #033b74 !important;
@@ -151,6 +152,7 @@
         background: #f1f5f9 !important;
     }
 </style>
+@endpush
 
     @if($show)
         <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
@@ -161,12 +163,14 @@
                     <div wire:loading style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #e2e8f0; z-index: 9999; overflow: hidden;">
                         <div style="height: 100%; background: #06498b; width: 30%; border-radius: 2px; animation: loadingBar 1.5s infinite ease-in-out;"></div>
                     </div>
+                    @push('styles')
                     <style>
                         @keyframes loadingBar {
                             0% { transform: translateX(-100%); }
                             100% { transform: translateX(333%); }
                         }
                     </style>
+                    @endpush
 
                     <div class="modal-body p-3 p-md-4 pt-2">
                         <div>
@@ -546,6 +550,7 @@
             </div>
         </div>
         
+        @push('styles')
         <style>
             .step-content.step2 .form-floating.text-inpt > .form-control {
                 font-size: 15px;
@@ -633,6 +638,7 @@
                 }
             }
         </style>
+        @endpush
 
         <script>
             (function() {

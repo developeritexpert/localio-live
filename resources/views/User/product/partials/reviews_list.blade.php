@@ -330,7 +330,7 @@
                         </div>
 
                         <div class="review_text size18" style="padding-right: 0;">
-                            <h3 class="review-title" id="review-title-{{ $review->id }}" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                            <h3 class="review-title" id="review-title-layout2-{{ $review->id }}" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
                                 {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                             </h3>
                             
@@ -412,7 +412,7 @@
                         </div>
                             <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                         @endif
-                                <span class="review-display-text" id="review-text-{{ $review->id }}">{!! nl2br(e(strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available'))) !!}</span>
+                                <span class="review-display-text" id="review-text-layout2-{{ $review->id }}">{!! nl2br(e(strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available'))) !!}</span>
                             </div>
                             @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
                                 <div class="mt-1">
@@ -532,11 +532,11 @@
                         @endif
                     </div>
                     <div class="review_text size18">
-                        <p class="review-title" id="review-title-{{ $review->id }}" style="margin-bottom: 4px;">
+                        <p class="review-title" id="review-title-mobile-{{ $review->id }}" style="margin-bottom: 4px;">
                             {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                         </p>
                         <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
-                        <p class="review-display-text" id="review-text-{{ $review->id }}">{{ strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available') }}</p>
+                        <p class="review-display-text" id="review-text-mobile-{{ $review->id }}">{{ strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available') }}</p>
                         @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
                             <div class="mt-1">
                                 <a href="javascript:void(0);" 

@@ -34,7 +34,7 @@
                         <div class="banner_content_inner">
                             <h1>{{ $homeContents['header_title'] ?? null }}</h1>
                             <p>{{ $homeContents['header_description'] ?? null }}</p>
-                            @livewire('search-bar', ['placeholder' => 'Search digital products & services'])
+                            @include('partials.search_box', ['placeholder' => 'Search digital products & services'])
                             {{-- @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search digital products & services']) --}}
                         </div>
                     </div>
@@ -53,7 +53,7 @@
     </section>
     <!-- end  -->
     <!-- section trusted brands marquee -->
-    <section class="trusted-brands">
+    <div class="trusted-brands">
         <div class="container">
             <div class="trst-brnd-wrp" style="display: none;">
                 {{-- <div class="brnd-wrp-lft">
@@ -84,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     <!-- section most-popular -->
     <section class="most-populr-sec light p_120">
         <div class="container">
@@ -186,9 +186,6 @@
                                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                                                                 <p class="head">{{ $businessTranslation->name ?? 'Business' }}</p>
                                                                             </a>
-                                                                            <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
-                                                                                @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
-                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                     @if($business->should_show_rating)
@@ -370,7 +367,7 @@
         @endif
     </section> --}}
     <!-- slider section start -->
-    <section class="outer_slider dark">
+    <div class="outer_slider dark">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
@@ -489,8 +486,8 @@
                 </div>
             </div>
         </div> --}}
-        @livewire('latest-reviews')
-    </section>
+        @include('partials.latest_reviews')
+    </div>
     <!-- slider section end -->
     <!-- read section start -->
     {{-- <section class="read_sec_outer light p_120">

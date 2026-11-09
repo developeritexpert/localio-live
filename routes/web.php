@@ -713,6 +713,8 @@ Route::get('/claim-business/{slug?}', [BusinessClaimController::class, 'index'])
 Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically','CaptureAdClickId']], function () {
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
+    Route::get('/search-autocomplete', [ViewController::class, 'searchAutocomplete'])->name('search.autocomplete');
+    Route::post('/toggle-business-wishlist', [ViewController::class, 'toggleBusinessWishlist'])->name('business.wishlist.toggle');
     Route::get('/write-review', [ViewController::class, 'writeReviewPage'])->name('write-review');
 
     // Auth routes for guests only

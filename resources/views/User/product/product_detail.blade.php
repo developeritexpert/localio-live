@@ -262,7 +262,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 @endif
 @include('User.partials.business_detail_styles')
 <div data-business-id="{{ $business->id }}">
-    <section class="product_sec">
+    <div class="product_sec">
         <div class="inner_banner_sec">
             <div class="container-fluid" style="display: flex; justify-content: space-between;">
                 <div class="inner_banr_content">
@@ -308,7 +308,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             </div>
         </div>
 
-    </section>
+    </div>
 
     <section class="asn_main_sec asn_main_sec_2" id="section1">
         <div class="asn_dv">
@@ -1654,14 +1654,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class=" ">
                                 <div class="">
                                     <div class="inner_table_1">
-                                        <section class="is-asana light">
-
-                                        </section>
-
-                                        <section class="reviews-section">
-
-                                        </section>
-
                                         @php
                                         $currentLangId = $lang_id ?? getCurrentLanguageID();
                                         $prosList = collect();
@@ -1709,10 +1701,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <section class="choice-business d-none" id="softweretopic">
-
-                                        </section>
 
                                         @php
                                         // Decode items safely
@@ -2164,7 +2152,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </section>
                                         @endif
 
-                                        <section class="about_asn_2 light pt-0 p_50 d-none">
+                                        <div class="about_asn_2 light pt-0 p_50 d-none">
 
                                             <div class="about_asn_content">
                                                 <div class="hd_content asan-text-para">
@@ -2173,7 +2161,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                             </div>
 
-                                        </section>
+                                        </div>
 
                                         <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important; background-color:#fdfdfd;">
                                             <div class="container">
@@ -2742,9 +2730,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             />
                         </div>
                         <div class="mt-5">
-                            <section class="subs_sec light p_50 d-none" id="section16">
+                            <div class="subs_sec light p_50 d-none" id="section16">
                                 <x-news-letter-subscription />
-                            </section>
+                            </div>
                         </div>
                     </div>
                     <!-- all new part section end here  -->

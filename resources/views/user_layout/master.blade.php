@@ -2643,7 +2643,7 @@ header .sec_head {
                         <div class="options">
                             <div class="container">
                                 <div class="country-modal-header d-flex align-items-center justify-content-between">
-                                    <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">{{ static_text('choose_country_region_heading') ?: 'Choose your Country or region' }}</h3>
+                                    <h2 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">{{ static_text('choose_country_region_heading') ?: 'Choose your Country or region' }}</h2>
                                     <button type="button" class="close-country-menu" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();" aria-label="Close modal" title="Close">
                                         ✕
                                     </button>

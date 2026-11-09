@@ -120,7 +120,7 @@
                 <div class="col-md-6" data-aos="fade-up" data-aos-duration="1000">
                     <div class="succs_box">
                         <div class="succes_img">
-                            <img src="{{ asset($item->translations->first()->img) }}">
+                            <img src="{{ asset($item->translations->first()->img) }}" alt="{{ $item->translations->first()->title ?? 'Specialist' }}">
                         </div>
                         <div class="succes_infp">
                             <div class="succes_text">

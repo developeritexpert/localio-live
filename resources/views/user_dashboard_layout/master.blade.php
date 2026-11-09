@@ -593,7 +593,7 @@
             <div class="col-lg-3 p-0">
                 <div class="dashboard_lft">
                     <div class="left-text">
-                        <ul class="list-unstyled dash-tab mb-0" id="menu">
+                        <ul class="list-unstyled dash-tab mb-0 mt-5" id="menu">
                             <li class="nav-links">
                                 <a href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"
                                     class="nav-link nav_sv {{ request()->routeIs('user-dashboard') ? 'active' : '' }}">

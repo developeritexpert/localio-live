@@ -9,7 +9,7 @@
     $routeName = $routeName ?? Route::currentRouteName() ?? 'none';
 ?>
     <header>
-        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
+        <div class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
@@ -32,7 +32,7 @@
                         <i class="fa fa-search"></i>
                     </div> --}}
                     @if (!in_array(Route::currentRouteName(), ['login', 'register']))
-                    <livewire:header-search-bar />
+                    @include('partials.search_box')
                     @endif
 
                     <div class="header_button_col">
@@ -144,6 +144,7 @@
 
 
 
+@push('styles')
 <style>
 /* ==========================================================================
    Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
@@ -654,6 +655,7 @@
 }
 
 </style>
+@endpush
 
                         <!-- mobile nav -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -1188,7 +1190,7 @@
                         $isHomePage = (request()->is('/') || request()->is(app()->getLocale()) || Route::currentRouteName() === 'home' || (isset($pageClass) && $pageClass === 'page-home'));
                     @endphp
                     <div id="mobile-search-container" class="mobile-search-container d-block d-lg-none {{ $isHomePage ? 'home-mobile-search' : '' }}">
-                        <livewire:header-search-bar />
+                        @include('partials.search_box')
                     </div>
 
                     <!-- Mobile Quick Category Nav Bar (Below Search Bar) -->
@@ -1220,7 +1222,7 @@
                 </div>
             </div>
 
-        </section>
+        </div>
     </header>
 
 
@@ -1235,6 +1237,89 @@
         jQuery(document).on('click', '.mobile-sidebar-close, .mobile-sidebar-overlay', function() {
             jQuery('.mobile-sidebar').removeClass('active');
             jQuery('.mobile-sidebar-overlay').removeClass('active');
+        });
+
+        // Global Header & Hero Search Autocomplete
+        const searchUrl = "{{ route('search.autocomplete', ['locale' => app()->getLocale()]) }}";
+        function escapeSearchHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        document.querySelectorAll('.global-search-container').forEach(function(container) {
+            const input = container.querySelector('.global-search-input');
+            const dropdown = container.querySelector('.global-search-results');
+            const list = container.querySelector('.global-search-list');
+            if (!input || !dropdown || !list) return;
+
+            let debounceTimer = null;
+
+            const performSearch = function() {
+                const query = input.value.trim();
+                if (!query) {
+                    dropdown.style.display = 'none';
+                    list.innerHTML = '';
+                    return;
+                }
+
+                fetch(searchUrl + '?q=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(data => {
+                        list.innerHTML = '';
+                        const results = data.results || [];
+                        if (results.length > 0) {
+                            results.forEach(item => {
+                                const li = document.createElement('li');
+                                li.style.cssText = 'padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.2s ease-in-out; color: black;';
+                                li.onmouseover = function() { this.style.backgroundColor = '#f4f4f4'; };
+                                li.onmouseout = function() { this.style.backgroundColor = 'white'; };
+                                li.innerHTML = '<div style="margin-right: 8px;"><i class="fa-solid fa-magnifying-glass"></i></div>' +
+                                    '<a href="' + item.url + '" style="color: inherit; text-decoration: none; width: 100%; display: block;">' + escapeSearchHtml(item.name) + '</a>';
+                                li.addEventListener('click', function() {
+                                    window.location.href = item.url;
+                                });
+                                list.appendChild(li);
+                            });
+                        } else {
+                            const li = document.createElement('li');
+                            li.style.cssText = 'padding: 10px 15px; color: #888; font-size: 14px;';
+                            li.textContent = 'No results found for "' + query + '"';
+                            list.appendChild(li);
+                        }
+                        dropdown.style.display = 'block';
+                    })
+                    .catch(err => {
+                        console.error('Search error:', err);
+                    });
+            };
+
+            input.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(performSearch, 200);
+            });
+
+            input.addEventListener('focus', function() {
+                if (input.value.trim()) {
+                    performSearch();
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstLink = list.querySelector('a');
+                    if (firstLink) {
+                        window.location.href = firstLink.href;
+                    }
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
         });
     });
 </script>

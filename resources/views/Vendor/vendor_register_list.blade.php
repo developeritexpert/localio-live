@@ -1,15 +1,15 @@
 @extends('user_layout.master')
 @section('content')
-    <section class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
+    <div class="banner_sec help-cntr-bnr inr-bnr dark lg_Bnr" style="background-color: #003F7D;">
         <div class="bubble-wrp">
             <img src="{{ asset('front/img/small-bnnr-bg.png') ?? '' }}" alt="">
         </div>
-    </section>
+    </div>
     <section class="contact_sec login_form p_120 pt-0 light">
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">{{ static_text('register_to_localio') }}</h2>
+                    <h1 class="h2 text-center">{{ static_text('register_to_localio') }}</h1>
                     <p class="text-center">{{ static_text('create_an_account') }}</p>
                     {{-- <p class="text-center">as</p>
 
@@ -75,7 +75,7 @@
 
                             <div class="form-group form-group_m ">
                                 {{-- <input type="email" class="form-control" name="email" id="emailAddress" placeholder="Email"> --}}
-                                <x-google-input type="email" name="email" label="Email" id="emailAddress" :attributes="['autocomplete' => 'off']" />
+                                <x-google-input type="email" name="email" label="Email" id="vendorEmailAddress" :attributes="['autocomplete' => 'off']" />
                             </div>
 
                     </div>
@@ -83,7 +83,7 @@
                         <div class="form-group form-group_m">
                             {{-- <input type="password" class="form-control" id="password" name="password" placeholder="Password"> --}}
                             <x-google-input type="password" name="password" id="register-password"  label="Password" :attributes="['autocomplete' => 'new-password']" />
-                            <span id="togglePassword" class="eye-icon" style="cursor: pointer;">
+                            <span id="vendorTogglePassword" class="eye-icon" style="cursor: pointer;">
                                 <i class="fa fa-eye-slash"></i>
                             </span>
 
@@ -104,9 +104,10 @@
 
                     {{-- <div class="col-lg-6"> --}}
                         <div class="row">
-                        <div class="form-group form-group_m">
-                        <x-google-input type="select" name="business_id" id="business_id" label="Business" :options="$options" :alwaysActive="true" />
-
+                            <div class="form-group form-group_m">
+                                <x-google-input type="select" name="business_id" id="business_id" label="Business" :options="$options" :alwaysActive="true" />
+                            </div>
+                        </div>
 
                      <div class="accor-btn">
                         <button type="submit" class="cta cta_white register_btn">{{ static_text('sign_up') }}</button>
@@ -210,7 +211,7 @@
 
             // Toggle password visibility
             setTimeout(() => {
-                $('#togglePassword').on('click', function () {
+                $('#vendorTogglePassword').on('click', function () {
                     const $input = $('#register-password');
                     const $icon = $(this).find('i');
 

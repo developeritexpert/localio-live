@@ -2,7 +2,7 @@
 
 @section('title', 'Claim your Business Profile | Localio')
 
-@section('content')
+@push('styles')
 <style>
     .claim-hero {
         background: linear-gradient(135deg, #002244 0%, #003f7d 100%);
@@ -177,7 +177,9 @@
         color: #003f7d;
     }
 </style>
+@endpush
 
+@section('content')
 <div class="claim-hero">
     <div class="container">
         <h1>Claim your Business Profile</h1>
@@ -192,7 +194,7 @@
 
                 <!-- SEARCH SECTION -->
                 <div id="section-search" style="{{ $selectedBusiness ? 'display: none;' : '' }}">
-                    <h4 class="mb-3 font-weight-bold" style="color: #0f172a;">Search for your business</h4>
+                    <h2 class="h4 mb-3 font-weight-bold" style="color: #0f172a;">Search for your business</h2>
                     <p class="text-muted mb-4">Type the name of your company or product to find its Localio profile.</p>
 
                     <div class="claim-search-box mb-4">
@@ -233,9 +235,9 @@
                                 @endif
                             </div>
                             <div>
-                                <h5 class="mb-1 font-weight-bold" id="selected-biz-name" style="color: #0f172a;">
+                                <h3 class="h5 mb-1 font-weight-bold" id="selected-biz-name" style="color: #0f172a;">
                                     {{ $selectedBusiness?->translations?->first()?->name ?? 'Business Name' }}
-                                </h5>
+                                </h3>
                                 <div style="font-size: 13px; color: #64748b;">
                                     <span id="selected-biz-domain"><i class="fas fa-globe me-1"></i> {{ $selectedBusiness?->website_domain ?: 'Domain' }}</span>
                                     <span class="mx-2">•</span>
@@ -261,49 +263,49 @@
 
                     <!-- STEP 1: Connection & Role -->
                     <div id="step-1-content">
-                        <h5 class="font-weight-bold mb-3" id="connection-question-title">
+                        <h3 class="h5 font-weight-bold mb-3" id="connection-question-title">
                             How are you connected to {{ $selectedBusiness?->translations?->first()?->name ?? 'this business' }}?
-                        </h5>
+                        </h3>
 
                         <div class="mb-4">
                             <label class="radio-card selected" onclick="selectRadio(this, 'owner')">
                                 <input type="radio" name="connection_type" value="owner" checked>
-                                <div>
-                                    <div class="font-weight-bold text-dark">Owner</div>
+                                <span class="d-block">
+                                    <span class="d-block font-weight-bold text-dark">Owner</span>
                                     <small class="text-muted">I founded or own this business.</small>
-                                </div>
+                                </span>
                             </label>
 
                             <label class="radio-card" onclick="selectRadio(this, 'employee')">
                                 <input type="radio" name="connection_type" value="employee">
-                                <div>
-                                    <div class="font-weight-bold text-dark">Employee</div>
+                                <span class="d-block">
+                                    <span class="d-block font-weight-bold text-dark">Employee</span>
                                     <small class="text-muted">I work directly at this business.</small>
-                                </div>
+                                </span>
                             </label>
 
                             <label class="radio-card" onclick="selectRadio(this, 'representative')">
                                 <input type="radio" name="connection_type" value="representative">
-                                <div>
-                                    <div class="font-weight-bold text-dark">Authorized representative</div>
+                                <span class="d-block">
+                                    <span class="d-block font-weight-bold text-dark">Authorized representative</span>
                                     <small class="text-muted">I am officially authorized to speak on behalf of this company.</small>
-                                </div>
+                                </span>
                             </label>
 
                             <label class="radio-card" onclick="selectRadio(this, 'agency')">
                                 <input type="radio" name="connection_type" value="agency">
-                                <div>
-                                    <div class="font-weight-bold text-dark">Agency managing this business</div>
+                                <span class="d-block">
+                                    <span class="d-block font-weight-bold text-dark">Agency managing this business</span>
                                     <small class="text-muted">We manage public relations, marketing, or reviews for this client.</small>
-                                </div>
+                                </span>
                             </label>
 
                             <label class="radio-card" onclick="selectRadio(this, 'other')">
                                 <input type="radio" name="connection_type" value="other">
-                                <div>
-                                    <div class="font-weight-bold text-dark">Other</div>
+                                <span class="d-block">
+                                    <span class="d-block font-weight-bold text-dark">Other</span>
                                     <small class="text-muted">Other professional affiliation with this organization.</small>
-                                </div>
+                                </span>
                             </label>
                         </div>
 
@@ -333,7 +335,7 @@
 
                     <!-- STEP 2: Verification Choice -->
                     <div id="step-2-content" style="display: none;">
-                        <h5 class="font-weight-bold mb-3">Verify your authorization</h5>
+                        <h3 class="h5 font-weight-bold mb-3">Verify your authorization</h3>
                         <p class="text-muted mb-4">Choose how you'd like to verify your connection to this business.</p>
 
                         <!-- Method Tabs -->
@@ -349,7 +351,7 @@
                         <!-- TAB: AUTOMATIC -->
                         <div id="verify-pane-auto">
                             <div class="card p-3 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                                <h6 class="font-weight-bold text-dark mb-1">Verify using your work email</h6>
+                                <h4 class="h6 font-weight-bold text-dark mb-1">Verify using your work email</h4>
                                 <p class="text-muted mb-2" style="font-size: 14px;">
                                     Localio automatically verifies claims when your email domain strictly matches the business domain:
                                     <strong class="text-primary" id="auto-biz-domain">@domain.com</strong>
@@ -371,7 +373,7 @@
                             <!-- CODE VERIFICATION SUB-STEP (Visible after code sent) -->
                             <div id="auto-code-box" style="display: none;" class="text-center p-4 border rounded mb-4 bg-light">
                                 <i class="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
-                                <h5 class="font-weight-bold">Enter Verification Code</h5>
+                                <h3 class="h5 font-weight-bold">Enter Verification Code</h3>
                                 <p class="text-muted" style="font-size: 14px;">
                                     We sent a 6-digit code to <strong id="sent-code-target-email"></strong>.<br>
                                     You can also click the link in that email to verify instantly.
@@ -403,7 +405,7 @@
                         <!-- TAB: MANUAL -->
                         <div id="verify-pane-manual" style="display: none;">
                             <div class="card p-3 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                                <h6 class="font-weight-bold text-dark mb-1">Request Manual Verification</h6>
+                                <h4 class="h6 font-weight-bold text-dark mb-1">Request Manual Verification</h4>
                                 <p class="text-muted mb-0" style="font-size: 14px;">
                                     Can't use an official domain email? Provide evidence of authorization (company documents, official corporate registry, or official channel proof) and our team will review manually.
                                 </p>

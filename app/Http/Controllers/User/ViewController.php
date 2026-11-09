@@ -28,6 +28,57 @@ use Illuminate\Support\Str;
 
 class ViewController extends Controller
 {
+    public function searchAutocomplete(Request $request)
+    {
+        $query = trim($request->input('q', ''));
+        if (empty($query)) {
+            return response()->json(['results' => []]);
+        }
+
+        $lang_id = getCurrentLanguageID();
+        $locale = app()->getLocale();
+
+        $results = BusinessTranslation::where('lang_id', $lang_id)
+            ->where('name', 'like', '%' . $query . '%')
+            ->limit(10)
+            ->get(['id', 'business_id', 'name', 'slug'])
+            ->map(function ($item) use ($locale) {
+                return [
+                    'id' => $item->business_id,
+                    'name' => $item->name,
+                    'url' => route('user.product_detail', ['locale' => $locale, 'id' => $item->slug]),
+                ];
+            });
+
+        return response()->json(['results' => $results]);
+    }
+
+    public function toggleBusinessWishlist(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['status' => 'unauthenticated'], 401);
+        }
+
+        $businessId = $request->input('business_id');
+        if (!$businessId) {
+            return response()->json(['status' => 'error', 'message' => 'Missing business ID'], 400);
+        }
+
+        $user = auth()->user();
+        $wishlist = $user->wishlists()->where('business_id', $businessId)->first();
+
+        if ($wishlist) {
+            $wishlist->delete();
+            return response()->json(['status' => 'removed']);
+        } else {
+            \App\Models\Wishlist::create([
+                'user_id' => $user->id,
+                'business_id' => $businessId,
+            ]);
+            return response()->json(['status' => 'added']);
+        }
+    }
+
     public function home()
     {
         $langCode = getCurrentLocale();

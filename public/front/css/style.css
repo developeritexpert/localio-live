@@ -2127,11 +2127,11 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     margin-bottom: 14px;
 }
 
-.is_text br + br,
-.is-asana-lft br + br,
-.offering-section br + br,
-.after-image-desc br + br,
-.rich-text-content br + br {
+.is_text br+br,
+.is-asana-lft br+br,
+.offering-section br+br,
+.after-image-desc br+br,
+.rich-text-content br+br {
     display: none;
 }
 
@@ -12397,9 +12397,9 @@ div#navbarSupportedContent .close_btn_mobile {
     padding-bottom: 80px;
 }
 
-.sec_head .header_row:has(.search-results) .search-box input {
+/* .sec_head .header_row:has(.search-results) .search-box input {
     border-radius: 8px 8px 0px 0px;
-}
+} */
 
 .accordion-bdy-wrp .review_card:hover {
     transform: unset;
@@ -12578,9 +12578,10 @@ div#howRankingsWorkModal .circle_11 {
     color: var(--color-primary-blue) !important;
 }
 
+/* 
 .banner_content_inner:has(.search-results) .search-box input {
     border-radius: 8px 8px 0px 0px;
-}
+} */
 
 .drop_menu {
     cursor: pointer;
@@ -15810,6 +15811,6 @@ button.action-icon-btn.share-trigger-btn:hover {
     color: var(--color-white) !important;
 }
 
-.txt-gry{
+.txt-gry {
     color: #5b6b7a;
 }
