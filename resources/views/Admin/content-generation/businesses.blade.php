@@ -88,7 +88,12 @@
                         <select name="category_id" class="form-select form-select-sm">
                             <option value="">All categories</option>
                             @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                <option value="{{ $cat->id }}" class="fw-bold" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                @if(isset($cat->children) && $cat->children->isNotEmpty())
+                                    @foreach($cat->children as $sub)
+                                        <option value="{{ $sub->id }}" {{ request('category_id') == $sub->id ? 'selected' : '' }}>&nbsp;&nbsp;— {{ $sub->name }}</option>
+                                    @endforeach
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -536,11 +541,13 @@ function insertSampleJson() {
     const sample = JSON.stringify([
         {
             "name": "Hostgator",
-            "url": "https://www.hostgator.com"
+            "url": "https://www.hostgator.com",
+            "primary_category_id": 11
         },
         {
-            "name": "Bluehost",
-            "url": "https://www.bluehost.com"
+            "name": "Cloudflare",
+            "url": "https://www.cloudflare.com",
+            "primary_subcategory_id": 23
         }
     ], null, 2);
     document.getElementById('jsonInputTextarea').value = sample;
@@ -564,24 +571,8 @@ function insertSampleJson() {
                 <input type="hidden" name="tab" value="{{ $activeTab }}">
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">
-                        Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Each entry only requires the business <strong>Name</strong> and <strong>URL</strong> (which identifies the business exactly). Once imported, they will appear in the table below ready to be selected for AI batch jobs to get all missing information.
+                        Add one or multiple businesses at once by uploading a JSON/JSONL file or pasting JSON below. Each entry only requires the business <strong>Name</strong> and <strong>URL</strong> (which identifies the business exactly). Each business can independently specify its own <strong>Primary Category</strong> or <strong>Primary Subcategory</strong>. Once imported, they will appear in the table below ready to be selected for AI batch jobs.
                     </p>
-
-                    {{-- Category Selection (Defaults to current page filter) --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small mb-1">
-                            <em class="icon ni ni-folder me-1 text-primary"></em> Primary Category
-                        </label>
-                        <select name="category_id" id="importJsonCategoryId" class="form-select form-select-sm">
-                            <option value="">— Uncategorized / Detect from JSON —</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ (string)request('category_id') === (string)$cat->id ? 'selected' : '' }}>
-                                    {{ $cat->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <span class="text-muted small">Imported businesses will be assigned to this category so they appear directly in your active view.</span>
-                    </div>
 
                     {{-- Option 1: File Upload --}}
                     <div class="mb-3">
@@ -608,11 +599,13 @@ function insertSampleJson() {
                         <textarea name="json_data" id="jsonInputTextarea" class="form-control font-monospace text-dark" rows="9" style="font-size: 13px; line-height: 1.5; background: #f8fafc;" placeholder='[
   {
     "name": "Hostgator",
-    "url": "https://www.hostgator.com"
+    "url": "https://www.hostgator.com",
+    "primary_category_id": 11
   },
   {
-    "name": "Bluehost",
-    "url": "https://www.bluehost.com"
+    "name": "Cloudflare",
+    "url": "https://www.cloudflare.com",
+    "primary_subcategory_id": 23
   }
 ]'></textarea>
                     </div>
@@ -626,8 +619,15 @@ function insertSampleJson() {
                     </div>
 
                     <div class="alert alert-light border mt-3 py-2 px-3 small text-muted">
-                        <em class="icon ni ni-info-fill text-info me-1"></em>
-                        <strong>Required keys:</strong> <code>name</code> (or <code>business_name</code>) and <code>url</code> (or <code>business_url</code>, <code>website</code>). Once uploaded, select businesses in the table below to send them to batch jobs for missing information.
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span><em class="icon ni ni-info-fill text-info me-1"></em> <strong>Required keys:</strong> <code>name</code> (or <code>business_name</code>) and <code>url</code> (or <code>business_url</code>).</span>
+                            <a href="{{ route('content-gen.download-categories') }}" class="btn btn-xs btn-outline-primary" target="_blank" title="Download all Category & Subcategory IDs as JSON">
+                                <em class="icon ni ni-download me-1"></em> Categories & IDs JSON
+                            </a>
+                        </div>
+                        <div>
+                            <strong>Primary Category or Subcategory:</strong> Specify <code>"primary_category_id": 11</code> (for top-level Category) or <code>"primary_subcategory_id": 23</code> (for Subcategory). Each business in the bulk upload can belong to a different category or subcategory.
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">

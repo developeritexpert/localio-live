@@ -458,6 +458,21 @@ class ContentGenerationController extends Controller
         $skippedBusinesses  = [];
         $errors             = [];
 
+        $resolveImportCatId = function ($val) {
+            if (empty($val)) return null;
+            if (is_numeric($val) && Category::where('id', (int)$val)->exists()) {
+                return (int)$val;
+            }
+            if (is_string($val) && trim($val) !== '') {
+                $clean = trim($val);
+                $found = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                    ->orWhere('name', 'like', '%' . $clean . '%')
+                    ->value('category_id');
+                if ($found) return (int)$found;
+            }
+            return null;
+        };
+
         DB::beginTransaction();
         try {
             foreach ($decoded as $index => $item) {
@@ -469,6 +484,39 @@ class ContentGenerationController extends Controller
                 // Flexible name and URL resolution
                 $name = trim($item['business'] ?? $item['name'] ?? $item['business_name'] ?? $item['Business name'] ?? $item['businessName'] ?? $item['title'] ?? $item['company'] ?? $item['company_name'] ?? '');
                 $url  = trim($item['url'] ?? $item['business_url'] ?? $item['Business URL'] ?? $item['businessUrl'] ?? $item['website'] ?? $item['website_url'] ?? $item['domain'] ?? $item['link'] ?? '');
+
+                // Resolve primary category or primary subcategory from JSON item
+                $assignedCategory = null;
+                $rawSub = $item['primary_subcategory_id'] ?? ($item['subcategory_id'] ?? null);
+                if (!empty($rawSub) && ($cid = $resolveImportCatId($rawSub))) {
+                    $assignedCategory = $cid;
+                }
+                if (!$assignedCategory) {
+                    $rawCat = $item['primary_category_id'] ?? ($item['category_id'] ?? null);
+                    if (!empty($rawCat) && ($cid = $resolveImportCatId($rawCat))) {
+                        $assignedCategory = $cid;
+                    }
+                }
+                if (!$assignedCategory && isset($item['categories']) && is_array($item['categories'])) {
+                    $nestedSub = $item['categories']['primary_subcategory_id'] ?? ($item['categories']['subcategory_id'] ?? null);
+                    if (!empty($nestedSub) && ($cid = $resolveImportCatId($nestedSub))) {
+                        $assignedCategory = $cid;
+                    } else {
+                        $nestedCat = $item['categories']['primary_category_id'] ?? ($item['categories']['category_id'] ?? null);
+                        if (!empty($nestedCat) && ($cid = $resolveImportCatId($nestedCat))) {
+                            $assignedCategory = $cid;
+                        }
+                    }
+                }
+                if (!$assignedCategory) {
+                    $rawName = $item['subcategory_name'] ?? ($item['subcategory'] ?? ($item['category_name'] ?? ($item['category'] ?? null)));
+                    if (!empty($rawName) && ($cid = $resolveImportCatId($rawName))) {
+                        $assignedCategory = $cid;
+                    }
+                }
+                if (!$assignedCategory && !empty($defaultCategoryId)) {
+                    $assignedCategory = (int) $defaultCategoryId;
+                }
 
                 // If name is omitted but URL is provided, derive name cleanly from domain
                 if (empty($name) && !empty($url)) {
@@ -581,9 +629,13 @@ class ContentGenerationController extends Controller
                     if (!empty($url)) {
                         $business->permanent_url = $url;
                     }
-                    // Update category if provided and business currently has none
-                    if ($defaultCategoryId && empty($business->category_id)) {
-                        $business->category_id = $defaultCategoryId;
+                    // Update category/subcategory if provided in JSON
+                    if ($assignedCategory) {
+                        $business->category_id = $assignedCategory;
+                        $catObj = Category::find($assignedCategory);
+                        if ($catObj && !empty($catObj->parent_id)) {
+                            $business->subCategories()->syncWithoutDetaching([$catObj->parent_id, $assignedCategory]);
+                        }
                     }
                     $business->save();
 
@@ -608,16 +660,6 @@ class ContentGenerationController extends Controller
                     $affLinkInitial = trim($item['affiliate_link'] ?? ($item['affiliate_url'] ?? ''));
                     $isAffInitial = (!empty($affLinkInitial) || !empty($item['is_affiliate'])) ? 1 : 0;
 
-                    // Resolve category: item category takes precedence, then modal selected category
-                    $assignedCategory = null;
-                    if (!empty($item['category_id'])) {
-                        $assignedCategory = (int) $item['category_id'];
-                    } elseif (!empty($item['primary_category_id'])) {
-                        $assignedCategory = (int) $item['primary_category_id'];
-                    } elseif (!empty($defaultCategoryId)) {
-                        $assignedCategory = (int) $defaultCategoryId;
-                    }
-
                     $business = Business::create([
                         'permanent_url'        => $url ?: null,
                         'affiliate_link'       => $affLinkInitial ?: null,
@@ -627,6 +669,13 @@ class ContentGenerationController extends Controller
                         'active_all_countries' => 1,
                         'category_id'          => $assignedCategory,
                     ]);
+
+                    if ($assignedCategory) {
+                        $catObj = Category::find($assignedCategory);
+                        if ($catObj && !empty($catObj->parent_id)) {
+                            $business->subCategories()->syncWithoutDetaching([$catObj->parent_id, $assignedCategory]);
+                        }
+                    }
 
                     BusinessTranslation::create([
                         'business_id' => $business->id,
@@ -707,11 +756,6 @@ class ContentGenerationController extends Controller
                 'category_name'          => $item['category_name'] ?? ($item['category'] ?? null),
                 'category_ids'           => $item['category_ids'] ?? [],
                 'subcategory_ids'        => $item['subcategory_ids'] ?? ($item['subcategories'] ?? []),
-            ];
-        } elseif ($catData === null && !empty($business->category_id)) {
-            $catData = [
-                'primary_category_id' => $business->category_id,
-                'category_id'         => $business->category_id,
             ];
         }
         if ($catData) {
@@ -1003,7 +1047,14 @@ class ContentGenerationController extends Controller
         $baseQuery = Business::query();
 
         if ($request->filled('category_id')) {
-            $baseQuery->where('category_id', $request->category_id);
+            $catId = (int)$request->category_id;
+            $subIds = Category::where('parent_id', $catId)->pluck('id')->toArray();
+            $allCategoryIds = array_merge([$catId], $subIds);
+
+            $baseQuery->where(function($q) use ($allCategoryIds) {
+                $q->whereIn('category_id', $allCategoryIds)
+                  ->orWhereHas('subCategories', fn($sq) => $sq->whereIn('categories.id', $allCategoryIds));
+            });
         }
         if ($request->filled('status')) {
             $baseQuery->where('status', $request->status);
@@ -1060,7 +1111,13 @@ class ContentGenerationController extends Controller
         }
 
         $lastPollAt = Cache::get('ai_batch_last_poll');
-        $categories = Category::whereNull('parent_id')->orderBy('id')->get();
+        $categories = Category::whereNull('parent_id')
+            ->with([
+                'translation' => fn($q) => $q->where('lang_id', 1),
+                'children.translation' => fn($q) => $q->where('lang_id', 1),
+            ])
+            ->orderBy('id')
+            ->get();
 
         $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
 
@@ -1110,6 +1167,8 @@ class ContentGenerationController extends Controller
                 $businessModels = Business::with([
                     'translations' => fn($q) => $q->where('lang_id', 1),
                     'websites',
+                    'category.translations' => fn($q) => $q->where('lang_id', 1),
+                    'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
                 ])->whereIn('id', $chunk)->get();
 
                 foreach ($chunk as $bizId) {
@@ -1118,10 +1177,42 @@ class ContentGenerationController extends Controller
                     $bName = optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $bizId;
                     // Official business URL only — never affiliate link!
                     $bUrl  = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+
+                    $cat = $b->category;
+                    $primaryCatId = null;
+                    $primaryCatName = null;
+                    $primarySubId = null;
+                    $primarySubName = null;
+                    $parentCatId = null;
+                    $parentCatName = null;
+
+                    if ($cat) {
+                        if (empty($cat->parent_id)) {
+                            $primaryCatId = $cat->id;
+                            $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                        } else {
+                            $primarySubId = $cat->id;
+                            $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                            $parentCatId = $cat->parent_id;
+                            $parentCat = $cat->parent;
+                            $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                        }
+                    }
+
                     $businessesData[] = [
-                        'business_id'   => $bizId,
-                        'business_name' => $bName,
-                        'business_url'  => $bUrl,
+                        'business_id'              => $bizId,
+                        'business_name'            => $bName,
+                        'business_url'             => $bUrl,
+                        'primary_category_id'      => $primaryCatId,
+                        'primary_category_name'    => $primaryCatName,
+                        'primary_subcategory_id'   => $primarySubId,
+                        'primary_subcategory_name' => $primarySubName,
+                        'parent_category_id'       => $parentCatId,
+                        'parent_category_name'     => $parentCatName,
+                        'categories'               => [
+                            'primary_category_id'    => $primaryCatId,
+                            'primary_subcategory_id' => $primarySubId,
+                        ],
                     ];
                 }
 
@@ -1373,8 +1464,10 @@ class ContentGenerationController extends Controller
         $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
         $batchResultExample        = self::getBatchResultExampleJson();
         $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
+        $pendingCount              = AiBatchJob::where('status', 'pending')->count();
+        $totalCount                = AiBatchJob::count();
 
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample'));
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'totalCount'));
     }
 
     // -------------------------------------------------------------------------
@@ -1414,6 +1507,29 @@ class ContentGenerationController extends Controller
         $job->delete();
 
         return back()->with('success', "Batch job {$batchId} and all associated queue items have been deleted successfully.");
+    }
+
+    public function bulkDeleteBatchJobs(Request $request)
+    {
+        $ids = $request->input('ids');
+        if (!is_array($ids) && is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+        $ids = array_filter(array_map('intval', (array)$ids));
+
+        if (empty($ids)) {
+            return back()->with('error', 'Please select at least one batch job to delete.');
+        }
+
+        $jobs = AiBatchJob::whereIn('id', $ids)->get();
+        $count = $jobs->count();
+
+        foreach ($jobs as $job) {
+            $job->queueItems()->delete();
+            $job->delete();
+        }
+
+        return back()->with('success', "{$count} batch job(s) and all associated queue items have been deleted successfully.");
     }
 
     /**
@@ -1965,8 +2081,14 @@ class ContentGenerationController extends Controller
                 }
                 break;
             case 'categories':
-                if (!isset($data['category_id']) && !isset($data['subcategory_ids'])) {
-                    return 'Expected {"category_id":..., "subcategory_ids": [...]}';
+                $hasCat = isset($data['category_id']) 
+                    || isset($data['primary_category_id']) 
+                    || isset($data['primary_subcategory_id']) 
+                    || isset($data['subcategory_id']) 
+                    || isset($data['subcategory_ids'])
+                    || isset($data['categories']);
+                if (!$hasCat) {
+                    return 'Expected category or subcategory selection (e.g. {"primary_category_id": ...} or {"primary_subcategory_id": ...})';
                 }
                 break;
             case 'active_countries':
@@ -2361,15 +2483,51 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $businesses  = Business::with([
             'translations' => fn($q) => $q->where('lang_id', 1),
             'websites',
+            'category.translations' => fn($q) => $q->where('lang_id', 1),
+            'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
         ])->whereIn('id', $businessIds)->get();
 
         $bList = [];
         foreach ($businesses as $b) {
             $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+
+            $cat = $b->category;
+            $primaryCatId = null;
+            $primaryCatName = null;
+            $primarySubId = null;
+            $primarySubName = null;
+            $parentCatId = null;
+            $parentCatName = null;
+
+            if ($cat) {
+                if (empty($cat->parent_id)) {
+                    // Primary is a Category
+                    $primaryCatId = $cat->id;
+                    $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                } else {
+                    // Primary is a Subcategory
+                    $primarySubId = $cat->id;
+                    $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                    $parentCatId = $cat->parent_id;
+                    $parentCat = $cat->parent;
+                    $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                }
+            }
+
             $bList[] = [
-                'business_id'   => $b->id,
-                'business_name' => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
-                'business_url'  => $bUrl,
+                'business_id'              => $b->id,
+                'business_name'            => optional($b->translations->first())->name ?? $b->name ?? 'Business #' . $b->id,
+                'business_url'             => $bUrl,
+                'primary_category_id'      => $primaryCatId,
+                'primary_category_name'    => $primaryCatName,
+                'primary_subcategory_id'   => $primarySubId,
+                'primary_subcategory_name' => $primarySubName,
+                'parent_category_id'       => $parentCatId,
+                'parent_category_name'     => $parentCatName,
+                'categories'               => [
+                    'primary_category_id'    => $primaryCatId,
+                    'primary_subcategory_id' => $primarySubId,
+                ],
             ];
         }
 
@@ -2388,16 +2546,135 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
+    public function getBatchJobFilenameCode(AiBatchJob $job): string
+    {
+        $batchId = trim($job->batch_id ?? '');
+        if (!empty($batchId)) {
+            // Strip common prefixes: BATCH-MANUAL- or BATCH-FEAT-MANUAL-
+            $clean = preg_replace('/^BATCH-(?:FEAT-)?MANUAL-/i', '', $batchId);
+            $clean = preg_replace('/[^A-Za-z0-9_-]/', '', $clean);
+            if (!empty($clean)) {
+                return $clean;
+            }
+        }
+        return (string)$job->id;
+    }
+
     public function downloadBatchJson(AiBatchJob $job)
     {
-        $payload = $this->buildCleanBatchPayload($job);
-        $content = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $type = isset($payload['batch_type']) ? $payload['batch_type'] : 'businesses';
-        $filename = 'batch_' . $type . '_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
+        $payload  = $this->buildCleanBatchPayload($job);
+        $content  = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $filename = $this->getBatchJobFilenameCode($job) . '.json';
 
         return response($content, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadBulkBatchJson(Request $request)
+    {
+        $query = AiBatchJob::query();
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', (string)$request->ids);
+            $ids = array_filter(array_map('intval', $ids));
+            if (!empty($ids)) {
+                $query->whereIn('id', $ids);
+            }
+        } elseif ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } else {
+            if (!$request->filled('status')) {
+                $query->where('status', 'pending');
+            }
+        }
+
+        $jobs = $query->orderBy('id', 'desc')->get();
+
+        if ($jobs->isEmpty()) {
+            return back()->with('error', 'No batch jobs found matching your download criteria.');
+        }
+
+        $statusLabel = $request->filled('ids') ? 'selected' : ($request->status ?: 'pending');
+        $zipFileName = 'batch_jobs_' . $statusLabel . '_' . now()->format('Ymd_His') . '.zip';
+        $zipPath     = tempnam(sys_get_temp_dir(), 'batch_zip_');
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return back()->with('error', 'Failed to create ZIP archive on server.');
+        }
+
+        $usedFilenames = [];
+        foreach ($jobs as $job) {
+            $payload  = $this->buildCleanBatchPayload($job);
+            $json     = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $baseName = $this->getBatchJobFilenameCode($job);
+            $filename = $baseName . '.json';
+
+            if (isset($usedFilenames[$filename])) {
+                $usedFilenames[$filename]++;
+                $filename = $baseName . '_' . $usedFilenames[$filename] . '.json';
+            } else {
+                $usedFilenames[$filename] = 1;
+            }
+
+            $zip->addFromString($filename, $json);
+        }
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipFileName, [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
+    }
+
+    public function getBulkBatchPayloads(Request $request)
+    {
+        $query = AiBatchJob::query();
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', (string)$request->ids);
+            $ids = array_filter(array_map('intval', $ids));
+            if (!empty($ids)) {
+                $query->whereIn('id', $ids);
+            }
+        } elseif ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } else {
+            if (!$request->filled('status')) {
+                $query->where('status', 'pending');
+            }
+        }
+
+        $jobs = $query->orderBy('id', 'desc')->get();
+
+        $usedFilenames = [];
+        $items = [];
+        foreach ($jobs as $job) {
+            $payload  = $this->buildCleanBatchPayload($job);
+            $baseName = $this->getBatchJobFilenameCode($job);
+            $filename = $baseName . '.json';
+
+            if (isset($usedFilenames[$filename])) {
+                $usedFilenames[$filename]++;
+                $filename = $baseName . '_' . $usedFilenames[$filename] . '.json';
+            } else {
+                $usedFilenames[$filename] = 1;
+            }
+
+            $items[] = [
+                'id'       => $job->id,
+                'batch_id' => $job->batch_id,
+                'filename' => $filename,
+                'payload'  => $payload,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'count'   => count($items),
+            'items'   => $items,
         ]);
     }
 
@@ -2603,7 +2880,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $errors         = [];
 
         foreach ($payloads as $p) {
-            $res = $this->processSingleBatchResultJson($p['json'], $job);
+            $res = $this->processSingleBatchResultJson($p['json'], $job, $p['name'] ?? null);
             if ($res['success']) {
                 $processedFiles++;
                 if (!empty($res['job_id'])) {
@@ -2657,7 +2934,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     /**
      * Process a single JSON payload string for features or businesses.
      */
-    public function processSingleBatchResultJson(string $rawJson, ?AiBatchJob $job = null): array
+    public function processSingleBatchResultJson(string $rawJson, ?AiBatchJob $job = null, ?string $filename = null): array
     {
         // Clean any markdown code blocks if user pasted ```json ... ```
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
@@ -2696,11 +2973,27 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             if ($batchId) {
                 $job = AiBatchJob::where('batch_id', $batchId)->first();
+                if (!$job) {
+                    $job = AiBatchJob::where('batch_id', 'like', "%{$batchId}")->first();
+                }
                 if (!$job && is_numeric($batchId)) {
                     $job = AiBatchJob::find($batchId);
                 }
                 if (!$job && preg_match('/BATCH-(\d+)/i', (string)$batchId, $m)) {
                     $job = AiBatchJob::find($m[1]);
+                }
+            }
+
+            // Fallback: match by filename if provided (e.g. 5HUUQRBU.json or BATCH-MANUAL-5HUUQRBU.json)
+            if (!$job && $filename && $filename !== 'Pasted JSON') {
+                $fnCode = pathinfo($filename, PATHINFO_FILENAME);
+                $fnCode = preg_replace('/^BATCH-(?:FEAT-)?MANUAL-/i', '', $fnCode);
+                $fnCode = preg_replace('/[^A-Za-z0-9_-]/', '', $fnCode);
+                if (!empty($fnCode)) {
+                    $job = AiBatchJob::where('batch_id', 'like', "%{$fnCode}")->first();
+                    if (!$job && is_numeric($fnCode)) {
+                        $job = AiBatchJob::find($fnCode);
+                    }
                 }
             }
 
@@ -2905,10 +3198,11 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             $biz = null;
 
-            // 1. If rawBizId is provided, check if it matches a business in this batch job
-            if ($rawBizId && $job) {
-                $isJobBiz = $job->queueItems()->where('resource_type', 'business')->where('resource_id', $rawBizId)->exists();
-                if ($isJobBiz) {
+            // 1. If rawBizId is provided, check if it matches a business in this batch job or globally
+            if ($rawBizId) {
+                if ($job && $job->queueItems()->where('resource_type', 'business')->where('resource_id', $rawBizId)->exists()) {
+                    $biz = Business::find($rawBizId);
+                } elseif (!$biz) {
                     $biz = Business::find($rawBizId);
                 }
             }
@@ -2937,20 +3231,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
-            // 3. Fallback: If this batch job only has 1 business in its queue items
-            if (!$biz && $job) {
-                $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->values();
-                if ($jobBizIds->count() === 1) {
-                    $biz = Business::find($jobBizIds->first());
-                }
-            }
-
-            // 4. Try matching globally by rawBizId if it exists in the businesses table
-            if (!$biz && $rawBizId) {
-                $biz = Business::find($rawBizId);
-            }
-
-            // 5. Try matching globally by business name in translations (exact, case-insensitive, or cleaned)
+            // 3. Try matching globally by business name in translations (exact, case-insensitive, or cleaned)
             if (!$biz && !empty($bizName)) {
                 $cleanName = trim(preg_replace('/\s*\([^)]*\)/', '', $bizName)); // remove trailing (Web Hosting)
                 $matchedBizId = BusinessTranslation::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($bizName))])->value('business_id')
@@ -2960,7 +3241,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
-            // 5b. Try matching globally by permanent URL (exact normalized match)
+            // 3b. Try matching globally by permanent URL (exact normalized match)
             if (!$biz && !empty($bizUrl)) {
                 $cleanNormUrl = preg_replace('#^https?://#i', '', $bizUrl);
                 $cleanNormUrl = preg_replace('#^www\.#i', '', $cleanNormUrl);
@@ -2970,6 +3251,14 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         "LOWER(TRIM(TRAILING '/' FROM TRIM(REPLACE(REPLACE(REPLACE(permanent_url, 'https://', ''), 'http://', ''), 'www.', '')))) = ?",
                         [$cleanNormUrl]
                     )->first();
+                }
+            }
+
+            // 4. Fallback: If no ID, name, or URL could match and this batch job only has 1 business in its queue items
+            if (!$biz && $job && empty($rawBizId)) {
+                $jobBizIds = $job->queueItems()->where('resource_type', 'business')->pluck('resource_id')->unique()->values();
+                if ($jobBizIds->count() === 1) {
+                    $biz = Business::find($jobBizIds->first());
                 }
             }
 
@@ -3035,6 +3324,28 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     if (isset($bData['categories'])) {
                         $fieldVal = $bData['categories'];
                         $hasField = true;
+                    } elseif (
+                        isset($bData['primary_category_id']) ||
+                        isset($bData['primary_subcategory_id']) ||
+                        isset($bData['category_id']) ||
+                        isset($bData['subcategory_id']) ||
+                        isset($bData['category_ids']) ||
+                        isset($bData['subcategory_ids']) ||
+                        isset($bData['subcategory']) ||
+                        isset($bData['subcategory_name']) ||
+                        isset($bData['category_name'])
+                    ) {
+                        $fieldVal = [
+                            'primary_category_id'    => $bData['primary_category_id'] ?? ($bData['category_id'] ?? null),
+                            'primary_subcategory_id' => $bData['primary_subcategory_id'] ?? ($bData['subcategory_id'] ?? null),
+                            'category_ids'           => $bData['category_ids'] ?? [],
+                            'subcategory_ids'        => $bData['subcategory_ids'] ?? [],
+                            'category_name'          => $bData['category_name'] ?? null,
+                            'subcategory_name'       => $bData['subcategory_name'] ?? ($bData['subcategory'] ?? null),
+                            'parent_category_id'     => $bData['parent_category_id'] ?? null,
+                            'parent_category_name'   => $bData['parent_category_name'] ?? null,
+                        ];
+                        $hasField = true;
                     }
                 } else {
                     if (isset($bData[$field])) {
@@ -3046,22 +3357,34 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 if (!$hasField) continue;
 
                 $normalizedData = [];
-                if ($field === 'categories' && is_array($fieldVal)) {
-                    $primaryCatId = !empty($fieldVal['primary_category_id']) ? (int)$fieldVal['primary_category_id'] : null;
-                    $primarySubId = !empty($fieldVal['primary_subcategory_id']) ? (int)$fieldVal['primary_subcategory_id'] : null;
-                    $catIds = isset($fieldVal['category_ids']) && is_array($fieldVal['category_ids'])
-                        ? array_values(array_filter(array_map('intval', $fieldVal['category_ids'])))
-                        : [];
-                    $subIds = isset($fieldVal['subcategory_ids']) && is_array($fieldVal['subcategory_ids'])
-                        ? array_values(array_filter(array_map('intval', $fieldVal['subcategory_ids'])))
-                        : [];
+                if ($field === 'categories') {
+                    if (is_array($fieldVal)) {
+                        if (array_is_list($fieldVal)) {
+                            $normalizedData = $fieldVal;
+                        } else {
+                            $primaryCatId = !empty($fieldVal['primary_category_id']) ? (int)$fieldVal['primary_category_id'] : (!empty($fieldVal['category_id']) && is_numeric($fieldVal['category_id']) ? (int)$fieldVal['category_id'] : null);
+                            $primarySubId = !empty($fieldVal['primary_subcategory_id']) ? (int)$fieldVal['primary_subcategory_id'] : (!empty($fieldVal['subcategory_id']) && is_numeric($fieldVal['subcategory_id']) ? (int)$fieldVal['subcategory_id'] : null);
+                            $catIds = isset($fieldVal['category_ids']) && is_array($fieldVal['category_ids'])
+                                ? array_values(array_filter(array_map('intval', $fieldVal['category_ids'])))
+                                : [];
+                            $subIds = isset($fieldVal['subcategory_ids']) && is_array($fieldVal['subcategory_ids'])
+                                ? array_values(array_filter(array_map('intval', $fieldVal['subcategory_ids'])))
+                                : [];
 
-                    $normalizedData = [
-                        'primary_category_id'    => $primaryCatId,
-                        'primary_subcategory_id' => $primarySubId,
-                        'category_ids'           => $catIds,
-                        'subcategory_ids'        => $subIds,
-                    ];
+                            $normalizedData = [
+                                'primary_category_id'    => $primaryCatId,
+                                'primary_subcategory_id' => $primarySubId,
+                                'category_ids'           => $catIds,
+                                'subcategory_ids'        => $subIds,
+                            ];
+                            if (isset($fieldVal['category_name'])) $normalizedData['category_name'] = $fieldVal['category_name'];
+                            if (isset($fieldVal['subcategory_name'])) $normalizedData['subcategory_name'] = $fieldVal['subcategory_name'];
+                            if (isset($fieldVal['parent_category_id'])) $normalizedData['parent_category_id'] = $fieldVal['parent_category_id'];
+                            if (isset($fieldVal['parent_category_name'])) $normalizedData['parent_category_name'] = $fieldVal['parent_category_name'];
+                        }
+                    } elseif (is_numeric($fieldVal) || is_string($fieldVal)) {
+                        $normalizedData = ['category_id' => $fieldVal];
+                    }
                 } elseif (in_array($field, ['short_description', 'long_description', 'what_is', 'reviews_description'])) {
                     $normalizedData = [$field => is_string($fieldVal) ? trim($fieldVal) : ''];
                 } elseif ($field === 'usps' && is_array($fieldVal)) {
@@ -3099,7 +3422,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
                 // Find or create AiContentQueue record
                 $queueItem = AiContentQueue::firstOrNew([
-                    'batch_job_id'  => $job->id,
+                    'batch_job_id'  => $job ? $job->id : null,
                     'resource_type' => 'business',
                     'resource_id'   => $bizId,
                     'content_field' => $field,
@@ -3387,14 +3710,24 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 $primaryCatId = $resolved;
             }
         } elseif (is_array($catData)) {
-            // Check primary category vs subcategory
-            $rawPrimaryCat = $catData['primary_category_id'] ?? null;
-            $rawPrimarySub = $catData['primary_subcategory_id'] ?? null;
+            // Check primary subcategory FIRST so a subcategory can be the primary category!
+            $rawPrimarySub = $catData['primary_subcategory_id'] ?? ($catData['subcategory_id'] ?? ($catData['subcategory_name'] ?? null));
+            $rawPrimaryCat = $catData['primary_category_id'] ?? ($catData['category_id'] ?? ($catData['category_name'] ?? null));
 
-            if ($rawPrimaryCat && ($cid = $resolveCatId($rawPrimaryCat))) {
+            if (!empty($rawPrimarySub) && ($cid = $resolveCatId($rawPrimarySub))) {
                 $primaryCatId = $cid;
-            } elseif ($rawPrimarySub && ($cid = $resolveCatId($rawPrimarySub))) {
+                // If a parent category was also provided, add it to secondary
+                if (!empty($rawPrimaryCat) && ($pCid = $resolveCatId($rawPrimaryCat)) && $pCid !== $primaryCatId) {
+                    $secondaryCatIds[] = $pCid;
+                }
+            } elseif (!empty($rawPrimaryCat) && ($cid = $resolveCatId($rawPrimaryCat))) {
                 $primaryCatId = $cid;
+            }
+
+            // Also check parent_category_id / parent_category_name if provided
+            $rawParentCat = $catData['parent_category_id'] ?? ($catData['parent_category_name'] ?? null);
+            if (!empty($rawParentCat) && ($pCid = $resolveCatId($rawParentCat)) && $pCid !== $primaryCatId) {
+                $secondaryCatIds[] = $pCid;
             }
 
             // category_ids
@@ -3414,13 +3747,13 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
 
             // subcategory_ids / subcategories
-            $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? ($catData['subcategory_id'] ?? []));
+            $subs = $catData['subcategory_ids'] ?? ($catData['subcategories'] ?? []);
             if (!empty($subs)) {
                 if (!is_array($subs)) $subs = [$subs];
                 foreach ($subs as $sub) {
                     $resolved = $resolveCatId($sub);
                     if ($resolved) {
-                        if ($primaryCatId === null && !empty($rawPrimarySub)) {
+                        if ($primaryCatId === null) {
                             $primaryCatId = $resolved;
                         } else {
                             $subCatIds[] = $resolved;
@@ -3429,7 +3762,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 }
             }
 
-            // Single category_id or category_name fallback
+            // Fallback: single category_id or category_name if still not resolved
             if ($primaryCatId === null) {
                 $rawCid = $catData['category_id'] ?? null;
                 $catName = $catData['category_name'] ?? ($catData['category'] ?? null);
@@ -3473,6 +3806,13 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
         if ($primaryCatId) {
             $business->update(['category_id' => $primaryCatId]);
+
+            // If the primary category is a subcategory (has a parent_id),
+            // automatically ensure the parent category is included in the pivot table
+            $catRecord = Category::find($primaryCatId);
+            if ($catRecord && !empty($catRecord->parent_id)) {
+                $secondaryCatIds[] = (int)$catRecord->parent_id;
+            }
         }
 
         // Clean sync without accumulating old categories!
@@ -3480,7 +3820,19 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         if ($primaryCatId) {
             $allPivotIds = array_values(array_diff($allPivotIds, [$primaryCatId]));
         }
-        $business->subCategories()->sync($allPivotIds);
+
+        $explicitSecondaryGiven = is_array($catData) && (
+            isset($catData['subcategory_ids']) || 
+            isset($catData['category_ids']) || 
+            isset($catData['subcategories']) || 
+            array_is_list($catData)
+        );
+
+        if ($explicitSecondaryGiven) {
+            $business->subCategories()->sync($allPivotIds);
+        } elseif (!empty($allPivotIds)) {
+            $business->subCategories()->syncWithoutDetaching($allPivotIds);
+        }
     }
 
     public static function applyProsConsToBusiness(Business $business, array $data): int
