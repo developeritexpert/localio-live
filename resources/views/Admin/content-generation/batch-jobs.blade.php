@@ -17,6 +17,37 @@
                     </p>
                 </div>
                 <div class="nk-block-head-content d-flex flex-wrap gap-2">
+                    {{-- Bulk Download Dropdown --}}
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Download batch jobs as JSON files">
+                            <em class="icon ni ni-download-cloud me-1"></em> Download Batch Jobs
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow">
+                            <a class="dropdown-item d-flex align-items-center justify-content-between" href="{{ route('content-gen.batch-jobs.download-bulk', ['status' => 'pending']) }}" title="Download all pending batch jobs inside a single ZIP archive">
+                                <span><em class="icon ni ni-file-zip text-warning me-2 fs-5"></em> Download All Pending (ZIP)</span>
+                                @if(isset($pendingCount) && $pendingCount > 0)
+                                    <span class="badge bg-warning ms-3">{{ $pendingCount }}</span>
+                                @endif
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between" href="{{ route('content-gen.batch-jobs.download-bulk', ['status' => 'all']) }}" title="Download all batch jobs inside a single ZIP archive">
+                                <span><em class="icon ni ni-archive text-primary me-2 fs-5"></em> Download All Jobs (ZIP)</span>
+                                @if(isset($totalCount) && $totalCount > 0)
+                                    <span class="badge bg-secondary ms-3">{{ $totalCount }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)" onclick="startDirectBulkDownload('pending')" title="Download individual .json files directly to your Downloads folder">
+                                <span><em class="icon ni ni-files text-info me-2 fs-5"></em> Bulk Download Pending (.json files)</span>
+                                @if(isset($pendingCount) && $pendingCount > 0)
+                                    <span class="badge bg-info ms-3">{{ $pendingCount }}</span>
+                                @endif
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between" href="javascript:void(0)" onclick="startDirectBulkDownload('all')" title="Download all .json files directly to your Downloads folder">
+                                <span><em class="icon ni ni-files text-secondary me-2 fs-5"></em> Bulk Download All (.json files)</span>
+                            </a>
+                        </div>
+                    </div>
+
                     <button type="button" class="btn btn-success btn-sm" onclick="openGlobalUploadModal()" title="Paste or upload ChatGPT result JSON — auto-detects batch ID">
                         <em class="icon ni ni-upload-cloud me-1"></em> Upload Batch Result
                     </button>
@@ -80,6 +111,28 @@
             </div>
         </div>
 
+        {{-- Bulk Selection Action Bar --}}
+        <div id="bulkSelectionBar" class="alert alert-primary py-2 px-3 mb-3 d-none align-items-center justify-content-between shadow-sm">
+            <div class="d-flex align-items-center">
+                <em class="icon ni ni-check-circle-fill text-primary fs-5 me-2"></em>
+                <span class="fw-bold text-dark"><span id="selectedCount">0</span> batch job(s) selected</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-xs btn-primary" onclick="downloadSelected('zip')" title="Download selected jobs as a ZIP archive">
+                    <em class="icon ni ni-file-zip me-1"></em> Download Selected (ZIP)
+                </button>
+                <button type="button" class="btn btn-xs btn-info" onclick="downloadSelected('direct')" title="Download selected jobs as individual .json files directly">
+                    <em class="icon ni ni-files me-1"></em> Download Selected (.json)
+                </button>
+                <button type="button" class="btn btn-xs btn-danger" onclick="confirmDeleteSelected()" title="Delete selected jobs and queue items">
+                    <em class="icon ni ni-trash me-1"></em> Delete Selected
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-secondary" onclick="clearJobSelection()">
+                    Clear Selection
+                </button>
+            </div>
+        </div>
+
         {{-- Batch Jobs Table --}}
         <div class="card card-bordered card-stretch">
             <div class="card-inner p-0">
@@ -87,6 +140,9 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
+                                <th width="35" class="text-center">
+                                    <input type="checkbox" id="selectAllJobsCheck" class="form-check-input" title="Select all on this page" onchange="toggleSelectAllJobs(this)">
+                                </th>
                                 <th>#</th>
                                 <th>Provider</th>
                                 <th>Batch ID</th>
@@ -95,12 +151,15 @@
                                 <th>Items</th>
                                 <th>Submitted</th>
                                 <th>Completed</th>
-                                <th class="text-end" style="min-width: 250px;">Actions</th>
+                                <th class="text-end" style="min-width: 280px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($jobs as $job)
                                 <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input job-check" value="{{ $job->id }}" onchange="onJobSelectionChange()">
+                                    </td>
                                     <td class="text-muted small">{{ $job->id }}</td>
                                     <td>
                                         @if($job->provider === 'manual')
@@ -155,6 +214,14 @@
                                     <td class="text-soft small">{{ $job->submitted_at ? $job->submitted_at->diffForHumans() : '-' }}</td>
                                     <td class="text-soft small">{{ $job->completed_at ? $job->completed_at->diffForHumans() : '-' }}</td>
                                     <td class="text-end text-nowrap">
+                                        {{-- Download JSON file [ID].json --}}
+                                        @php
+                                            $cleanId = $job->batch_id ? preg_replace('/^BATCH-(?:FEAT-)?MANUAL-/i', '', $job->batch_id) : $job->id;
+                                        @endphp
+                                        <a href="{{ route('content-gen.batch-jobs.download', $job->id) }}" class="btn btn-xs btn-outline-primary me-1" title="Download {{ $cleanId }}.json">
+                                            <em class="icon ni ni-download me-1"></em> Download
+                                        </a>
+
                                         {{-- Copy JSON for ChatGPT --}}
                                         <button type="button" class="btn btn-xs btn-info me-1" onclick="copyBatchJson({{ $job->id }}, this)" title="Copy batch JSON for ChatGPT to clipboard">
                                             <em class="icon ni ni-copy me-1"></em> Copy JSON
@@ -172,7 +239,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
+                                <tr><td colspan="10" class="text-center text-muted py-5">No batch jobs yet. Go to <a href="{{ route('content-gen.businesses') }}">Businesses</a> to create one.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -190,6 +257,48 @@
     @csrf
     @method('DELETE')
 </form>
+
+{{-- Hidden Bulk Delete Batch Form --}}
+<form id="bulkDeleteForm" action="{{ route('content-gen.batch-jobs.bulk-delete') }}" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="ids" id="bulkDeleteIds" value="">
+</form>
+
+{{-- Direct Multi-File Download Progress Modal --}}
+<div class="modal fade" id="directDownloadModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title">
+                    <em class="icon ni ni-download-cloud text-primary me-2"></em>Downloading Batch Job Files
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold small text-dark" id="directDownloadStatus">
+                        <span class="spinner-border spinner-border-sm me-1 text-primary"></span> Preparing files...
+                    </span>
+                    <span class="badge bg-primary" id="directDownloadPercent">0%</span>
+                </div>
+                <div class="progress mb-3" style="height: 14px; border-radius: 6px;">
+                    <div id="directDownloadBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
+                </div>
+                <div class="small text-muted d-flex justify-content-between">
+                    <span id="directDownloadCurrentFile">Initializing...</span>
+                    <span id="directDownloadStats" class="fw-semibold">0 / 0</span>
+                </div>
+                <div class="alert alert-light border mt-3 py-2 px-3 small text-muted">
+                    <em class="icon ni ni-info me-1 text-info"></em>
+                    Files are saved directly to your browser's default Downloads folder as <code>[ID].json</code>.
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-sm btn-secondary" id="btnCancelDirectDownload" onclick="cancelDirectDownload()">Cancel</button>
+                <button type="button" class="btn btn-sm btn-success d-none" id="btnCloseDirectDownload" onclick="closeDirectDownloadModal()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{-- Upload Batch Result Modal --}}
 <div class="modal fade" id="uploadResultModal" tabindex="-1" role="dialog" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
@@ -718,6 +827,216 @@ function copyExampleJson() {
         document.body.removeChild(textarea);
         alert('Example JSON copied to clipboard!');
     });
+}
+
+// ==========================================
+// Batch Jobs Selection & Bulk Download Logic
+// ==========================================
+let isDirectDownloadCancelled = false;
+
+function triggerBlobDownload(jsonObj, filename) {
+    const text = typeof jsonObj === 'string' ? jsonObj : JSON.stringify(jsonObj, null, 2);
+    const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function openDirectDownloadModal() {
+    if (window.jQuery && typeof $('#directDownloadModal').modal === 'function') {
+        $('#directDownloadModal').modal('show');
+    } else if (window.bootstrap && bootstrap.Modal) {
+        new bootstrap.Modal(document.getElementById('directDownloadModal')).show();
+    } else {
+        const el = document.getElementById('directDownloadModal');
+        if (el) {
+            el.classList.add('show');
+            el.style.display = 'block';
+        }
+    }
+}
+
+function closeDirectDownloadModal() {
+    if (window.jQuery && typeof $('#directDownloadModal').modal === 'function') {
+        $('#directDownloadModal').modal('hide');
+    }
+    const el = document.getElementById('directDownloadModal');
+    if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
+
+function cancelDirectDownload() {
+    isDirectDownloadCancelled = true;
+    const statusEl = document.getElementById('directDownloadStatus');
+    if (statusEl) {
+        statusEl.innerHTML = '<span class="text-danger"><em class="icon ni ni-cross-circle me-1"></em> Cancelling...</span>';
+    }
+}
+
+async function startDirectBulkDownload(status = 'pending', customIds = null) {
+    isDirectDownloadCancelled = false;
+    openDirectDownloadModal();
+
+    const statusEl = document.getElementById('directDownloadStatus');
+    const barEl = document.getElementById('directDownloadBar');
+    const pctEl = document.getElementById('directDownloadPercent');
+    const fileEl = document.getElementById('directDownloadCurrentFile');
+    const statsEl = document.getElementById('directDownloadStats');
+    const btnCancel = document.getElementById('btnCancelDirectDownload');
+    const btnClose = document.getElementById('btnCloseDirectDownload');
+
+    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm me-1 text-primary"></span> Contacting server...';
+    fileEl.textContent = 'Fetching batch jobs list...';
+    barEl.style.width = '0%';
+    pctEl.textContent = '0%';
+    statsEl.textContent = '0 / 0';
+    btnCancel.classList.remove('d-none');
+    btnClose.classList.add('d-none');
+
+    let url = "{{ route('content-gen.batch-jobs.bulk-payloads') }}";
+    if (customIds && customIds.length) {
+        url += '?ids=' + encodeURIComponent(customIds.join(','));
+    } else {
+        url += '?status=' + encodeURIComponent(status);
+    }
+
+    try {
+        const response = await fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+
+        if (!data.success || !data.items || data.items.length === 0) {
+            statusEl.innerHTML = '<span class="text-warning"><em class="icon ni ni-alert-circle me-1"></em> No batch jobs found to download.</span>';
+            fileEl.textContent = 'Zero files matched criteria.';
+            btnCancel.classList.add('d-none');
+            btnClose.classList.remove('d-none');
+            return;
+        }
+
+        const items = data.items;
+        const total = items.length;
+        statsEl.textContent = `0 / ${total}`;
+
+        for (let i = 0; i < total; i++) {
+            if (isDirectDownloadCancelled) {
+                statusEl.innerHTML = '<span class="text-warning"><em class="icon ni ni-alert-circle me-1"></em> Download stopped by user.</span>';
+                fileEl.textContent = `Downloaded ${i} of ${total} files.`;
+                btnCancel.classList.add('d-none');
+                btnClose.classList.remove('d-none');
+                return;
+            }
+
+            const item = items[i];
+            fileEl.textContent = `Saving ${item.filename}...`;
+            statusEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1 text-primary"></span> Downloading file ${i + 1} of ${total}...`;
+
+            triggerBlobDownload(item.payload, item.filename);
+
+            const pct = Math.round(((i + 1) / total) * 100);
+            barEl.style.width = pct + '%';
+            pctEl.textContent = pct + '%';
+            statsEl.textContent = `${i + 1} / ${total}`;
+
+            // Small delay between downloads so the browser can queue the files safely
+            await new Promise(r => setTimeout(r, 120));
+        }
+
+        barEl.style.width = '100%';
+        pctEl.textContent = '100%';
+        statusEl.innerHTML = '<span class="text-success"><em class="icon ni ni-check-circle-fill me-1"></em> All files downloaded successfully!</span>';
+        fileEl.textContent = `Saved ${total} .json file(s) to your Downloads folder.`;
+        btnCancel.classList.add('d-none');
+        btnClose.classList.remove('d-none');
+    } catch (err) {
+        statusEl.innerHTML = '<span class="text-danger"><em class="icon ni ni-cross-circle me-1"></em> Error downloading files!</span>';
+        fileEl.textContent = err.message;
+        btnCancel.classList.add('d-none');
+        btnClose.classList.remove('d-none');
+    }
+}
+
+function getSelectedJobIds() {
+    return Array.from(document.querySelectorAll('.job-check:checked')).map(cb => cb.value);
+}
+
+function toggleSelectAllJobs(master) {
+    const checkboxes = document.querySelectorAll('.job-check');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+    onJobSelectionChange();
+}
+
+function onJobSelectionChange() {
+    const selected = getSelectedJobIds();
+    const bar = document.getElementById('bulkSelectionBar');
+    const countEl = document.getElementById('selectedCount');
+    const master = document.getElementById('selectAllJobsCheck');
+    const allCbs = document.querySelectorAll('.job-check');
+
+    if (countEl) countEl.textContent = selected.length;
+
+    if (master && allCbs.length > 0) {
+        master.checked = selected.length === allCbs.length;
+        master.indeterminate = selected.length > 0 && selected.length < allCbs.length;
+    }
+
+    if (bar) {
+        if (selected.length > 0) {
+            bar.classList.remove('d-none');
+            bar.classList.add('d-flex');
+        } else {
+            bar.classList.add('d-none');
+            bar.classList.remove('d-flex');
+        }
+    }
+}
+
+function clearJobSelection() {
+    document.querySelectorAll('.job-check').forEach(cb => cb.checked = false);
+    const master = document.getElementById('selectAllJobsCheck');
+    if (master) {
+        master.checked = false;
+        master.indeterminate = false;
+    }
+    onJobSelectionChange();
+}
+
+function downloadSelected(type) {
+    const selected = getSelectedJobIds();
+    if (selected.length === 0) {
+        alert('Please select at least one batch job.');
+        return;
+    }
+
+    if (type === 'zip') {
+        window.location.href = "{{ route('content-gen.batch-jobs.download-bulk') }}?ids=" + selected.join(',');
+    } else {
+        startDirectBulkDownload('custom', selected);
+    }
+}
+
+function confirmDeleteSelected() {
+    const selected = getSelectedJobIds();
+    if (selected.length === 0) {
+        alert('Please select at least one batch job to delete.');
+        return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${selected.length} selected batch job(s)? All associated queue items will be permanently removed.`)) {
+        document.getElementById('bulkDeleteIds').value = selected.join(',');
+        document.getElementById('bulkDeleteForm').submit();
+    }
 }
 </script>
 @endsection

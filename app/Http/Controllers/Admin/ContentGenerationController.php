@@ -1373,8 +1373,10 @@ class ContentGenerationController extends Controller
         $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
         $batchResultExample        = self::getBatchResultExampleJson();
         $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
+        $pendingCount              = AiBatchJob::where('status', 'pending')->count();
+        $totalCount                = AiBatchJob::count();
 
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample'));
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'totalCount'));
     }
 
     // -------------------------------------------------------------------------
@@ -1414,6 +1416,29 @@ class ContentGenerationController extends Controller
         $job->delete();
 
         return back()->with('success', "Batch job {$batchId} and all associated queue items have been deleted successfully.");
+    }
+
+    public function bulkDeleteBatchJobs(Request $request)
+    {
+        $ids = $request->input('ids');
+        if (!is_array($ids) && is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+        $ids = array_filter(array_map('intval', (array)$ids));
+
+        if (empty($ids)) {
+            return back()->with('error', 'Please select at least one batch job to delete.');
+        }
+
+        $jobs = AiBatchJob::whereIn('id', $ids)->get();
+        $count = $jobs->count();
+
+        foreach ($jobs as $job) {
+            $job->queueItems()->delete();
+            $job->delete();
+        }
+
+        return back()->with('success', "{$count} batch job(s) and all associated queue items have been deleted successfully.");
     }
 
     /**
@@ -2388,16 +2413,135 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
+    public function getBatchJobFilenameCode(AiBatchJob $job): string
+    {
+        $batchId = trim($job->batch_id ?? '');
+        if (!empty($batchId)) {
+            // Strip common prefixes: BATCH-MANUAL- or BATCH-FEAT-MANUAL-
+            $clean = preg_replace('/^BATCH-(?:FEAT-)?MANUAL-/i', '', $batchId);
+            $clean = preg_replace('/[^A-Za-z0-9_-]/', '', $clean);
+            if (!empty($clean)) {
+                return $clean;
+            }
+        }
+        return (string)$job->id;
+    }
+
     public function downloadBatchJson(AiBatchJob $job)
     {
-        $payload = $this->buildCleanBatchPayload($job);
-        $content = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $type = isset($payload['batch_type']) ? $payload['batch_type'] : 'businesses';
-        $filename = 'batch_' . $type . '_' . $job->id . '_' . ($job->batch_id ?: 'job') . '.json';
+        $payload  = $this->buildCleanBatchPayload($job);
+        $content  = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $filename = $this->getBatchJobFilenameCode($job) . '.json';
 
         return response($content, 200, [
             'Content-Type'        => 'application/json; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadBulkBatchJson(Request $request)
+    {
+        $query = AiBatchJob::query();
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', (string)$request->ids);
+            $ids = array_filter(array_map('intval', $ids));
+            if (!empty($ids)) {
+                $query->whereIn('id', $ids);
+            }
+        } elseif ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } else {
+            if (!$request->filled('status')) {
+                $query->where('status', 'pending');
+            }
+        }
+
+        $jobs = $query->orderBy('id', 'desc')->get();
+
+        if ($jobs->isEmpty()) {
+            return back()->with('error', 'No batch jobs found matching your download criteria.');
+        }
+
+        $statusLabel = $request->filled('ids') ? 'selected' : ($request->status ?: 'pending');
+        $zipFileName = 'batch_jobs_' . $statusLabel . '_' . now()->format('Ymd_His') . '.zip';
+        $zipPath     = tempnam(sys_get_temp_dir(), 'batch_zip_');
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return back()->with('error', 'Failed to create ZIP archive on server.');
+        }
+
+        $usedFilenames = [];
+        foreach ($jobs as $job) {
+            $payload  = $this->buildCleanBatchPayload($job);
+            $json     = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $baseName = $this->getBatchJobFilenameCode($job);
+            $filename = $baseName . '.json';
+
+            if (isset($usedFilenames[$filename])) {
+                $usedFilenames[$filename]++;
+                $filename = $baseName . '_' . $usedFilenames[$filename] . '.json';
+            } else {
+                $usedFilenames[$filename] = 1;
+            }
+
+            $zip->addFromString($filename, $json);
+        }
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipFileName, [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
+    }
+
+    public function getBulkBatchPayloads(Request $request)
+    {
+        $query = AiBatchJob::query();
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->ids) ? $request->ids : explode(',', (string)$request->ids);
+            $ids = array_filter(array_map('intval', $ids));
+            if (!empty($ids)) {
+                $query->whereIn('id', $ids);
+            }
+        } elseif ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } else {
+            if (!$request->filled('status')) {
+                $query->where('status', 'pending');
+            }
+        }
+
+        $jobs = $query->orderBy('id', 'desc')->get();
+
+        $usedFilenames = [];
+        $items = [];
+        foreach ($jobs as $job) {
+            $payload  = $this->buildCleanBatchPayload($job);
+            $baseName = $this->getBatchJobFilenameCode($job);
+            $filename = $baseName . '.json';
+
+            if (isset($usedFilenames[$filename])) {
+                $usedFilenames[$filename]++;
+                $filename = $baseName . '_' . $usedFilenames[$filename] . '.json';
+            } else {
+                $usedFilenames[$filename] = 1;
+            }
+
+            $items[] = [
+                'id'       => $job->id,
+                'batch_id' => $job->batch_id,
+                'filename' => $filename,
+                'payload'  => $payload,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'count'   => count($items),
+            'items'   => $items,
         ]);
     }
 
@@ -2603,7 +2747,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $errors         = [];
 
         foreach ($payloads as $p) {
-            $res = $this->processSingleBatchResultJson($p['json'], $job);
+            $res = $this->processSingleBatchResultJson($p['json'], $job, $p['name'] ?? null);
             if ($res['success']) {
                 $processedFiles++;
                 if (!empty($res['job_id'])) {
@@ -2657,7 +2801,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     /**
      * Process a single JSON payload string for features or businesses.
      */
-    public function processSingleBatchResultJson(string $rawJson, ?AiBatchJob $job = null): array
+    public function processSingleBatchResultJson(string $rawJson, ?AiBatchJob $job = null, ?string $filename = null): array
     {
         // Clean any markdown code blocks if user pasted ```json ... ```
         $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawJson);
@@ -2696,11 +2840,27 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             if ($batchId) {
                 $job = AiBatchJob::where('batch_id', $batchId)->first();
+                if (!$job) {
+                    $job = AiBatchJob::where('batch_id', 'like', "%{$batchId}")->first();
+                }
                 if (!$job && is_numeric($batchId)) {
                     $job = AiBatchJob::find($batchId);
                 }
                 if (!$job && preg_match('/BATCH-(\d+)/i', (string)$batchId, $m)) {
                     $job = AiBatchJob::find($m[1]);
+                }
+            }
+
+            // Fallback: match by filename if provided (e.g. 5HUUQRBU.json or BATCH-MANUAL-5HUUQRBU.json)
+            if (!$job && $filename && $filename !== 'Pasted JSON') {
+                $fnCode = pathinfo($filename, PATHINFO_FILENAME);
+                $fnCode = preg_replace('/^BATCH-(?:FEAT-)?MANUAL-/i', '', $fnCode);
+                $fnCode = preg_replace('/[^A-Za-z0-9_-]/', '', $fnCode);
+                if (!empty($fnCode)) {
+                    $job = AiBatchJob::where('batch_id', 'like', "%{$fnCode}")->first();
+                    if (!$job && is_numeric($fnCode)) {
+                        $job = AiBatchJob::find($fnCode);
+                    }
                 }
             }
 

@@ -252,6 +252,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/content-generation/submit-batch', [ContentGenerationController::class, 'submitBatch'])->name('content-gen.submit-batch');
     Route::post('/admin-dashboard/content-generation/retry-failed', [ContentGenerationController::class, 'retryFailed'])->name('content-gen.retry-failed');
     Route::get('/admin-dashboard/content-generation/batch-jobs', [ContentGenerationController::class, 'batchJobs'])->name('content-gen.batch-jobs');
+    Route::get('/admin-dashboard/content-generation/batch-jobs/download-bulk', [ContentGenerationController::class, 'downloadBulkBatchJson'])->name('content-gen.batch-jobs.download-bulk');
+    Route::get('/admin-dashboard/content-generation/batch-jobs/bulk-payloads', [ContentGenerationController::class, 'getBulkBatchPayloads'])->name('content-gen.batch-jobs.bulk-payloads');
+    Route::post('/admin-dashboard/content-generation/batch-jobs/bulk-delete', [ContentGenerationController::class, 'bulkDeleteBatchJobs'])->name('content-gen.batch-jobs.bulk-delete');
     Route::get('/admin-dashboard/content-generation/poll-batches', [ContentGenerationController::class, 'pollBatches'])->name('content-gen.poll-batches');
     Route::get('/admin-dashboard/content-generation/result/{item}', [ContentGenerationController::class, 'viewResult'])->name('content-gen.view-result');
     Route::post('/admin-dashboard/content-generation/result/{item}/apply', [ContentGenerationController::class, 'applyResult'])->name('content-gen.apply-result');
