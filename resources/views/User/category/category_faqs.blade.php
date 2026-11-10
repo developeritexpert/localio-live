@@ -303,8 +303,14 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner">
                     <div>
-                        <h2 >
-                            {{ static_text('still_have_questions_prompt') ?: 'Still have a question?' }} ({{ $catName }})
+                        @php
+                            $promptHeading = static_text('still_have_questions_prompt') ?: 'Still have questions?';
+                            if (str_contains($promptHeading, '[category]') || str_contains($promptHeading, '[category_name]')) {
+                                $promptHeading = str_replace(['[category]', '[category_name]'], $catName, $promptHeading);
+                            }
+                        @endphp
+                        <h2>
+                            {{ $promptHeading }}
                         </h2>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
                             Ask the Localio community
