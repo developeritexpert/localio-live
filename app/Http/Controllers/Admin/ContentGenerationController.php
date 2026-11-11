@@ -1167,8 +1167,8 @@ class ContentGenerationController extends Controller
                 $businessModels = Business::with([
                     'translations' => fn($q) => $q->where('lang_id', 1),
                     'websites',
-                    'category.translations' => fn($q) => $q->where('lang_id', 1),
-                    'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
+                    'category.translation' => fn($q) => $q->where('lang_id', 1),
+                    'category.parent.translation' => fn($q) => $q->where('lang_id', 1),
                 ])->whereIn('id', $chunk)->get();
 
                 foreach ($chunk as $bizId) {
@@ -1188,14 +1188,16 @@ class ContentGenerationController extends Controller
 
                     if ($cat) {
                         if (empty($cat->parent_id)) {
+                            // Primary is a top-level Category
                             $primaryCatId = $cat->id;
-                            $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                            $primaryCatName = $cat->translation?->name ?? ($cat->name ?? ('Category #' . $cat->id));
                         } else {
+                            // Primary is a child Subcategory
                             $primarySubId = $cat->id;
-                            $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                            $primarySubName = $cat->translation?->name ?? ($cat->name ?? ('Subcategory #' . $cat->id));
                             $parentCatId = $cat->parent_id;
                             $parentCat = $cat->parent;
-                            $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                            $parentCatName = $parentCat ? ($parentCat->translation?->name ?? ($parentCat->name ?? ('Category #' . $parentCat->id))) : null;
                         }
                     }
 
@@ -1278,7 +1280,7 @@ class ContentGenerationController extends Controller
 
             $businessName    = optional($business->translations->first())->name ?? 'Business #' . $businessId;
             $businessUrl     = $business->permanent_url ?: ($business->affiliate_link ?: '');
-            $categoryName    = optional(optional($business->category)->translations->firstWhere('lang_id', 1))->name ?? optional($business->category)->name ?? '';
+            $categoryName    = optional($business->category)->translation?->name ?? (optional($business->category)->name ?? '');
             $subcategoryName = $business->subCategories->pluck('name')->filter()->implode(', ');
 
             // Contextual pros/cons list for pros_cons field (includes IDs for strict selection)
@@ -2483,8 +2485,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $businesses  = Business::with([
             'translations' => fn($q) => $q->where('lang_id', 1),
             'websites',
-            'category.translations' => fn($q) => $q->where('lang_id', 1),
-            'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
+            'category.translation' => fn($q) => $q->where('lang_id', 1),
+            'category.parent.translation' => fn($q) => $q->where('lang_id', 1),
         ])->whereIn('id', $businessIds)->get();
 
         $bList = [];
@@ -2501,16 +2503,16 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             if ($cat) {
                 if (empty($cat->parent_id)) {
-                    // Primary is a Category
+                    // Primary is a top-level Category
                     $primaryCatId = $cat->id;
-                    $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                    $primaryCatName = $cat->translation?->name ?? ($cat->name ?? ('Category #' . $cat->id));
                 } else {
-                    // Primary is a Subcategory
+                    // Primary is a child Subcategory
                     $primarySubId = $cat->id;
-                    $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                    $primarySubName = $cat->translation?->name ?? ($cat->name ?? ('Subcategory #' . $cat->id));
                     $parentCatId = $cat->parent_id;
                     $parentCat = $cat->parent;
-                    $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                    $parentCatName = $parentCat ? ($parentCat->translation?->name ?? ($parentCat->name ?? ('Category #' . $parentCat->id))) : null;
                 }
             }
 
