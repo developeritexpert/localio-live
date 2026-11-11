@@ -906,7 +906,15 @@ class ContentGenerationController extends Controller
                 $a = $faq['answer'] ?? ($faq['a'] ?? null);
                 if (!$q || !$a) continue;
 
-                $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? '')));
+                $rawFaqCatId = $faq['category_id'] ?? ($faq['faq_category_id'] ?? ($faq['business_faq_category_id'] ?? null));
+                $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? ($faq['faq_category_name'] ?? ''))));
+                if (empty($catName) && !empty($rawFaqCatId) && is_numeric($rawFaqCatId)) {
+                    $catModel = Category::with('translation')->find((int)$rawFaqCatId);
+                    if ($catModel) {
+                        $catName = $catModel->translation?->name ?? ($catModel->name ?? '');
+                    }
+                }
+
                 $faqCatId = null;
                 if (!empty($catName)) {
                     $catObj = BusinessFaqCategory::where('business_id', $businessId)
@@ -968,7 +976,7 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
-        // 11. Active countries (support country_ids as primary, fallback to country_codes)
+        // 11. Active countries (support country_ids as primary, fallback to country_codes and country_names)
         if (isset($item['active_countries']) && is_array($item['active_countries'])) {
             $activeAll = !empty($item['active_countries']['active_all_countries']);
             $business->active_all_countries = $activeAll ? 1 : 0;
@@ -979,6 +987,17 @@ class ContentGenerationController extends Controller
                     $countryIds = array_values(array_filter(array_map('intval', $item['active_countries']['country_ids'])));
                 } elseif (!empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
                     $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
+                } elseif (!empty($item['active_countries']['country_names']) && is_array($item['active_countries']['country_names'])) {
+                    $countryIds = \App\Models\Country::whereIn('name', $item['active_countries']['country_names'])->pluck('id')->toArray();
+                } elseif (!empty($item['active_countries']['countries']) && is_array($item['active_countries']['countries'])) {
+                    $cList = $item['active_countries']['countries'];
+                    if (!empty($cList)) {
+                        if (is_numeric($cList[0] ?? null)) {
+                            $countryIds = array_values(array_filter(array_map('intval', $cList)));
+                        } else {
+                            $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
+                        }
+                    }
                 }
                 if (!empty($countryIds)) {
                     $business->countries()->sync($countryIds);
@@ -1167,8 +1186,8 @@ class ContentGenerationController extends Controller
                 $businessModels = Business::with([
                     'translations' => fn($q) => $q->where('lang_id', 1),
                     'websites',
-                    'category.translations' => fn($q) => $q->where('lang_id', 1),
-                    'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
+                    'category.translation' => fn($q) => $q->where('lang_id', 1),
+                    'category.parent.translation' => fn($q) => $q->where('lang_id', 1),
                 ])->whereIn('id', $chunk)->get();
 
                 foreach ($chunk as $bizId) {
@@ -1188,14 +1207,16 @@ class ContentGenerationController extends Controller
 
                     if ($cat) {
                         if (empty($cat->parent_id)) {
+                            // Primary is a top-level Category
                             $primaryCatId = $cat->id;
-                            $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                            $primaryCatName = $cat->translation?->name ?? ($cat->name ?? ('Category #' . $cat->id));
                         } else {
+                            // Primary is a child Subcategory
                             $primarySubId = $cat->id;
-                            $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                            $primarySubName = $cat->translation?->name ?? ($cat->name ?? ('Subcategory #' . $cat->id));
                             $parentCatId = $cat->parent_id;
                             $parentCat = $cat->parent;
-                            $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                            $parentCatName = $parentCat ? ($parentCat->translation?->name ?? ($parentCat->name ?? ('Category #' . $parentCat->id))) : null;
                         }
                     }
 
@@ -1278,14 +1299,26 @@ class ContentGenerationController extends Controller
 
             $businessName    = optional($business->translations->first())->name ?? 'Business #' . $businessId;
             $businessUrl     = $business->permanent_url ?: ($business->affiliate_link ?: '');
-            $categoryName    = optional(optional($business->category)->translations->firstWhere('lang_id', 1))->name ?? optional($business->category)->name ?? '';
+            $categoryName    = optional($business->category)->translation?->name ?? (optional($business->category)->name ?? '');
             $subcategoryName = $business->subCategories->pluck('name')->filter()->implode(', ');
 
             // Contextual pros/cons list for pros_cons field (includes IDs for strict selection)
             $availableProsStr = "- [ID: 1] High reliability\n- [ID: 2] Good value for money\n- [ID: 3] Affordable pricing\n- [ID: 4] Easy to use interface\n- [ID: 5] 24/7 expert customer support\n- [ID: 6] Fast performance\n- [ID: 7] Comprehensive features";
             $availableConsStr = "- [ID: 8] Steep learning curve\n- [ID: 9] Limited advanced features\n- [ID: 10] Hidden additional fees\n- [ID: 11] Unclear pricing\n- [ID: 12] Occasional support delays";
+            $parentCatIds = [];
+            if ($business->category && !empty($business->category->parent_id)) {
+                $parentCatIds[] = (int)$business->category->parent_id;
+            }
+            if ($business->subCategories) {
+                foreach ($business->subCategories as $sc) {
+                    if (!empty($sc->parent_id)) {
+                        $parentCatIds[] = (int)$sc->parent_id;
+                    }
+                }
+            }
             $allBusinessCatIds = array_values(array_unique(array_filter(array_merge(
                 [$business->category_id],
+                $parentCatIds,
                 $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
             ))));
             if (!empty($allBusinessCatIds)) {
@@ -1918,7 +1951,15 @@ class ContentGenerationController extends Controller
                         $answer   = $faq['answer']   ?? null;
                         if (!$question || !$answer) continue;
 
-                        $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? '')));
+                        $rawFaqCatId = $faq['category_id'] ?? ($faq['faq_category_id'] ?? ($faq['business_faq_category_id'] ?? null));
+                        $catName = trim($faq['category'] ?? ($faq['category_name'] ?? ($faq['cat'] ?? ($faq['faq_category_name'] ?? ''))));
+                        if (empty($catName) && !empty($rawFaqCatId) && is_numeric($rawFaqCatId)) {
+                            $catModel = Category::with('translation')->find((int)$rawFaqCatId);
+                            if ($catModel) {
+                                $catName = $catModel->translation?->name ?? ($catModel->name ?? '');
+                            }
+                        }
+
                         $faqCatId = null;
                         if (!empty($catName)) {
                             $catObj = BusinessFaqCategory::where('business_id', $businessId)
@@ -1969,6 +2010,17 @@ class ContentGenerationController extends Controller
                         $countryIds = array_values(array_filter(array_map('intval', $data['country_ids'])));
                     } elseif (!empty($data['country_codes']) && is_array($data['country_codes'])) {
                         $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
+                    } elseif (!empty($data['country_names']) && is_array($data['country_names'])) {
+                        $countryIds = \App\Models\Country::whereIn('name', $data['country_names'])->pluck('id')->toArray();
+                    } elseif (!empty($data['countries']) && is_array($data['countries'])) {
+                        $cList = $data['countries'];
+                        if (!empty($cList)) {
+                            if (is_numeric($cList[0] ?? null)) {
+                                $countryIds = array_values(array_filter(array_map('intval', $cList)));
+                            } else {
+                                $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
+                            }
+                        }
                     }
                     $biz = Business::find($businessId);
                     if ($biz && !empty($countryIds)) {
@@ -1992,24 +2044,6 @@ class ContentGenerationController extends Controller
                     BusinessTranslation::where('business_id', $businessId)
                         ->where('lang_id', 1)
                         ->update(['description' => $content]);
-                }
-                break;
-
-            case 'features':
-                $features = $data['features'] ?? [];
-                if (!empty($features) && is_array($features)) {
-                    BusinessUsp::where('business_id', $businessId)->delete();
-                    foreach ($features as $index => $feature) {
-                        $title = $feature['title']       ?? null;
-                        $desc  = $feature['description'] ?? null;
-                        if (!$title) continue;
-                        $text = $desc ? "{$title}: {$desc}" : $title;
-                        BusinessUsp::create([
-                            'business_id' => $businessId,
-                            'text'        => $text,
-                            'sort_order'  => $index + 1,
-                        ]);
-                    }
                 }
                 break;
 
@@ -2483,8 +2517,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         $businesses  = Business::with([
             'translations' => fn($q) => $q->where('lang_id', 1),
             'websites',
-            'category.translations' => fn($q) => $q->where('lang_id', 1),
-            'category.parent.translations' => fn($q) => $q->where('lang_id', 1),
+            'category.translation' => fn($q) => $q->where('lang_id', 1),
+            'category.parent.translation' => fn($q) => $q->where('lang_id', 1),
         ])->whereIn('id', $businessIds)->get();
 
         $bList = [];
@@ -2501,16 +2535,16 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
 
             if ($cat) {
                 if (empty($cat->parent_id)) {
-                    // Primary is a Category
+                    // Primary is a top-level Category
                     $primaryCatId = $cat->id;
-                    $primaryCatName = optional($cat->translations->first())->name ?? $cat->name;
+                    $primaryCatName = $cat->translation?->name ?? ($cat->name ?? ('Category #' . $cat->id));
                 } else {
-                    // Primary is a Subcategory
+                    // Primary is a child Subcategory
                     $primarySubId = $cat->id;
-                    $primarySubName = optional($cat->translations->first())->name ?? $cat->name;
+                    $primarySubName = $cat->translation?->name ?? ($cat->name ?? ('Subcategory #' . $cat->id));
                     $parentCatId = $cat->parent_id;
                     $parentCat = $cat->parent;
-                    $parentCatName = $parentCat ? (optional($parentCat->translations->first())->name ?? $parentCat->name) : null;
+                    $parentCatName = $parentCat ? ($parentCat->translation?->name ?? ($parentCat->name ?? ('Category #' . $parentCat->id))) : null;
                 }
             }
 
@@ -2791,7 +2825,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
         ->map(function ($cat) {
             $catName = optional($cat->translation)->name ?? ($cat->name ?? ('Category #' . $cat->id));
             $features = $cat->features->map(function ($f) {
-                $fName = optional($f->translations->first())->name ?? ('Feature #' . $f->id);
+                $fName = $f->translations->firstWhere('lang_id', 1)?->name ?? ($f->translations->first()?->name ?? ('Feature #' . $f->id));
                 return [
                     'feature_id'   => $f->id,
                     'feature_name' => $fName,
@@ -3696,9 +3730,19 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
             if (is_string($val) && trim($val) !== '') {
                 $clean = trim($val);
-                $found = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
-                    ->orWhere('name', 'like', '%' . $clean . '%')
+                // Exact match in English first
+                $found = \App\Models\CategoryTranslation::where('lang_id', 1)
+                    ->whereRaw('LOWER(name) = ?', [strtolower($clean)])
                     ->value('category_id');
+                if (!$found) {
+                    $found = \App\Models\CategoryTranslation::whereRaw('LOWER(name) = ?', [strtolower($clean)])
+                        ->value('category_id');
+                }
+                if (!$found) {
+                    $found = \App\Models\CategoryTranslation::where('lang_id', 1)
+                        ->where('name', 'like', '%' . $clean . '%')
+                        ->value('category_id');
+                }
                 if ($found) return (int)$found;
             }
             return null;
@@ -3839,9 +3883,21 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
     {
         $businessId = $business->id;
 
-        // Gather all category IDs the business belongs to
+        // Gather all category IDs the business belongs to (including parent categories)
+        $parentCatIds = [];
+        if ($business->category && !empty($business->category->parent_id)) {
+            $parentCatIds[] = (int)$business->category->parent_id;
+        }
+        if ($business->subCategories) {
+            foreach ($business->subCategories as $sc) {
+                if (!empty($sc->parent_id)) {
+                    $parentCatIds[] = (int)$sc->parent_id;
+                }
+            }
+        }
         $allCategoryIds = array_values(array_unique(array_filter(array_merge(
             [$business->category_id],
+            $parentCatIds,
             $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
         ))));
 
@@ -4001,7 +4057,23 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $featuresInput = array_filter(array_map('trim', explode("\n", (string)$featuresInput)));
         }
 
-        $categoryId = $business->category_id;
+        $candidateCatIds = [];
+        if ($business->category_id) {
+            $candidateCatIds[] = (int)$business->category_id;
+            if ($business->category && !empty($business->category->parent_id)) {
+                $candidateCatIds[] = (int)$business->category->parent_id;
+            }
+        }
+        if ($business->subCategories) {
+            foreach ($business->subCategories as $sc) {
+                $candidateCatIds[] = (int)$sc->id;
+                if (!empty($sc->parent_id)) {
+                    $candidateCatIds[] = (int)$sc->parent_id;
+                }
+            }
+        }
+        $candidateCatIds = array_values(array_unique(array_filter($candidateCatIds)));
+
         $validFeatureIds = [];
 
         foreach ($featuresInput as $item) {
@@ -4011,7 +4083,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             if (is_numeric($val)) {
                 $featId = (int)$val;
                 $featQuery = Feature::where('id', $featId)->where('status', 'active');
-                if ($categoryId && (clone $featQuery)->where('category_id', $categoryId)->exists()) {
+                if (!empty($candidateCatIds) && (clone $featQuery)->whereIn('category_id', $candidateCatIds)->exists()) {
                     $validFeatureIds[] = $featId;
                 } elseif ($featQuery->exists()) {
                     $validFeatureIds[] = $featId;
@@ -4022,8 +4094,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     ->whereHas('translations', function($t) use ($cleanName) {
                         $t->where('lang_id', 1)->where('name', 'like', $cleanName);
                     });
-                if ($categoryId) {
-                    $matched = (clone $featQuery)->where('category_id', $categoryId)->value('id');
+                if (!empty($candidateCatIds)) {
+                    $matched = (clone $featQuery)->whereIn('category_id', $candidateCatIds)->value('id');
                 } else {
                     $matched = null;
                 }
