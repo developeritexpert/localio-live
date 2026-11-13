@@ -34,6 +34,7 @@ class TopRatedProduct extends Component
     public $categorySlug = null;
     public $sortBy = 'highest_rated';
     public $showSortDropdown = false;
+    protected $memoizedProducts = null;
     // Configure URL parameters - page is now path-based, not query string
     protected $queryString = [
         'selectedOptions' => ['except' => []],
@@ -129,6 +130,8 @@ class TopRatedProduct extends Component
         if ($this->page > 1) {
             $this->page--;
             $this->setPage($this->page);
+            $this->memoizedProducts = null;
+            unset($this->products);
             $this->dispatchPaginationUrl();
             $this->dispatch('scroll-to-middle');
         }
@@ -140,6 +143,8 @@ class TopRatedProduct extends Component
         if ($this->page < $totalPages) {
             $this->page++;
             $this->setPage($this->page);
+            $this->memoizedProducts = null;
+            unset($this->products);
             $this->dispatchPaginationUrl();
             $this->dispatch('scroll-to-middle');
         }
@@ -149,6 +154,8 @@ class TopRatedProduct extends Component
     {
         $this->page = $page;
         $this->setPage($this->page);
+        $this->memoizedProducts = null;
+        unset($this->products);
         $this->dispatchPaginationUrl();
         $this->dispatch('scroll-to-middle');
     }
@@ -156,6 +163,9 @@ class TopRatedProduct extends Component
     private function resetPage()
     {
         $this->page = 1;
+        $this->setPage(1);
+        $this->memoizedProducts = null;
+        unset($this->products);
         $this->dispatchPaginationUrl();
     }
 
@@ -264,29 +274,8 @@ class TopRatedProduct extends Component
 
     public function calculateRatingCounts()
     {
-        // Reset counts
-        $this->ratingCounts = [
-            5 => 0,
-            4 => 0,
-            3 => 0,
-            2 => 0,
-            1 => 0
-        ];
-
-        // Use the same filtered businesses that are returned by getProductsProperty()
-        $businesses = $this->getProductsProperty()->getCollection(); // Get raw collection from paginator
-
-        foreach ($businesses as $business) {
-            $avgRating = $business->reviews->avg('rating');
-
-            if ($avgRating) {
-                foreach ([5, 4, 3, 2, 1] as $rating) {
-                    if ($avgRating >= $rating) {
-                        $this->ratingCounts[$rating]++;
-                    }
-                }
-            }
-        }
+        // Triggers getProductsProperty() which calculates $this->ratingCounts across all matching businesses
+        $this->getProductsProperty();
     }
 
 
@@ -361,8 +350,7 @@ class TopRatedProduct extends Component
 
     public function getTopAffiliatedBusinessIdProperty()
     {
-        return Business::where('status', 1)
-            ->where('is_affiliate', 1)
+        return Business::where('is_affiliate', 1)
             ->whereHas('languages', function ($query) {
                 $query->where('language_id', $this->lang_id);
             })
@@ -382,12 +370,16 @@ class TopRatedProduct extends Component
 
     public function getProductsProperty()
     {
+        if ($this->memoizedProducts !== null) {
+            return $this->memoizedProducts;
+        }
+
         // Start with businesses query
         $query = Business::whereHas('translations', function ($q) {
-            $q->where('lang_id', $this->lang_id);
-        })->whereHas('languages', function ($query) {
-            $query->where('language_id', $this->lang_id);
-        })
+                $q->where('lang_id', $this->lang_id);
+            })->whereHas('languages', function ($query) {
+                $query->where('language_id', $this->lang_id);
+            })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
                     ->orWhere(function ($q) {
@@ -419,8 +411,26 @@ class TopRatedProduct extends Component
                 $q->whereIn('status', ['published', 'active']);
             }], 'rating')
             ->orderByDesc('is_affiliate')
-            ->orderByDesc('avg_rating') // Order by rating high to low
+            ->orderByRaw('COALESCE(avg_rating, admin_rating, 0) DESC')
             ->orderBy('id'); // Secondary sort for consistent pagination
+
+        // Apply category filter if categorySlug is present
+        if (!empty($this->categorySlug)) {
+            $cat = Category::whereHas('translations', function ($q) {
+                $q->where('slug', $this->categorySlug);
+            })->first();
+
+            if ($cat) {
+                $catIds = array_merge([$cat->id], Category::where('parent_id', $cat->id)->pluck('id')->toArray());
+                $query->where(function ($q) use ($catIds) {
+                    $q->whereIn('category_id', $catIds)
+                      ->orWhereHas('subCategories', function ($sq) use ($catIds) {
+                          $sq->whereIn('categories.id', $catIds);
+                      });
+                });
+            }
+        }
+
         // Apply search filter if exists
         if (!empty($this->searchTerm)) {
             $query->whereHas('translations', function ($q) {
@@ -472,43 +482,44 @@ class TopRatedProduct extends Component
 
         $businesses = $query->get();
 
-        $businesses->each(function ($business) {
-            if ($business->icon_id && !file_exists(public_path($business->icon_id))) {
-                \Log::warning("Business icon missing: {$business->icon_id} for business ID: {$business->id}");
-                $business->icon_id = null;
-            }
-        });
-
         // Filter businesses by price range
-        $filtered = $businesses->filter(function ($business) {
-            if (!$business->is_affiliate) {
-                return !$this->isPriceFilterActive;
-            }
-
-            if (!$this->isPriceFilterActive) {
-                return true;
-            }
-
-            $validPrices = $business->products->flatMap(function ($product) {
-                return $product->prices;
-            })->map(function ($price) {
-                $now = now();
-                if ($price->discount_price && $price->discount_expiration_date && $now->lte($price->discount_expiration_date)) {
-                    return $price->discount_price;
-                } elseif ($price->renewal_price) {
-                    return $price->renewal_price;
-                } else {
-                    return $price->price;
+        if (!$this->isPriceFilterActive) {
+            $filtered = $businesses;
+        } else {
+            $filtered = $businesses->filter(function ($business) {
+                if (!$business->is_affiliate) {
+                    return false;
                 }
-            })->filter(fn($p) => !is_null($p));
 
-            if ($validPrices->isEmpty()) return false;
+                if (!$business->products || $business->products->isEmpty()) {
+                    return false;
+                }
 
-            $min = $validPrices->min();
-            return $min >= $this->minPrice && $min <= $this->maxPrice;
-        });
+                $validPrices = $business->products->flatMap(function ($product) {
+                    return $product->prices;
+                })->map(function ($price) {
+                    $now = now();
+                    if ($price->discount_price && $price->discount_expiration_date && $now->lte($price->discount_expiration_date)) {
+                        return $price->discount_price;
+                    } elseif ($price->renewal_price) {
+                        return $price->renewal_price;
+                    } else {
+                        return $price->price;
+                    }
+                })->filter(fn($p) => !is_null($p));
+
+                if ($validPrices->isEmpty()) return false;
+
+                $min = $validPrices->min();
+                return $min >= $this->minPrice && $min <= $this->maxPrice;
+            });
+        }
 
         $getStartingPrice = function ($business) {
+            if (!$business->products || $business->products->isEmpty()) {
+                return null;
+            }
+
             $validPrices = $business->products->flatMap(function ($product) {
                 return $product->prices;
             })->map(function ($price) {
@@ -525,89 +536,107 @@ class TopRatedProduct extends Component
             return $validPrices->isNotEmpty() ? $validPrices->min() : null;
         };
 
-        $getMetrics = function ($business) use ($getStartingPrice) {
-            $activeReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
-            $reviewCount = $activeReviews->count();
-            $avgRating = $reviewCount > 0 ? (float)$activeReviews->avg('rating') : 0.0;
-            $recCount = $activeReviews->where('recommend', 1)->count();
-            $recRate = $reviewCount > 0 ? (float)(($recCount / $reviewCount) * 100) : 0.0;
-            $name = mb_strtolower(trim($business->translations->first()?->name ?? $business->name ?? ''));
-            $price = $getStartingPrice($business);
-
-            return [
-                'is_affiliate' => (int)($business->is_affiliate ?? 0),
-                'name' => $name,
-                'avg_rating' => $avgRating,
-                'review_count' => $reviewCount,
-                'rec_rate' => $recRate,
-                'price' => $price,
-            ];
-        };
-
         $sortBy = $this->sortBy ?? 'highest_rated';
 
-        $filtered = $filtered->sort(function ($a, $b) use ($sortBy, $getMetrics) {
-            $mA = $getMetrics($a);
-            $mB = $getMetrics($b);
+        // When a non-default sort is active, precompute sort metrics and re-sort in PHP
+        if ($sortBy !== 'highest_rated') {
+            foreach ($filtered as $business) {
+                $activeReviews = $business->reviews;
+                $reviewCount = $activeReviews ? $activeReviews->count() : 0;
+                $avgRating = $reviewCount > 0 ? (float)$activeReviews->avg('rating') : (float)($business->admin_rating ?? 0.0);
+                $recRate = 0.0;
+                if ($reviewCount > 0) {
+                    $recCount = $activeReviews->where('recommend', 1)->count();
+                    $recRate = (float)(($recCount / $reviewCount) * 100);
+                }
+                $name = mb_strtolower(trim($business->translations->first()?->name ?? $business->name ?? ''));
+                $price = $getStartingPrice($business);
 
-            switch ($sortBy) {
-                case 'most_reviewed':
-                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
-                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
-                    }
-                    if ($mA['review_count'] !== $mB['review_count']) {
-                        return $mB['review_count'] <=> $mA['review_count'];
-                    }
-                    return $mB['avg_rating'] <=> $mA['avg_rating'];
-
-                case 'most_recommended':
-                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
-                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
-                    }
-                    if ($mA['rec_rate'] !== $mB['rec_rate']) {
-                        return $mB['rec_rate'] <=> $mA['rec_rate'];
-                    }
-                    return $mB['avg_rating'] <=> $mA['avg_rating'];
-
-                case 'price_low_high':
-                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
-                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
-                    }
-                    $pA = is_null($mA['price']) ? PHP_INT_MAX : $mA['price'];
-                    $pB = is_null($mB['price']) ? PHP_INT_MAX : $mB['price'];
-                    if ($pA !== $pB) {
-                        return $pA <=> $pB;
-                    }
-                    return $mB['avg_rating'] <=> $mA['avg_rating'];
-
-                case 'price_high_low':
-                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
-                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
-                    }
-                    $pA = is_null($mA['price']) ? -1 : $mA['price'];
-                    $pB = is_null($mB['price']) ? -1 : $mB['price'];
-                    if ($pA !== $pB) {
-                        return $pB <=> $pA;
-                    }
-                    return $mB['avg_rating'] <=> $mA['avg_rating'];
-
-                case 'name_a_z':
-                    return strcmp($mA['name'], $mB['name']);
-
-                case 'name_z_a':
-                    return strcmp($mB['name'], $mA['name']);
-
-                case 'highest_rated':
-                default:
-                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
-                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
-                    }
-                    if ($mA['avg_rating'] !== $mB['avg_rating']) {
-                        return $mB['avg_rating'] <=> $mA['avg_rating'];
-                    }
-                    return $mB['review_count'] <=> $mA['review_count'];
+                $business->sort_metric = [
+                    'is_affiliate' => (int)($business->is_affiliate ?? 0),
+                    'name'         => $name,
+                    'avg_rating'   => $avgRating,
+                    'review_count' => $reviewCount,
+                    'rec_rate'     => $recRate,
+                    'price'        => $price,
+                ];
             }
-        })->values();
+
+            $filtered = $filtered->sort(function ($a, $b) use ($sortBy) {
+                $mA = $a->sort_metric;
+                $mB = $b->sort_metric;
+
+                switch ($sortBy) {
+                    case 'most_reviewed':
+                        if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                            return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                        }
+                        if ($mA['review_count'] !== $mB['review_count']) {
+                            return $mB['review_count'] <=> $mA['review_count'];
+                        }
+                        return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                    case 'most_recommended':
+                        if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                            return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                        }
+                        if ($mA['rec_rate'] !== $mB['rec_rate']) {
+                            return $mB['rec_rate'] <=> $mA['rec_rate'];
+                        }
+                        return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                    case 'price_low_high':
+                        if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                            return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                        }
+                        $pA = is_null($mA['price']) ? PHP_INT_MAX : $mA['price'];
+                        $pB = is_null($mB['price']) ? PHP_INT_MAX : $mB['price'];
+                        if ($pA !== $pB) {
+                            return $pA <=> $pB;
+                        }
+                        return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                    case 'price_high_low':
+                        if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                            return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                        }
+                        $pA = is_null($mA['price']) ? -1 : $mA['price'];
+                        $pB = is_null($mB['price']) ? -1 : $mB['price'];
+                        if ($pA !== $pB) {
+                            return $pB <=> $pA;
+                        }
+                        return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                    case 'name_a_z':
+                        return strcmp($mA['name'], $mB['name']);
+
+                    case 'name_z_a':
+                        return strcmp($mB['name'], $mA['name']);
+
+                    default:
+                        if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                            return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                        }
+                        if ($mA['avg_rating'] !== $mB['avg_rating']) {
+                            return $mB['avg_rating'] <=> $mA['avg_rating'];
+                        }
+                        return $mB['review_count'] <=> $mA['review_count'];
+                }
+            })->values();
+        }
+
+        // Update rating breakdown counts based on filtered results
+        $this->ratingCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+        foreach ($filtered as $bItem) {
+            $r = (float)($bItem->avg_rating ?? $bItem->admin_rating ?? 0);
+            if ($r > 0) {
+                foreach ([5, 4, 3, 2, 1] as $star) {
+                    if ($r >= $star) {
+                        $this->ratingCounts[$star]++;
+                    }
+                }
+            }
+        }
 
         // Count results
         $totalCount = $filtered->count();
@@ -636,6 +665,7 @@ class TopRatedProduct extends Component
             ]
         );
 
+        $this->memoizedProducts = $paginator;
         return $paginator;
     }
     public function updateActiveFilters()
