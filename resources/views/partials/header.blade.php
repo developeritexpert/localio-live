@@ -9,7 +9,7 @@
     $routeName = $routeName ?? Route::currentRouteName() ?? 'none';
 ?>
     <header>
-        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
+        <div class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
@@ -144,6 +144,7 @@
 
 
 
+@push('styles')
 <style>
 /* ==========================================================================
    Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
@@ -654,6 +655,7 @@
 }
 
 </style>
+@endpush
 
                         <!-- mobile nav -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -1220,7 +1222,7 @@
                 </div>
             </div>
 
-        </section>
+        </div>
     </header>
 
 

@@ -532,11 +532,11 @@
                         @endif
                     </div>
                     <div class="review_text size18">
-                        <p class="review-title" id="review-title-{{ $review->id }}" style="margin-bottom: 4px;">
+                        <p class="review-title" id="tp-review-title-{{ $review->id }}" style="margin-bottom: 4px;">
                             {{ $review->display_title ?? $review->translations->first()->title ?? '' }}
                         </p>
                         <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
-                        <p class="review-display-text" id="review-text-{{ $review->id }}">{{ strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available') }}</p>
+                        <p class="review-display-text" id="tp-review-text-{{ $review->id }}">{{ strip_tags($review->display_text ?? $review->translations->first()->description ?? 'No Description Available') }}</p>
                         @if(!empty($review->can_toggle_original) && !empty($review->is_translated))
                             <div class="mt-1">
                                 <a href="javascript:void(0);" 

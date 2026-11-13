@@ -258,7 +258,7 @@
                                                         {{ $question }}
                                                     </button>
                                                 </h3>
-                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
+                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" role="region" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
                                                     <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
@@ -357,7 +357,7 @@
                                     <div class="review-header d-flex justify-content-between align-items-start">
                                         <div class="review-user d-flex align-items-center gap-2">
                                             @if($u && $u->profile_image && $u->profile_image !== 'front/img/default.png')
-                                                <img src="{{ asset($u->profile_image) }}" class="rounded-circle" width="38" height="38" style="object-fit:cover;">
+                                                <img src="{{ asset($u->profile_image) }}" alt="{{ $displayName }}" class="rounded-circle" width="38" height="38" style="object-fit:cover;">
                                             @else
                                                 <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                     <span style="color: white; font-weight: bold; font-size: 16px;">{{ strtoupper(substr($displayName, 0, 1)) }}</span>
@@ -434,12 +434,14 @@
                                     <div class="review-user d-flex align-items-center gap-2">
                                         @if($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
                                         <img src="{{ asset($pDisc->user->profile_image) }}"
+                                            alt="{{ $pDisc->author_name ?? 'User' }}"
                                             class="rounded-circle"
                                             width="38"
                                             height="38"
                                             style="object-fit: cover;">
                                         @elseif($pDisc->author_avatar)
                                         <img src="{{ asset($pDisc->author_avatar) }}"
+                                            alt="{{ $pDisc->author_name ?? 'User' }}"
                                             class="rounded-circle"
                                             width="38"
                                             height="38"
@@ -575,7 +577,7 @@
 <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
-            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
+            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px;">
                 {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
             </h2>
             @if(!empty($exploreSubtext))

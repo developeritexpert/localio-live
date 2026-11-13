@@ -2301,7 +2301,7 @@
                                         {{ $faq['question'] }}
                                     </button>
                                 </h3>
-                                <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
+                                <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" role="region" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
                                     <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
@@ -2339,7 +2339,7 @@
         <section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 class="explore-cat-h2" style="text-transform: math-auto;">
+                    <h2 class="explore-cat-h2">
                         {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
                     </h2>
                     @if(!empty($exploreSubtext))
