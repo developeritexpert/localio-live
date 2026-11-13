@@ -70,14 +70,6 @@
     $pros = $pros->unique()->take(3);
     $cons = $cons->unique()->take(3);
 
-    // Fallbacks if no pros/cons exist
-    if ($pros->isEmpty()) {
-        $pros = collect(['Wide range of IT services', 'Strong focus on innovation', 'Professional project management']);
-    }
-    if ($cons->isEmpty()) {
-        $cons = collect(['Enterprise services can be expensive', 'Initial consultation may take time', 'Custom projects require detailed requirements']);
-    }
-
     $totalReviewsCount = $totalReviews ?? ($ratingCount ?: 0);
 @endphp
 
@@ -226,14 +218,29 @@
                                 );
                             }
                         }
+                        $hasAnyPros = (isset($aggregatedPros) && count($aggregatedPros) > 0) || (isset($pros) && $pros->count() > 0);
+                        $hasAnyCons = (isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($cons) && $cons->count() > 0);
+
+                        $defaultHeadline = $hasUnder10 ? 'Pros & cons from public sources' : (static_text('community_sentiment_heading') ?: 'What the community says');
+                        if ($hasAnyPros && !$hasAnyCons) {
+                            $defaultHeadline = $hasUnder10 ? 'Pros from public sources' : (static_text('pros_label') ?: 'Pros users mention most');
+                        } elseif ($hasAnyCons && !$hasAnyPros) {
+                            $defaultHeadline = $hasUnder10 ? 'Cons from public sources' : (static_text('cons_label') ?: 'Cons users mention most');
+                        }
+
                         $finalReviewsProsConsHeadline = !empty($resolvedReviewsProsCons['headline'])
                             ? $resolvedReviewsProsCons['headline']
-                            : ($hasUnder10 ? 'Pros & cons from public sources' : (static_text('community_sentiment_heading') ?: 'What the community says'));
+                            : $defaultHeadline;
+
+                        if (!$hasAnyCons && $hasAnyPros && stripos($finalReviewsProsConsHeadline, 'cons') !== false) {
+                            $finalReviewsProsConsHeadline = preg_replace('/(\s*(&amp;|&|\band\b)\s*cons\b|\s*drawbacks\b)/i', '', $finalReviewsProsConsHeadline);
+                        }
+
                         $finalReviewsProsConsSubtext = !empty($reviewsProConsIntro)
                             ? $reviewsProConsIntro
                             : (!empty($resolvedReviewsProsCons['subtext']) ? $resolvedReviewsProsCons['subtext'] : null);
                     @endphp
-                    @if((isset($aggregatedPros) && count($aggregatedPros) > 0 && isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($pros) && $pros->count() > 0 && isset($cons) && $cons->count() > 0))
+                    @if($hasAnyPros || $hasAnyCons)
                     <div class="col-lg-12 mt-4 mb-4" id="section-pros-cons">
                         <div class="pros-cons-header mb-3">
                             <h2 style="margin-bottom: 8px;">
@@ -246,9 +253,10 @@
                             @endif
                         </div>
 
-                        <!-- Desktop Pros & Cons (Side by Side) -->
+                        <!-- Desktop Pros & Cons -->
                         <div class="row g-4 d-none d-md-flex">
-                            <div class="col-md-6">
+                            @if($hasAnyPros)
+                            <div class="{{ $hasAnyCons ? 'col-md-6' : 'col-md-12' }}">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
                                         <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('pros_label') ?: 'Pros' }}</p>
@@ -284,7 +292,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            @endif
+
+                            @if($hasAnyCons)
+                            <div class="{{ $hasAnyPros ? 'col-md-6' : 'col-md-12' }}">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
                                         <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('cons_label') ?: 'Cons' }}</p>
@@ -320,10 +331,12 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
 
-                        <!-- Mobile Pros & Cons Tabs (Tabination from business detail) -->
+                        <!-- Mobile Pros & Cons -->
                         <div class="mobile-pros-cons d-md-none mt-3">
+                            @if($hasAnyPros && $hasAnyCons)
                             <ul class="nav nav-tabs nav-justified" id="prosConsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: nowrap;">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="pros-tab" data-bs-toggle="tab" data-bs-target="#pros-content" type="button" role="tab" aria-controls="pros-content" aria-selected="true" style="font-weight: 600; color: #1e3050; border: none; background: transparent; padding-bottom: 12px; position: relative;">
@@ -410,6 +423,75 @@
                                     </div>
                                 </div>
                             </div>
+                            @elseif($hasAnyPros)
+                            <!-- Only Pros available -->
+                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                <div class="card-body p-3">
+                                    <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('pros_label') ?: 'Pros' }}</p>
+                                    <ul class="list-unstyled mb-0">
+                                        @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
+                                        @foreach($aggregatedPros as $pro)
+                                        @php $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.'; @endphp
+                                        <li class="d-flex align-items-start mb-2">
+                                            <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                            <span style="color: #202124;">{{ $pro->text }}
+                                                <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($proDesc) }}">
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                        <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                    </svg>
+                                                    <span class="pro-con-tooltip">{{ $proDesc }}</span>
+                                                </span>
+                                                @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                            </span>
+                                        </li>
+                                        @endforeach
+                                        @else
+                                            @foreach($pros as $p)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $p }}</span>
+                                            </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                            @elseif($hasAnyCons)
+                            <!-- Only Cons available -->
+                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                <div class="card-body p-3">
+                                    <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">{{ static_text('cons_label') ?: 'Cons' }}</p>
+                                    <ul class="list-unstyled mb-0">
+                                        @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
+                                        @foreach($aggregatedCons as $con)
+                                        @php $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.'; @endphp
+                                        <li class="d-flex align-items-start mb-2">
+                                            <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                            <span style="color: #202124;">{{ $con->text }}
+                                                <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($conDesc) }}">
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                        <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                    </svg>
+                                                    <span class="pro-con-tooltip">{{ $conDesc }}</span>
+                                                </span>
+                                                @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                            </span>
+                                        </li>
+                                        @endforeach
+                                        @else
+                                            @foreach($cons as $c)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $c }}</span>
+                                            </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         @push('styles')
 <style>
@@ -968,7 +1050,7 @@
                                 @endif
 
                                 <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ get_recommend_question($bName) }}</span>
                                     <div style="display: flex; gap: 8px;">
                                         @auth
                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff  ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff    ';">

@@ -520,7 +520,7 @@ function getBusinessesWithStartingPrice($businesses)
 
     return $result;
 }
-function static_text($key)
+function static_text($key, $replace = [])
 {
     $langId = session('lang_id', 1);
     $defaultLangId = 1;
@@ -540,15 +540,54 @@ function static_text($key)
 
     // If requested lang is default, return default_value directly
     if ($langId == $defaultLangId) {
-        return $content->default_value ?? '';
+        $text = $content->default_value ?? '';
+    } else {
+        // Try to find translation for requested lang
+        $translation = $content->translations->firstWhere('lang_id', $langId);
+        $text = $translation->value ?? $content->default_value ?? '';
     }
 
-    // Try to find translation for requested lang
-    $translation = $content->translations->firstWhere('lang_id', $langId);
+    if (!empty($replace) && is_array($replace)) {
+        foreach ($replace as $placeholder => $val) {
+            $text = str_replace(
+                ['[' . trim($placeholder, '[]:') . ']', ':' . trim($placeholder, '[]:'), '{' . trim($placeholder, '{}:') . '}', $placeholder],
+                $val,
+                $text
+            );
+        }
+    }
 
-    // Return translation if found, else fallback to default_value
-    return $translation->value ?? $content->default_value ?? '';
+    return $text;
 }
+
+function get_recommend_question($businessName = null)
+{
+    $bName = trim($businessName ?: 'this business');
+    $q = static_text('do_you_recommend_question');
+
+    if (empty($q)) {
+        return "Do you recommend {$bName}?";
+    }
+
+    // If placeholder [business], :business, or {business} is used
+    if (str_contains($q, '[business]') || str_contains($q, ':business') || str_contains($q, '{business}')) {
+        return str_replace(['[business]', ':business', '{business}'], $bName, $q);
+    }
+
+    // If inadvertently set to legacy full question "Do you recommend this business?"
+    if (rtrim(trim($q), '?') === 'Do you recommend this business') {
+        return "Do you recommend {$bName}?";
+    }
+
+    // If already contains the business name
+    if (str_contains($q, $bName)) {
+        return rtrim(trim($q), '?') . '?';
+    }
+
+    // Standard prefix (e.g., "Do you recommend" -> "Do you recommend Business?")
+    return rtrim(trim($q), '? ') . " {$bName}?";
+}
+
 
 
 function web_setting($key = null, $value = false, $type = null, $modelRef = null)

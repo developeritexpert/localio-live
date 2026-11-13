@@ -663,7 +663,7 @@ class ContentGenerationController extends Controller
                     $business = Business::create([
                         'permanent_url'        => $url ?: null,
                         'affiliate_link'       => $affLinkInitial ?: null,
-                        'status'               => 1,
+                        'status'               => 0, // Inactive / Draft until content is added
                         'created_by'           => auth()->id() ?? 1,
                         'is_affiliate'         => $isAffInitial,
                         'active_all_countries' => 1,
@@ -682,7 +682,7 @@ class ContentGenerationController extends Controller
                         'lang_id'     => 1,
                         'name'        => $name,
                         'slug'        => $slug,
-                        'status'      => 1,
+                        'status'      => 0, // Inactive / Draft until content is added
                     ]);
 
                     $business->languages()->syncWithoutDetaching([1]);
@@ -748,17 +748,25 @@ class ContentGenerationController extends Controller
 
         // 1. Categories
         $catData = $item['categories'] ?? null;
-        if ($catData === null && (isset($item['category_id']) || isset($item['category']) || isset($item['category_name']) || isset($item['subcategory_ids']) || isset($item['subcategories']) || isset($item['primary_category_id']) || isset($item['primary_subcategory_id']))) {
-            $catData = [
-                'primary_category_id'    => $item['primary_category_id'] ?? null,
-                'primary_subcategory_id' => $item['primary_subcategory_id'] ?? null,
-                'category_id'            => $item['category_id'] ?? null,
-                'category_name'          => $item['category_name'] ?? ($item['category'] ?? null),
-                'category_ids'           => $item['category_ids'] ?? [],
-                'subcategory_ids'        => $item['subcategory_ids'] ?? ($item['subcategories'] ?? []),
-            ];
+        if (!is_array($catData) && $catData !== null) {
+            $catData = ['category_name' => $catData];
         }
-        if ($catData) {
+        if ($catData === null) {
+            $catData = [];
+        }
+        foreach ([
+            'primary_category_id', 'primary_category', 'primary_category_name',
+            'primary_subcategory_id', 'primary_subcategory', 'primary_subcategory_name',
+            'category_id', 'category', 'category_name',
+            'subcategory_id', 'subcategory', 'subcategory_name',
+            'parent_category_id', 'parent_category_name', 'parent_category',
+            'category_ids', 'subcategory_ids', 'subcategories'
+        ] as $k) {
+            if (isset($item[$k]) && !isset($catData[$k])) {
+                $catData[$k] = $item[$k];
+            }
+        }
+        if (!empty($catData)) {
             self::applyCategoriesToBusiness($business, $catData);
             $appliedCount++;
         }
@@ -1490,17 +1498,32 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     // BATCH JOBS LIST
     // -------------------------------------------------------------------------
-    public function batchJobs()
+    public function batchJobs(Request $request)
     {
-        $jobs                      = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
+        $tab = $request->get('tab', 'pending');
+        if (!in_array($tab, ['pending', 'completed', 'all'])) {
+            $tab = 'pending';
+        }
+
+        $pendingCount   = AiBatchJob::whereIn('status', ['pending', 'processing'])->count();
+        $completedCount = AiBatchJob::where('status', 'completed')->count();
+        $totalCount     = AiBatchJob::count();
+
+        $query = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc');
+
+        if ($tab === 'pending') {
+            $query->whereIn('status', ['pending', 'processing']);
+        } elseif ($tab === 'completed') {
+            $query->where('status', 'completed');
+        }
+
+        $jobs                      = $query->paginate(20)->withQueryString();
         $lastPollAt                = Cache::get('ai_batch_last_poll');
         $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
         $batchResultExample        = self::getBatchResultExampleJson();
         $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
-        $pendingCount              = AiBatchJob::where('status', 'pending')->count();
-        $totalCount                = AiBatchJob::count();
 
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'totalCount'));
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'completedCount', 'totalCount', 'tab'));
     }
 
     // -------------------------------------------------------------------------
@@ -1622,10 +1645,25 @@ class ContentGenerationController extends Controller
      */
     private function performDeleteBusiness(Business $business): void
     {
-        // 1. Delete associated AI content queues
+        // 1. Delete associated AI content queues and cascade-delete single-business batch jobs
+        $affectedBatchJobIds = AiContentQueue::where('resource_type', 'business')
+            ->where('resource_id', $business->id)
+            ->whereNotNull('batch_job_id')
+            ->pluck('batch_job_id')
+            ->unique()
+            ->toArray();
+
         AiContentQueue::where('resource_type', 'business')
             ->where('resource_id', $business->id)
             ->delete();
+
+        foreach ($affectedBatchJobIds as $bJobId) {
+            $bJob = AiBatchJob::find($bJobId);
+            if ($bJob && $bJob->queueItems()->count() === 0) {
+                // If the batch job has no remaining queue items (it only had this single business), delete it!
+                $bJob->delete();
+            }
+        }
 
         // 2. Detach many-to-many relationships
         $business->countries()->detach();
@@ -2031,9 +2069,11 @@ class ContentGenerationController extends Controller
 
             case 'rating':
                 $ratingVal = $data['rating'] ?? ($data['value'] ?? null);
-                if (is_numeric($ratingVal)) {
+                if ($ratingVal !== null && is_numeric($ratingVal)) {
                     $ratingVal = max(1.0, min(5.0, round((float) $ratingVal, 2)));
                     Business::where('id', $businessId)->update(['admin_rating' => $ratingVal]);
+                } else {
+                    Business::where('id', $businessId)->update(['admin_rating' => null]);
                 }
                 break;
 
@@ -3215,11 +3255,136 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $businessList = [$parsed];
         }
 
+        // STRICT PRE-VALIDATION:
+        // Validate all features, pros, and cons against database records BEFORE modifying any business.
+        // If any feature, pro, or con does not exist in the database, reject this file.
+        $validationErrors = [];
+
+        foreach ($businessList as $bIndex => $bData) {
+            if (!is_array($bData)) continue;
+            $bLabel = trim($bData['business_name'] ?? ($bData['name'] ?? ($bData['business_id'] ?? ('Item #' . ($bIndex + 1)))));
+
+            // 1. Validate features
+            $featItems = $bData['feature_ids'] ?? ($bData['features'] ?? null);
+            if (!empty($featItems)) {
+                if (!is_array($featItems)) {
+                    $featItems = array_filter(array_map('trim', explode("\n", (string)$featItems)));
+                }
+                foreach ($featItems as $featItem) {
+                    $val = is_array($featItem) ? ($featItem['feature_id'] ?? ($featItem['id'] ?? ($featItem['name'] ?? ($featItem['feature_name'] ?? null)))) : $featItem;
+                    if ($val === null || $val === '') continue;
+
+                    $exists = false;
+                    if (is_numeric($val)) {
+                        $exists = Feature::where('id', (int)$val)->where('status', 'active')->exists();
+                    } elseif (is_string($val)) {
+                        $cleanFeat = trim($val);
+                        $exists = Feature::where('status', 'active')
+                            ->whereHas('translations', function($t) use ($cleanFeat) {
+                                $t->where('name', 'like', $cleanFeat);
+                            })->exists();
+                    }
+                    if (!$exists) {
+                        $validationErrors[] = "Feature '{$val}' for '{$bLabel}' does not exist in active features database.";
+                    }
+                }
+            }
+
+            // 2. Validate pros and cons
+            $rawPros = [];
+            $rawCons = [];
+            if (isset($bData['pros_cons']) && is_array($bData['pros_cons'])) {
+                if (isset($bData['pros_cons']['pro_ids']) || isset($bData['pros_cons']['pros']) || isset($bData['pros_cons']['con_ids']) || isset($bData['pros_cons']['cons'])) {
+                    $rawPros = $bData['pros_cons']['pro_ids'] ?? ($bData['pros_cons']['pros'] ?? []);
+                    $rawCons = $bData['pros_cons']['con_ids'] ?? ($bData['pros_cons']['cons'] ?? []);
+                } else {
+                    foreach ($bData['pros_cons'] as $pcItem) {
+                        if (!is_array($pcItem)) continue;
+                        $t = strtolower($pcItem['type'] ?? 'pro');
+                        if ($t === 'con') {
+                            $rawCons[] = $pcItem;
+                        } else {
+                            $rawPros[] = $pcItem;
+                        }
+                    }
+                }
+            }
+            if (empty($rawPros) && isset($bData['pro_ids'])) $rawPros = $bData['pro_ids'];
+            if (empty($rawPros) && isset($bData['pros'])) $rawPros = $bData['pros'];
+            if (empty($rawCons) && isset($bData['con_ids'])) $rawCons = $bData['con_ids'];
+            if (empty($rawCons) && isset($bData['cons'])) $rawCons = $bData['cons'];
+
+            if (!empty($rawPros)) {
+                if (!is_array($rawPros)) {
+                    $rawPros = array_filter(array_map('trim', explode("\n", (string)$rawPros)));
+                }
+                foreach ($rawPros as $pItem) {
+                    $pId = is_array($pItem) ? ($pItem['id'] ?? ($pItem['category_pro_con_id'] ?? null)) : (is_numeric($pItem) ? (int)$pItem : null);
+                    $pText = is_array($pItem) ? ($pItem['text'] ?? ($pItem['name'] ?? null)) : (is_string($pItem) && !is_numeric($pItem) ? trim($pItem) : null);
+
+                    $exists = false;
+                    if ($pId) {
+                        $exists = \App\Models\CategoryProCon::where('id', $pId)->where('type', 'pro')->where('status', 1)->exists();
+                    } elseif (!empty($pText)) {
+                        $cleanText = trim($pText);
+                        $exists = \App\Models\CategoryProCon::where('type', 'pro')->where('status', 1)
+                            ->where(function($q) use ($cleanText) {
+                                $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                                  ->orWhereJsonContains('aliases', $cleanText);
+                            })->exists();
+                    }
+                    if (!$exists) {
+                        $itemIdentifier = $pId ?: $pText ?: json_encode($pItem);
+                        $validationErrors[] = "Pro '{$itemIdentifier}' for '{$bLabel}' does not exist in active pros database.";
+                    }
+                }
+            }
+
+            if (!empty($rawCons)) {
+                if (!is_array($rawCons)) {
+                    $rawCons = array_filter(array_map('trim', explode("\n", (string)$rawCons)));
+                }
+                foreach ($rawCons as $cItem) {
+                    $cId = is_array($cItem) ? ($cItem['id'] ?? ($cItem['category_pro_con_id'] ?? null)) : (is_numeric($cItem) ? (int)$cItem : null);
+                    $cText = is_array($cItem) ? ($cItem['text'] ?? ($cItem['name'] ?? null)) : (is_string($cItem) && !is_numeric($cItem) ? trim($cItem) : null);
+
+                    $exists = false;
+                    if ($cId) {
+                        $exists = \App\Models\CategoryProCon::where('id', $cId)->where('type', 'con')->where('status', 1)->exists();
+                    } elseif (!empty($cText)) {
+                        $cleanText = trim($cText);
+                        $exists = \App\Models\CategoryProCon::where('type', 'con')->where('status', 1)
+                            ->where(function($q) use ($cleanText) {
+                                $q->whereRaw('LOWER(text) = ?', [strtolower($cleanText)])
+                                  ->orWhereJsonContains('aliases', $cleanText);
+                            })->exists();
+                    }
+                    if (!$exists) {
+                        $itemIdentifier = $cId ?: $cText ?: json_encode($cItem);
+                        $validationErrors[] = "Con '{$itemIdentifier}' for '{$bLabel}' does not exist in active cons database.";
+                    }
+                }
+            }
+        }
+
+        if (!empty($validationErrors)) {
+            $msg = 'Validation failed: ' . implode('; ', array_slice($validationErrors, 0, 5));
+            if (count($validationErrors) > 5) {
+                $msg .= ' (and ' . (count($validationErrors) - 5) . ' more)';
+            }
+            return [
+                'success' => false,
+                'error'   => $msg,
+            ];
+        }
+
         $appliedBusinessesCount = 0;
         $appliedFieldsCount     = 0;
         $newlyCreatedCount      = 0;
 
-        foreach ($businessList as $bData) {
+        DB::beginTransaction();
+        try {
+            foreach ($businessList as $bData) {
             if (!is_array($bData)) continue;
 
             $rawBizId = $bData['business_id'] ?? ($bData['id'] ?? null);
@@ -3355,30 +3520,33 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                 $hasField = false;
 
                 if ($field === 'categories') {
-                    if (isset($bData['categories'])) {
-                        $fieldVal = $bData['categories'];
+                    $catField = $bData['categories'] ?? [];
+                    if (!is_array($catField)) {
+                        $catField = ['category_name' => $catField];
+                    }
+                    foreach ([
+                        'primary_category_id', 'primary_category', 'primary_category_name',
+                        'primary_subcategory_id', 'primary_subcategory', 'primary_subcategory_name',
+                        'category_id', 'category', 'category_name',
+                        'subcategory_id', 'subcategory', 'subcategory_name',
+                        'parent_category_id', 'parent_category_name', 'parent_category',
+                        'category_ids', 'subcategory_ids', 'subcategories'
+                    ] as $k) {
+                        if (isset($bData[$k]) && !isset($catField[$k])) {
+                            $catField[$k] = $bData[$k];
+                        }
+                    }
+                    if (!empty($catField) || isset($bData['categories'])) {
+                        $fieldVal = $catField;
                         $hasField = true;
-                    } elseif (
-                        isset($bData['primary_category_id']) ||
-                        isset($bData['primary_subcategory_id']) ||
-                        isset($bData['category_id']) ||
-                        isset($bData['subcategory_id']) ||
-                        isset($bData['category_ids']) ||
-                        isset($bData['subcategory_ids']) ||
-                        isset($bData['subcategory']) ||
-                        isset($bData['subcategory_name']) ||
-                        isset($bData['category_name'])
-                    ) {
-                        $fieldVal = [
-                            'primary_category_id'    => $bData['primary_category_id'] ?? ($bData['category_id'] ?? null),
-                            'primary_subcategory_id' => $bData['primary_subcategory_id'] ?? ($bData['subcategory_id'] ?? null),
-                            'category_ids'           => $bData['category_ids'] ?? [],
-                            'subcategory_ids'        => $bData['subcategory_ids'] ?? [],
-                            'category_name'          => $bData['category_name'] ?? null,
-                            'subcategory_name'       => $bData['subcategory_name'] ?? ($bData['subcategory'] ?? null),
-                            'parent_category_id'     => $bData['parent_category_id'] ?? null,
-                            'parent_category_name'   => $bData['parent_category_name'] ?? null,
-                        ];
+                    }
+                } elseif ($field === 'rating') {
+                    if (array_key_exists('rating', $bData)) {
+                        $fieldVal = $bData['rating'];
+                        $hasField = true;
+                    } elseif ($job && $job->queueItems()->where('resource_id', $bizId)->where('content_field', 'rating')->exists()) {
+                        // Batch job requested rating, but result omitted it -> accept as null
+                        $fieldVal = null;
                         $hasField = true;
                     }
                 } else {
@@ -3411,7 +3579,13 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                                 'category_ids'           => $catIds,
                                 'subcategory_ids'        => $subIds,
                             ];
+                            if (isset($fieldVal['primary_category'])) $normalizedData['primary_category'] = $fieldVal['primary_category'];
+                            if (isset($fieldVal['primary_subcategory'])) $normalizedData['primary_subcategory'] = $fieldVal['primary_subcategory'];
+                            if (isset($fieldVal['primary_category_name'])) $normalizedData['primary_category_name'] = $fieldVal['primary_category_name'];
+                            if (isset($fieldVal['primary_subcategory_name'])) $normalizedData['primary_subcategory_name'] = $fieldVal['primary_subcategory_name'];
+                            if (isset($fieldVal['category'])) $normalizedData['category'] = $fieldVal['category'];
                             if (isset($fieldVal['category_name'])) $normalizedData['category_name'] = $fieldVal['category_name'];
+                            if (isset($fieldVal['subcategory'])) $normalizedData['subcategory'] = $fieldVal['subcategory'];
                             if (isset($fieldVal['subcategory_name'])) $normalizedData['subcategory_name'] = $fieldVal['subcategory_name'];
                             if (isset($fieldVal['parent_category_id'])) $normalizedData['parent_category_id'] = $fieldVal['parent_category_id'];
                             if (isset($fieldVal['parent_category_name'])) $normalizedData['parent_category_name'] = $fieldVal['parent_category_name'];
@@ -3449,9 +3623,13 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     }
                 } elseif ($field === 'rating') {
                     $rVal = is_array($fieldVal) ? ($fieldVal['rating'] ?? $fieldVal['value'] ?? null) : $fieldVal;
-                    $rFloat = is_numeric($rVal) ? round((float)$rVal, 2) : 4.5;
-                    $rFloat = max(1.0, min(5.0, $rFloat));
-                    $normalizedData = ['rating' => $rFloat];
+                    if ($rVal !== null && $rVal !== '' && is_numeric($rVal)) {
+                        $rFloat = round((float)$rVal, 2);
+                        $rFloat = max(1.0, min(5.0, $rFloat));
+                        $normalizedData = ['rating' => $rFloat];
+                    } else {
+                        $normalizedData = ['rating' => null];
+                    }
                 }
 
                 // Find or create AiContentQueue record
@@ -3485,28 +3663,25 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $bOpt4Label = $bGlanceLabels['option_4'] ?? null;
 
             $glanceUpdates = [];
-            if (isset($bData['main_offering'])) {
-                $glanceUpdates['main_offering'] = is_string($bData['main_offering']) ? trim($bData['main_offering']) : null;
+            if (array_key_exists('main_offering', $bData)) {
+                $glanceUpdates['main_offering'] = (is_string($bData['main_offering']) && trim($bData['main_offering']) !== '') ? trim($bData['main_offering']) : null;
             }
-            if (isset($bData['suitable_for'])) {
-                $glanceUpdates['suitable_for'] = is_string($bData['suitable_for']) ? trim($bData['suitable_for']) : null;
+            if (array_key_exists('suitable_for', $bData)) {
+                $glanceUpdates['suitable_for'] = (is_string($bData['suitable_for']) && trim($bData['suitable_for']) !== '') ? trim($bData['suitable_for']) : null;
             }
-            if (!empty($bOpt3Label)) {
-                $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
-                if ($opt3Val !== null) {
-                    $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
-                }
-            } else {
-                $glanceUpdates['glance_option_3'] = null;
+
+            $hasOpt3Key = array_key_exists('glance_option_3', $bData) || array_key_exists('option_3', $bData) || array_key_exists('hosting_options', $bData);
+            if ($hasOpt3Key) {
+                $rawOpt3 = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
+                $glanceUpdates['glance_option_3'] = (is_string($rawOpt3) && trim($rawOpt3) !== '') ? trim($rawOpt3) : null;
             }
-            if (!empty($bOpt4Label)) {
-                $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
-                if ($opt4Val !== null) {
-                    $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
-                }
-            } else {
-                $glanceUpdates['glance_option_4'] = null;
+
+            $hasOpt4Key = array_key_exists('glance_option_4', $bData) || array_key_exists('option_4', $bData) || array_key_exists('website_tools', $bData);
+            if ($hasOpt4Key) {
+                $rawOpt4 = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
+                $glanceUpdates['glance_option_4'] = (is_string($rawOpt4) && trim($rawOpt4) !== '') ? trim($rawOpt4) : null;
             }
+
             if (!empty($glanceUpdates)) {
                 BusinessTranslation::where('business_id', $bizId)
                     ->where('lang_id', 1)
@@ -3562,11 +3737,26 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $biz->save();
                 }
             }
+
+            // Activate business on frontend now that content has been added
+            $biz->update(['status' => 1]);
+            BusinessTranslation::where('business_id', $bizId)->update(['status' => 1]);
         }
 
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to process batch result: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return [
+                'success' => false,
+                'error'   => 'Error applying batch data: ' . $e->getMessage(),
+            ];
+        }
+
+        $completedCount = $job->queueItems()->where('status', 'completed')->count();
         $job->update([
             'status'          => 'completed',
-            'completed_items' => $appliedFieldsCount,
+            'completed_items' => $completedCount > 0 ? $completedCount : $appliedFieldsCount,
             'completed_at'    => now(),
             'raw_response'    => $cleanJson,
         ]);
@@ -3755,8 +3945,8 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
         } elseif (is_array($catData)) {
             // Check primary subcategory FIRST so a subcategory can be the primary category!
-            $rawPrimarySub = $catData['primary_subcategory_id'] ?? ($catData['subcategory_id'] ?? ($catData['subcategory_name'] ?? null));
-            $rawPrimaryCat = $catData['primary_category_id'] ?? ($catData['category_id'] ?? ($catData['category_name'] ?? null));
+            $rawPrimarySub = $catData['primary_subcategory_id'] ?? ($catData['primary_subcategory'] ?? ($catData['primary_subcategory_name'] ?? ($catData['subcategory_id'] ?? ($catData['subcategory_name'] ?? ($catData['subcategory'] ?? null)))));
+            $rawPrimaryCat = $catData['primary_category_id'] ?? ($catData['primary_category'] ?? ($catData['primary_category_name'] ?? ($catData['category_id'] ?? ($catData['category_name'] ?? ($catData['category'] ?? null)))));
 
             if (!empty($rawPrimarySub) && ($cid = $resolveCatId($rawPrimarySub))) {
                 $primaryCatId = $cid;
@@ -3769,7 +3959,7 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             }
 
             // Also check parent_category_id / parent_category_name if provided
-            $rawParentCat = $catData['parent_category_id'] ?? ($catData['parent_category_name'] ?? null);
+            $rawParentCat = $catData['parent_category_id'] ?? ($catData['parent_category_name'] ?? ($catData['parent_category'] ?? null));
             if (!empty($rawParentCat) && ($pCid = $resolveCatId($rawParentCat)) && $pCid !== $primaryCatId) {
                 $secondaryCatIds[] = $pCid;
             }
@@ -3992,16 +4182,14 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     }
                 }
 
-                $finalCatId = $found ? $found->id : ($id ?: null);
-                $finalText = $text ?: ($found ? $found->text : '');
-                $finalDesc = !empty($description) ? $description : ($found ? $found->description : null);
-
-                if (!empty($finalText)) {
+                // Strictly only accept and persist pros/cons that exist in the database!
+                if ($found) {
+                    $finalDesc = !empty($description) ? $description : ($found->description ?: null);
                     $results[] = [
-                        'category_pro_con_id' => $finalCatId,
+                        'category_pro_con_id' => $found->id,
                         'type'                => $defaultType,
-                        'text'                => $finalText,
-                        'description'         => $finalDesc ?: null,
+                        'text'                => $found->text,
+                        'description'         => $finalDesc,
                         'weight'              => $weight,
                     ];
                 }

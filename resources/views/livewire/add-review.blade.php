@@ -188,7 +188,7 @@
                                         </div>
                                         <h2 class="m-0 fw-bold header-title-responsive" style="color: #002655; font-size: 22px; line-height:1.2 !important;">
                                             @if($step === 1)
-                                                Do you recommend {{ $businessName }}?
+                                                {{ get_recommend_question($businessName) }}
                                             @elseif($step === 2)
                                                 Share your experience
                                             @elseif($step === 3)

@@ -543,7 +543,7 @@
                         @endif
 
                         <div class="do-you-recommend" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                            <span style="font-weight: 600; color: #002347; font-size: 14px;">{{ get_recommend_question($bName) }}</span>
                             <div style="display: flex; gap: 8px;">
                                 @auth
                                     <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
