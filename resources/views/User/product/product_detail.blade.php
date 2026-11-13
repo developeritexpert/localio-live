@@ -669,10 +669,23 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
                         </div>
 
-                        @if(isset($aggregatedPros) && isset($aggregatedCons) && count($aggregatedPros) > 0 && count($aggregatedCons) > 0)
+                        @php
+                            $hasAggregatedPros = isset($aggregatedPros) && count($aggregatedPros) > 0;
+                            $hasAggregatedCons = isset($aggregatedCons) && count($aggregatedCons) > 0;
+                        @endphp
+
+                        @if($hasAggregatedPros || $hasAggregatedCons)
                         <div class="col-lg-12 mt-2 mb-4" id="section-pros-cons">
                             @php
-                                $bizProsConsFallbackH2 = ($business->translations->first()->name ?? $business->name ?? 'Business') . ' pros and cons';
+                                $bizName = $business->translations->first()->name ?? $business->name ?? 'Business';
+                                if ($hasAggregatedPros && $hasAggregatedCons) {
+                                    $bizProsConsFallbackH2 = $bizName . ' pros and cons';
+                                } elseif ($hasAggregatedPros) {
+                                    $bizProsConsFallbackH2 = $bizName . ' pros';
+                                } else {
+                                    $bizProsConsFallbackH2 = $bizName . ' cons';
+                                }
+
                                 $publishedReviewCount = $ratingCount ?? ($business->reviews ? $business->reviews->whereIn('status', ['published', 'active'])->count() : 0);
                                 $prosConsFieldKey = ($publishedReviewCount < 10) ? 'profile_pros_cons_under_10' : 'profile_pros_cons';
                                 $resolvedBizProsCons = \App\Services\ContentTemplateService::resolveBusinessSection(
@@ -688,6 +701,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     );
                                 }
                                 $finalBizProsConsH2 = !empty($resolvedBizProsCons['headline']) ? $resolvedBizProsCons['headline'] : $bizProsConsFallbackH2;
+                                if (!$hasAggregatedCons && $hasAggregatedPros && stripos($finalBizProsConsH2, 'cons') !== false) {
+                                    $finalBizProsConsH2 = preg_replace('/(\s*(&amp;|&|\band\b)\s*cons\b|\s*drawbacks\b)/i', '', $finalBizProsConsH2);
+                                }
                                 $finalBizProsConsUpper = !empty($resolvedBizProsCons['subtext']) ? $resolvedBizProsCons['subtext'] : (!empty($business->pro_cons_intro) ? $business->pro_cons_intro : null);
                             @endphp
                             <div class="pros-cons-header mb-3">
@@ -702,7 +718,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             </div>
 
                             <div class="row g-4 d-none d-md-flex">
-                                <div class="col-md-6">
+                                @if($hasAggregatedPros)
+                                <div class="{{ $hasAggregatedCons ? 'col-md-6' : 'col-md-12' }}">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
                                             <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
@@ -727,7 +744,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                @endif
+
+                                @if($hasAggregatedCons)
+                                <div class="{{ $hasAggregatedPros ? 'col-md-6' : 'col-md-12' }}">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
                                             <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
@@ -752,10 +772,12 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
-                            <!-- Mobile Pros & Cons Tabs -->
+                            <!-- Mobile Pros & Cons -->
                             <div class="mobile-pros-cons d-md-none mt-3">
+                                @if($hasAggregatedPros && $hasAggregatedCons)
                                 <ul class="nav nav-tabs nav-justified" id="prosConsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: nowrap;">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="pros-tab" data-bs-toggle="tab" data-bs-target="#pros-content" type="button" role="tab" aria-controls="pros-content" aria-selected="true" style="font-weight: 600; color: #1e3050; border: none; background: transparent; padding-bottom: 12px; position: relative;">
@@ -823,6 +845,59 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                @elseif($hasAggregatedPros)
+                                <!-- Only Pros available -->
+                                <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                    <div class="card-body">
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach($aggregatedPros as $pro)
+                                            @php $proDesc = !empty($pro->description) ? $pro->description : 'Explanation and details regarding ' . $pro->text . '.'; @endphp
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                <span style="color: #202124;">{{ $pro->text }}
+                                                    <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($proDesc) }}">
+                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                            <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                        </svg>
+                                                        <span class="pro-con-tooltip">{{ $proDesc }}</span>
+                                                    </span>
+                                                    @if($hasUserRatings && isset($pro->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                </span>
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                                @elseif($hasAggregatedCons)
+                                <!-- Only Cons available -->
+                                <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                    <div class="card-body">
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach($aggregatedCons as $con)
+                                            @php $conDesc = !empty($con->description) ? $con->description : 'Explanation and details regarding ' . $con->text . '.'; @endphp
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                <span style="color: #202124;">{{ $con->text }}
+                                                    <span class="pro-con-info-btn ms-1" tabindex="0" role="button" aria-label="Explanation: {{ e($conDesc) }}">
+                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pro-con-info-svg">
+                                                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                                                            <path d="M8 7V11.5M8 4.5V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                                        </svg>
+                                                        <span class="pro-con-tooltip">{{ $conDesc }}</span>
+                                                    </span>
+                                                    @if($hasUserRatings && isset($con->review_count))<small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>@endif
+                                                </span>
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
                                 </div>
                             </div>
                             @push('styles')
