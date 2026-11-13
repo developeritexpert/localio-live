@@ -210,7 +210,7 @@ return new class extends Migration
             'review_cons_subtext' => 'What could be improved?',
             'search_pros_placeholder' => 'Search or add a pro...',
             'search_cons_placeholder' => 'Search or add a con...',
-            'do_you_recommend_question' => 'Do you recommend this business?',
+            'do_you_recommend_question' => 'Do you recommend',
             'rating_guideline_1' => 'Be honest and direct',
             'rating_guideline_2' => 'Describe your real-world experience',
             'rating_guideline_3' => 'Highlight specific pros and cons',

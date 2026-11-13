@@ -383,6 +383,7 @@
                                                     'join_conversation_title' => 'Heading for the "Join the conversation" box on discussion pages.',
                                                     'join_conversation_desc' => 'Description text for the "Join the conversation" box on discussion pages.',
                                                     'start_discussion_button' => 'Button text for starting a new discussion on discussion pages.',
+                                                    'do_you_recommend_question' => 'Prompt or prefix for the recommendation question (e.g. "Do you recommend" or "Do you recommend [business]?"). The business name will automatically replace [business] or be appended.',
                                                 ];
                                                 $displayHint = $keyHints[$key] ?? null;
                                             @endphp
