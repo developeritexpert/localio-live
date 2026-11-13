@@ -663,7 +663,7 @@ class ContentGenerationController extends Controller
                     $business = Business::create([
                         'permanent_url'        => $url ?: null,
                         'affiliate_link'       => $affLinkInitial ?: null,
-                        'status'               => 1,
+                        'status'               => 0, // Inactive / Draft until content is added
                         'created_by'           => auth()->id() ?? 1,
                         'is_affiliate'         => $isAffInitial,
                         'active_all_countries' => 1,
@@ -682,7 +682,7 @@ class ContentGenerationController extends Controller
                         'lang_id'     => 1,
                         'name'        => $name,
                         'slug'        => $slug,
-                        'status'      => 1,
+                        'status'      => 0, // Inactive / Draft until content is added
                     ]);
 
                     $business->languages()->syncWithoutDetaching([1]);
@@ -1490,17 +1490,32 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     // BATCH JOBS LIST
     // -------------------------------------------------------------------------
-    public function batchJobs()
+    public function batchJobs(Request $request)
     {
-        $jobs                      = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
+        $tab = $request->get('tab', 'pending');
+        if (!in_array($tab, ['pending', 'completed', 'all'])) {
+            $tab = 'pending';
+        }
+
+        $pendingCount   = AiBatchJob::whereIn('status', ['pending', 'processing'])->count();
+        $completedCount = AiBatchJob::where('status', 'completed')->count();
+        $totalCount     = AiBatchJob::count();
+
+        $query = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc');
+
+        if ($tab === 'pending') {
+            $query->whereIn('status', ['pending', 'processing']);
+        } elseif ($tab === 'completed') {
+            $query->where('status', 'completed');
+        }
+
+        $jobs                      = $query->paginate(20)->withQueryString();
         $lastPollAt                = Cache::get('ai_batch_last_poll');
         $batchSize                 = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 1);
         $batchResultExample        = self::getBatchResultExampleJson();
         $featureBatchResultExample = self::getFeatureBatchResultExampleJson();
-        $pendingCount              = AiBatchJob::where('status', 'pending')->count();
-        $totalCount                = AiBatchJob::count();
 
-        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'totalCount'));
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt', 'batchSize', 'batchResultExample', 'featureBatchResultExample', 'pendingCount', 'completedCount', 'totalCount', 'tab'));
     }
 
     // -------------------------------------------------------------------------
@@ -2031,9 +2046,11 @@ class ContentGenerationController extends Controller
 
             case 'rating':
                 $ratingVal = $data['rating'] ?? ($data['value'] ?? null);
-                if (is_numeric($ratingVal)) {
+                if ($ratingVal !== null && is_numeric($ratingVal)) {
                     $ratingVal = max(1.0, min(5.0, round((float) $ratingVal, 2)));
                     Business::where('id', $businessId)->update(['admin_rating' => $ratingVal]);
+                } else {
+                    Business::where('id', $businessId)->update(['admin_rating' => null]);
                 }
                 break;
 
@@ -3381,6 +3398,15 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                         ];
                         $hasField = true;
                     }
+                } elseif ($field === 'rating') {
+                    if (array_key_exists('rating', $bData)) {
+                        $fieldVal = $bData['rating'];
+                        $hasField = true;
+                    } elseif ($job && $job->queueItems()->where('resource_id', $bizId)->where('content_field', 'rating')->exists()) {
+                        // Batch job requested rating, but result omitted it -> accept as null
+                        $fieldVal = null;
+                        $hasField = true;
+                    }
                 } else {
                     if (isset($bData[$field])) {
                         $fieldVal = $bData[$field];
@@ -3449,9 +3475,13 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     }
                 } elseif ($field === 'rating') {
                     $rVal = is_array($fieldVal) ? ($fieldVal['rating'] ?? $fieldVal['value'] ?? null) : $fieldVal;
-                    $rFloat = is_numeric($rVal) ? round((float)$rVal, 2) : 4.5;
-                    $rFloat = max(1.0, min(5.0, $rFloat));
-                    $normalizedData = ['rating' => $rFloat];
+                    if ($rVal !== null && $rVal !== '' && is_numeric($rVal)) {
+                        $rFloat = round((float)$rVal, 2);
+                        $rFloat = max(1.0, min(5.0, $rFloat));
+                        $normalizedData = ['rating' => $rFloat];
+                    } else {
+                        $normalizedData = ['rating' => null];
+                    }
                 }
 
                 // Find or create AiContentQueue record
@@ -3485,28 +3515,25 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
             $bOpt4Label = $bGlanceLabels['option_4'] ?? null;
 
             $glanceUpdates = [];
-            if (isset($bData['main_offering'])) {
-                $glanceUpdates['main_offering'] = is_string($bData['main_offering']) ? trim($bData['main_offering']) : null;
+            if (array_key_exists('main_offering', $bData)) {
+                $glanceUpdates['main_offering'] = (is_string($bData['main_offering']) && trim($bData['main_offering']) !== '') ? trim($bData['main_offering']) : null;
             }
-            if (isset($bData['suitable_for'])) {
-                $glanceUpdates['suitable_for'] = is_string($bData['suitable_for']) ? trim($bData['suitable_for']) : null;
+            if (array_key_exists('suitable_for', $bData)) {
+                $glanceUpdates['suitable_for'] = (is_string($bData['suitable_for']) && trim($bData['suitable_for']) !== '') ? trim($bData['suitable_for']) : null;
             }
-            if (!empty($bOpt3Label)) {
-                $opt3Val = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
-                if ($opt3Val !== null) {
-                    $glanceUpdates['glance_option_3'] = is_string($opt3Val) ? trim($opt3Val) : null;
-                }
-            } else {
-                $glanceUpdates['glance_option_3'] = null;
+
+            $hasOpt3Key = array_key_exists('glance_option_3', $bData) || array_key_exists('option_3', $bData) || array_key_exists('hosting_options', $bData);
+            if ($hasOpt3Key) {
+                $rawOpt3 = $bData['glance_option_3'] ?? ($bData['option_3'] ?? ($bData['hosting_options'] ?? null));
+                $glanceUpdates['glance_option_3'] = (is_string($rawOpt3) && trim($rawOpt3) !== '') ? trim($rawOpt3) : null;
             }
-            if (!empty($bOpt4Label)) {
-                $opt4Val = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
-                if ($opt4Val !== null) {
-                    $glanceUpdates['glance_option_4'] = is_string($opt4Val) ? trim($opt4Val) : null;
-                }
-            } else {
-                $glanceUpdates['glance_option_4'] = null;
+
+            $hasOpt4Key = array_key_exists('glance_option_4', $bData) || array_key_exists('option_4', $bData) || array_key_exists('website_tools', $bData);
+            if ($hasOpt4Key) {
+                $rawOpt4 = $bData['glance_option_4'] ?? ($bData['option_4'] ?? ($bData['website_tools'] ?? null));
+                $glanceUpdates['glance_option_4'] = (is_string($rawOpt4) && trim($rawOpt4) !== '') ? trim($rawOpt4) : null;
             }
+
             if (!empty($glanceUpdates)) {
                 BusinessTranslation::where('business_id', $bizId)
                     ->where('lang_id', 1)
@@ -3562,11 +3589,16 @@ Return JSON: {\"category_id\": 1, \"category_name\": \"...\", \"subcategory_ids\
                     $biz->save();
                 }
             }
+
+            // Activate business on frontend now that content has been added
+            $biz->update(['status' => 1]);
+            BusinessTranslation::where('business_id', $bizId)->update(['status' => 1]);
         }
 
+        $completedCount = $job->queueItems()->where('status', 'completed')->count();
         $job->update([
             'status'          => 'completed',
-            'completed_items' => $appliedFieldsCount,
+            'completed_items' => $completedCount > 0 ? $completedCount : $appliedFieldsCount,
             'completed_at'    => now(),
             'raw_response'    => $cleanJson,
         ]);

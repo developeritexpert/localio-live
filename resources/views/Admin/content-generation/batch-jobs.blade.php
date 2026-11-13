@@ -133,6 +133,33 @@
             </div>
         </div>
 
+        {{-- Navigation Tabs: Pending / Completed / All --}}
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <ul class="nav nav-tabs nav-tabs-mb-icon nav-tabs-card">
+                <li class="nav-item">
+                    <a class="nav-link {{ ($tab ?? 'pending') === 'pending' ? 'active' : '' }}" href="{{ route('content-gen.batch-jobs', ['tab' => 'pending']) }}">
+                        <em class="icon ni ni-clock me-1"></em>
+                        <span>Pending &amp; In Progress</span>
+                        <span class="badge rounded-pill bg-warning text-dark ms-1">{{ $pendingCount ?? 0 }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ ($tab ?? '') === 'completed' ? 'active' : '' }}" href="{{ route('content-gen.batch-jobs', ['tab' => 'completed']) }}">
+                        <em class="icon ni ni-check-circle me-1"></em>
+                        <span>Completed</span>
+                        <span class="badge rounded-pill bg-success ms-1">{{ $completedCount ?? 0 }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ ($tab ?? '') === 'all' ? 'active' : '' }}" href="{{ route('content-gen.batch-jobs', ['tab' => 'all']) }}">
+                        <em class="icon ni ni-list me-1"></em>
+                        <span>All Batches</span>
+                        <span class="badge rounded-pill bg-light text-muted ms-1">{{ $totalCount ?? 0 }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
         {{-- Batch Jobs Table --}}
         <div class="card card-bordered card-stretch">
             <div class="card-inner p-0">
