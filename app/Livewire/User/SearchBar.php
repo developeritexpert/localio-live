@@ -39,6 +39,9 @@ class SearchBar extends Component
             // Get products
             $products = BusinessTranslation::where('lang_id', $lang_id)
                 ->where('name', 'like', '%' . $this->query . '%')
+                ->whereHas('business', function ($q) {
+                    $q->where('status', 1);
+                })
                 ->limit(5)
                 ->get()
                 ->map(function ($item) {

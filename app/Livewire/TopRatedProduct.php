@@ -350,7 +350,8 @@ class TopRatedProduct extends Component
 
     public function getTopAffiliatedBusinessIdProperty()
     {
-        return Business::where('is_affiliate', 1)
+        return Business::where('status', 1)
+            ->where('is_affiliate', 1)
             ->whereHas('languages', function ($query) {
                 $query->where('language_id', $this->lang_id);
             })
@@ -374,8 +375,9 @@ class TopRatedProduct extends Component
             return $this->memoizedProducts;
         }
 
-        // Start with businesses query
-        $query = Business::whereHas('translations', function ($q) {
+        // Start with active businesses query
+        $query = Business::where('status', 1)
+            ->whereHas('translations', function ($q) {
                 $q->where('lang_id', $this->lang_id);
             })->whereHas('languages', function ($query) {
                 $query->where('language_id', $this->lang_id);

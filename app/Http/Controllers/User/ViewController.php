@@ -94,6 +94,7 @@ class ViewController extends Controller
                     });
                 })
                     ->where('is_affiliate', 1)
+                    ->where('status', 1)
                     ->where(function ($query) {
                         $query->where('active_all_countries', 1)
                             ->orWhereHas('countries', function ($q) {
@@ -320,6 +321,7 @@ class ViewController extends Controller
         }
 
         $business = Business::where('id', $businessTranslation->business_id)
+            ->where('status', 1)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -576,6 +578,7 @@ class ViewController extends Controller
         }
 
         $business = Business::where('id', $businessTranslation->business_id)
+            ->where('status', 1)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
@@ -929,6 +932,7 @@ class ViewController extends Controller
         }
 
         $business = Business::where('id', $businessTranslation->business_id)
+            ->where('status', 1)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -1005,6 +1009,7 @@ class ViewController extends Controller
         }
 
         $business = Business::where('id', $businessTranslation->business_id)
+            ->where('status', 1)
             ->with([
                 'translations',
             ])->firstOrFail();
@@ -1130,13 +1135,13 @@ class ViewController extends Controller
             return app(\App\Http\Controllers\User\CategoryController::class)->categoryDetail($locale, $slug);
         }
 
-        // 2. Check if slug matches a Business / Product
-        $business = Business::whereHas('translations', function ($query) use ($slug, $lang_id) {
+        // 2. Check if slug matches an active Business / Product
+        $business = Business::where('status', 1)->whereHas('translations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 
         if (!$business) {
-            $business = Business::whereHas('translations', function ($query) use ($slug) {
+            $business = Business::where('status', 1)->whereHas('translations', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })->first();
         }
@@ -1362,6 +1367,7 @@ class ViewController extends Controller
         }
 
         $business = Business::where('id', $businessTranslation->business_id)
+            ->where('status', 1)
             ->with([
                 'category.translation',
                 'category.parent.translation',

@@ -38,6 +38,9 @@ class SearchBar extends Component
         if (!empty($this->query)) {
             $this->results = BusinessTranslation::where('lang_id', $lang_id)
                 ->where('name', 'like', '%' . $this->query . '%')
+                ->whereHas('business', function ($q) {
+                    $q->where('status', 1);
+                })
                 ->limit(10)
                 ->get()
                 ->toArray();

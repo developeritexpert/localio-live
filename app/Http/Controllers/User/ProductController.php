@@ -36,11 +36,19 @@ class ProductController extends Controller
         $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
         $user = auth()->user();
 
-        $business = Business::whereHas('translations', function ($q) use ($slug, $lang_id) {
-            $q->where('slug', $slug)->where('lang_id', $lang_id);
-        })->orWhereHas('translations', function ($q) use ($slug) {
-            $q->where('slug', $slug);
-        })->with([
+        $businessQuery = Business::where(function ($q) use ($slug, $lang_id) {
+            $q->whereHas('translations', function ($tq) use ($slug, $lang_id) {
+                $tq->where('slug', $slug)->where('lang_id', $lang_id);
+            })->orWhereHas('translations', function ($tq) use ($slug) {
+                $tq->where('slug', $slug);
+            });
+        });
+
+        if (!auth()->check() || !(optional(auth()->user())->role === 'admin' || optional(auth()->user())->role === 'superadmin' || !empty(optional(auth()->user())->is_admin))) {
+            $businessQuery->where('status', 1);
+        }
+
+        $business = $businessQuery->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->with('translations')
                 ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
@@ -1183,21 +1191,23 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
     {
         $lang_id = getCurrentLanguageID();
 
-        $business = Business::whereHas('translations', function ($q) use ($business_slug, $lang_id) {
-            $q->where('slug', $business_slug)->where('lang_id', $lang_id);
-        })->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
-            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
-            'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
-        ])->first();
+        $business = Business::where('status', 1)
+            ->whereHas('translations', function ($q) use ($business_slug, $lang_id) {
+                $q->where('slug', $business_slug)->where('lang_id', $lang_id);
+            })->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->whereIn('status', ['published', 'active']),
+            ])->first();
 
         if (!$business) {
-            $business = Business::whereHas('translations', function ($q) use ($business_slug) {
-                $q->where('slug', $business_slug);
-            })->with([
+            $business = Business::where('status', 1)
+                ->whereHas('translations', function ($q) use ($business_slug) {
+                    $q->where('slug', $business_slug);
+                })->with([
                 'translations',
                 'category.translation',
                 'category.translations',
