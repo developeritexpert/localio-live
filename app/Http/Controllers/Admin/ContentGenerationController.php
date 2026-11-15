@@ -986,31 +986,33 @@ class ContentGenerationController extends Controller
 
         // 11. Active countries (support country_ids as primary, fallback to country_codes and country_names)
         if (isset($item['active_countries']) && is_array($item['active_countries'])) {
-            $activeAll = !empty($item['active_countries']['active_all_countries']);
-            $business->active_all_countries = $activeAll ? 1 : 0;
-            $business->save();
-            if (!$activeAll) {
-                $countryIds = [];
-                if (!empty($item['active_countries']['country_ids']) && is_array($item['active_countries']['country_ids'])) {
-                    $countryIds = array_values(array_filter(array_map('intval', $item['active_countries']['country_ids'])));
-                } elseif (!empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
-                    $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
-                } elseif (!empty($item['active_countries']['country_names']) && is_array($item['active_countries']['country_names'])) {
-                    $countryIds = \App\Models\Country::whereIn('name', $item['active_countries']['country_names'])->pluck('id')->toArray();
-                } elseif (!empty($item['active_countries']['countries']) && is_array($item['active_countries']['countries'])) {
-                    $cList = $item['active_countries']['countries'];
-                    if (!empty($cList)) {
-                        if (is_numeric($cList[0] ?? null)) {
-                            $countryIds = array_values(array_filter(array_map('intval', $cList)));
-                        } else {
-                            $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
-                        }
+            $countryIds = [];
+            if (!empty($item['active_countries']['country_ids']) && is_array($item['active_countries']['country_ids'])) {
+                $countryIds = array_values(array_filter(array_map('intval', $item['active_countries']['country_ids'])));
+            } elseif (!empty($item['active_countries']['country_codes']) && is_array($item['active_countries']['country_codes'])) {
+                $countryIds = \App\Models\Country::whereIn('country_code', $item['active_countries']['country_codes'])->pluck('id')->toArray();
+            } elseif (!empty($item['active_countries']['country_names']) && is_array($item['active_countries']['country_names'])) {
+                $countryIds = \App\Models\Country::whereIn('name', $item['active_countries']['country_names'])->pluck('id')->toArray();
+            } elseif (!empty($item['active_countries']['countries']) && is_array($item['active_countries']['countries'])) {
+                $cList = $item['active_countries']['countries'];
+                if (!empty($cList)) {
+                    if (is_numeric($cList[0] ?? null)) {
+                        $countryIds = array_values(array_filter(array_map('intval', $cList)));
+                    } else {
+                        $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
                     }
                 }
-                if (!empty($countryIds)) {
-                    $business->countries()->sync($countryIds);
-                }
             }
+            if (!empty($countryIds)) {
+                // Keep default country (1 = US) available so the business is visible on the main frontend
+                if (!in_array(1, $countryIds)) {
+                    $countryIds[] = 1;
+                }
+                $business->countries()->sync($countryIds);
+            }
+            // Keep business active globally so it appears on frontend
+            $business->active_all_countries = 1;
+            $business->save();
             $appliedCount++;
         }
 
@@ -1053,6 +1055,12 @@ class ContentGenerationController extends Controller
                 $business->save();
             }
             $appliedCount++;
+        }
+
+        if ($appliedCount > 0) {
+            $business->status = 1;
+            $business->save();
+            BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
         }
 
         return $appliedCount;
@@ -2039,32 +2047,31 @@ class ContentGenerationController extends Controller
                 break;
 
             case 'active_countries':
-                $activeAll = !empty($data['active_all_countries']);
-                Business::where('id', $businessId)->update(['active_all_countries' => $activeAll ? 1 : 0]);
-
-                if (!$activeAll) {
-                    $countryIds = [];
-                    if (!empty($data['country_ids']) && is_array($data['country_ids'])) {
-                        $countryIds = array_values(array_filter(array_map('intval', $data['country_ids'])));
-                    } elseif (!empty($data['country_codes']) && is_array($data['country_codes'])) {
-                        $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
-                    } elseif (!empty($data['country_names']) && is_array($data['country_names'])) {
-                        $countryIds = \App\Models\Country::whereIn('name', $data['country_names'])->pluck('id')->toArray();
-                    } elseif (!empty($data['countries']) && is_array($data['countries'])) {
-                        $cList = $data['countries'];
-                        if (!empty($cList)) {
-                            if (is_numeric($cList[0] ?? null)) {
-                                $countryIds = array_values(array_filter(array_map('intval', $cList)));
-                            } else {
-                                $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
-                            }
+                $countryIds = [];
+                if (!empty($data['country_ids']) && is_array($data['country_ids'])) {
+                    $countryIds = array_values(array_filter(array_map('intval', $data['country_ids'])));
+                } elseif (!empty($data['country_codes']) && is_array($data['country_codes'])) {
+                    $countryIds = \App\Models\Country::whereIn('country_code', $data['country_codes'])->pluck('id')->toArray();
+                } elseif (!empty($data['country_names']) && is_array($data['country_names'])) {
+                    $countryIds = \App\Models\Country::whereIn('name', $data['country_names'])->pluck('id')->toArray();
+                } elseif (!empty($data['countries']) && is_array($data['countries'])) {
+                    $cList = $data['countries'];
+                    if (!empty($cList)) {
+                        if (is_numeric($cList[0] ?? null)) {
+                            $countryIds = array_values(array_filter(array_map('intval', $cList)));
+                        } else {
+                            $countryIds = \App\Models\Country::whereIn('name', $cList)->orWhereIn('country_code', $cList)->pluck('id')->toArray();
                         }
                     }
-                    $biz = Business::find($businessId);
-                    if ($biz && !empty($countryIds)) {
-                        $biz->countries()->sync($countryIds);
-                    }
                 }
+                $biz = Business::find($businessId);
+                if ($biz && !empty($countryIds)) {
+                    if (!in_array(1, $countryIds)) {
+                        $countryIds[] = 1;
+                    }
+                    $biz->countries()->sync($countryIds);
+                }
+                Business::where('id', $businessId)->update(['active_all_countries' => 1]);
                 break;
 
             case 'rating':
@@ -2096,6 +2103,10 @@ class ContentGenerationController extends Controller
                 }
                 break;
         }
+
+        // When content is applied to a business, activate it so it shows on the frontend
+        Business::where('id', $businessId)->update(['status' => 1]);
+        BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
     }
 
     /**
