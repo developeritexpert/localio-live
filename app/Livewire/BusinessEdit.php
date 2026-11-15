@@ -2166,6 +2166,15 @@ class BusinessEdit extends Component
             }
         }
 
+        $hasAddedInfo = !empty(trim($this->business_description ?? ''))
+            || !empty(trim($this->short_description ?? ''))
+            || !empty($this->admin_rating)
+            || !empty($this->businessPros)
+            || !empty($this->businessOfferings)
+            || !empty($this->businessUsps);
+
+        $finalStatus = (!empty($this->status) || $hasAddedInfo) ? 1 : 0;
+
         return Business::create([
             'affiliate_partner' => $isAffVal ? ($this->affiliate_partner ?: 'partner') : null,
             'affiliate_link' => $this->affiliate_link,
@@ -2180,7 +2189,7 @@ class BusinessEdit extends Component
             'created_by' => auth()->id(),
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
-            'status' => (bool)$this->status,
+            'status' => $finalStatus,
             'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary,
@@ -2288,6 +2297,15 @@ class BusinessEdit extends Component
             }
         }
 
+        $hasAddedInfo = !empty(trim($this->business_description ?? ''))
+            || !empty(trim($this->short_description ?? ''))
+            || !empty($this->admin_rating)
+            || !empty($this->businessPros)
+            || !empty($this->businessOfferings)
+            || !empty($this->businessUsps);
+
+        $finalStatus = (!empty($this->status) || $hasAddedInfo) ? 1 : 0;
+
         $business->update([
             'affiliate_partner' => $isAffVal ? ($this->affiliate_partner ?: 'partner') : null,
             'affiliate_link' => $this->affiliate_link,
@@ -2301,7 +2319,7 @@ class BusinessEdit extends Component
             'languages_supported' => $this->languages_supported,
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
-            'status' => (bool)$this->status,
+            'status' => $finalStatus,
             'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary,

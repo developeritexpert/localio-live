@@ -1055,6 +1055,12 @@ class ContentGenerationController extends Controller
             $appliedCount++;
         }
 
+        if ($appliedCount > 0) {
+            $business->status = 1;
+            $business->save();
+            BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
+        }
+
         return $appliedCount;
     }
 
@@ -2096,6 +2102,10 @@ class ContentGenerationController extends Controller
                 }
                 break;
         }
+
+        // When content is applied to a business, activate it so it shows on the frontend
+        Business::where('id', $businessId)->update(['status' => 1]);
+        BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
     }
 
     /**
