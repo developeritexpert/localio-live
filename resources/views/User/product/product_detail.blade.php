@@ -11,7 +11,7 @@ $pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBi
 $reviewCountForIndex = isset($ratingCount) ? (int)$ratingCount : $business->reviews()->whereIn('status', ['published', 'active'])->count();
 @endphp
 
-@if($reviewCountForIndex < 5)+
+@if($reviewCountForIndex < 5)
 @section('meta_robots', 'noindex, follow')
 @endif
 
