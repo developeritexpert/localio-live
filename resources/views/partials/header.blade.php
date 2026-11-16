@@ -144,6 +144,7 @@
 
 
 
+@push('styles')
 <style>
 /* ==========================================================================
    Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
@@ -654,8 +655,7 @@
 }
 
 </style>
-
-                        <!-- mobile nav -->
+@endpush
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <div class="left_menu">
                                 <ul class="menu">

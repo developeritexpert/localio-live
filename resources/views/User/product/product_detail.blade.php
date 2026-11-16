@@ -1012,6 +1012,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endphp
                         @if(!empty($serviceGuideHtml))
                         <div class="col-lg-12 mt-4 mb-4 service-guide-section">
+                            @push('styles')
                             <style>
                                 .service-guide-box {
                                     border: 1px solid #eef2f6;
@@ -1081,6 +1082,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 }
                                 
                             </style>
+                            @endpush
                             <div class="service-guide-box">
                                 @php
                                     $bizGuideFallback = 'Which ' . ($business->translations->first()->name ?? $business->name ?? '') . ' service fits your needs?';
@@ -1434,6 +1436,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 }
                             @endphp
 
+                            @push('styles')
                             <style>
                                 #featureTabList {
                                     display: flex !important;
@@ -1481,6 +1484,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     outline: none !important;
                                 }
                             </style>
+                            @endpush
                             <div class="features-tabs-wrapper mt-3">
                                 @if(count($featuresByGroup) > 0)
                                 <ul class="nav feature-nav-tabs mb-3 d-flex flex-wrap" id="featureTabList" role="tablist">
@@ -2945,6 +2949,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                             @if($hasGlanceData)
                             <div class="main_feature_lg not-on-mobile d-none d-md-block business-glance-card-wrapper" style="margin-top: 20px;">
+                                @push('styles')
                                 <style>
                                     .business-glance-list .glance-item {
                                         display: flex;
@@ -2977,6 +2982,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         text-align: left;
                                     }
                                 </style>
+                                @endpush
                                 <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
                                     <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
                                         <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
