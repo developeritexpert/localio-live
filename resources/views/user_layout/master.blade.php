@@ -2,13 +2,15 @@
     $currentLangCode = getCurrentLocale();
     $currentLangObj = \App\Models\Language::where('lang_code', $currentLangCode)->first();
     $htmlLangAttr = $currentLangObj?->html_lang ?? ('en-US');
-    $canonicalUrl = request()->url();
+    $canonicalUrl = \App\Services\SeoService::getCanonicalUrl();
 ?>
 <!DOCTYPE html>
 <html lang="{{ $htmlLangAttr }}">
 
 <head>
-    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="@yield('canonical_url', $canonicalUrl)">
     <?php
 
     use App\Models\HomeContent; // Import your model
@@ -78,8 +80,48 @@
     @hasSection('meta_robots')
     <meta name="robots" content="@yield('meta_robots')">
     @endif
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {{-- Open Graph / Facebook / LinkedIn / WhatsApp --}}
+    @php
+        $resolvedPageTitle = View::hasSection('meta_title') ? trim(View::getSection('meta_title')) : $metaTitle;
+        $resolvedPageDesc = View::hasSection('meta_description') ? trim(View::getSection('meta_description')) : $metaDescription;
+        $ogType = View::hasSection('og_type') ? trim(View::getSection('og_type')) : 'website';
+        $defaultOgImage = asset('front/img/icon.svg');
+    @endphp
+    <meta property="og:site_name" content="Localio">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:title" content="@yield('og_title', $resolvedPageTitle)">
+    <meta property="og:description" content="@yield('og_description', $resolvedPageDesc)">
+    <meta property="og:url" content="@yield('og_url', $canonicalUrl)">
+    <meta property="og:image" content="@yield('og_image', $defaultOgImage)">
+    <meta property="og:locale" content="{{ str_replace('-', '_', $htmlLangAttr) }}">
+
+    {{-- Twitter Cards --}}
+    <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
+    <meta name="twitter:title" content="@yield('twitter_title', $resolvedPageTitle)">
+    <meta name="twitter:description" content="@yield('twitter_description', $resolvedPageDesc)">
+    <meta name="twitter:image" content="@yield('twitter_image', View::hasSection('og_image') ? View::getSection('og_image') : $defaultOgImage)">
+
+    {{-- Multilingual hreflang alternate links --}}
+    @hasSection('hreflang')
+        @yield('hreflang')
+    @else
+        @php
+            $hreflangLinks = \App\Services\SeoService::getHreflangLinks();
+        @endphp
+        @foreach($hreflangLinks as $hLink)
+    <link rel="alternate" hreflang="{{ $hLink['hreflang'] }}" href="{{ $hLink['href'] }}">
+        @endforeach
+    @endif
+
+    {{-- Global Structured Data (Organization & WebSite) --}}
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getWebSiteAndOrgSchema() !!}
+    </script>
+
+    {{-- Page-specific Structured Data (Breadcrumbs, Product, etc.) --}}
+    @yield('structured_data')
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="clear-session-url" content="{{ route('clear.register.session') }}">
 
@@ -2402,7 +2444,7 @@ header .sec_head {
                                         alt="{{ $footerLogo->meta_key }}"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/foot-logo.svg') }}"></a>
+                                        src="{{ asset('front/img/foot-logo.svg') }}" alt="Localio"></a>
                                 @endif
                                 <p class="mt-2">Make better buying decisions</p>
                                 <ul class="foot-right-list d-none">

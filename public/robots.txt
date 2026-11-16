@@ -1,4 +1,15 @@
 User-agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /sign-in
+Disallow: /recover-password
+Disallow: /otp-confirm
+Disallow: /new-password
+Disallow: /switch-language/
+Disallow: /user/
+Disallow: /vendor/
+Disallow: /clear-registration-session
 
 Sitemap: https://localio.com/sitemap.xml
