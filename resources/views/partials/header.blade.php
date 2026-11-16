@@ -22,7 +22,7 @@
                                         alt="{{ $headerLogo->meta_key }}"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"></a>
                                 @endif
                             </div>
                         </div>
@@ -144,6 +144,7 @@
 
 
 
+@push('styles')
 <style>
 /* ==========================================================================
    Mobile Sidebar & MSP Panel Styles (Ensuring Desktop Always Hides Them)
@@ -654,8 +655,7 @@
 }
 
 </style>
-
-                        <!-- mobile nav -->
+@endpush
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <div class="left_menu">
                                 <ul class="menu">
@@ -700,7 +700,7 @@
                                         alt="{{ $headerLogo->meta_key }}"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"></a>
                                 @endif
                             </div>
                         </div>
@@ -721,6 +721,7 @@
                                     @if (Auth::user()->profile_image && Auth::user()->profile_image !==
                                     'front/img/default.png')
                                     <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle"
+                                        alt="{{ Auth::user()->name ?? 'User Profile' }}"
                                         style='border-radius: 50%; width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;'>
                                     @else
                                     <div class="profile-circle"
@@ -739,6 +740,7 @@
                                                 @if (Auth::user()->profile_image && Auth::user()->profile_image !==
                                                 'front/img/default.png')
                                                 <img src="{{ asset(Auth::user()->profile_image) }}"
+                                                    alt="{{ Auth::user()->name ?? 'User Profile' }}"
                                                     class="img-fluid profile-circle"
                                                     style='border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
                                                 @else
@@ -843,7 +845,7 @@
                                         @else
                                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}"
                                             class="msp_brand">
-                                            <img src="{{ asset('front/img/logo.svg') }}">
+                                            <img src="{{ asset('front/img/logo.svg') }}" alt="Localio">
                                         </a>
                                         @endif
                                     </div>
@@ -956,7 +958,7 @@
                                             </a>
                                             @else
                                             <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
-                                                <img src="{{ asset('front/img/logo.svg') }}">
+                                                <img src="{{ asset('front/img/logo.svg') }}" alt="Localio">
                                             </a>
                                             @endif
                                         </div>

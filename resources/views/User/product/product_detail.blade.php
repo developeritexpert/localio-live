@@ -8,7 +8,12 @@ $currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $match
 $resolvedBizMeta = \App\Services\MetaTagService::resolveBusinessMeta($business, $currentLangId);
 $pageMetaTitle = !empty($metaTitle) ? $metaTitle : $resolvedBizMeta['title'];
 $pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBizMeta['description'];
-$reviewCountForIndex = isset($ratingCount) ? (int)$ratingCount : $business->reviews()->whereIn('status', ['published', 'active'])->count();
+$activeReviews = $business->reviews ? $business->reviews->whereIn('status', ['published', 'active']) : collect();
+$reviewCountForIndex = isset($ratingCount) ? (int)$ratingCount : $activeReviews->count();
+$computedAvgRating = $reviewCountForIndex >= 10 
+    ? round($activeReviews->avg('rating'), 1) 
+    : ((!empty($business->admin_rating) && (float)$business->admin_rating > 0) ? (float)$business->admin_rating : null);
+$bizLogoUrl = $business->hasLogo() ? asset($business->getRawOriginal('icon_id') ?? $business->icon_id) : asset('front/img/icon.svg');
 @endphp
 
 @if($reviewCountForIndex < 5)
@@ -19,6 +24,45 @@ $reviewCountForIndex = isset($ratingCount) ? (int)$ratingCount : $business->revi
 @if(!empty($pageMetaDescription))
 @section('meta_description', format_meta_text($pageMetaDescription))
 @endif
+
+@section('og_type', 'product')
+@section('og_image', $bizLogoUrl)
+
+@section('hreflang')
+    @php
+        $bizHreflangLinks = \App\Services\SeoService::getHreflangLinks($business);
+    @endphp
+    @foreach($bizHreflangLinks as $bLink)
+    <link rel="alternate" hreflang="{{ $bLink['hreflang'] }}" href="{{ $bLink['href'] }}">
+    @endforeach
+@endsection
+
+@section('structured_data')
+    @php
+        $bizBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+        ];
+        if ($business->category && $business->category->parent) {
+            $pTrans = $business->category->parent->translation()->first();
+            if ($pTrans) {
+                $bizBreadcrumbs[] = ['name' => $pTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $pTrans->slug])];
+            }
+        }
+        if ($business->category) {
+            $cTrans = $business->category->translation()->first();
+            if ($cTrans) {
+                $bizBreadcrumbs[] = ['name' => $cTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cTrans->slug])];
+            }
+        }
+        $bizBreadcrumbs[] = ['name' => optional($business->translations->first())->name ?? $business->name, 'url' => url()->current()];
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($bizBreadcrumbs) !!}
+    </script>
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBusinessSchema($business, $computedAvgRating, $reviewCountForIndex, $pageMetaDescription) !!}
+    </script>
+@endsection
 
 @section('content')
 @php
@@ -1012,6 +1056,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         @endphp
                         @if(!empty($serviceGuideHtml))
                         <div class="col-lg-12 mt-4 mb-4 service-guide-section">
+                            @push('styles')
                             <style>
                                 .service-guide-box {
                                     border: 1px solid #eef2f6;
@@ -1081,6 +1126,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 }
                                 
                             </style>
+                            @endpush
                             <div class="service-guide-box">
                                 @php
                                     $bizGuideFallback = 'Which ' . ($business->translations->first()->name ?? $business->name ?? '') . ' service fits your needs?';
@@ -1434,6 +1480,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 }
                             @endphp
 
+                            @push('styles')
                             <style>
                                 #featureTabList {
                                     display: flex !important;
@@ -1481,6 +1528,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     outline: none !important;
                                 }
                             </style>
+                            @endpush
                             <div class="features-tabs-wrapper mt-3">
                                 @if(count($featuresByGroup) > 0)
                                 <ul class="nav feature-nav-tabs mb-3 d-flex flex-wrap" id="featureTabList" role="tablist">
@@ -2800,25 +2848,25 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <ul class="list-unstyled">
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="Check">
                                             </div>
                                             <p class="m-0">Free domain & SSL certificate</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="Check">
                                             </div>
                                             <p class="m-0">Customizable automatic updates</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="Check">
                                             </div>
                                             <p class="m-0">Scalable performance management</p>
                                         </li>
                                         <li class="d-flex flex-row size15">
                                             <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                <img src="{{ asset('front/img/tick-img.png') }}" alt="Check">
                                             </div>
                                             <p class="m-0">DDoS & malware protection</p>
                                         </li>
@@ -2945,6 +2993,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                             @if($hasGlanceData)
                             <div class="main_feature_lg not-on-mobile d-none d-md-block business-glance-card-wrapper" style="margin-top: 20px;">
+                                @push('styles')
                                 <style>
                                     .business-glance-list .glance-item {
                                         display: flex;
@@ -2977,6 +3026,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         text-align: left;
                                     }
                                 </style>
+                                @endpush
                                 <div class="feture_box boxshadow_border bg-white" style="border-radius: 14px; padding: 22px 24px; border: 1px solid #eef2f6; box-shadow: 0 2px 10px rgba(0,35,71,0.04);">
                                     <div class="business-glance-header pb-3 mb-2" style="border-bottom: 1px solid #f0f0f0;">
                                         <h3 class="size20 big-bld m-0" style="color: #002347; font-weight: 700; font-size: 19px;">
@@ -3078,7 +3128,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="main_feature_sm">
                                     <div class="fre_trail feture_box size22">
                                         <div class="grn_check_big">
-                                            <img src="{{ asset('front/img/new-grn-chk.svg') }}">
+                                            <img src="{{ asset('front/img/new-grn-chk.svg') }}" alt="Check">
                                         </div>
                                         <h6 class="blue-text big-bld">{{ static_text('free_trial_available_heading') ?: 'Free trial available' }}</h6>
                                         <div class="accor-btn">
