@@ -1,6 +1,24 @@
 @extends('user_layout.master')
 @section('meta_title', format_meta_text(isset($contact) && isset($contact->meta_title) ? $contact->meta_title : 'Contact Page'))
 @section('meta_description', format_meta_text(isset($contact) && isset($contact->meta_description) ? $contact->meta_description : ''))
+
+@section('structured_data')
+    @php
+        $contactBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+            ['name' => 'Contact Us', 'url' => url()->current()],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($contactBreadcrumbs) !!}
+    </script>
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getContactPageSchema([
+        'name' => isset($contact) && isset($contact->meta_title) ? $contact->meta_title : 'Contact Localio',
+        'description' => isset($contact) && isset($contact->meta_description) ? $contact->meta_description : 'Get in touch with Localio support.',
+    ]) !!}
+    </script>
+@endsection
 @section('content')
 
 <section class="banner_sec help-cntr-bnr inr-bnr dark d-none" style="background-color: #003F7D;">

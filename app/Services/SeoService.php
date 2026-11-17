@@ -255,4 +255,65 @@ class SeoService
 
         return $links;
     }
+
+    /**
+     * FAQPage JSON-LD Schema.
+     *
+     * @param array $faqs Array of ['question' => '...', 'answer' => '...']
+     */
+    public static function getFaqPageSchema(array $faqs): string
+    {
+        $entities = [];
+        foreach ($faqs as $faq) {
+            $q = trim(strip_tags($faq['question'] ?? ''));
+            $a = trim(strip_tags($faq['answer'] ?? ''));
+            if (!empty($q) && !empty($a)) {
+                $entities[] = [
+                    '@type'          => 'Question',
+                    'name'           => $q,
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text'  => $a,
+                    ],
+                ];
+            }
+        }
+
+        if (empty($entities)) {
+            return '';
+        }
+
+        $data = [
+            '@context'   => 'https://schema.org',
+            '@type'      => 'FAQPage',
+            'mainEntity' => $entities,
+        ];
+
+        return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * ContactPage JSON-LD Schema.
+     */
+    public static function getContactPageSchema(array $info = []): string
+    {
+        $baseUrl = self::getBaseUrl();
+        $url = self::getCanonicalUrl();
+
+        $data = [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'ContactPage',
+            'name'        => $info['name'] ?? 'Contact Us',
+            'description' => $info['description'] ?? 'Contact Localio support team for assistance, feedback, or partnership inquiries.',
+            'url'         => $url,
+            'mainEntity'  => [
+                '@type' => 'Organization',
+                'name'  => 'Localio',
+                'url'   => $baseUrl,
+                'logo'  => $baseUrl . '/front/img/icon.svg',
+            ],
+        ];
+
+        return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
 }

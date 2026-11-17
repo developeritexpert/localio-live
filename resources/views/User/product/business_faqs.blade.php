@@ -42,6 +42,49 @@
 @section('meta_description', format_meta_text($faqsMetaDesc))
 @endif
 
+@section('structured_data')
+    @php
+        $bizBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+        ];
+        if ($business->category && $business->category->parent) {
+            $pTrans = $business->category->parent->translation()->first();
+            if ($pTrans) {
+                $bizBreadcrumbs[] = ['name' => $pTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $pTrans->slug])];
+            }
+        }
+        if ($business->category) {
+            $cTrans = $business->category->translation()->first();
+            if ($cTrans) {
+                $bizBreadcrumbs[] = ['name' => $cTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cTrans->slug])];
+            }
+        }
+        $bizName = optional($business->translations->first())->name ?? $business->name;
+        $bizBreadcrumbs[] = ['name' => $bizName, 'url' => url('/' . app()->getLocale() . '/' . (optional($business->translations->first())->slug ?? $business->id))];
+        $bizBreadcrumbs[] = ['name' => 'FAQs', 'url' => url()->current()];
+
+        $faqList = [];
+        $rawFaqs = $business->faqs()->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->where('status', 1)->get();
+        foreach ($rawFaqs as $fItem) {
+            $fTrans = $fItem->translations->first() ?? $fItem->translations()->first();
+            if ($fTrans && !empty($fTrans->question) && !empty($fTrans->answer)) {
+                $faqList[] = [
+                    'question' => $fTrans->question,
+                    'answer'   => $fTrans->answer,
+                ];
+            }
+        }
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($bizBreadcrumbs) !!}
+    </script>
+    @if(!empty($faqList))
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getFaqPageSchema($faqList) !!}
+    </script>
+    @endif
+@endsection
+
 @section('content')
 
 @php
