@@ -43,6 +43,38 @@
 @section('meta_description', format_meta_text($pageFaqDesc))
 @endif
 
+@section('structured_data')
+    @php
+        $catBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+        ];
+        if (!empty($parentCatName) && !empty($parentCatSlug)) {
+            $catBreadcrumbs[] = ['name' => $parentCatName, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentCatSlug])];
+        }
+        $catBreadcrumbs[] = ['name' => $categoryTranslation->name ?? 'Category', 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug])];
+        $catBreadcrumbs[] = ['name' => 'FAQs', 'url' => url()->current()];
+
+        $faqList = [];
+        if (isset($faqs) && is_iterable($faqs)) {
+            foreach ($faqs as $fItem) {
+                $q = is_array($fItem) ? ($fItem['question'] ?? '') : ($fItem->question ?? '');
+                $a = is_array($fItem) ? ($fItem['answer'] ?? '') : ($fItem->answer ?? '');
+                if (!empty($q) && !empty($a)) {
+                    $faqList[] = ['question' => $q, 'answer' => $a];
+                }
+            }
+        }
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($catBreadcrumbs) !!}
+    </script>
+    @if(!empty($faqList))
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getFaqPageSchema($faqList) !!}
+    </script>
+    @endif
+@endsection
+
 @section('content')
 
 <!-- Upper Header Section -->

@@ -30,6 +30,31 @@
 @endif
 @section('meta_title', format_meta_text($discMeta['title']))
 @section('meta_description', format_meta_text($discMeta['description']))
+
+@section('structured_data')
+    @php
+        $bizBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+        ];
+        if ($business->category && $business->category->parent) {
+            $pTrans = $business->category->parent->translation()->first();
+            if ($pTrans) {
+                $bizBreadcrumbs[] = ['name' => $pTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $pTrans->slug])];
+            }
+        }
+        if ($business->category) {
+            $cTrans = $business->category->translation()->first();
+            if ($cTrans) {
+                $bizBreadcrumbs[] = ['name' => $cTrans->name, 'url' => route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cTrans->slug])];
+            }
+        }
+        $bizBreadcrumbs[] = ['name' => $bName, 'url' => url('/' . app()->getLocale() . '/' . (optional($business->translations->first())->slug ?? $business->id))];
+        $bizBreadcrumbs[] = ['name' => 'Discussions', 'url' => url()->current()];
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($bizBreadcrumbs) !!}
+    </script>
+@endsection
 <style>
     .top-rated-heading-sec {
         margin-top: 95px;

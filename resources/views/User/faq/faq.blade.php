@@ -18,6 +18,33 @@
 @section('meta_title', format_meta_text('Frequently Asked Questions | Localio'))
 @section('meta_description', format_meta_text('Find answers to common questions about Localio, categories, business reviews, and software ratings.'))
 
+@section('structured_data')
+    @php
+        $faqBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+            ['name' => 'FAQs', 'url' => url()->current()],
+        ];
+
+        $faqList = [];
+        if (!empty($activeCategory) && !empty($activeCategory->faqs)) {
+            foreach ($activeCategory->faqs as $fItem) {
+                $fTrans = $fItem->translations->first() ?? $fItem->translations()->first();
+                if ($fTrans && !empty($fTrans->question) && !empty($fTrans->answer)) {
+                    $faqList[] = ['question' => $fTrans->question, 'answer' => $fTrans->answer];
+                }
+            }
+        }
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($faqBreadcrumbs) !!}
+    </script>
+    @if(!empty($faqList))
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getFaqPageSchema($faqList) !!}
+    </script>
+    @endif
+@endsection
+
 @section('content')
 
 <!-- Upper Header Section -->

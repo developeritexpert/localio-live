@@ -1,6 +1,18 @@
 @extends('user_layout.master')
 @section('meta_title', format_meta_text(isset($help) && isset($help->meta_title) ? $help->meta_title : 'Help Center | Localio'))
 @section('meta_description', format_meta_text(isset($help) && isset($help->meta_description) ? $help->meta_description : ''))
+
+@section('structured_data')
+    @php
+        $helpBreadcrumbs = [
+            ['name' => 'Home', 'url' => url('/' . app()->getLocale())],
+            ['name' => 'Help Center', 'url' => url()->current()],
+        ];
+    @endphp
+    <script type="application/ld+json">
+    {!! \App\Services\SeoService::getBreadcrumbsSchema($helpBreadcrumbs) !!}
+    </script>
+@endsection
 @section('content')
     <section class="banner_sec help-cntr-bnr dark" style="background-color: #003F7D;">
         <div class="bubble-wrp">
