@@ -44,4 +44,9 @@ class TranslationBatch extends Model
     {
         return $this->hasMany(ReviewTranslation::class, 'batch_id');
     }
+
+    public function entityTranslations()
+    {
+        return $this->hasMany(EntitySectionTranslation::class, 'batch_id');
+    }
 }

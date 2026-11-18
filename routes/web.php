@@ -277,6 +277,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // ===== Translations =====
     Route::get('/admin-dashboard/translations/businesses', [TranslationsController::class, 'businesses'])->name('translations.businesses');
+    Route::post('/admin-dashboard/translations/businesses/submit-batch', [TranslationsController::class, 'submitBusinessBatch'])->name('translations.businesses.submit-batch');
     Route::get('/admin-dashboard/translations/reviews', [TranslationsController::class, 'reviews'])->name('translations.reviews');
     Route::post('/admin-dashboard/translations/reviews/dispatch-batch', [TranslationsController::class, 'dispatchReviewBatch'])->name('translations.reviews.dispatch-batch');
     Route::post('/admin-dashboard/translations/reviews/retry', [TranslationsController::class, 'retryReviewTranslation'])->name('translations.reviews.retry');

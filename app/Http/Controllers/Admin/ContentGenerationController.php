@@ -2106,6 +2106,13 @@ class ContentGenerationController extends Controller
         // When content is applied to a business, activate it so it shows on the frontend
         Business::where('id', $businessId)->update(['status' => 1]);
         BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
+
+        // Sync English hashes to detect changes and flag outdated translations
+        try {
+            \App\Services\BusinessTranslationService::syncBusinessEnglishSource($businessId);
+        } catch (\Throwable $e) {
+            Log::warning("Could not sync business English translation hashes for business {$businessId}: " . $e->getMessage());
+        }
     }
 
     /**
