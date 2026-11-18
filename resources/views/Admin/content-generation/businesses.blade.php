@@ -105,11 +105,20 @@
                             <option value="0" {{ (request('status') === '0' || request('status') === 'inactive') ? 'selected' : '' }}>Offline</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label mb-1 small">Search business</label>
                         <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Business name...">
                     </div>
-                    <div class="col-md-3 d-flex gap-2">
+                    <div class="col-md-2">
+                        <label class="form-label mb-1 small">Show</label>
+                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="30" {{ (request('per_page', 30) == 30) ? 'selected' : '' }}>30 entries</option>
+                            <option value="100" {{ (request('per_page') == 100) ? 'selected' : '' }}>100 entries</option>
+                            <option value="200" {{ (request('per_page') == 200) ? 'selected' : '' }}>200 entries</option>
+                            <option value="500" {{ (request('per_page') == 500) ? 'selected' : '' }}>500 entries</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-sm btn-primary">Filter</button>
                         <a href="{{ route('content-gen.businesses', ['tab' => $activeTab]) }}" class="btn btn-sm btn-light">Reset</a>
                     </div>
@@ -351,11 +360,22 @@
                     </table>
                     </div>
                 </div>
-                @if($businesses->hasPages())
-                    <div class="card-inner">
+                <div class="card-inner py-2 d-flex flex-wrap align-items-center justify-content-between gap-2 border-top">
+                    <div>
                         {{ $businesses->links() }}
                     </div>
-                @endif
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fs-12px text-muted">Show per page:</span>
+                        <div class="btn-group btn-group-sm">
+                            @foreach([30, 100, 200, 500] as $opt)
+                                <a href="{{ request()->fullUrlWithQuery(['per_page' => $opt]) }}"
+                                   class="btn {{ (request('per_page', 30) == $opt) ? 'btn-primary' : 'btn-outline-light' }}">
+                                    {{ $opt }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
 

@@ -135,20 +135,35 @@
                                 </li>
 
                                 <!-- Content Generation -->
-                                <li class="nk-menu-item {{ request()->routeIs('content-gen.businesses*') ? 'active current-page' : '' }}">
-                                    <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.businesses*', 'content-gen.logos*') && !request()->routeIs('content-gen.logos.batch-jobs*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon">
                                             <em class="icon ni ni-cpu"></em>
                                         </span>
                                         <span class="nk-menu-text">Content Generation</span>
                                     </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.businesses*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.businesses') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Businesses</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.logos*') && !request()->routeIs('content-gen.logos.batch-jobs*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.logos') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Logos</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 <!-- Batches -->
                                 @php
                                     $contentBatchPendingCount = class_exists(\App\Models\AiBatchJob::class)
                                         ? \App\Models\AiBatchJob::where(function($q) {
-                                            $q->whereNull('prompt_type')->orWhere('prompt_type', '!=', 'review_moderation');
+                                            $q->whereNull('prompt_type')->orWhere(function($sub) {
+                                                $sub->where('prompt_type', '!=', 'review_moderation')
+                                                    ->where('prompt_type', '!=', 'logo_generation');
+                                            });
                                         })->whereIn('status', ['pending', 'processing'])->count()
                                         : 0;
 
@@ -165,9 +180,14 @@
                                         ? \App\Models\TranslationBatch::whereIn('status', ['waiting', 'submitting', 'processing', 'pending'])->count()
                                         : 0;
 
-                                    $totalBatchesPendingCount = $contentBatchPendingCount + $reviewsBatchPendingCount + $translationsBatchPendingCount;
+                                    $logosBatchPendingCount = class_exists(\App\Models\AiBatchJob::class)
+                                        ? \App\Models\AiBatchJob::where('prompt_type', 'logo_generation')
+                                            ->whereIn('status', ['pending', 'processing'])->count()
+                                        : 0;
+
+                                    $totalBatchesPendingCount = $contentBatchPendingCount + $reviewsBatchPendingCount + $translationsBatchPendingCount + $logosBatchPendingCount;
                                 @endphp
-                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*', 'admin.reviews.batches*', 'translations.batch-jobs*') ? 'active current-page' : '' }}">
+                                <li class="nk-menu-item has-sub {{ request()->routeIs('content-gen.batch-jobs*', 'content-gen.batch-job-items*', 'admin.reviews.batches*', 'translations.batch-jobs*', 'content-gen.logos.batch-jobs*') ? 'active current-page' : '' }}">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon">
                                             <em class="icon ni ni-layers-fill"></em>
@@ -196,10 +216,10 @@
                                                 <span class="badge {{ $translationsBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $translationsBatchPendingCount }}</span>
                                             </a>
                                         </li>
-                                        <li class="nk-menu-item">
-                                            <a href="#" class="nk-menu-link">
+                                        <li class="nk-menu-item {{ request()->routeIs('content-gen.logos.batch-jobs*') ? 'active' : '' }}">
+                                            <a href="{{ route('content-gen.logos.batch-jobs') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Logos</span>
-                                                <span class="badge bg-light text-dark border ms-auto" style="font-size: 11px;">0</span>
+                                                <span class="badge {{ $logosBatchPendingCount > 0 ? 'bg-primary' : 'bg-light text-dark border' }} ms-auto" style="font-size: 11px;">{{ $logosBatchPendingCount }}</span>
                                             </a>
                                         </li>
                                     </ul>

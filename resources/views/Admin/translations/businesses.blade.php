@@ -351,11 +351,22 @@ thead th.sticky-col-country {
                         </tbody>
                     </table>
                 </div>
-                @if($businesses->hasPages())
-                    <div class="card-inner py-3 border-top">
+                <div class="card-inner py-2 d-flex flex-wrap align-items-center justify-content-between gap-2 border-top">
+                    <div>
                         {{ $businesses->links() }}
                     </div>
-                @endif
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fs-12px text-muted">Show per page:</span>
+                        <div class="btn-group btn-group-sm">
+                            @foreach([20, 50, 100, 200, 500] as $opt)
+                                <a href="{{ request()->fullUrlWithQuery(['per_page' => $opt]) }}"
+                                   class="btn {{ (request('per_page', 20) == $opt) ? 'btn-primary' : 'btn-outline-light' }}">
+                                    {{ $opt }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
 

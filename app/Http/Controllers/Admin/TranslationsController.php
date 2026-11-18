@@ -96,7 +96,11 @@ class TranslationsController extends Controller
             });
         }
 
-        $businesses = $query->orderBy('id', 'desc')->paginate(20);
+        $perPage = (int)$request->input('per_page', 20);
+        if (!in_array($perPage, [20, 50, 100, 200, 500])) {
+            $perPage = 20;
+        }
+        $businesses = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
         $categories = Category::onlyParents()->orderBy('id')->with('translation')->get();
         $countries = Country::orderBy('name')->get();
 
