@@ -53,7 +53,7 @@
     </section>
     <!-- end  -->
     <!-- section trusted brands marquee -->
-    <section class="trusted-brands">
+    <div class="trusted-brands">
         <div class="container">
             <div class="trst-brnd-wrp" style="display: none;">
                 {{-- <div class="brnd-wrp-lft">
@@ -84,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     <!-- section most-popular -->
     <section class="most-populr-sec light p_120">
         <div class="container">
@@ -370,7 +370,7 @@
         @endif
     </section> --}}
     <!-- slider section start -->
-    <section class="outer_slider dark">
+    <div class="outer_slider dark">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
@@ -490,7 +490,7 @@
             </div>
         </div> --}}
         @livewire('latest-reviews')
-    </section>
+    </div>
     <!-- slider section end -->
     <!-- read section start -->
     {{-- <section class="read_sec_outer light p_120">

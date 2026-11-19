@@ -43,6 +43,51 @@ class W3cHtmlCompliance
                     // 3. Remove trailing slash on void elements
                     $content = preg_replace('/<(link|input|meta)\b([^>]*?)\s*\/>/i', '<$1$2>', $content);
 
+                    // 4. Convert Livewire wire:* attributes to valid HTML5 data-wire-* attributes for W3C compliance
+                    if (str_contains($content, 'wire:')) {
+                        $content = preg_replace('/(?<=\s)wire:([a-zA-Z0-9_\-\.:]+)(?=[=\s\/>])/i', 'data-wire-$1', $content);
+
+                        $restorerScript = '<script id="w3c-livewire-restorer">'
+                            . '(function(){'
+                            . 'function r(root){'
+                            . 'if(!root)root=document.documentElement;'
+                            . 'var list=[];'
+                            . 'if(root.nodeType===1)list.push(root);'
+                            . 'if(root.querySelectorAll){'
+                            . 'var sub=root.querySelectorAll("*");'
+                            . 'for(var s=0;s<sub.length;s++)list.push(sub[s]);'
+                            . '}'
+                            . 'for(var i=0;i<list.length;i++){'
+                            . 'var el=list[i];var attrs=el.attributes;if(!attrs)continue;'
+                            . 'for(var j=0;j<attrs.length;j++){'
+                            . 'var a=attrs[j].name;'
+                            . 'if(a.indexOf("data-wire-")===0){'
+                            . 'var w="wire:"+a.substring(10);'
+                            . 'if(!el.hasAttribute(w)){el.setAttribute(w,attrs[j].value);}'
+                            . '}'
+                            . '}'
+                            . '}'
+                            . '}'
+                            . 'if(window.MutationObserver){'
+                            . 'new MutationObserver(function(m){'
+                            . 'for(var i=0;i<m.length;i++){'
+                            . 'for(var j=0;j<m[i].addedNodes.length;j++){'
+                            . 'var n=m[i].addedNodes[j];if(n.nodeType===1){r(n);}'
+                            . '}'
+                            . '}'
+                            . '}).observe(document.documentElement,{childList:true,subtree:true});'
+                            . '}'
+                            . 'document.addEventListener("DOMContentLoaded",function(){r(document.documentElement);},{capture:true});'
+                            . '})();'
+                            . '</script>';
+
+                        if (stripos($content, '</head>') !== false) {
+                            $content = str_ireplace('</head>', $restorerScript . '</head>', $content);
+                        } else {
+                            $content = $restorerScript . $content;
+                        }
+                    }
+
                     $response->setContent($content);
                 }
             }
