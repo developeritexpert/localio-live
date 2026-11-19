@@ -1,4 +1,5 @@
 <div>
+@push('styles')
 <style>
     button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.gap-1.btn-success.text-white.shadow-sm {
         background: #033b74 !important;
@@ -151,6 +152,7 @@
         background: #f1f5f9 !important;
     }
 </style>
+@endpush
 
     @if($show)
         <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">

@@ -1354,9 +1354,9 @@
     </section>
     <!-- here end discution section -->
 
-    <section class="subs_sec light top_rated_org_sec ">
+    <div class="subs_sec light top_rated_org_sec ">
         <x-news-letter-subscription />
-    </section>
+    </div>
     @endif
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
     <script>

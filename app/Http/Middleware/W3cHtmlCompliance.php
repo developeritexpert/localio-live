@@ -43,7 +43,30 @@ class W3cHtmlCompliance
                     // 3. Remove trailing slash on void elements
                     $content = preg_replace('/<(link|input|meta)\b([^>]*?)\s*\/>/i', '<$1$2>', $content);
 
-                    // 4. Convert Livewire wire:* attributes to valid HTML5 data-wire-* attributes for W3C compliance
+                    // 4. Move any in-body <style> tags to <head> for W3C compliance
+                    if (stripos($content, '<body') !== false && stripos($content, '<style') !== false) {
+                        $bodyPos = stripos($content, '<body');
+                        $headClosePos = stripos($content, '</head>');
+                        if ($headClosePos !== false && $bodyPos > $headClosePos) {
+                            $bodyContent = substr($content, $bodyPos);
+                            if (stripos($bodyContent, '<style') !== false) {
+                                $extractedStyles = [];
+                                $newBodyContent = preg_replace_callback('/<style\b[^>]*>.*?<\/style>/is', function ($matches) use (&$extractedStyles) {
+                                    $extractedStyles[] = $matches[0];
+                                    return '';
+                                }, $bodyContent);
+
+                                if (!empty($extractedStyles)) {
+                                    $headContent = substr($content, 0, $bodyPos);
+                                    $combinedStyles = implode("\n", $extractedStyles);
+                                    $headContent = str_ireplace('</head>', $combinedStyles . "\n</head>", $headContent);
+                                    $content = $headContent . $newBodyContent;
+                                }
+                            }
+                        }
+                    }
+
+                    // 5. Convert Livewire wire:* attributes to valid HTML5 data-wire-* attributes for W3C compliance
                     if (str_contains($content, 'wire:')) {
                         $content = preg_replace('/(?<=\s)wire:([a-zA-Z0-9_\-\.:]+)(?=[=\s\/>])/i', 'data-wire-$1', $content);
 

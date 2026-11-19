@@ -1495,7 +1495,7 @@
         </div>
     </section>
 
-    <section class="subs_sec light top_rated_org_sec ">
+    <div class="subs_sec light top_rated_org_sec ">
         {{-- <div class="container">
             <div class="subs_content">
                 <h2 data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_titile') }}
@@ -1520,7 +1520,7 @@
             </div>
         </div> --}}
         <x-news-letter-subscription/>
-    </section>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
     <script>
         function initPriceSlider() {
