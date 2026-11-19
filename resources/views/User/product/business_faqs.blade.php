@@ -265,7 +265,7 @@
                                     <div class="faq-category-group mb-4" data-category-group="{{ $cat->id }}">
                                         <h2 class="category-group-headline mb-3" style="">
                                             {{ $cat->name }}
-                                        </h3>
+                                        </h2>
 
                                         @foreach($cat->faqs as $faq)
                                             @php
@@ -323,7 +323,7 @@
                                     @if(isset($faqCategories) && $faqCategories->count() > 0)
                                     <h2 class="category-group-headline mb-3" style=" ">
                                         General
-                                    </h3>
+                                    </h2>
                                     @endif
 
                                     @foreach($uncategorizedFaqs as $faq)
@@ -880,7 +880,7 @@
 <section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
-            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
+            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: none;">
                 {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
             </h2>
             @if(!empty($exploreSubtext))
@@ -943,12 +943,12 @@
 
 
 <!-- Report Issue Modal -->
-<div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportIssueModal" tabindex="-1" role="dialog" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
         <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
             <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
                 <div>
-                    <h5 class="modal-title fw-bold m-0" id="reportIssueModalLabel" style="color: #002347; font-size: 18px;">Report an issue</h5>
+                    <h3 class="modal-title fw-bold m-0" id="reportIssueModalLabel" style="color: #002347; font-size: 18px;">Report an issue</h3>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -966,7 +966,7 @@
                         ['value' => 'Spam or advertising',    'icon' => 'fa-ban',              'desc' => 'Promotional or irrelevant content'],
                         ['value' => 'Other',                  'icon' => 'fa-ellipsis-h',       'desc' => 'Something else is wrong'],
                     ] as $opt)
-                    <label class="report-option-card d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" style="border: 1.5px solid #e2e8f0; cursor: pointer; transition: all 0.15s ease;" onclick="selectReportReason('{{ $opt['value'] }}', this)">
+                    <div role="button" tabindex="0" class="report-option-card d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" style="border: 1.5px solid #e2e8f0; cursor: pointer; transition: all 0.15s ease;" onclick="selectReportReason('{{ $opt['value'] }}', this)">
                         <div style="width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <i class="fas {{ $opt['icon'] }}" style="color: #64748b; font-size: 14px;"></i>
                         </div>
@@ -977,7 +977,7 @@
                         <div class="report-check" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease;">
                             <i class="fas fa-check" style="font-size: 10px; color: transparent; transition: color 0.15s ease;"></i>
                         </div>
-                    </label>
+                    </div>
                     @endforeach
                 </div>
 
