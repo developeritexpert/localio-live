@@ -2274,9 +2274,9 @@
 
 
 
-        <section class="subs_sec light ">
+        <div class="subs_sec light ">
                 <x-news-letter-subscription />
-        </section>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
         <script>
         function initPriceSlider() {

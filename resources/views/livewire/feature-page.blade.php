@@ -2339,7 +2339,7 @@
         <section class="explore-subcategories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 class="explore-cat-h2" style="text-transform: math-auto;">
+                    <h2 class="explore-cat-h2" style="text-transform: none;">
                         {!! \App\Services\ContentTemplateService::cleanHeading($exploreHeadline) !!}
                     </h2>
                     @if(!empty($exploreSubtext))
@@ -2396,9 +2396,9 @@
         </section>
         @endif
 
-        <section class="subs_sec light ">
+        <div class="subs_sec light ">
             <x-news-letter-subscription />
-        </section>
+        </div>
 <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 <script>
 function initPriceSlider() {
