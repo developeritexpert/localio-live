@@ -80,4 +80,17 @@ class BusinessTranslation extends Model
     {
         return $this->belongsTo(Business::class);
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($model) {
+            try {
+                if ((int)$model->lang_id === 1 && !empty($model->business_id)) {
+                    \App\Services\BusinessTranslationService::syncBusinessEnglishSource($model->business_id);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Auto-sync error for business translation #{$model->business_id}: " . $e->getMessage());
+            }
+        });
+    }
 }

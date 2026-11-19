@@ -9,6 +9,7 @@
 @endphp
 
 @if(!empty($recaptchaSiteKey))
+@push('styles')
 <style id="recaptcha-v3-visibility-styles">
     /* 1. By default, completely hide Google reCAPTCHA floating badge on ALL pages */
     .grecaptcha-badge {
@@ -40,6 +41,7 @@
         }
     }
 </style>
+@endpush
 
 @if($shouldLoadImmediately)
 <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>

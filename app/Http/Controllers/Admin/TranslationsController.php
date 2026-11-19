@@ -19,6 +19,7 @@ use App\Models\StaticContentKey;
 use App\Models\StaticContentTranslation;
 use App\Models\TranslationBatch;
 use App\Models\WebSetting;
+use App\Services\BusinessTranslationService;
 use App\Services\ReviewModerationService;
 use App\Services\ReviewTranslationService;
 use Carbon\Carbon;
@@ -95,38 +96,79 @@ class TranslationsController extends Controller
             });
         }
 
-        $businesses = $query->orderBy('id', 'desc')->paginate(20);
+        $perPage = (int)$request->input('per_page', 20);
+        if (!in_array($perPage, [20, 50, 100, 200, 500])) {
+            $perPage = 20;
+        }
+        $businesses = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
         $categories = Category::onlyParents()->orderBy('id')->with('translation')->get();
         $countries = Country::orderBy('name')->get();
 
-        // Build matrix table data for view
+        // Build matrix table data for view with granular change-detection
         $matrix = [];
         foreach ($businesses as $biz) {
-            $locales = [];
-            $transLangIds = $biz->translations->pluck('lang_id')->toArray();
-
-            foreach ($languages as $lang) {
-                $codeKey = strtolower($lang['code']);
-                $matchedId = $langCodeToIdMap[$codeKey] ?? null;
-
-                if ($matchedId && in_array($matchedId, $transLangIds)) {
-                    $tr = $biz->translations->firstWhere('lang_id', $matchedId);
-                    $hasAbout = !empty($tr->about);
-                    $hasDesc = !empty($tr->description);
-                    $status = ($hasAbout && $hasDesc) ? 'full' : 'partial';
-                } else {
-                    $status = 'missing';
-                }
-                $locales[$lang['code']] = ['status' => $status];
-            }
-
+            $locales = BusinessTranslationService::getMatrixRowForBusiness($biz, $languages, $langCodeToIdMap);
             $matrix[] = [
                 'business' => $biz,
                 'locales'  => $locales,
             ];
         }
 
-        return view('Admin.translations.businesses', compact('businesses', 'matrix', 'languages', 'categories', 'countries'));
+        $translatableFields = BusinessTranslationService::TRANSLATABLE_FIELDS;
+        $batchSize = (int)(WebSetting::where('key', 'ai_batch_size')->value('value') ?: 10);
+
+        return view('Admin.translations.businesses', compact(
+            'businesses',
+            'matrix',
+            'languages',
+            'categories',
+            'countries',
+            'translatableFields',
+            'batchSize'
+        ));
+    }
+
+    /**
+     * Submit selected businesses and target locales to batch translation queue.
+     */
+    public function submitBusinessBatch(Request $request)
+    {
+        $request->validate([
+            'business_ids'   => 'required|array|min:1',
+            'business_ids.*' => 'integer|exists:businesses,id',
+            'target_locales' => 'required|array|min:1',
+            'fields'         => 'nullable|array',
+            'provider'       => 'nullable|in:manual,openai,anthropic',
+            'batch_size'     => 'nullable|integer|min:1|max:50',
+        ]);
+
+        $businessIds   = $request->business_ids;
+        $targetLocales = $request->target_locales;
+        $fields        = $request->fields ?: array_keys(BusinessTranslationService::TRANSLATABLE_FIELDS);
+        $provider      = $request->input('provider', 'manual');
+        $batchSize     = (int)($request->input('batch_size') ?: (WebSetting::where('key', 'ai_batch_size')->value('value') ?: 10));
+
+        if ($request->filled('batch_size')) {
+            WebSetting::updateOrCreate(['key' => 'ai_batch_size'], ['value' => $batchSize]);
+        }
+
+        $result = BusinessTranslationService::createBusinessTranslationBatch(
+            $businessIds,
+            $targetLocales,
+            $fields,
+            $provider,
+            $batchSize
+        );
+
+        if (empty($result['batches'])) {
+            return redirect()->back()->with('warning', 'All selected businesses are already fully translated and up to date for the chosen locales. No new translations were needed.');
+        }
+
+        $countBatches = count($result['batches']);
+        $countRequests = $result['request_count'];
+        $countBusinesses = $result['businesses_count'];
+
+        return redirect()->route('translations.batch-jobs')->with('success', "Created {$countBatches} translation batch job(s) containing {$countRequests} request(s) for {$countBusinesses} business(es). You can now download the JSON for ChatGPT or process them.");
     }
 
     // =========================================================================
@@ -827,7 +869,7 @@ class TranslationsController extends Controller
     // =========================================================================
     public function batchJobs(Request $request)
     {
-        $query = TranslationBatch::withCount('translations');
+        $query = TranslationBatch::withCount(['translations', 'entityTranslations']);
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -847,8 +889,13 @@ class TranslationsController extends Controller
      */
     public function downloadBatchJson(TranslationBatch $batch)
     {
-        $payload = ReviewTranslationService::buildCleanBatchPayload($batch);
-        $filename = "localio_translation_batch_{$batch->id}_{$batch->type}_" . date('Y-m-d_His') . ".json";
+        if ($batch->type === 'business_translation') {
+            $payload = BusinessTranslationService::buildBusinessBatchPayload($batch);
+            $filename = "localio_business_translation_batch_{$batch->id}_" . date('Y-m-d_His') . ".json";
+        } else {
+            $payload = ReviewTranslationService::buildCleanBatchPayload($batch);
+            $filename = "localio_translation_batch_{$batch->id}_{$batch->type}_" . date('Y-m-d_His') . ".json";
+        }
 
         return response()->json($payload, 200, [
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -899,6 +946,12 @@ class TranslationsController extends Controller
         $items = $data['translations'] ?? ($data['results'] ?? ($data['items'] ?? $data));
         if (!is_array($items)) {
             return redirect()->back()->with('error', 'Could not find translation items array in JSON payload.');
+        }
+
+        if ($targetBatch->type === 'business_translation') {
+            $res = BusinessTranslationService::processBusinessBatchResult($targetBatch, $items);
+            return redirect()->route('translations.batch-jobs')
+                ->with('success', "Batch #{$targetBatch->id} business translations processed: {$res['successful']} succeeded, {$res['failed']} failed.");
         }
 
         $res = ReviewTranslationService::processBatchResultItems($targetBatch, $items);

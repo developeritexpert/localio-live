@@ -9,7 +9,7 @@
     $routeName = $routeName ?? Route::currentRouteName() ?? 'none';
 ?>
     <header>
-        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
+        <div class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
@@ -1222,7 +1222,7 @@
                 </div>
             </div>
 
-        </section>
+        </div>
     </header>
 
 

@@ -1120,7 +1120,12 @@ class ContentGenerationController extends Controller
             $query->whereIn('id', $completedSubquery);
         }
 
-        $businesses = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
+        $perPage = (int)$request->input('per_page', 30);
+        if (!in_array($perPage, [30, 50, 100, 200, 500])) {
+            $perPage = 30;
+        }
+
+        $businesses = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         $businessIds = $businesses->pluck('id')->toArray();
         $queueItems  = AiContentQueue::where('resource_type', 'business')
@@ -1156,8 +1161,486 @@ class ContentGenerationController extends Controller
 
         return view('Admin.content-generation.businesses', compact(
             'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt', 'batchSize',
-            'activeTab', 'pendingCount', 'completedCount', 'allCount'
+            'activeTab', 'pendingCount', 'completedCount', 'allCount', 'perPage'
         ));
+    }
+
+    // -------------------------------------------------------------------------
+    // LOGOS SUB-SECTION OF CONTENT GENERATION
+    // -------------------------------------------------------------------------
+    public function logos(Request $request)
+    {
+        $baseQuery = Business::query();
+
+        if ($request->filled('category_id')) {
+            $catId = (int)$request->category_id;
+            $subIds = Category::where('parent_id', $catId)->pluck('id')->toArray();
+            $allCategoryIds = array_merge([$catId], $subIds);
+
+            $baseQuery->where(function($q) use ($allCategoryIds) {
+                $q->whereIn('category_id', $allCategoryIds)
+                  ->orWhereHas('subCategories', fn($sq) => $sq->whereIn('categories.id', $allCategoryIds));
+            });
+        }
+        if ($request->filled('status')) {
+            $baseQuery->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $baseQuery->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('id', $search)
+                  ->orWhere('slug', 'like', "%{$search}%")
+                  ->orWhereHas('translations', function ($tq) use ($search) {
+                      $tq->where('lang_id', 1)->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Default icon paths defined in Business::hasLogo()
+        $defaultIcons = [
+            'front/img/default_business_logo.svg',
+            'front/img/logo.svg',
+            'front/img/default.png',
+            'images/default.png',
+            'front/img/top-rate-img2.svg',
+            'front/img/big-asana.png',
+            'front/img/sftare-img1.svg',
+            'front/img/poplr-zero.svg',
+            'front/img/lyt-rd-grey.svg',
+            'front/img/slider1_img.svg',
+            'front/img/slider2_img.svg',
+            'front/img/slider3_img.svg',
+            'business_icon/1746103824_3H8UUe4f7h.png',
+            'business_icon/1746103787_c7J7kSWbJN.png',
+            'business_icon/1746103760_rpmXVNYcF2.png',
+            'business_icon/1746103678_aBqoscEoLL.png',
+            'business_icon/1748244192_NT3NodH2Zg.png',
+        ];
+
+        $hasLogoCondition = function($q) use ($defaultIcons) {
+            $q->whereNotNull('icon_id')
+              ->where('icon_id', '!=', '')
+              ->whereNotIn('icon_id', $defaultIcons);
+        };
+
+        $noLogoCondition = function($q) use ($defaultIcons) {
+            $q->where(function($sub) use ($defaultIcons) {
+                $sub->whereNull('icon_id')
+                    ->orWhere('icon_id', '')
+                    ->orWhereIn('icon_id', $defaultIcons);
+            });
+        };
+
+        $pendingCount   = (clone $baseQuery)->where($noLogoCondition)->count();
+        $completedCount = (clone $baseQuery)->where($hasLogoCondition)->count();
+        $allCount       = (clone $baseQuery)->count();
+
+        $activeTab = $request->get('tab', 'pending');
+        if (!in_array($activeTab, ['pending', 'completed', 'all'])) {
+            $activeTab = 'pending';
+        }
+
+        $query = (clone $baseQuery)->with([
+            'category.translation',
+            'websites',
+            'translations' => function ($q) {
+                $q->where('lang_id', 1)->select('business_id', 'name', 'lang_id');
+            },
+        ]);
+
+        if ($activeTab === 'pending') {
+            $query->where($noLogoCondition);
+        } elseif ($activeTab === 'completed') {
+            $query->where($hasLogoCondition);
+        }
+
+        $perPage = (int)$request->input('per_page', 30);
+        if (!in_array($perPage, [30, 50, 100, 200, 500])) {
+            $perPage = 30;
+        }
+
+        $businesses = $query->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
+
+        $bizIds = $businesses->pluck('id')->toArray();
+        $logoQueueItems = AiContentQueue::where('resource_type', 'business')
+            ->where('content_field', 'logo')
+            ->whereIn('resource_id', $bizIds)
+            ->latest('id')
+            ->get()
+            ->keyBy('resource_id');
+
+        $categories = Category::whereNull('parent_id')
+            ->with([
+                'translation' => fn($q) => $q->where('lang_id', 1),
+                'children.translation' => fn($q) => $q->where('lang_id', 1),
+            ])
+            ->orderBy('id')
+            ->get();
+
+        $batchSize = (int)(WebSetting::where('key', 'ai_logo_batch_size')->value('value') ?: 25);
+
+        return view('Admin.content-generation.logos', compact(
+            'businesses',
+            'activeTab',
+            'pendingCount',
+            'completedCount',
+            'allCount',
+            'categories',
+            'logoQueueItems',
+            'batchSize',
+            'perPage'
+        ));
+    }
+
+    /**
+     * Submit selected businesses to Logo Batch Job.
+     */
+    public function submitLogoBatch(Request $request)
+    {
+        $request->validate([
+            'business_ids'   => 'required|array|min:1',
+            'business_ids.*' => 'integer|exists:businesses,id',
+            'batch_size'     => 'nullable|integer|min:1|max:100',
+        ]);
+
+        $businessIds = array_values(array_unique($request->business_ids));
+        $batchSize = (int)($request->batch_size ?: 25);
+        WebSetting::updateOrCreate(['key' => 'ai_logo_batch_size'], ['value' => $batchSize]);
+
+        $chunks = array_chunk($businessIds, $batchSize);
+        $createdJobs = [];
+
+        $businesses = Business::with(['translations' => fn($q) => $q->where('lang_id', 1), 'websites'])
+            ->whereIn('id', $businessIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($chunks as $chunk) {
+            $itemsData = [];
+            $job = AiBatchJob::create([
+                'provider'        => 'manual',
+                'prompt_type'     => 'logo_generation',
+                'status'          => 'pending',
+                'submitted_at'    => now(),
+                'total_items'     => count($chunk),
+                'completed_items' => 0,
+                'failed_items'    => 0,
+            ]);
+
+            foreach ($chunk as $bizId) {
+                $b = $businesses->get($bizId);
+                if (!$b) continue;
+
+                $bName = optional($b->translations->first())->name ?? $b->title ?? "Business #{$bizId}";
+                $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+
+                $itemsData[] = [
+                    'batch_id'             => $job->id,
+                    'business_id'          => $b->id,
+                    'business_name'        => $bName,
+                    'business_url'         => $bUrl,
+                    'slug'                 => $b->slug ?? '',
+                    'suggested_filename'   => "Logo-{$b->id}.svg",
+                    'alternative_filename' => count($chunk) === 1 ? "Logo-{$job->id}.svg" : "Logo-{$job->id}-{$b->id}.svg",
+                ];
+
+                AiContentQueue::updateOrCreate(
+                    [
+                        'resource_type' => 'business',
+                        'resource_id'   => $b->id,
+                        'content_field' => 'logo',
+                    ],
+                    [
+                        'batch_job_id'      => $job->id,
+                        'status'            => 'pending',
+                        'openai_request_id' => "logo_{$b->id}",
+                    ]
+                );
+            }
+
+            $payload = [
+                'batch_id'         => $job->id,
+                'type'             => 'logo_generation',
+                'total_businesses' => count($itemsData),
+                'instructions'     => "Generate an official, high-quality SVG logo for each business. Save each SVG file matching the naming rule: Logo-[businessID].svg (e.g. Logo-{$chunk[0]}.svg) or Logo-[batchID].svg. Upload the SVG files in the Batches -> Logos section.",
+                'items'            => $itemsData,
+            ];
+
+            $job->update(['input_payload' => json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)]);
+            $createdJobs[] = $job;
+        }
+
+        $count = count($createdJobs);
+        return redirect()->route('content-gen.logos.batch-jobs')
+            ->with('success', "Created {$count} Logo batch job(s) for " . count($businessIds) . " business(es). You can now download the JSONs and bulk upload SVG logos.");
+    }
+
+    /**
+     * View Logo Batch Jobs (Batches -> Logos).
+     */
+    public function logoBatchJobs(Request $request)
+    {
+        $query = AiBatchJob::where('prompt_type', 'logo_generation');
+
+        $statusFilter = $request->query('status');
+        if ($statusFilter && in_array($statusFilter, ['pending', 'processing', 'completed', 'failed'])) {
+            $query->where('status', $statusFilter);
+        }
+
+        $jobs = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
+
+        $pendingCount   = AiBatchJob::where('prompt_type', 'logo_generation')->whereIn('status', ['pending', 'processing'])->count();
+        $completedCount = AiBatchJob::where('prompt_type', 'logo_generation')->where('status', 'completed')->count();
+        $totalCount     = AiBatchJob::where('prompt_type', 'logo_generation')->count();
+
+        return view('Admin.content-generation.logo-batch-jobs', compact('jobs', 'pendingCount', 'completedCount', 'totalCount', 'statusFilter'));
+    }
+
+    /**
+     * Download Logo Batch JSON for processing.
+     */
+    public function downloadLogoBatchJson(AiBatchJob $job)
+    {
+        if ($job->input_payload) {
+            $payload = json_decode($job->input_payload, true);
+        } else {
+            $queueItems = AiContentQueue::where('batch_job_id', $job->id)->get();
+            $bizIds = $queueItems->pluck('resource_id')->toArray();
+            $businesses = Business::with(['translations' => fn($q) => $q->where('lang_id', 1), 'websites'])
+                ->whereIn('id', $bizIds)
+                ->get();
+
+            $items = [];
+            foreach ($businesses as $b) {
+                $bName = optional($b->translations->first())->name ?? $b->title ?? "Business #{$b->id}";
+                $bUrl = $b->permanent_url ?: (optional($b->websites->first())->website_url ?: '');
+                $items[] = [
+                    'batch_id'             => $job->id,
+                    'business_id'          => $b->id,
+                    'business_name'        => $bName,
+                    'business_url'         => $bUrl,
+                    'slug'                 => $b->slug ?? '',
+                    'suggested_filename'   => "Logo-{$b->id}.svg",
+                    'alternative_filename' => count($bizIds) === 1 ? "Logo-{$job->id}.svg" : "Logo-{$job->id}-{$b->id}.svg",
+                ];
+            }
+
+            $payload = [
+                'batch_id'         => $job->id,
+                'type'             => 'logo_generation',
+                'total_businesses' => count($items),
+                'instructions'     => "Generate an official, high-quality SVG logo for each business. Save each SVG file matching the naming rule: Logo-[businessID].svg or Logo-[batchID].svg. Upload the SVG files in the Batches -> Logos section.",
+                'items'            => $items,
+            ];
+        }
+
+        $filename = "localio_logo_batch_{$job->id}_" . date('Y-m-d_His') . ".json";
+        return response()->json($payload, 200, [
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
+     * Bulk Upload SVG Logos (files or ZIP) with intelligent business matching.
+     */
+    public function uploadBulkSvgLogos(Request $request, ?AiBatchJob $job = null)
+    {
+        $request->validate([
+            'batch_id'    => 'nullable|exists:ai_batch_jobs,id',
+            'svg_files'   => 'nullable|array',
+            'svg_files.*' => 'file|max:10240',
+            'zip_file'    => 'nullable|file|mimes:zip|max:51200',
+        ]);
+
+        $batchId = $job?->id ?: $request->input('batch_id');
+        $targetBatch = $batchId ? AiBatchJob::find($batchId) : null;
+
+        if (!$targetBatch) {
+            $targetBatch = AiBatchJob::where('prompt_type', 'logo_generation')
+                ->whereIn('status', ['pending', 'processing'])
+                ->latest('id')
+                ->first();
+        }
+
+        $destDir = public_path('business/icon');
+        if (!\File::exists($destDir)) {
+            \File::makeDirectory($destDir, 0755, true);
+        }
+
+        $filesToProcess = [];
+        $tempExtractDir = null;
+
+        if ($request->hasFile('svg_files')) {
+            foreach ($request->file('svg_files') as $file) {
+                if ($file->isValid()) {
+                    $filesToProcess[] = [
+                        'tmp_path'      => $file->getRealPath(),
+                        'original_name' => $file->getClientOriginalName(),
+                    ];
+                }
+            }
+        }
+
+        if ($request->hasFile('zip_file')) {
+            $zip = new \ZipArchive();
+            $zipPath = $request->file('zip_file')->getRealPath();
+            if ($zip->open($zipPath) === true) {
+                $tempExtractDir = storage_path('app/temp_logo_extract_' . time() . '_' . Str::random(6));
+                \File::makeDirectory($tempExtractDir, 0755, true);
+                $zip->extractTo($tempExtractDir);
+                $zip->close();
+
+                $allExtracted = \File::allFiles($tempExtractDir);
+                foreach ($allExtracted as $extFile) {
+                    if (in_array(strtolower($extFile->getExtension()), ['svg', 'png', 'jpg', 'webp'])) {
+                        $filesToProcess[] = [
+                            'tmp_path'      => $extFile->getRealPath(),
+                            'original_name' => $extFile->getFilename(),
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (empty($filesToProcess)) {
+            return redirect()->back()->with('error', 'No SVG or image files provided for upload.');
+        }
+
+        $batchBusinessIds = collect();
+        if ($targetBatch) {
+            $batchBusinessIds = AiContentQueue::where('batch_job_id', $targetBatch->id)
+                ->where('resource_type', 'business')
+                ->pluck('resource_id');
+        }
+
+        $allBusinesses = Business::select('id', 'slug', 'icon_id')
+            ->with(['translations' => fn($q) => $q->where('lang_id', 1)->select('business_id', 'name')])
+            ->get();
+        $businessById = $allBusinesses->keyBy('id');
+        $businessBySlug = $allBusinesses->whereNotNull('slug')->keyBy(fn($b) => strtolower($b->slug));
+
+        $matched = 0;
+        $unmatched = [];
+
+        foreach ($filesToProcess as $fileItem) {
+            $origName = $fileItem['original_name'];
+            $baseName = pathinfo($origName, PATHINFO_FILENAME);
+            $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION) ?: 'svg');
+
+            $matchedBizId = null;
+
+            // Pattern 1: Logo-[batchId]-[businessId] (e.g. Logo-18-2118)
+            if (preg_match('/^logo[-_](\d+)[-_](\d+)$/i', $baseName, $m)) {
+                $candidateBizId = (int)$m[2];
+                if ($businessById->has($candidateBizId)) {
+                    $matchedBizId = $candidateBizId;
+                }
+            }
+
+            // Pattern 2: Logo-[ID] (e.g. Logo-2118 or Logo-18)
+            if (!$matchedBizId && preg_match('/^logo[-_](\d+)$/i', $baseName, $m)) {
+                $num = (int)$m[1];
+                if ($batchBusinessIds->contains($num)) {
+                    $matchedBizId = $num;
+                } elseif ($targetBatch && $targetBatch->id == $num && $batchBusinessIds->count() === 1) {
+                    $matchedBizId = $batchBusinessIds->first();
+                } elseif ($businessById->has($num)) {
+                    $matchedBizId = $num;
+                }
+            }
+
+            // Pattern 3: Pure number ID (e.g. 2118.svg)
+            if (!$matchedBizId && preg_match('/^(\d+)$/', $baseName, $m)) {
+                $num = (int)$m[1];
+                if ($businessById->has($num)) {
+                    $matchedBizId = $num;
+                }
+            }
+
+            // Pattern 4: Logo-[slug] or pure slug (e.g. Logo-hostinger or hostinger)
+            if (!$matchedBizId) {
+                $cleanedSlug = strtolower(preg_replace('/^logo[-_]/i', '', $baseName));
+                if ($businessBySlug->has($cleanedSlug)) {
+                    $matchedBizId = $businessBySlug->get($cleanedSlug)->id;
+                }
+            }
+
+            if ($matchedBizId) {
+                $biz = $businessById->get($matchedBizId);
+                $newFilename = time() . '_' . Str::random(10) . '.' . $ext;
+                $destPath = $destDir . DIRECTORY_SEPARATOR . $newFilename;
+
+                \File::copy($fileItem['tmp_path'], $destPath);
+                $relativePath = 'business/icon/' . $newFilename;
+
+                // Delete old custom icon if exists
+                $oldIcon = $biz->getRawOriginal('icon_id');
+                if ($oldIcon && \File::exists(public_path($oldIcon)) && !in_array($oldIcon, [
+                    'front/img/default_business_logo.svg', 'front/img/logo.svg', 'front/img/default.png', 'images/default.png'
+                ])) {
+                    @unlink(public_path($oldIcon));
+                }
+
+                $biz->icon_id = $relativePath;
+                $biz->save();
+
+                // Update AiContentQueue for logo
+                AiContentQueue::updateOrCreate(
+                    [
+                        'resource_type' => 'business',
+                        'resource_id'   => $matchedBizId,
+                        'content_field' => 'logo',
+                    ],
+                    [
+                        'status' => 'completed',
+                        'result' => json_encode(['logo_url' => asset($relativePath)]),
+                    ]
+                );
+
+                $matched++;
+            } else {
+                $unmatched[] = $origName;
+            }
+        }
+
+        if ($tempExtractDir && \File::exists($tempExtractDir)) {
+            \File::deleteDirectory($tempExtractDir);
+        }
+
+        if ($targetBatch) {
+            $completedInBatch = AiContentQueue::where('batch_job_id', $targetBatch->id)
+                ->where('status', 'completed')
+                ->count();
+            $targetBatch->completed_items = $completedInBatch;
+            if ($completedInBatch >= $targetBatch->total_items && $targetBatch->total_items > 0) {
+                $targetBatch->status = 'completed';
+                $targetBatch->completed_at = now();
+            } else {
+                $targetBatch->status = 'processing';
+            }
+            $targetBatch->save();
+        }
+
+        $msg = "Successfully matched and uploaded {$matched} SVG logo(s).";
+        if (!empty($unmatched)) {
+            $msg .= " Unmatched filenames (" . count($unmatched) . "): " . implode(', ', array_slice($unmatched, 0, 5)) . (count($unmatched) > 5 ? '...' : '');
+            return redirect()->back()->with('warning', $msg);
+        }
+
+        return redirect()->back()->with('success', $msg);
+    }
+
+    /**
+     * Delete Logo Batch Job.
+     */
+    public function deleteLogoBatchJob(AiBatchJob $job)
+    {
+        $job->queueItems()->delete();
+        $job->delete();
+
+        return redirect()->route('content-gen.logos.batch-jobs')
+            ->with('success', "Logo batch job #{$job->id} deleted successfully.");
     }
 
     // -------------------------------------------------------------------------
@@ -2106,6 +2589,13 @@ class ContentGenerationController extends Controller
         // When content is applied to a business, activate it so it shows on the frontend
         Business::where('id', $businessId)->update(['status' => 1]);
         BusinessTranslation::where('business_id', $businessId)->update(['status' => 1]);
+
+        // Sync English hashes to detect changes and flag outdated translations
+        try {
+            \App\Services\BusinessTranslationService::syncBusinessEnglishSource($businessId);
+        } catch (\Throwable $e) {
+            Log::warning("Could not sync business English translation hashes for business {$businessId}: " . $e->getMessage());
+        }
     }
 
     /**

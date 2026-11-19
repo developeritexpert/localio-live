@@ -244,6 +244,13 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // ===== Content Generation =====
     Route::get('/admin-dashboard/content-generation/businesses', [ContentGenerationController::class, 'businesses'])->name('content-gen.businesses');
+    Route::get('/admin-dashboard/content-generation/logos', [ContentGenerationController::class, 'logos'])->name('content-gen.logos');
+    Route::post('/admin-dashboard/content-generation/logos/submit-batch', [ContentGenerationController::class, 'submitLogoBatch'])->name('content-gen.logos.submit-batch');
+    Route::get('/admin-dashboard/content-generation/logos/batch-jobs', [ContentGenerationController::class, 'logoBatchJobs'])->name('content-gen.logos.batch-jobs');
+    Route::get('/admin-dashboard/content-generation/logos/batch-jobs/{job}/download', [ContentGenerationController::class, 'downloadLogoBatchJson'])->name('content-gen.logos.batch-jobs.download');
+    Route::post('/admin-dashboard/content-generation/logos/batch-jobs/upload-svg', [ContentGenerationController::class, 'uploadBulkSvgLogos'])->name('content-gen.logos.batch-jobs.upload-svg');
+    Route::post('/admin-dashboard/content-generation/logos/batch-jobs/{job}/upload-svg', [ContentGenerationController::class, 'uploadBulkSvgLogos'])->name('content-gen.logos.batch-jobs.upload-job-svg');
+    Route::delete('/admin-dashboard/content-generation/logos/batch-jobs/{job}', [ContentGenerationController::class, 'deleteLogoBatchJob'])->name('content-gen.logos.batch-jobs.delete');
     Route::post('/admin-dashboard/content-generation/import-json', [ContentGenerationController::class, 'importJson'])->name('content-gen.import-json');
     Route::get('/admin-dashboard/content-generation/features', [ContentGenerationController::class, 'features'])->name('content-gen.features');
     Route::post('/admin-dashboard/content-generation/features/submit-batch', [ContentGenerationController::class, 'submitFeaturesBatch'])->name('content-gen.features.submit-batch');
@@ -277,6 +284,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // ===== Translations =====
     Route::get('/admin-dashboard/translations/businesses', [TranslationsController::class, 'businesses'])->name('translations.businesses');
+    Route::post('/admin-dashboard/translations/businesses/submit-batch', [TranslationsController::class, 'submitBusinessBatch'])->name('translations.businesses.submit-batch');
     Route::get('/admin-dashboard/translations/reviews', [TranslationsController::class, 'reviews'])->name('translations.reviews');
     Route::post('/admin-dashboard/translations/reviews/dispatch-batch', [TranslationsController::class, 'dispatchReviewBatch'])->name('translations.reviews.dispatch-batch');
     Route::post('/admin-dashboard/translations/reviews/retry', [TranslationsController::class, 'retryReviewTranslation'])->name('translations.reviews.retry');
