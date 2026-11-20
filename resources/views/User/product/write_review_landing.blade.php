@@ -30,7 +30,7 @@
                         $count = $business->approved_reviews_count;
                     @endphp
                     <div class="col">
-                        <div class="card h-100   p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; background: #fff;  border: 1px solid #e2e8f0; border-radius:15px;"onmouseout="this.style.transform='none'">
+                        <div class="card h-100   p-4 text-center d-flex flex-column align-items-center" style="border-radius: 15px; background: #fff;  border: 1px solid #e2e8f0;" onmouseout="this.style.transform='none'">
                             <div style="" class="mb-3 top-product-logo">
                                 <x-business-logo :business="$business" />
                             </div>
