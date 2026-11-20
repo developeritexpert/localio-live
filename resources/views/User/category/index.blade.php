@@ -1,7 +1,7 @@
 @extends('user_layout.master')
 @section('meta_title', format_meta_text($categoriesContents['meta_title'] ?? '', 'Categories'))
 @section('meta_description', format_meta_text($categoriesContents['meta_description'] ?? '', 'Browse all software and business categories on Localio.'))
-@section('content')
+@push('styles')
 <style>
     /* Sidebar */
     .parent-cat-sidebar {
@@ -164,7 +164,8 @@
         flex: 1;
         min-width: 0;
     }
-    .top-product-info h6 {
+    .top-product-info h6,
+    .top-product-info h3 {
         font-size: 15px;
         font-weight: 700;
         color: #002347;
@@ -174,7 +175,8 @@
         text-overflow: ellipsis;
         transition: color 0.2s ease;
     }
-    .top-product-card:hover .top-product-info h6 {
+    .top-product-card:hover .top-product-info h6,
+    .top-product-card:hover .top-product-info h3 {
         color: #e56b46;
     }
     .top-product-rating {
@@ -235,6 +237,8 @@
     }
   
 </style>
+@endpush
+@section('content')
 {{-- <section class="banner_sec help-cntr-bnr inr-bnr dark cate_bnr_sec" style="background-color: #003F7D;">
     <div class="bubble-wrp">
 

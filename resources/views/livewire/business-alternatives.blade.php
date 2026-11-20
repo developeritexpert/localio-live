@@ -61,7 +61,7 @@
 
 
     @if(empty($hasUpperHeader))
-    <section class="d-none top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
+    <div class="d-none top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
     <div class="top-auto-btm">
         
             <div class="container">
@@ -80,7 +80,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     @endif
 
     @if(isset($tableRowsList) && $tableRowsList->count() > 0)
@@ -507,7 +507,7 @@
                             <div class="auto-choice-lft">
                                 <!-- Mobile Filter Drawer Header -->
                                 <div class="mobile-filter-header d-flex d-lg-none justify-content-between align-items-center">
-                                    <h5 class="m-0 fw-bold" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h5>
+                                    <h3 class="m-0 fw-bold fs-6" style="color: #002347; font-size: 18px;">{{ static_text('filters') ?: 'Filters' }}</h3>
                                     <button type="button" class="mobile-filter-close-btn" onclick="closeMobileFilterDrawer()" aria-label="Close filters">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -900,7 +900,7 @@
                                                                         <div class="sl_h">
                                                                             <div class="inn_h">
                                                                                 <div class="sl_main">
-                                                                                    <h6 class="head">{{ $item->translations->first()?->name ?? '' }}</h6>
+                                                                                    <p class="head">{{ $item->translations->first()?->name ?? '' }}</p>
                                                                                     <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                         @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                     </div>
@@ -1036,10 +1036,10 @@
                                                                     <div class="text-center mt-4 w-100"
                                                                         style="padding: 15px 25px; border-radius: 8px;">
 
-                                                                        <h6
+                                                                        <p
                                                                             style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
                                                                             Starting price
-                                                                        </h6>
+                                                                        </p>
 
                                                                         <h3
                                                                             style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
