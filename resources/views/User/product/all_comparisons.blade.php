@@ -163,9 +163,9 @@
                     $finalCompSearchPlaceholder = !empty($resolvedCompPlaceholder['headline']) ? $resolvedCompPlaceholder['headline'] : (static_text('search_product_to_compare_placeholder') ?: 'Search business to compare...');
                 @endphp
                 <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1.5px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0,0,0,0.03); overflow: visible !important;">
-                    <h3 style="margin-bottom: 6px;">
+                    <h2 style="margin-bottom: 6px; font-size: 20px !important; font-weight: 600 !important; line-height: 1.6 !important;">
                         {!! \App\Services\ContentTemplateService::cleanHeading($finalCompToolHeadline) !!}
-                    </h3>
+                    </h2>
                     @if(!empty($finalCompToolSubtext))
                     <div style="margin: 0 0 12px 0; color: #475569; font-size: 15px;">
                         {!! $finalCompToolSubtext !!}

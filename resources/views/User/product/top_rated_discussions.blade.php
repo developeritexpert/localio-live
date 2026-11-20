@@ -18,6 +18,7 @@
 @section('meta_title', format_meta_text($metaTitle))
 @section('meta_description', format_meta_text($metaDescription))
 
+@push('styles')
 <style>
     .top-rated-heading-sec {
         margin-top: 95px;
@@ -27,6 +28,7 @@
         border-bottom: 1px solid #e2e8f0;
     }
 </style>
+@endpush
 
 @section('content')
 

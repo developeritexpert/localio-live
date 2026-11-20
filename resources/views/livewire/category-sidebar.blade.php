@@ -109,7 +109,7 @@
                         @if(!empty($catName))
                         <div class="subcat-block" wire:key="sub-{{ $subcat->id }}" style="background: #f7f9fb;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h2 style="margin: 0;">{{ $catName }}</h3>
+                                <h2 style="margin: 0;">{{ $catName }}</h2>
                                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="subcat-link" >See all {{ $catName }}</a>
                             </div>
 
@@ -129,9 +129,9 @@
                                         <x-business-logo :business="$business" :name="$bizName" />
                                     </div>
                                     <div class="top-product-info min-w-0 flex-grow-1">
-                                        <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <h3 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px !important; line-height: 1.2 !important; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             {{ $bizName }}
-                                        </h6>
+                                        </h3>
                                         @if($business->should_show_rating)
                                         <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
                                             <span class="fw-medium text-dark">{{ formatRating($business->display_rating) }}</span>
