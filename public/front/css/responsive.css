@@ -34,6 +34,7 @@
     }
 }
 
+
 @media only screen and (max-width: 1599px) {
     .faq-category-nav {
         gap: 17px;
@@ -4922,6 +4923,7 @@
 }
 
 @media only screen and (max-width: 575px) {
+    
     .card.card-bordered .card-body ul {
         font-size: 14px;
     }
@@ -7129,6 +7131,7 @@
 }
 
 @media only screen and (max-width: 480px) {
+
     .most-populr-sec .inn_sl_hed.mst_hdn {
         display: flex !important;
         flex-direction: row !important;

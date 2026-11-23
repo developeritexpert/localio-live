@@ -5157,10 +5157,8 @@ header .search_logo {
 }
 
 header .search_logo .search-box {
-	visibility: hidden;
-	/* Hide by default */
-	transition: visibility 0.6s ease;
-	/* Optional smooth transition */
+	visibility: hidden;	
+	transition: visibility 0.6s ease;	
 }
 
 .ft-btm-lft p {
@@ -5251,6 +5249,7 @@ header .search_logo .search-box {
     font-size: 1.15rem;
     box-sizing: border-box;
 }
+
 
 .business-initial-logo.size-xs {
     width: 24px;

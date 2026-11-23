@@ -8,9 +8,6 @@
     right: -38px;
   }
 
-  /* .banner_text_col .search-box input {
-    padding: 20px 30px;
-  } */
 
   header .search-box i {
     padding:9px 35px;
@@ -664,10 +661,6 @@
     margin-bottom: 20px;
   }
 
-  /*
-  .contact_sec .contact_content {
-    padding: 30px 35px;
-  } */
 
   .contact_sec form .form-control {
     padding: 18px;
@@ -788,14 +781,6 @@
     margin-right: 15px;
   }
 
-  /* .inn_sl_hed.mst_hdn {
-    flex-direction: column;
-    gap: 15px;
-  } */
-  /*
-  .inn_sl_hed.mst_hdn .sl_h {
-    flex: 0 0 100%;
-  } */
   .inn_sl_hed.mst_hdn .slider_img {
     min-width: 60px;
     width: 100%;
@@ -1284,9 +1269,6 @@
     padding: 40px 30px;
   }
 
-  .cpa_bg {
-    /* gap: 15px; */
-  }
 
   .localio-brkdwn .main_feture .feture_box .progress-bar {
     width: 110px;
@@ -1773,13 +1755,6 @@
   .right_menu ul {
     gap: 14px;
   }
-
-  /*
-  header .menu .dropdown_menu {
-    background-color: #06498b;
-    z-index: 1;
-    color: #fff;
-  } */
 
   header .menu li.menu-item {
     border: 1px solid #000;
@@ -2846,10 +2821,6 @@
   .adip_sec .adip_ryt .adp_txt {
     margin-bottom: 15px;
   }
-
-  /* .adip_sec button.slick-arrow {
-		top: 110% !important;
-	} */
 
   .adip_sec button.slick-next.slick-arrow {
     left: 60%;
@@ -4041,6 +4012,7 @@
     right: 0px;
     bottom: 0px;
   }
+  
 
   .back-image1 {
     left: 0;
