@@ -241,7 +241,7 @@
                 </div>
 
                 {{-- Pagination Footer & Per-Page Selector --}}
-                <div class="card-inner py-2 d-flex flex-wrap align-items-center justify-content-between gap-2 border-top">
+                <div class="card-inner py-2 d-flex flex-wrap align-items-center justify-content-between  border-top">
                     <div>
                         {{ $businesses->links() }}
                     </div>
