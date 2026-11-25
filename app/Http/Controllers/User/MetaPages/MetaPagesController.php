@@ -386,7 +386,7 @@ class MetaPagesController extends Controller
         'name'       => 'required|string|max:255',
         'email'      => 'required|email|max:255',
         'message'    => 'required|string',
-        'attachment' => 'nullable|file|max:5120',
+        'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120',
         'g-recaptcha-response' => ['required', new Recaptcha('contact')],
     ], [
         'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',

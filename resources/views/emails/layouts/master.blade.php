@@ -11,8 +11,8 @@
         body { margin: 0; padding: 0; width: 100% !important; min-width: 100%; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .wrapper { width: 100%; table-layout: fixed; background-color: #f1f5f9; padding: 40px 0 30px 0; }
         .main-container { width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
-        .header { background-color: #ffffff; padding: 28px 40px 20px 40px; text-align: left; border-bottom: 1px solid #f1f5f9; }
-        .header img { max-height: 38px; width: auto; display: block; }
+        .header { background-color: #214787; padding: 26px 40px; text-align: left; }
+        .header img { max-height: 38px; width: auto; display: block; border: 0; outline: none; }
         .content { padding: 36px 40px 40px 40px; color: #1e3050; font-size: 15px; line-height: 1.6; }
         .content h1, .content h2, .content h3 { color: #002347; font-weight: 700; margin-top: 0; margin-bottom: 18px; line-height: 1.3; }
         .content h1 { font-size: 24px; }
@@ -40,15 +40,25 @@
     </style>
 </head>
 <body>
+    @php
+        $appUrl = config('app.url');
+        $isLocal = empty($appUrl)
+            || str_contains($appUrl, '127.0.0.1')
+            || str_contains($appUrl, 'localhost')
+            || (request() && (str_contains(request()->getHttpHost(), '127.0.0.1') || str_contains(request()->getHttpHost(), 'localhost')));
+
+        // Use the official site logo (white speech bubble + Localio typography in PNG for universal email client support)
+        $logoUrl = $isLocal ? 'https://localio.com/front/img/logo.png' : asset('front/img/logo.png');
+    @endphp
     <div class="wrapper">
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 <td align="center">
                     <div class="main-container">
                         <!-- Header -->
-                        <div class="header">
+                        <div class="header" style="background-color: #214787; padding: 26px 40px; text-align: left; border-top-left-radius: 14px; border-top-right-radius: 14px;">
                             <a href="{{ url('/') }}" target="_blank" style="text-decoration: none; display: inline-block;">
-                                <img src="{{ asset('front/img/logo.png') }}" alt="{{ config('app.name', 'Localio') }}" />
+                                <img src="{{ $logoUrl }}" alt="{{ config('app.name', 'Localio') }}" height="36" style="height: 36px; max-height: 36px; width: auto; display: block; border: 0; outline: none;" />
                             </a>
                         </div>
 

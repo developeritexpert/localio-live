@@ -12,6 +12,9 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
+        if (session('admin_2fa_pending')) {
+            return route('admin.2fa.show');
+        }
         return $request->expectsJson() ? null : route('login');
     }
 }

@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(Request $request )
     {
+        if (config('app.env') === 'production' || $this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         \Illuminate\Pagination\Paginator::useBootstrapFour();
         Relation::morphMap([
             'product' => \App\Models\Product::class,

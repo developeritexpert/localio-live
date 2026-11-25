@@ -48,6 +48,9 @@ Route::get('/switch-language/{lang_code}', [ViewController::class, 'changeLangua
 
 Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 Route::post('loginprocc', [AuthenticationController::class, 'loginProcc'])->name('login_process');
+Route::get('admin/verify-2fa', [AuthenticationController::class, 'showAdmin2faForm'])->name('admin.2fa.show');
+Route::post('admin/verify-2fa', [AuthenticationController::class, 'verifyAdmin2fa'])->name('admin.2fa.verify');
+Route::post('admin/resend-2fa', [AuthenticationController::class, 'resendAdmin2fa'])->name('admin.2fa.resend');
 
 // --------------- ADMIN ROUTES ----------------------
 Route::group(['middleware' => ['auth', 'admin']], function () {
