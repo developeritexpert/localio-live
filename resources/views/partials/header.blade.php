@@ -78,7 +78,7 @@
             <div class="top_header dark">
                 <div class="container-fluid">
                     <nav id="mobile_res" class="navbar navbar-expand-lg">
-                        <button class="navbar-toggler mobile-sidebar-btn collapsed" type="button">
+                        <button class="navbar-toggler mobile-sidebar-btn collapsed" type="button" aria-label="Toggle navigation menu">
                             <span class="bar"></span>
                             <span class="bar"></span>
                             <span class="bar"></span>

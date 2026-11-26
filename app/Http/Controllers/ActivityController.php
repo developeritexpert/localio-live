@@ -27,60 +27,57 @@ class ActivityController extends Controller
 
     public function track(Request $request)
     {
-        // dd($request->all());
-        $validated = $request->validate([
-            'user_id' => 'nullable|integer',
-            'session_id' => 'required|string',
-            'activity' => 'required|array',
-            'activity.type' => 'required|string',
-            'activity.product_id' => 'nullable|integer',
-            'activity.category_id' => 'nullable|string',
-            'activity.business_id' => 'nullable|integer',
-            'activity.duration' => 'nullable|integer',
-            'activity.metadata' => 'nullable|array'
-        ]);
-  
-        // dd($validated);
-
-        //    $country= getCurrentLocale('lang_code');
-        //     dd($country);
-
-        $activity = $validated['activity'];
-
-        // Extract and decrypt lang_code from cookie
-        $encrypted = Cookie::get('lang_code');
-        $langCode = 'en-us'; // default
-        
         try {
-            $cookieVal = Crypt::decryptString($encrypted);
-            $langCode = str_contains($cookieVal, '|') ? explode('|', $cookieVal)[1] : $cookieVal;
-        } catch (\Exception $e) {
-            // fallback stays as 'en-us'
-        }
-        
-        // Now fetch the language record
-        $language = Language::where('lang_code', $langCode)->first();
-        
-        // Extract country (you may need to adjust the field name below)
-        $country = $language->name ?? 'Unknown';
-        // dd($country);
+            $validated = $request->validate([
+                'user_id' => 'nullable|integer',
+                'session_id' => 'required|string',
+                'activity' => 'required|array',
+                'activity.type' => 'required|string',
+                'activity.product_id' => 'nullable|integer',
+                'activity.category_id' => 'nullable|string',
+                'activity.business_id' => 'nullable|integer',
+                'activity.duration' => 'nullable|integer',
+                'activity.metadata' => 'nullable|array'
+            ]);
+
+            $activity = $validated['activity'];
+
+            // Extract and decrypt lang_code from cookie
+            $encrypted = Cookie::get('lang_code');
+            $langCode = 'en-us'; // default
+            
+            if ($encrypted) {
+                try {
+                    $cookieVal = Crypt::decryptString($encrypted);
+                    $langCode = str_contains($cookieVal, '|') ? explode('|', $cookieVal)[1] : $cookieVal;
+                } catch (\Throwable $e) {
+                    // fallback stays as 'en-us'
+                }
+            }
+            
+            // Now fetch the language record
+            $language = Language::where('lang_code', $langCode)->first();
+            $country = $language->name ?? 'Unknown';
 
             // Inject lang_code, lang_id, and country into metadata
-        $activity['metadata']['lang_code'] = $langCode;
-        $activity['metadata']['lang_id'] = $language->id ?? null;
-        $activity['metadata']['country'] = $country;
-                
-        $this->tracker->trackActivity(
-            $validated['user_id'],
-            $validated['session_id'],
-            $activity
+            if (!isset($activity['metadata']) || !is_array($activity['metadata'])) {
+                $activity['metadata'] = [];
+            }
+            $activity['metadata']['lang_code'] = $langCode;
+            $activity['metadata']['lang_id'] = $language->id ?? null;
+            $activity['metadata']['country'] = $country;
+                    
+            $this->tracker->trackActivity(
+                $validated['user_id'] ?? null,
+                $validated['session_id'],
+                $activity
+            );
 
-        );
-
-        
-        // dd($validated);
-
-        return response()->json(['status' => 'success']);
+            return response()->json(['status' => 'success']);
+        } catch (\Throwable $th) {
+            \Log::warning('Activity tracking notice: ' . $th->getMessage());
+            return response()->json(['status' => 'error', 'message' => $th->getMessage()], 200);
+        }
     }
 
     public function getPersonalizedDeals(Request $request)
