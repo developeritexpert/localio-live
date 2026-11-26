@@ -24,6 +24,7 @@ class LatestReviews extends Component
             ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin'))
             ->whereIn('status', ['published', 'active'])
             ->latest()
+            ->take(12)
             ->get();
 
         return view('livewire.latest-reviews', [

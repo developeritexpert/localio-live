@@ -72,7 +72,7 @@
     <section class="most-populr-sec light p_120">
         <div class="container">
             @if (isset($categories) && $categories->isNotEmpty())
-                <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
+                <div class="row most-popular-g2-layout">
                     <!-- Left Sidebar Column: Category list -->
                     <div class="col-lg-3 col-12 mb-4 mb-lg-0">
                         <h2 class="popular-categories-title">{{ !empty($homeContents['most_popular']) ? $homeContents['most_popular'] : 'Most popular categories' }}</h2>
@@ -353,7 +353,7 @@
         @endif
     </section> --}}
     <!-- slider section start -->
-    <div class="outer_slider dark" style="content-visibility: auto; contain-intrinsic-size: 1px 400px; contain: paint;">
+    <div class="outer_slider dark">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
@@ -538,7 +538,7 @@
     <!-- section right-tool -->
     <section class="right_tool_sec dark ">
         <div class="container">
-            <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
+            <div class="right-tool-wrp text-center">
                 <div class="otr_rgtool">
                     <h2>Join Localio</h2>
                     <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>

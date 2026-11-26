@@ -178,7 +178,12 @@ class UserTracker {
     }
 }
 
-// Initialize tracker
-document.addEventListener('DOMContentLoaded', () => {
-    new UserTracker();
+// Initialize tracker after critical load window so /api/track-activity never blocks LCP
+window.addEventListener('load', () => {
+    const startTracker = () => new UserTracker();
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(startTracker, { timeout: 2000 });
+    } else {
+        setTimeout(startTracker, 1500);
+    }
 });
