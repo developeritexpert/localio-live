@@ -108,10 +108,30 @@ class AiModelService
         return $response['content'][0]['text'] ?? 'No response';
     }
 
+    /**
+     * Sanitize dynamic user inputs before prompt interpolation to prevent prompt injection.
+     */
+    public static function sanitizePromptInput($input): string
+    {
+        if (!is_string($input)) {
+            return (string) $input;
+        }
+
+        // Strip HTML, script tags, and zero-width/control characters
+        $clean = strip_tags($input);
+        $clean = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $clean);
+
+        // Sanitize delimiter override attempts like {{system}}, {role}, etc.
+        $clean = str_replace(['{{', '}}'], ['{', '}'], $clean);
+
+        return trim($clean);
+    }
+
     protected function replaceVariables(string $template, array $variables): string
     {
         foreach ($variables as $key => $value) {
-            $template = str_replace('{{' . $key . '}}', $value, $template);
+            $sanitized = is_string($value) ? self::sanitizePromptInput($value) : $value;
+            $template = str_replace('{{' . $key . '}}', $sanitized, $template);
         }
         return $template;
     }

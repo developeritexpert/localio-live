@@ -76,7 +76,7 @@ class AdminDashController extends Controller
         $request->validate(
             [
                 'old_password' => 'required',
-                'new_password' => 'required|confirmed|min:6',
+                'new_password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
                 'new_password_confirmation' => 'required',
             ],
             [

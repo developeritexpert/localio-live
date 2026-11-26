@@ -26,6 +26,8 @@ use App\Models\Language;
 use App\Models\MetaVendor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 
 
 class AuthenticationController extends Controller
@@ -64,88 +66,127 @@ class AuthenticationController extends Controller
 
     public function loginProcc(Request $request)
     {
+        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
 
+        // Brute-force protection: Lock account after 5 failed attempts for 10 minutes (600s)
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $minutes = max(1, (int) ceil($seconds / 60));
+            return redirect()->back()->with('error', "Too many login attempts. For your security, this account is temporarily locked. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.');
+        }
 
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6',
-        'g-recaptcha-response' => ['required', new Recaptcha('login')],
-    ], [
-        'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
-    ]);
-
-    $credentials = $request->only('email', 'password');
-
-    $user = User::where('email', $request->email)->first();
-    if (!$user) {
-        $isFromModal = $request->has('is_modal') || session('register_from_modal');
-        session([
-            'register_email' => $request->email,
-            'register_password' => $request->password,
-            'register_is_google' => false,
-            'register_from_modal' => $isFromModal,
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+            'g-recaptcha-response' => ['required', new Recaptcha('login')],
+        ], [
+            'g-recaptcha-response.required' => 'Security check token is missing. Please refresh and try again.',
         ]);
 
-        if ($isFromModal) {
-            session(['register_profile_needed' => true]);
-            if (session()->has('pending_review_business_id')) {
-                session(['pending_review_business_id' => session('pending_review_business_id')]);
+        $credentials = $request->only('email', 'password');
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            RateLimiter::hit($throttleKey, 600);
+            $isFromModal = $request->has('is_modal') || session('register_from_modal');
+            session([
+                'register_email' => $request->email,
+                'register_password' => $request->password,
+                'register_is_google' => false,
+                'register_from_modal' => $isFromModal,
+            ]);
+
+            if ($isFromModal) {
+                session(['register_profile_needed' => true]);
+                if (session()->has('pending_review_business_id')) {
+                    session(['pending_review_business_id' => session('pending_review_business_id')]);
+                }
+                return redirect()->back();
             }
-            return redirect()->back();
+
+            $lang = app()->getLocale() ?? session('lang_code', 'en-us');
+            return redirect()->to("/{$lang}/sign-in/details");
         }
 
-        $lang = app()->getLocale() ?? session('lang_code', 'en-us');
-        return redirect()->to("/{$lang}/sign-in/details");
-    }
+        if (Auth::attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
+            $user = Auth::user();
 
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        $locale = app()->getLocale();
-
-        if ($user->status === 'pending') {
-            Auth::logout();
-            return redirect()->back()->with('error', static_text('error_auth_account_deactivated') ?: 'Your account has been deactivated.');
-        }
-
-        // Create a token once at login and save it to session
-        $token = $user->createToken('user_token')->plainTextToken;
-        session([
-            'api_token' => $token,
-            'user_id' => $user->id,
-        ]);
-
-        if ($user->user_type === 'admin') {
-            session()->forget(['url.intended', 'pending_review_business_id', 'register_from_modal']);
-            return redirect()->route('admin_dashboard')->with('success', 'Welcome Admin!');
-        }
-
-        $isFromModal = $request->has('is_modal') || session('register_from_modal') || session()->has('pending_review_business_id');
-
-        // Store intended URL in session if passed from form
-        if ($request->filled('url_intended')) {
-            session(['url.intended' => $request->input('url_intended')]);
-        }
-
-        // Redirect to intended if set
-        if (session()->has('url.intended')) {
-            return redirect()->intended();
-        }
-
-        if ($isFromModal) {
-            return redirect()->back();
-        }
-
-        switch ($user->user_type) {
-            case 'user':
-                return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')]);
-            case 'vendor':
-                return redirect()->route('vendor-overview', ['locale' => session('lang_code', 'en-us')]);
-            default:
+            if ($user->status === 'pending') {
                 Auth::logout();
-                return redirect()->route('login')->with('error', static_text('error_auth_invalid_credentials') ?: 'Invalid email or password.');
-        }
-    }
+                return redirect()->back()->with('error', static_text('error_auth_account_deactivated') ?: 'Your account has been deactivated.');
+            }
 
+            // Create a token once at login and save it to session
+            $token = $user->createToken('user_token')->plainTextToken;
+            session([
+                'api_token' => $token,
+                'user_id' => $user->id,
+            ]);
+
+            // Two-Factor Authentication (2FA) for Admin users
+            if ($user->user_type === 'admin') {
+                $otp = (string) rand(100000, 999999);
+                OtpVerification::updateOrCreate(
+                    ['user_id' => $user->id, 'otp_type' => 'admin_2fa'],
+                    [
+                        'otp' => $otp,
+                        'expires_at' => Carbon::now()->addMinutes(10),
+                    ]
+                );
+
+                session([
+                    'admin_2fa_pending' => true,
+                    'admin_2fa_user_id' => $user->id,
+                    'admin_2fa_email' => $user->email,
+                ]);
+
+                $adminName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Admin';
+                $htmlBody = "<p>Hello {$adminName},</p>"
+                    . "<p>Your 6-digit login verification code for the Localio Admin Dashboard is:</p>"
+                    . "<div style='font-size: 28px; font-weight: bold; letter-spacing: 6px; padding: 12px 20px; background: #f0f7ff; color: #003f7d; border-radius: 8px; display: inline-block; margin: 15px 0;'>" . $otp . "</div>"
+                    . "<p>This code will expire in 10 minutes. If you did not initiate this login attempt, please secure your account immediately.</p>";
+
+                try {
+                    MailService::sendRaw($user->email, 'Localio Admin Login Verification Code', $htmlBody);
+                } catch (\Throwable $e) {
+                    Log::error('Admin 2FA email delivery failed: ' . $e->getMessage());
+                }
+                Log::info("=== ADMIN 2FA OTP FOR {$user->email}: {$otp} ===");
+
+                Auth::logout();
+
+                return redirect()->route('admin.2fa.show')->with('success', 'A 6-digit verification code has been sent to your registered email address.');
+            }
+
+            $isFromModal = $request->has('is_modal') || session('register_from_modal') || session()->has('pending_review_business_id');
+
+            // Store intended URL in session if passed from form
+            if ($request->filled('url_intended')) {
+                session(['url.intended' => $request->input('url_intended')]);
+            }
+
+            // Redirect to intended if set
+            if (session()->has('url.intended')) {
+                return redirect()->intended();
+            }
+
+            if ($isFromModal) {
+                return redirect()->back();
+            }
+
+            switch ($user->user_type) {
+                case 'user':
+                    return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')]);
+                case 'vendor':
+                    return redirect()->route('vendor-overview', ['locale' => session('lang_code', 'en-us')]);
+                default:
+                    Auth::logout();
+                    return redirect()->route('login')->with('error', static_text('error_auth_invalid_credentials') ?: 'Invalid email or password.');
+            }
+        }
+
+        RateLimiter::hit($throttleKey, 600);
         return redirect()->back()->with('error', static_text('error_auth_invalid_credentials') ?: 'Invalid email or password.');
     }
 
@@ -259,7 +300,7 @@ class AuthenticationController extends Controller
             'first_name' => 'required',
             'last_name'  => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required',
+            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'job_title' => 'required|string|max:191',
             'g-recaptcha-response' => ['required', new Recaptcha('register')],
             // 'country_id' => 'required',
@@ -410,7 +451,7 @@ class AuthenticationController extends Controller
        $lang = app()->getLocale();
 
        $request->validate([
-            'password' => 'required|confirmed',
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
         ]);
         $user = User::where('email', $email)->first();
 
@@ -646,4 +687,119 @@ class AuthenticationController extends Controller
 
 
 
+
+    /**
+     * Show the Admin 2FA verification screen.
+     */
+    public function showAdmin2faForm()
+    {
+        if (!session('admin_2fa_pending') || !session('admin_2fa_user_id')) {
+            return redirect()->route('login');
+        }
+        return view('Authentication.admin_2fa');
+    }
+
+    /**
+     * Verify the 6-digit Admin 2FA code.
+     */
+    public function verifyAdmin2fa(Request $request)
+    {
+        if (!session('admin_2fa_pending') || !session('admin_2fa_user_id')) {
+            return redirect()->route('login')->with('error', 'Session expired. Please log in again.');
+        }
+
+        $request->validate([
+            'otp' => 'required|digits:6',
+        ]);
+
+        $userId = session('admin_2fa_user_id');
+        $throttleKey = 'admin_2fa_' . $userId . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $minutes = max(1, (int) ceil($seconds / 60));
+            return redirect()->back()->with('error', "Too many invalid code attempts. Please wait {$minutes} minute(s) before trying again.");
+        }
+
+        $verification = OtpVerification::where('user_id', $userId)
+            ->where('otp_type', 'admin_2fa')
+            ->where('otp', $request->otp)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+
+        if (!$verification) {
+            RateLimiter::hit($throttleKey, 600);
+            return redirect()->back()->with('error', 'Invalid or expired verification code.');
+        }
+
+        RateLimiter::clear($throttleKey);
+        $verification->delete();
+
+        $user = User::find($userId);
+        if (!$user || $user->user_type !== 'admin') {
+            session()->forget(['admin_2fa_pending', 'admin_2fa_user_id', 'admin_2fa_email']);
+            return redirect()->route('login')->with('error', 'Access denied.');
+        }
+
+        Auth::login($user);
+        session()->forget(['admin_2fa_pending', 'admin_2fa_user_id', 'admin_2fa_email']);
+        session(['admin_2fa_verified' => true]);
+
+        $token = $user->createToken('user_token')->plainTextToken;
+        session([
+            'api_token' => $token,
+            'user_id' => $user->id,
+        ]);
+
+        Log::info("Admin #{$user->id} ({$user->email}) successfully authenticated with 2FA from IP " . $request->ip());
+        return redirect()->route('admin_dashboard')->with('success', 'Welcome Admin!');
+    }
+
+    /**
+     * Resend a fresh 6-digit Admin 2FA code.
+     */
+    public function resendAdmin2fa(Request $request)
+    {
+        if (!session('admin_2fa_pending') || !session('admin_2fa_user_id')) {
+            return redirect()->route('login');
+        }
+
+        $userId = session('admin_2fa_user_id');
+        $resendKey = 'admin_resend_2fa_' . $userId;
+
+        if (RateLimiter::tooManyAttempts($resendKey, 1)) {
+            return redirect()->back()->with('error', 'Please wait 60 seconds before requesting a new code.');
+        }
+
+        RateLimiter::hit($resendKey, 60);
+
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $otp = (string) rand(100000, 999999);
+        OtpVerification::updateOrCreate(
+            ['user_id' => $user->id, 'otp_type' => 'admin_2fa'],
+            [
+                'otp' => $otp,
+                'expires_at' => Carbon::now()->addMinutes(10),
+            ]
+        );
+
+        $adminName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Admin';
+        $htmlBody = "<p>Hello {$adminName},</p>"
+            . "<p>Your new 6-digit verification code to access the Localio Admin Dashboard is:</p>"
+            . "<div style='font-size: 28px; font-weight: bold; letter-spacing: 6px; padding: 12px 20px; background: #f0f7ff; color: #003f7d; border-radius: 8px; display: inline-block; margin: 15px 0;'>" . $otp . "</div>"
+            . "<p>This code will expire in 10 minutes.</p>";
+
+        try {
+            MailService::sendRaw($user->email, 'Localio Admin Login Verification Code', $htmlBody);
+        } catch (\Throwable $e) {
+            Log::error('Admin 2FA email resend failed: ' . $e->getMessage());
+        }
+        Log::info("=== ADMIN 2FA OTP RESENT FOR {$user->email}: {$otp} ===");
+
+        return redirect()->back()->with('success', 'A new 6-digit verification code has been sent to your registered email.');
+    }
 }

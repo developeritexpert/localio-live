@@ -31,7 +31,7 @@
                                     placeholder="{{ $headerContent['header_search_placeholder'] ?? '' }}">
                         <i class="fa fa-search"></i>
                     </div> --}}
-                    @if (!in_array(Route::currentRouteName(), ['login', 'register']))
+                    @if (!in_array(Route::currentRouteName(), ['login', 'register', 'admin.2fa.show']))
                     <livewire:header-search-bar />
                     @endif
 
@@ -1185,7 +1185,7 @@
                         </script>
                     </nav>
                     
-                    @if (!in_array(Route::currentRouteName(), ['login', 'register']))
+                    @if (!in_array(Route::currentRouteName(), ['login', 'register', 'admin.2fa.show']))
                     @php
                         $isHomePage = (request()->is('/') || request()->is(app()->getLocale()) || Route::currentRouteName() === 'home' || (isset($pageClass) && $pageClass === 'page-home'));
                     @endphp
