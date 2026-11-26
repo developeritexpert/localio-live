@@ -23,10 +23,18 @@
                                 @if (isset($headerLogo) && $headerLogo)
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
                                         src="{{ asset($headerLogo->meta_value) }}"
-                                        alt="{{ $headerLogo->meta_key }}" width="220" height="52"></a>
+                                        alt="{{ $headerLogo->meta_key }}"
+                                        width="220" height="52"
+                                        style="width:220px;height:52px;aspect-ratio:220/52;object-fit:contain;"
+                                        fetchpriority="high"
+                                        loading="eager"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"
+                                        width="220" height="52"
+                                        style="width:220px;height:52px;aspect-ratio:220/52;object-fit:contain;"
+                                        fetchpriority="high"
+                                        loading="eager"></a>
                                 @endif
                             </div>
                         </div>
@@ -176,10 +184,18 @@
                                 @if (isset($headerLogo) && $headerLogo)
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
                                         src="{{ asset($headerLogo->meta_value) }}"
-                                        alt="{{ $headerLogo->meta_key }}" width="220" height="52"></a>
+                                        alt="{{ $headerLogo->meta_key }}"
+                                        width="220" height="52"
+                                        style="width:220px;height:52px;aspect-ratio:220/52;object-fit:contain;"
+                                        fetchpriority="high"
+                                        loading="eager"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"
+                                        width="220" height="52"
+                                        style="width:220px;height:52px;aspect-ratio:220/52;object-fit:contain;"
+                                        fetchpriority="high"
+                                        loading="eager"></a>
                                 @endif
                             </div>
                         </div>

@@ -459,6 +459,13 @@ div#navbarSupportedContent {
     z-index: 1;
     background-color: var(--color-light-blue-text);
     padding-top: 0px;
+    /* Reserve space to prevent Livewire-induced CLS on mobile */
+    min-height: 420px;
+}
+@media (max-width: 991px) {
+    .outer_slider {
+        min-height: 500px;
+    }
 }
 
 /* Removed hidden z-index:-1 ::after/::before pseudo-elements to prevent phantom CLS */

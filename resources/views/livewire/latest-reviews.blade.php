@@ -1,4 +1,4 @@
-<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; ">
+<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; min-height: 420px;">
     <style>
         
     </style>

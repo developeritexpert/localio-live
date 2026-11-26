@@ -138,6 +138,10 @@
 
     <!-- Preload Critical Font Awesome Webfont -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Preload primary Montserrat woff2 to eliminate font-swap CLS on right_tool_sec -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/montserrat/v31/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Override font-display to 'optional' so browser uses fallback if font isn't ready, eliminating CLS -->
+    <style>@font-face{font-family:'Montserrat';font-display:optional;src:url('https://fonts.gstatic.com/s/montserrat/v31/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}</style>
 
     @php
         $isHomeRoute = (Route::currentRouteName() === 'home' || request()->is('/') || request()->is($currentLangCode ?? 'en-us'));
