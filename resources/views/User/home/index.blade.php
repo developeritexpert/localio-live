@@ -22,9 +22,9 @@
 
             ?>
             @if (isset($headerBackgroundImage))
-                <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}">
+                <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}" fetchpriority="high" loading="eager">
             @else
-                <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="">
+                <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="" fetchpriority="high" loading="eager">
             @endif
         </div>
         <div class="banner_content">
@@ -227,7 +227,7 @@
                                                                                 @foreach ($business->usps->take(4) as $usp)
                                                                                     <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
                                                                                         <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                            <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="" loading="lazy">
                                                                                             
                                                                                         </div>
                                                                                         <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
@@ -236,20 +236,20 @@
                                                                             @else
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="" loading="lazy">
                                                                                         
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="" loading="lazy">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable updates</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 0;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="" loading="lazy">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Friendly Customer Service</p>
                                                                                 </li>
@@ -603,14 +603,14 @@
         <div class="back-image1">
             @if (isset($findToolLeftImage))
                 <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
-                    alt="{{ $findToolLeftImage->meta_key }}">
+                    alt="{{ $findToolLeftImage->meta_key }}" loading="lazy">
             @endif
             <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
         </div>
         <div class="back-image2">
             @if (isset($findToolRightImage))
                 <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
-                    alt="{{ $findToolRightImage->meta_key }}">
+                    alt="{{ $findToolRightImage->meta_key }}" loading="lazy">
             @endif
             <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
         </div>

@@ -132,6 +132,15 @@
     </script>
 
 
+    <!-- Preconnect to CDN origins to reduce DNS/TCP/TLS latency -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://static.addtoany.com">
+
     <!-- Font Awesome (latest version) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -148,17 +157,14 @@
         integrity="sha512-6lLUdeQ5uheMFbWm3CP271l14RsX1xtx+J5x2yeIDkkiBpeVTNhTqijME7GgRKKi6hCqovwCoBTlRBEC20M8Mg=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- noUiSlider -->
+    <!-- noUiSlider CSS only (JS moved to end of body) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
 
-    <!-- SweetAlert2 -->
+    <!-- SweetAlert2 CSS only (JS moved to end of body, before flash calls) -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-    <!--  Preview Reviews Slider -->
+    <!--  Preview Reviews Slider CSS only (JS moved to end of body) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     
     @include('partials.favicon')
@@ -167,10 +173,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
+    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=1">
     <!-- Custom Developer CSS -->
-    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?{{ time() }}">
-    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
+    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?v=1">
     @stack('styles')
     <script src="//unpkg.com/alpinejs" defer></script>
     <style>
@@ -3344,10 +3350,9 @@ header .sec_head {
         integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script  src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-    <script src="{{ asset('front/js/script.js') }}?{{ time() }}"></script>
-    <script src="{{ asset('front/js/tracking.js') }}?{{ time() }}"></script>
+    <script src="{{ asset('front/js/script.js') }}?v=1"></script>
+    <script src="{{ asset('front/js/tracking.js') }}?v=1"></script>
     <script>
     window.livewireDebug = true;
     </script>
@@ -3415,6 +3420,11 @@ header .sec_head {
         $(window).on('scroll', checkScroll);
     });
     </script>
+    <!-- SweetAlert2, noUiSlider, Swiper JS moved from <head> to end of body to eliminate render-blocking -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
     @session('success')
     <script>
     @if(Session::has('success'))
