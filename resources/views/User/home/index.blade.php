@@ -19,16 +19,6 @@
         $reviewLeftImage = $homeContantImages->get('review_section_left_img');
         $aiImage = $homeContantImages->get('ai_send_img');
         ?>
-        {{-- Decorative bubble pattern commented out as requested for clean solid brand background and optimal LCP --}}
-        {{--
-        <div class="bubble-wrp">
-            @if (isset($headerBackgroundImage))
-                <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}" fetchpriority="high" loading="eager">
-            @else
-                <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="" fetchpriority="high" loading="eager">
-            @endif
-        </div>
-        --}}
         <div class="banner_content">
             <div class="container">
                 <div class="banner_row">
@@ -38,27 +28,6 @@
                             <p>{{ $homeContents['header_description'] ?? null }}</p>
                             @livewire('search-bar', ['placeholder' => 'Search digital products & services'])
                             {{-- @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search digital products & services']) --}}
-                        </div>
-                    </div>
-                    <div class="banner_image_col d-none">
-                        <div class="banner_image">
-                            @if (isset($headerImage))
-                                @php
-                                    $imgVal = $headerImage->meta_value;
-                                    $imgWebp = preg_replace('/\.(png|jpe?g)$/i', '.webp', $imgVal);
-                                @endphp
-                                <picture>
-                                    @if (file_exists(public_path($imgWebp)))
-                                        <source srcset="{{ asset($imgWebp) }}" type="image/webp">
-                                    @endif
-                                    <img src="{{ asset($imgVal) }}" alt="{{ $headerImage->meta_key }}" loading="lazy" decoding="async" width="1224" height="1273">
-                                </picture>
-                            @else
-                                <picture>
-                                    <source srcset="{{ asset('front/img/banner_image.webp') }}" type="image/webp">
-                                    <img src="{{ asset('front/img/banner_image.png') }}" alt="" loading="lazy" decoding="async" width="1224" height="1273">
-                                </picture>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -384,7 +353,7 @@
         @endif
     </section> --}}
     <!-- slider section start -->
-    <div class="outer_slider dark">
+    <div class="outer_slider dark" style="content-visibility: auto; contain-intrinsic-size: 1px 400px; contain: paint;">
         {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">

@@ -437,22 +437,10 @@ function fillColor() {
 // header search js /////////////////////////////////////////////////////////
 // myID = document.getElementById("myID");
 
-// var myScrollFunc = function () {
-//     var y = window.scrollY;
-//     if (y >= 200) {
-//         myID.className = "bottomMenu show"
-//     } else {
-//         myID.className = "bottomMenu hide"
-//     }
-// };
-
-window.addEventListener("scroll", myScrollFunc);
-
-
 // search bar
-
 function checkScroll() {
    var myElement = document.getElementById("myID");
+   if (!myElement) return;
 
    // Check if the page has been scrolled 200px or more
    if (window.scrollY > 460) {
