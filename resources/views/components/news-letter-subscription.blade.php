@@ -48,10 +48,16 @@
     </div>
 
     <div class="back-image1" style="position: absolute; left: 0; bottom: 0; pointer-events: none; z-index: 1;">
-        <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt="" style="max-height: 100%;">
+        <picture>
+            <source srcset="{{ asset('front/img/right-tool-vector1.webp') }}" type="image/webp">
+            <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt="" width="108" height="108" loading="lazy" decoding="async" style="max-height: 100%;">
+        </picture>
     </div>
     <div class="back-image2" style="position: absolute; right: 0; bottom: 0; pointer-events: none; z-index: 1;">
-        <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt="" style="max-height: 100%;">
+        <picture>
+            <source srcset="{{ asset('front/img/right-tool-vector2.webp') }}" type="image/webp">
+            <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt="" width="173" height="173" loading="lazy" decoding="async" style="max-height: 100%;">
+        </picture>
     </div>
 </section>
 @endguest

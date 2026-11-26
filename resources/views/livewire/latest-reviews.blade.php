@@ -10,8 +10,8 @@
                     <h2 style=" margin: 0; text-transform:none;">Latest reviews</h2>
                 </div>
                 <div class="reviews-slider-nav" style="display: flex; gap: 8px;">
-                    <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer;" onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-left"></i></button>
-                    <button class="reviews-next" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer; " onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-right"></i></button>
+                    <button class="reviews-prev" aria-label="Previous review" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer;" onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-left"></i></button>
+                    <button class="reviews-next" aria-label="Next review" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer; " onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>

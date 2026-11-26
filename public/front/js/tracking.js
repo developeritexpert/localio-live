@@ -136,17 +136,22 @@ class UserTracker {
             activity: data
         };
         // console.log(payload);
+        const csrfTokenEl = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenEl ? csrfTokenEl.content : '';
         if (synchronous) {
             // For beforeunload events, use sendBeacon for reliability
-            navigator.sendBeacon('/api/track-activity', 
-                new Blob([JSON.stringify(payload)], {type: 'application/json'})
-            );
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/track-activity', 
+                    new Blob([JSON.stringify(payload)], {type: 'application/json'})
+                );
+            }
         } else {
             fetch('/api/track-activity', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(payload)
             }).catch(err => console.log('Tracking error:', err));

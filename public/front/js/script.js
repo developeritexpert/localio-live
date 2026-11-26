@@ -1,5 +1,9 @@
 window.addEventListener('load', () => {
-   aos.init();
+   if (typeof AOS !== 'undefined') {
+      AOS.init();
+   } else if (typeof aos !== 'undefined') {
+      aos.init();
+   }
 });
 
 //product- comparison page slider
@@ -403,27 +407,30 @@ let displayValOne = document.getElementById("range1");
 let displayValTwo = document.getElementById("range2");
 let minGap = 0;
 let sliderTrack = document.querySelector(".range-slider-track");
-let sliderMaxValue = document.getElementById("slider-1").max;
+let sliderMaxValue = sliderOne ? sliderOne.max : 100;
 
 function slideOne() {
+   if (!sliderOne || !sliderTwo) return;
    if (parseInt(sliderTwo.value) - parseInt(sliderOne.value) <= minGap) {
       sliderOne.value = parseInt(sliderTwo.value) - minGap;
    }
-   displayValOne.textContent = sliderOne.value;
+   if (displayValOne) displayValOne.textContent = sliderOne.value;
    fillColor();
 }
 
 function slideTwo() {
+   if (!sliderOne || !sliderTwo) return;
    if (parseInt(sliderTwo.value) - parseInt(sliderOne.value) <= minGap) {
       sliderTwo.value = parseInt(sliderOne.value) + minGap;
    }
-   displayValTwo.textContent = sliderTwo.value;
+   if (displayValTwo) displayValTwo.textContent = sliderTwo.value;
    fillColor();
 }
 
 function fillColor() {
-   percent1 = (sliderOne.value / sliderMaxValue) * 100;
-   percent2 = (sliderTwo.value / sliderMaxValue) * 100;
+   if (!sliderOne || !sliderTwo || !sliderTrack || !sliderMaxValue) return;
+   let percent1 = (sliderOne.value / sliderMaxValue) * 100;
+   let percent2 = (sliderTwo.value / sliderMaxValue) * 100;
    sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #06498b ${percent1}% , #06498b ${percent2}%, #dadae5 ${percent2}%)`;
 }
 

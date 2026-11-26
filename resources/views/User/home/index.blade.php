@@ -4,29 +4,31 @@
 @section('meta_description', format_meta_text($homeContents['meta_home_description'] ?? ($homeContents['Meta_home_description'] ?? ''), 'Default Description'))
 @section('content')
     <section class="banner_sec dark home_bnr_sec" style="background-color: #003F7D;">
+        <?php
+        $headerBackgroundImage = $homeContantImages->get('header_background_img');
+        $headerImage = $homeContantImages->get('header_img');
+        $trustedBrandImages = $homeContantImages->get('trusted_brands_img');
+        $aiLeftImage = $homeContantImages->get('ai_section_left_img');
+        $aiRightImage = $homeContantImages->get('ai_section_right_img');
+        $findToolRightImage = $homeContantImages->get('find_tool_right_img');
+        $findToolLeftImage = $homeContantImages->get('find_tool_left_img');
+        $verifiedImage = $homeContantImages->get('user_reviews_img');
+        $featureImage = $homeContantImages->get('price_compare_img');
+        $indepentImage = $homeContantImages->get('independent_img');
+        $reviewRightImage = $homeContantImages->get('review_section_right_img');
+        $reviewLeftImage = $homeContantImages->get('review_section_left_img');
+        $aiImage = $homeContantImages->get('ai_send_img');
+        ?>
+        {{-- Decorative bubble pattern commented out as requested for clean solid brand background and optimal LCP --}}
+        {{--
         <div class="bubble-wrp">
-            <?php
-            $headerBackgroundImage = $homeContantImages->get('header_background_img');
-            $headerImage = $homeContantImages->get('header_img');
-            $trustedBrandImages = $homeContantImages->get('trusted_brands_img');
-            $aiLeftImage = $homeContantImages->get('ai_section_left_img');
-            $aiRightImage = $homeContantImages->get('ai_section_right_img');
-            $findToolRightImage = $homeContantImages->get('find_tool_right_img');
-            $findToolLeftImage = $homeContantImages->get('find_tool_left_img');
-            $verifiedImage = $homeContantImages->get('user_reviews_img');
-            $featureImage = $homeContantImages->get('price_compare_img');
-            $indepentImage = $homeContantImages->get('independent_img');
-            $reviewRightImage = $homeContantImages->get('review_section_right_img');
-            $reviewLeftImage = $homeContantImages->get('review_section_left_img');
-            $aiImage = $homeContantImages->get('ai_send_img');
-
-            ?>
             @if (isset($headerBackgroundImage))
                 <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}" fetchpriority="high" loading="eager">
             @else
                 <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="" fetchpriority="high" loading="eager">
             @endif
         </div>
+        --}}
         <div class="banner_content">
             <div class="container">
                 <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
@@ -41,9 +43,21 @@
                     <div class="banner_image_col d-none">
                         <div class="banner_image">
                             @if (isset($headerImage))
-                                <img src="{{ asset($headerImage->meta_value) }}" alt="{{ $headerImage->meta_key }}">
+                                @php
+                                    $imgVal = $headerImage->meta_value;
+                                    $imgWebp = preg_replace('/\.(png|jpe?g)$/i', '.webp', $imgVal);
+                                @endphp
+                                <picture>
+                                    @if (file_exists(public_path($imgWebp)))
+                                        <source srcset="{{ asset($imgWebp) }}" type="image/webp">
+                                    @endif
+                                    <img src="{{ asset($imgVal) }}" alt="{{ $headerImage->meta_key }}" loading="lazy" decoding="async" width="1224" height="1273">
+                                </picture>
                             @else
-                                <img src="{{ asset('front/img/banner_image.png') }}" alt="">
+                                <picture>
+                                    <source srcset="{{ asset('front/img/banner_image.webp') }}" type="image/webp">
+                                    <img src="{{ asset('front/img/banner_image.png') }}" alt="" loading="lazy" decoding="async" width="1224" height="1273">
+                                </picture>
                             @endif
                         </div>
                     </div>
@@ -636,8 +650,8 @@
 </script>
 
 <script>
-    $(window).on('load', function() {
-        $('body').addClass('HomeIndxPgCls');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('HomeIndxPgCls');
     });
 
     // Custom popular categories tab switching fallback/enhancement
