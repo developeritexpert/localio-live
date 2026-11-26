@@ -746,7 +746,7 @@ div#navbarSupportedContent {
 }
 
 .right_tool_sec {
-    background-color: #d84315;
+    background-color: var(--color-primary-orange);
     position: relative;
     z-index: 1;
     overflow: hidden;

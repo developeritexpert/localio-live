@@ -609,7 +609,7 @@
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Get started </a>
+                    <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" onclick="event.preventDefault(); openLoginModal();" class="blue-btn cta">Get started</a>
                 </div>
             </div>
         </div>

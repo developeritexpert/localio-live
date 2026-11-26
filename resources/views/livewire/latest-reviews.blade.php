@@ -2,7 +2,7 @@
     <style>
         
     </style>
-    <div class="section_hed" data-aos="fade-up" data-aos-duration="1000" style="margin-bottom: 30px;">
+    <div class="section_hed" style="margin-bottom: 30px;">
         <div class="container">
             <div class="slider_h" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="head_box" style="margin: 0;">
@@ -16,7 +16,7 @@
             </div>
         </div>
     </div>
-    <div class="reviews_block p-0" data-aos="fade-up" data-aos-duration="1000">
+    <div class="reviews_block p-0">
         <div class="container">
             <div class="row">
                 <div class="latest-reviews-slider reviews_slider" style="margin: 0 -10px;">

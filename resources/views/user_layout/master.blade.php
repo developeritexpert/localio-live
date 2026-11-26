@@ -145,9 +145,9 @@
 
     <!-- Critical CSS (Loaded directly to prevent Flash of Unstyled Content) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=2">
-    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?v=2">
-    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?v=3">
 
     <!-- Non-Critical CSS (Asynchronously loaded to eliminate render-blocking) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -3365,8 +3365,8 @@ window.addEventListener('load', function() {
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <script src="{{ asset('front/js/script.js') }}?v=1"></script>
-    <script src="{{ asset('front/js/tracking.js') }}?v=1"></script>
+    <script src="{{ asset('front/js/script.js') }}?v=3"></script>
+    <script src="{{ asset('front/js/tracking.js') }}?v=3"></script>
     <script>
     window.livewireDebug = true;
     </script>
@@ -3708,7 +3708,7 @@ window.addEventListener('load', function() {
                             @foreach($sidebarCategories as $cat)
                             @if($cat->translation)
                             <li>
-                                <a href="javascript:void(0);" class="parent-category-item"
+                                <a href="#category-panel" class="parent-category-item"
                                     data-category-id="{{ $cat->id }}">
                                     {{ $cat->translation->name }}
                                     <i class="fa-solid fa-chevron-right float-end mt-1"></i>
@@ -3725,7 +3725,7 @@ window.addEventListener('load', function() {
                 @if($cat->translation)
                 <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
                     <div class="sub-panel-back">
-                        <a href="javascript:void(0);" class="back-to-main-btn">
+                        <a href="#main-panel" class="back-to-main-btn">
                             <i class="fa-solid fa-arrow-left me-2"></i> Categories
                         </a>
                     </div>
@@ -3946,7 +3946,7 @@ window.addEventListener('load', function() {
                 <span class="booking-share-label">{{ static_text('copy_link_button') ?: 'Copy link' }}</span>
                 <span id="shareCopiedFeedback" class="booking-share-copied-badge" style="display: none;">{{ static_text('copied_toast') ?: 'Copied!' }}</span>
             </button>
-            <a href="javascript:void(0)" class="booking-share-item" id="btnShareFacebook" onclick="triggerShareFacebook(event)">
+            <button type="button" class="booking-share-item" id="btnShareFacebook" onclick="triggerShareFacebook(event)">
                 <span class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -3954,7 +3954,7 @@ window.addEventListener('load', function() {
                 </span>
                 <span class="booking-share-label">Facebook</span>
             </a>
-            <a href="javascript:void(0)" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
+            <button type="button" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
                 <span class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#111827">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>

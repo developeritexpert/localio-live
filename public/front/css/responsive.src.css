@@ -7341,3 +7341,11 @@
 }
 
 /* ====================================END RESPONSIVE CODE======================================= */
+
+.latest-reviews-slider:not(.slick-initialized) {
+    display: flex;
+    overflow: hidden;
+}
+.latest-reviews-slider:not(.slick-initialized) .review-slide-column {
+    min-width: 100%;
+}

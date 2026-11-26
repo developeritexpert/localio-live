@@ -40,7 +40,7 @@
                             @if (!auth()->user())
                             <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
-                            <a href="javascript:void(0);" onclick="openLoginModal()"
+                            <a href="{{ route('register', ['locale' => app()->getLocale()]) }}" onclick="event.preventDefault(); openLoginModal();"
                                 class="cta cta_orange wht-t-org-btn">
                                 {{ $headerContent['sign_up_btn_lable'] ?? 'Sign up' }}
                             </a>
@@ -64,7 +64,7 @@
                                     {{ $headerContent['login_btn_lable'] ?? 'Login' }}
                     </a>
 
-                    <a href="javascript:void(0);" onclick="openLoginModal()" class="cta cta_orange wht-t-org-btn">
+                    <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" onclick="event.preventDefault(); openLoginModal();" class="cta cta_orange wht-t-org-btn">
                         {{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}
                     </a>
                     @else
@@ -660,7 +660,7 @@
                             <div class="left_menu">
                                 <ul class="menu">
                                     <li class="menu-item cat_menu_item">
-                                        <a href="javascript:void(0);" id="open-categories-sidebar"><i
+                                        <a href="#categories-sidebar" id="open-categories-sidebar"><i
                                                 class="fa-solid fa-bars me-2"></i>{{ $headerContent['Categories'] ?? 'All' }}</a>
                                     </li>
                                     <li class=" menu-item cat_menu_item">
@@ -873,7 +873,7 @@
                                                 <div class="msp_buttons">
                                                     <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                                                         class="msp_btn msp_btn_outline">Write a review</a>
-                                                    <a href="javascript:void(0);" onclick="msp_closePanel(); openLoginModal();"
+                                                    <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" onclick="event.preventDefault(); msp_closePanel(); openLoginModal();"
                                                         class="cta cta_orange wht-t-org-btn msp_btn_signin">
                                                         Sign in
                                                     </a>
@@ -1051,7 +1051,7 @@
                                                     @foreach($sidebarCategories as $cat)
                                                         @if($cat->translation)
                                                         <li>
-                                                            <a href="javascript:void(0);" class="mobile-cat-nav-btn" data-target="mobile-subcat-pane-{{ $cat->id }}">
+                                                            <a href="#mobile-categories" class="mobile-cat-nav-btn" data-target="mobile-subcat-pane-{{ $cat->id }}">
                                                                 <span>{{ $cat->translation->name }}</span>
                                                                 <i class="fa-solid fa-chevron-right mobile-cat-right-arrow"></i>
                                                             </a>
