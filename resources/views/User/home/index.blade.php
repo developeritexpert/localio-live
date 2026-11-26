@@ -541,7 +541,7 @@
             <div class="right-tool-wrp text-center">
                 <div class="otr_rgtool">
                     <h2>Join Localio</h2>
-                    <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                    <p class="text-white" style="max-width: 700px; margin: 0 auto 0; font-size: 19px; font-weight: 700;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">
