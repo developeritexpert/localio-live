@@ -23,6 +23,7 @@ use App\Models\ContactContent;
 use App\Models\ExpertGuideCategory;
 use App\Models\PageTile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -32,217 +33,122 @@ class ViewController extends Controller
     {
         $langCode = getCurrentLocale();
         $lang_id = getCurrentLanguageID();
+        $country_id = getCurrentCountry();
         session(['lang_id' => $lang_id]); // Required for translationForCurrentLang to work
 
         try {
-            $homeContents = HomeContent::where('lang_id', $lang_id)->pluck('meta_value', 'meta_key');
-            if ($homeContents->isEmpty()) {
-                $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
-            }
+            $cachedHome = Cache::remember("home_page_v2_{$lang_id}_{$country_id}", 300, function () use ($lang_id, $country_id) {
+                $homeContents = HomeContent::where('lang_id', $lang_id)->pluck('meta_value', 'meta_key');
+                if ($homeContents->isEmpty()) {
+                    $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
+                }
 
-            $homepageCategories = Category::where('show_on_homepage', 1)
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'businesses.translations' => function ($query) use ($lang_id) {
-                        $query->where('lang_id', $lang_id);
-                    },
-                    'businesses.reviews'
-                ])
-                ->orderBy('homepage_order', 'asc')
-                ->get();
-
-            if ($homepageCategories->isEmpty()) {
-                $categories = Category::whereHas('businesses.reviews') // fallback: only include categories with reviewed businesses
+                $homepageCategories = Category::where('show_on_homepage', 1)
                     ->with([
                         'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                        'businesses.translations' => function ($query) use ($lang_id) {
-                            $query->where('lang_id', $lang_id);
-                        },
-                        'businesses.reviews'
+                        'subCategories:id,parent_id',
                     ])
-                    ->get()
-                    ->map(function ($category) {
-                        // Combine all ratings across all businesses
-                        $ratings = $category->businesses->flatMap->reviews->pluck('rating');
-                        $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
-                        return $category;
-                    })
-                    ->sortByDesc('average_rating') // sort by calculated average
-                    ->values()
-                    ->take(10);
-            } else {
-                $categories = $homepageCategories;
-            }
-
-
-            $categories->each(function ($category) use ($lang_id) {
-                $limit = $category->homepage_product_limit ?? 6;
-                if ($limit <= 0) $limit = 6;
-
-                $subCategoryIds = $category->subCategories ? $category->subCategories->pluck('id')->toArray() : [];
-
-                $businesses = Business::where(function ($query) use ($category, $subCategoryIds) {
-                    $query->where('category_id', $category->id);
-                    if (!empty($subCategoryIds)) {
-                        $query->orWhereIn('category_id', $subCategoryIds)
-                            ->orWhereHas('subCategories', function ($subQ) use ($subCategoryIds) {
-                                $subQ->whereIn('categories.id', $subCategoryIds);
-                            });
-                    }
-                    $query->orWhereHas('subCategories', function ($subQ) use ($category) {
-                        $subQ->where('categories.id', $category->id);
-                    });
-                })
-                    ->where('is_affiliate', 1)
-                    ->where('status', 1)
-                    ->where(function ($query) {
-                        $query->where('active_all_countries', 1)
-                            ->orWhereHas('countries', function ($q) {
-                                $q->where('country_id', getCurrentCountry());
-                            });
-                    })
-                    ->whereHas('languages', function ($query) use ($lang_id) {
-                        $query->where('language_id', $lang_id);
-                    })
-                    ->withAvg('reviews', 'rating')
-                    ->with([
-                        'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                        'reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
-                        'usps',
-                    ])
-                    ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC')
-                    ->take($limit)
+                    ->orderBy('homepage_order', 'asc')
                     ->get();
 
-                $category->setRelation('businesses', $businesses);
+                if ($homepageCategories->isEmpty()) {
+                    $categories = Category::whereHas('businesses.reviews')
+                        ->with([
+                            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                            'subCategories:id,parent_id',
+                            'businesses.reviews:id,business_id,rating',
+                        ])
+                        ->get()
+                        ->map(function ($category) {
+                            $ratings = $category->businesses->flatMap->reviews->pluck('rating');
+                            $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
+                            return $category;
+                        })
+                        ->sortByDesc('average_rating')
+                        ->values()
+                        ->take(10);
+                } else {
+                    $categories = $homepageCategories;
+                }
+
+                $categories->each(function ($category) use ($lang_id, $country_id) {
+                    $limit = $category->homepage_product_limit ?? 6;
+                    if ($limit <= 0) $limit = 6;
+
+                    $subCategoryIds = $category->subCategories ? $category->subCategories->pluck('id')->toArray() : [];
+
+                    $businesses = Business::where(function ($query) use ($category, $subCategoryIds) {
+                        $query->where('category_id', $category->id);
+                        if (!empty($subCategoryIds)) {
+                            $query->orWhereIn('category_id', $subCategoryIds)
+                                ->orWhereHas('subCategories', function ($subQ) use ($subCategoryIds) {
+                                    $subQ->whereIn('categories.id', $subCategoryIds);
+                                });
+                        }
+                        $query->orWhereHas('subCategories', function ($subQ) use ($category) {
+                            $subQ->where('categories.id', $category->id);
+                        });
+                    })
+                        ->where('is_affiliate', 1)
+                        ->where('status', 1)
+                        ->where(function ($query) use ($country_id) {
+                            $query->where('active_all_countries', 1)
+                                ->orWhereHas('countries', function ($q) use ($country_id) {
+                                    $q->where('country_id', $country_id);
+                                });
+                        })
+                        ->whereHas('languages', function ($query) use ($lang_id) {
+                            $query->where('language_id', $lang_id);
+                        })
+                        ->withAvg('reviews', 'rating')
+                        ->with([
+                            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                            'reviews:id,business_id,rating,status',
+                            'usps',
+                        ])
+                        ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC')
+                        ->take($limit)
+                        ->get();
+
+                    $category->setRelation('businesses', $businesses);
+                });
+
+                $homeContantImages = HomeContent::where('lang_id', 1)
+                    ->whereIn('meta_key', [
+                        'header_background_img',
+                        'header_img',
+                        'trusted_brands_img',
+                        'ai_section_left_img',
+                        'ai_section_right_img',
+                        'ai_send_img',
+                        'review_section_right_img',
+                        'review_section_left_img',
+                        'find_tool_left_img',
+                        'find_tool_right_img',
+                        'user_reviews_img',
+                        'price_compare_img',
+                        'independent_img',
+                    ])
+                    ->get()
+                    ->keyBy('meta_key');
+
+                return compact('homeContents', 'categories', 'homeContantImages');
             });
 
+            $homeContents = $cachedHome['homeContents'];
+            $categories = $cachedHome['categories'];
+            $homeContantImages = $cachedHome['homeContantImages'];
 
+            // Sections currently disabled in User/home/index.blade.php; preserve view contract without heavy queries
+            $default_image = null;
+            $latestReviews = collect();
+            $reviews = collect();
+            $articles = collect();
+            $exclusive_products = collect();
+            $expertGuide = null;
+            $pageTileTranslationEducation = collect();
+            $pageTileTranslationRightTools = collect();
 
-            // dd($categories);
-            $latestReviews = Review::with([
-                'user',
-                'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'business.reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
-                'translations' => fn($q) => $q->where('language_id', $lang_id),
-            ])->where('status', 'active')
-                ->whereHas('user', function ($q) {
-                    $q->where('user_type', '!=', 'admin');
-                })
-                ->latest()
-                ->take(3)
-                ->get();
-
-            $articles = ExpertGuideArticle::with([
-                'category.translations' => function ($query) use ($lang_id) {
-                    $query->where('lang_id', $lang_id);
-                },
-                'translationForCurrentLang',  // This will load the article translations for the current language
-            ])
-                ->latest() // Get the latest articles
-                ->take(3)  // Limit to 3 articles
-                ->get();
-            // dd($articles);
-            $homeContantImages = HomeContent::where('lang_id', 1)
-                ->whereIn('meta_key', [
-                    'header_background_img',
-                    'header_img',
-                    'trusted_brands_img',
-                    'ai_section_left_img',
-                    'ai_section_right_img',
-                    'ai_send_img',
-                    'review_section_right_img',
-                    'review_section_left_img',
-                    'find_tool_left_img',
-                    'find_tool_right_img',
-                    'user_reviews_img',
-                    'price_compare_img',
-                    'independent_img',
-                ])
-                ->get()
-                ->keyBy('meta_key');
-            $reviews = Review::with([
-                'user',
-                'translations' => fn($q) => $q->where('language_id', $lang_id),
-                'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'business.reviews',
-                'business.category',
-            ])
-                ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-                ->whereHas('business')
-                ->whereHas('business.category')
-                ->orderByDesc('rating')
-                ->where('status', 'active')
-                ->latest()
-                ->get()
-                ->groupBy(fn($review) => $review->business->category->id);
-
-            $expertGuide = ExpertGuides::where('lang_id', $lang_id)->first()  ?? ExpertGuides::where('lang_id', 1)->first();
-            $pageTileTranslationEducation = PageTile::where('source', 'educationItem')
-                ->with('translations')->where('lang_id', $lang_id)
-                ->get();
-            $pageTileTranslationRightTools = PageTile::where('source', 'righttools')
-                ->with('translations')->where('lang_id', $lang_id)
-                ->get();
-
-            $articles = ExpertGuideArticle::with(['translationForCurrentLang'])
-                ->latest() // orders by `created_at` descending by default
-                ->take(3)
-                ->get();
-            //  dd($categories);
-            $country_id = getCurrentCountry();
-            $exclusive_products = Product::whereHas('prices', function ($query) {
-                $query->whereNotNull('discount_price')
-                    ->whereDate('discount_expiration_date', '>=', now());
-            })
-                ->whereHas('translations', function ($query) use ($lang_id) {
-                    $query->where('lang_id', $lang_id)
-                        ->where('product_translations.status', 'active');
-                })
-                ->whereHas('businesses', function ($query) use ($lang_id, $country_id) {
-                    $query->where(function ($q) use ($country_id) {
-                        $q->where('active_all_countries', 1)
-                            ->orWhereHas('countries', function ($q2) use ($country_id) {
-                                $q2->where('country_id', $country_id);
-                            });
-                    })
-                        ->whereHas('translations', function ($q) use ($lang_id) {
-                            $q->where('lang_id', $lang_id);
-                        });
-                })
-                ->where(function ($query) use ($country_id) {
-                    $query->where('active_all_countries', 1)
-                        ->orWhereHas('countries', function ($countryQuery) use ($country_id) {
-                            $countryQuery->where('country_id', $country_id);
-                        });
-                })
-                ->where('products.status', 'public')
-                ->with([
-                    'translations' => function ($query) use ($lang_id) {
-                        $query->where('lang_id', $lang_id);
-                    },
-                    'prices' => function ($query) {
-                        $query->whereNotNull('discount_price')
-                            ->whereDate('discount_expiration_date', '>=', now())
-                            ->orderBy('price');
-                    },
-                    'businesses.translations' => function ($query) use ($lang_id) {
-                        $query->where('lang_id', $lang_id);
-                    }
-                ])
-                ->limit(10)
-                ->get()
-                ->map(function ($product) {
-                    $price = $product->prices->first();
-                    if ($price && $price->price > 0) {
-                        $discount_percentage = round((($price->price - $price->discount_price) / $price->price) * 100);
-                        $product->discount_percentage = $discount_percentage;
-                    } else {
-                        $product->discount_percentage = 0;
-                    }
-                    return $product;
-                });
-            $default_image = WebSetting::where('key', 'user_default_image')->value('value');
             return view('User.home.index', compact('default_image', 'exclusive_products', 'homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
         } catch (\Throwable $e) {
             return view('welcome');

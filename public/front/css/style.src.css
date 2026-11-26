@@ -468,9 +468,6 @@ div#navbarSupportedContent {
     right: 0;
     width: 161px;
     height: 161px;
-    background-image: url("../img/slider_bg_top.webp");
-    background-size: cover;
-    background-position: center;
     z-index: -1;
 }
 
@@ -481,9 +478,6 @@ div#navbarSupportedContent {
     left: 70px;
     width: 161px;
     height: 161px;
-    background-image: url("../img/slider_bg_bottom.webp");
-    background-size: cover;
-    background-position: center;
     z-index: -1;
 }
 
