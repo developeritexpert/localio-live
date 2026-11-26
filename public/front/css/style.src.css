@@ -461,25 +461,7 @@ div#navbarSupportedContent {
     padding-top: 0px;
 }
 
-.outer_slider::after {
-    content: "";
-    position: absolute;
-    top: 40px;
-    right: 0;
-    width: 161px;
-    height: 161px;
-    z-index: -1;
-}
-
-.outer_slider::before {
-    content: "";
-    position: absolute;
-    bottom: 0px;
-    left: 70px;
-    width: 161px;
-    height: 161px;
-    z-index: -1;
-}
+/* Removed hidden z-index:-1 ::after/::before pseudo-elements to prevent phantom CLS */
 
 .section_hed {
     margin-bottom: 20px;

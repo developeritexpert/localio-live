@@ -145,11 +145,11 @@
     @if ($isHomeRoute)
     <!-- Verbatim Critical Above-the-Fold CSS (0 Render-Blocking, 100% Exact Cascade) -->
     <style id="critical-home-css">{!! file_get_contents(public_path('front/css/critical-home.min.css')) !!}</style>
-    <link rel="preload" href="{{ asset('front/css/app.bundle.min.css') }}?v=5" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('front/css/app.bundle.min.css') }}?v=5"></noscript>
+    <link rel="preload" href="{{ asset('front/css/app.bundle.min.css') }}?v=6" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('front/css/app.bundle.min.css') }}?v=6"></noscript>
     @else
     <!-- Single Combined Minified Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('front/css/app.bundle.min.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('front/css/app.bundle.min.css') }}?v=6">
     @endif
 
     <!-- Non-Critical CSS (Asynchronously loaded to eliminate render-blocking) -->
@@ -1602,7 +1602,8 @@ window.addEventListener('load', function() {
                     </div>
                 </div>
 
-                <!-- Dynamic Category Sub-panels -->
+                <!-- Dynamic Category Sub-panels (lazily hydrated from template to eliminate initial DOM parse TBT) -->
+                <template id="desktop-subpanels-tpl">
                 @foreach($sidebarCategories as $cat)
                 @if($cat->translation)
                 <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
@@ -1638,6 +1639,7 @@ window.addEventListener('load', function() {
                 </div>
                 @endif
                 @endforeach
+                </template>
             </div>
         </div>
     </div>
@@ -1651,30 +1653,38 @@ window.addEventListener('load', function() {
         const overlay = document.getElementById('categories-sidebar-overlay');
         const sidebar = document.getElementById('categories-sidebar');
         const container = document.getElementById('sidebar-panels-container');
-        const subPanels = document.querySelectorAll('.category-sidebar-panel.sub-panel');
-        const businessPanels = document.querySelectorAll('.category-sidebar-panel.business-panel');
+        const subpanelsTpl = document.getElementById('desktop-subpanels-tpl');
+        let desktopSubpanelsHydrated = false;
+
+        function hydrateDesktopSubpanels() {
+            if (desktopSubpanelsHydrated || !container || !subpanelsTpl) return;
+            container.appendChild(subpanelsTpl.content.cloneNode(true));
+            desktopSubpanelsHydrated = true;
+        }
 
         if (openBtn && sidebar && overlay) {
             openBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                hydrateDesktopSubpanels();
                 sidebar.classList.add('show');
                 overlay.classList.add('show');
-                document.body.style.overflow = 'hidden'; // prevent scrolling main body
+                document.body.style.overflow = 'hidden';
             });
         }
 
         function closeSidebar() {
+            if (!sidebar || !overlay) return;
             sidebar.classList.remove('show');
             overlay.classList.remove('show');
             document.body.style.overflow = '';
-            // Reset view back to main panel
             setTimeout(() => {
+                if (!container) return;
                 container.classList.remove('slide-active');
                 container.classList.remove('slide-business-active');
-                subPanels.forEach(panel => {
+                container.querySelectorAll('.category-sidebar-panel.sub-panel').forEach(panel => {
                     panel.classList.remove('active');
                 });
-                businessPanels.forEach(panel => {
+                container.querySelectorAll('.category-sidebar-panel.business-panel').forEach(panel => {
                     panel.classList.remove('active');
                     panel.style.display = 'none';
                 });
@@ -1684,99 +1694,86 @@ window.addEventListener('load', function() {
         if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
         if (overlay) overlay.addEventListener('click', closeSidebar);
 
-        // Slide to category sub-menu (2nd level)
-        document.querySelectorAll('.parent-category-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const catId = this.getAttribute('data-category-id');
-                const targetPanel = document.getElementById('sub-panel-' + catId);
+        if (container) {
+            container.addEventListener('click', function(e) {
+                const parentItem = e.target.closest('.parent-category-item');
+                if (parentItem) {
+                    hydrateDesktopSubpanels();
+                    const catId = parentItem.getAttribute('data-category-id');
+                    const targetPanel = document.getElementById('sub-panel-' + catId);
+                    container.querySelectorAll('.category-sidebar-panel.sub-panel').forEach(panel => panel.classList.remove('active'));
+                    container.querySelectorAll('.category-sidebar-panel.business-panel').forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
+                    });
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                        container.classList.remove('slide-business-active');
+                        container.classList.add('slide-active');
+                    }
+                    return;
+                }
 
-                // Hide all sub panels, show target sub panel
-                subPanels.forEach(panel => {
-                    panel.classList.remove('active');
-                });
-                // Hide business panels
-                businessPanels.forEach(panel => {
-                    panel.classList.remove('active');
-                    panel.style.display = 'none';
-                });
-                if (targetPanel) {
-                    targetPanel.classList.add('active');
+                const subItem = e.target.closest('.subcategory-item');
+                if (subItem) {
+                    const subCatId = subItem.getAttribute('data-subcategory-id');
+                    const targetPanel = document.getElementById('business-panel-' + subCatId);
+                    container.querySelectorAll('.category-sidebar-panel.business-panel').forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
+                    });
+                    if (targetPanel) {
+                        targetPanel.style.display = 'block';
+                        targetPanel.classList.add('active');
+                        container.classList.add('slide-business-active');
+                    }
+                    return;
+                }
+
+                if (e.target.closest('.back-to-main-btn')) {
+                    container.classList.remove('slide-active');
+                    container.classList.remove('slide-business-active');
+                    return;
+                }
+
+                const backSubBtn = e.target.closest('.back-to-subcategories-btn');
+                if (backSubBtn) {
+                    const parentCatId = backSubBtn.getAttribute('data-parent-cat-id');
+                    const targetPanel = document.getElementById('sub-panel-' + parentCatId);
+                    container.querySelectorAll('.category-sidebar-panel.sub-panel').forEach(panel => panel.classList.remove('active'));
+                    if (targetPanel) targetPanel.classList.add('active');
                     container.classList.remove('slide-business-active');
                     container.classList.add('slide-active');
                 }
             });
-        });
-
-        // Slide to sub-category business-menu (3rd level)
-        document.querySelectorAll('.subcategory-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const subCatId = this.getAttribute('data-subcategory-id');
-                const targetPanel = document.getElementById('business-panel-' + subCatId);
-
-                // Hide all business panels, show target business panel
-                businessPanels.forEach(panel => {
-                    panel.classList.remove('active');
-                    panel.style.display = 'none';
-                });
-                if (targetPanel) {
-                    targetPanel.style.display = 'block';
-                    targetPanel.classList.add('active');
-                    container.classList.add('slide-business-active');
-                }
-            });
-        });
-
-        // Back to main menu
-        document.querySelectorAll('.back-to-main-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                container.classList.remove('slide-active');
-                container.classList.remove('slide-business-active');
-            });
-        });
-
-        // Back to sub-categories menu (from 3rd level back to 2nd level)
-        document.querySelectorAll('.back-to-subcategories-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const parentCatId = this.getAttribute('data-parent-cat-id');
-                const targetPanel = document.getElementById('sub-panel-' + parentCatId);
-
-                // Hide business panels, make sure parent sub-panel is active
-                subPanels.forEach(panel => {
-                    panel.classList.remove('active');
-                });
-                if (targetPanel) {
-                    targetPanel.classList.add('active');
-                }
-                container.classList.remove('slide-business-active');
-                container.classList.add('slide-active');
-            });
-        });
+        }
     });
     </script>
 
     <script>
     /* Conditional negative margin on Top Rated Products mobile business cards based on title line counts */
     function adjustAutomotiveRatings() {
+        const cards = document.querySelectorAll('.automotive-card');
+        if (!cards.length) return;
+
         if (window.innerWidth > 991) {
-            document.querySelectorAll('.automotive-card .tp-btm').forEach(el => {
-                el.style.setProperty('margin-top', '', 'important');
+            cards.forEach(card => {
+                const el = card.querySelector('.tp-btm');
+                if (el) el.style.setProperty('margin-top', '', 'important');
             });
             return;
         }
 
-        document.querySelectorAll('.automotive-card').forEach(card => {
+        cards.forEach(card => {
             const titleEl = card.querySelector('h6.head');
             const ratingEl = card.querySelector('.tp-btm');
             if (!titleEl || !ratingEl) return;
 
-            // Reset style first to measure correctly
             ratingEl.style.setProperty('margin-top', '', 'important');
-
             const style = window.getComputedStyle(titleEl);
-            const lineHeight = parseFloat(style.lineHeight) || 20; // fallback to 20px
+            const lineHeight = parseFloat(style.lineHeight) || 20;
             const titleHeight = titleEl.getBoundingClientRect().height;
 
-            // If title fits in one line (height is less than 1.5x line-height)
             if (titleHeight <= lineHeight * 1.5) {
                 ratingEl.style.setProperty('margin-top', '-1rem', 'important');
             } else {
@@ -1785,29 +1782,22 @@ window.addEventListener('load', function() {
         });
     }
 
-    // Run immediately to prevent layout shift before events fire
-    adjustAutomotiveRatings();
-
-    window.addEventListener('DOMContentLoaded', adjustAutomotiveRatings);
-    window.addEventListener('load', adjustAutomotiveRatings);
-    window.addEventListener('resize', adjustAutomotiveRatings);
-
-    // Use MutationObserver to watch for Livewire updates and rerun instantly
-    const observer = new MutationObserver((mutations) => {
-        observer.disconnect();
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!document.querySelector('.automotive-card')) return;
         adjustAutomotiveRatings();
+        window.addEventListener('load', adjustAutomotiveRatings);
+        window.addEventListener('resize', adjustAutomotiveRatings);
+
+        const observer = new MutationObserver(() => {
+            observer.disconnect();
+            adjustAutomotiveRatings();
+            observe();
+        });
+        function observe() {
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
         observe();
     });
-
-    function observe() {
-        const target = document.body;
-        observer.observe(target, {
-            childList: true,
-            subtree: true
-        });
-    }
-
-    observe();
     </script>
 
 

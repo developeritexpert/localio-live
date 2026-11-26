@@ -555,7 +555,8 @@
                                         </button>
                                     </div>
 
-                                    <div class="mobile-subcat-body">
+                                    <div class="mobile-subcat-body" id="mobile-subcat-body"></div>
+                                    <template id="mobile-subcat-panes-tpl">
                                         @foreach($sidebarCategories as $cat)
                                             @if($cat->translation)
                                                 <div class="mobile-subcat-pane" id="mobile-subcat-pane-{{ $cat->id }}" style="display: none;">
@@ -587,7 +588,7 @@
                                                 </div>
                                             @endif
                                         @endforeach
-                                    </div>
+                                    </template>
                                 </div>
 
                             </div>
@@ -602,10 +603,18 @@
                             const overlay = document.querySelector('.mobile-sidebar-overlay');
                             const subcatView = document.getElementById('mobile-view-subcats');
                             const backBtn = document.getElementById('mobile-subcat-back-btn');
-                            const catTriggers = document.querySelectorAll('.mobile-cat-nav-btn');
-                            const subcatPanes = document.querySelectorAll('.mobile-subcat-pane');
+                            const subcatBody = document.getElementById('mobile-subcat-body');
+                            const subcatTpl = document.getElementById('mobile-subcat-panes-tpl');
+                            let mobileSubcatsHydrated = false;
+
+                            function hydrateMobileSubcats() {
+                                if (mobileSubcatsHydrated || !subcatBody || !subcatTpl) return;
+                                subcatBody.appendChild(subcatTpl.content.cloneNode(true));
+                                mobileSubcatsHydrated = true;
+                            }
 
                             function openSidebar() {
+                                hydrateMobileSubcats();
                                 if (sidebar) sidebar.classList.add('active');
                                 if (overlay) overlay.classList.add('active');
                                 document.body.style.overflow = 'hidden';
@@ -632,14 +641,16 @@
                                 closeSidebar();
                             });
 
-                            // Clicking a category in View 1 -> switch to View 2
-                            catTriggers.forEach(function(trigger) {
-                                trigger.addEventListener('click', function(e) {
+                            // Event delegation for clicking a category in View 1 -> switch to View 2
+                            if (sidebar) {
+                                sidebar.addEventListener('click', function(e) {
+                                    const trigger = e.target.closest('.mobile-cat-nav-btn');
+                                    if (!trigger) return;
                                     e.preventDefault();
-                                    const targetId = this.getAttribute('data-target');
+                                    hydrateMobileSubcats();
+                                    const targetId = trigger.getAttribute('data-target');
 
-                                    // Hide all panes and show selected pane
-                                    subcatPanes.forEach(function(pane) {
+                                    sidebar.querySelectorAll('.mobile-subcat-pane').forEach(function(pane) {
                                         pane.style.display = 'none';
                                     });
 
@@ -651,7 +662,7 @@
                                     if (subcatView) subcatView.scrollTop = 0;
                                     if (track) track.classList.add('slide-subcat');
                                 });
-                            });
+                            }
 
                             // Clicking "< All Categories" -> switch back to View 1
                             if (backBtn) {
