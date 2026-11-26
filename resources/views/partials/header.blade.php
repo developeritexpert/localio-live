@@ -332,6 +332,8 @@
         align-items: center !important;
         justify-content: space-between !important;
         width: 100%;
+        background: none;
+        border: none;
         color: #fff !important;
         text-decoration: none !important;
         font-size: 15px;
@@ -1051,10 +1053,10 @@
                                                     @foreach($sidebarCategories as $cat)
                                                         @if($cat->translation)
                                                         <li>
-                                                            <a href="#mobile-categories" class="mobile-cat-nav-btn" data-target="mobile-subcat-pane-{{ $cat->id }}">
+                                                            <button type="button" class="mobile-cat-nav-btn" data-target="mobile-subcat-pane-{{ $cat->id }}">
                                                                 <span>{{ $cat->translation->name }}</span>
                                                                 <i class="fa-solid fa-chevron-right mobile-cat-right-arrow"></i>
-                                                            </a>
+                                                            </button>
                                                         </li>
                                                         @endif
                                                     @endforeach

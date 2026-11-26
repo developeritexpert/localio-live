@@ -143,11 +143,11 @@
     <!-- Preload Critical Font Awesome Webfont -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 
-    <!-- Critical CSS (Loaded directly to prevent Flash of Unstyled Content) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=3">
-    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?v=3">
-    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?v=3">
+    <!-- Core CSS (Directly loaded to guarantee 100% design fidelity) -->
+    <link href="{{ asset('front/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?v=4">
 
     <!-- Non-Critical CSS (Asynchronously loaded to eliminate render-blocking) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -1708,6 +1708,8 @@
                                 align-items: center !important;
                                 justify-content: space-between !important;
                                 width: 100%;
+                                background: none;
+                                border: none;
                                 color: #fff !important;
                                 text-decoration: none !important;
                                 font-size: 15px;
