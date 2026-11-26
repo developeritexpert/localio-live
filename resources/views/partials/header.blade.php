@@ -19,10 +19,10 @@
                                 @if (isset($headerLogo) && $headerLogo)
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
                                         src="{{ asset($headerLogo->meta_value) }}"
-                                        alt="{{ $headerLogo->meta_key }}"></a>
+                                        alt="{{ $headerLogo->meta_key }}" width="220" height="52"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52"></a>
                                 @endif
                             </div>
                         </div>
@@ -697,10 +697,10 @@
                                 @if (isset($headerLogo) && $headerLogo)
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
                                         src="{{ asset($headerLogo->meta_value) }}"
-                                        alt="{{ $headerLogo->meta_key }}"></a>
+                                        alt="{{ $headerLogo->meta_key }}" width="220" height="52"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio"></a>
+                                        src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52"></a>
                                 @endif
                             </div>
                         </div>
@@ -840,12 +840,12 @@
                                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}"
                                             class="msp_brand">
                                             <img src="{{ asset($headerLogo->meta_value) }}"
-                                                alt="{{ $headerLogo->meta_key }}">
+                                                alt="{{ $headerLogo->meta_key }}" width="220" height="52">
                                         </a>
                                         @else
                                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}"
                                             class="msp_brand">
-                                            <img src="{{ asset('front/img/logo.svg') }}" alt="Localio">
+                                            <img src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52">
                                         </a>
                                         @endif
                                     </div>
@@ -954,11 +954,11 @@
                                             @if (isset($headerLogo) && $headerLogo)
                                             <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
                                                 <img src="{{ asset($headerLogo->meta_value) }}"
-                                                    alt="{{ $headerLogo->meta_key }}">
+                                                    alt="{{ $headerLogo->meta_key }}" width="220" height="52">
                                             </a>
                                             @else
                                             <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
-                                                <img src="{{ asset('front/img/logo.svg') }}" alt="Localio">
+                                                <img src="{{ asset('front/img/logo.svg') }}" alt="Localio" width="220" height="52">
                                             </a>
                                             @endif
                                         </div>

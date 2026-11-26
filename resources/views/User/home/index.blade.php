@@ -31,7 +31,7 @@
         --}}
         <div class="banner_content">
             <div class="container">
-                <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
+                <div class="banner_row">
                     <div class="banner_text_col">
                         <div class="banner_content_inner">
                             <h1>{{ $homeContents['header_title'] ?? null }}</h1>
@@ -617,14 +617,14 @@
         <div class="back-image1">
             @if (isset($findToolLeftImage))
                 <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
-                    alt="{{ $findToolLeftImage->meta_key }}" loading="lazy">
+                    alt="{{ $findToolLeftImage->meta_key }}" width="108" height="108" loading="lazy" decoding="async">
             @endif
             <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
         </div>
         <div class="back-image2">
             @if (isset($findToolRightImage))
                 <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
-                    alt="{{ $findToolRightImage->meta_key }}" loading="lazy">
+                    alt="{{ $findToolRightImage->meta_key }}" width="173" height="173" loading="lazy" decoding="async">
             @endif
             <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
         </div>
