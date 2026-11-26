@@ -140,6 +140,9 @@
     <link rel="dns-prefetch" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://static.addtoany.com">
 
+    <!-- Preload Critical Font Awesome Webfont -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
     <!-- Critical CSS (Loaded directly to prevent Flash of Unstyled Content) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?v=2">
@@ -180,8 +183,8 @@
     @include('partials.favicon')
     @livewireStyles
     @stack('styles')
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <style>
+    {{-- Standalone unpkg Alpine removed (Livewire 3.6 bundles Alpine) --}}
+<style>
     @media (max-width: 767px) {
 
         .footer-dropdown .footer-title {
@@ -2451,10 +2454,10 @@ header .sec_head {
                                 @if (isset($footerLogo) && $footerLogo)
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
                                         src="{{ asset($footerLogo->meta_value) }}"
-                                        alt="{{ $footerLogo->meta_key }}"></a>
+                                        alt="{{ $footerLogo->meta_key }}" width="220" height="52" loading="lazy" decoding="async"></a>
                                 @else
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                        src="{{ asset('front/img/foot-logo.svg') }}" alt="Localio"></a>
+                                        src="{{ asset('front/img/foot-logo.svg') }}" alt="Localio" width="220" height="52" loading="lazy" decoding="async"></a>
                                 @endif
                                 <p class="mt-2">Make better buying decisions</p>
                                 <ul class="foot-right-list d-none">
@@ -3284,7 +3287,14 @@ header .sec_head {
 
     <!-- read section end -->
     <!-- AddToAny BEGIN -->
-    <script async src="https://static.addtoany.com/menu/page.js"></script>
+    <script>
+window.addEventListener('load', function() {
+    var a2aScript = document.createElement('script');
+    a2aScript.src = 'https://static.addtoany.com/menu/page.js';
+    a2aScript.async = true;
+    document.body.appendChild(a2aScript);
+});
+</script>
     <script>
     window.addEventListener('open-modal', () => {
         const modal = document.getElementById('learnMoreModal');
